@@ -1,0 +1,52 @@
+<script>
+        const form = document.getElementById("registrationForm");
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); 
+
+            const firstname = document.getElementById("firstname").value;
+            const lastname = document.getElementById("lastname").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("pw").value;
+            const confirmPassword = document.getElementById("confirmpw").value;
+            const phoneNumber = document.getElementById("cpnum").value;
+            const fields = [firstname, lastname, email, password, confirmPassword,  phoneNumber];
+            
+            if (fields.some(field => field === "")) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'ALL FIELDS MUST BE FILLED OUT',
+                });
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon:'error',
+                    title: 'ERROR',
+                    text:'Passwords do not match',
+                });
+                return;
+            }
+
+            const phonePattern = /^[0-9]{11}$/;
+            if (!phonePattern.test(phoneNumber)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Phone Number',
+                    text: 'Phone number must be exactly 11 digits.',
+                });
+                return;
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Account Created!',
+                text: 'Your account has been created successfully.',
+                showConfirmButton: true
+            }).then(() => {
+                window.location.href = "login.html"; 
+            });
+        });
+    </script>
