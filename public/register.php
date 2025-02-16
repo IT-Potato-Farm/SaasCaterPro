@@ -103,7 +103,7 @@
                     confirm_password: form["confirm_password"].value.trim()
                 };
                 // sending the data
-                let response = await fetch("/api/register_api.php", {
+                let response = await fetch("register_api.php", {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
@@ -186,7 +186,7 @@
                 Register
             </button>
 
-            <div class="text-center text-gray-400 text-sm mt-4">
+            <div class="text-center text-gray-400 text-sm mt-2">
                 Already have an account?
                 <a href="login.php" class="text-white font-semibold hover:underline hover:text-cyan-300 duration-300">Log in here</a>
             </div>
