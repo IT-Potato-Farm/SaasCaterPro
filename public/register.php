@@ -32,7 +32,7 @@
                         missingFields.push(field);
                     }
                 }
-                
+
                 // If there are missing fields, show an alert
                 if (missingFields.length > 0) {
                     Swal.fire({
@@ -103,13 +103,16 @@
                     confirm_password: form["confirm_password"].value.trim()
                 };
                 // sending the data
-                let response = await fetch("register_api.php", {
+                let response = await fetch("../api/register_api.php", {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
                     },
                     body: JSON.stringify(userData)
                 });
+
+                // console.log("Response Status:", response.status);
+                // console.log("Response Body:", await response.text());
 
                 let result = await response.json();
                 // if success register
@@ -135,7 +138,7 @@
                 Swal.fire({
                     icon: "error",
                     title: "Unexpected Error",
-                    text: "An unexpected error occurred.",
+                    text: `An error occurred: ${error.message}`,
                     confirmButtonColor: "#d33"
                 });
             }
@@ -150,7 +153,7 @@
         <h2 class="text-center text-white text-3xl font-semibold mb-4">Create an Account</h2>
 
 
-        <form id="registrationForm" name="registerForm" onsubmit="registerUser(event)" novalidate class="space-y-5">
+        <form id="registerForm" name="registerForm" onsubmit="registerUser(event)" novalidate class="space-y-5">
             <input type="text" id="firstname" name="first_name" placeholder="First Name"
                 class="w-full p-4 bg-[#2A2A2A] text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
 

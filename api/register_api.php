@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 header("Content-type: application/json");
 include_once __DIR__ . '/../config/database.php';
@@ -18,8 +20,7 @@ $user->first_name = htmlspecialchars(strip_tags(trim($data['first_name'])));
 $user->last_name = htmlspecialchars(strip_tags(trim($data['last_name'])));
 $user->email = filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL);
 $user->mobile = preg_replace('/\D/', '', trim($data['mobile']));
-$user->role = "user";
-$user->status = "Unverified";
+$user->role = "customer";
 
 $user->password = htmlspecialchars(strip_tags(trim($data['password'])));
 
@@ -38,7 +39,7 @@ if ($user->emailExists()) {
 //create user
 if ($user->create()) {
     http_response_code(201);
-    echo json_encode((["message" => "User registered successfully. Pls verify your account.", "success" => true]));
+    echo json_encode((["message" => "User registered successfully", "success" => true]));
 } else {
     http_response_code(500);
     echo json_encode(["message" => "Error registering user.", "success" => false]);

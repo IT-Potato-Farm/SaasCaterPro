@@ -1,3 +1,9 @@
+<?php  
+session_start();
+
+$userEmail = $_SESSION['email'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +12,8 @@
     <title>Document</title>
 </head>
 <body>
-    <?php echo"HELLO"; 
+    <?php echo"HELLO <br>"; 
+    echo "Welcome, $userEmail"
     ?>
 </body>
 </html>

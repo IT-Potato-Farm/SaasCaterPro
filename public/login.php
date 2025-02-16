@@ -95,7 +95,7 @@
             };
 
             try {
-                const response = await fetch("login_api.php", {
+                const response = await fetch("../api/login_api.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -119,7 +119,7 @@
                         if (userRole === "admin") {
                             window.location.href = "dashboard.php";
                         } else {
-                            window.location.href = "profile.php";
+                            window.location.href = "index.php";
                         }
                     });
                 } else {

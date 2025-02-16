@@ -2,15 +2,17 @@
 class User{
     private $conn;
     private $table_name = "users";
-    public $id, $first_name, $last_name, $email, $mobile, $password, $role, $status;
+    public $id, $first_name, $last_name, $email, $mobile, $password, $role;
 
     public function __construct($db)  {
         $this->conn=$db;
     }
 
     public function create(){
-        $query = "INSERT INTO " . $this->table_name . " (first_name, last_name, email, mobile, password, role, status) VALUES  
-        (:first_name, :last_name, :email, :mobile, :password, :role, :status)";
+        error_log("Role: " . $this->role);
+
+        $query = "INSERT INTO " . $this->table_name . " (first_name, last_name, email, mobile, password, role) VALUES  
+        (:first_name, :last_name, :email, :mobile, :password, :role)";
         $stmt= $this->conn->prepare($query);
 
         $stmt->bindParam(":first_name", $this->first_name);
@@ -19,17 +21,16 @@ class User{
         $stmt->bindParam(":mobile", $this->mobile);
         $stmt->bindParam(":password", $this->password);
         $stmt->bindParam(":role", $this->role);
-        $stmt->bindParam(":status", $this->status);
         
         if($stmt->execute()){
-            return ["success" => true, "message" => "user registered successfully. pls verify your account."];
+            return ["success" => true, "message" => "user registered successfully."];
         }else{
             return ["success" => false, "message" => "user registration failed. pls try again"];
 
         }
     }
     public function emailExists(){
-        $query = "SELECT id from " . $this->table_name . " WHERE email =:email LIMIT 1";
+        $query = "SELECT user_id from " . $this->table_name . " WHERE email =:email LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt ->bindParam(":email", $this->email);
         $stmt->execute();
@@ -53,7 +54,7 @@ class User{
             
             
             if (password_verify($this->password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['role'] = $user['role'];
