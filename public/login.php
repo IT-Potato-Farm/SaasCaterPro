@@ -39,6 +39,7 @@
         const emailField = document.getElementById("email");
         const passwordField = document.getElementById("password");
         const togglePassword = document.getElementById("togglePassword");
+        
         logform.addEventListener("submit", async function (e) {
             e.preventDefault(); // Prevent form from submitting immediately
 
