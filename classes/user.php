@@ -38,18 +38,15 @@ class User{
     }
 
     public function login() {
-        // Prepare the SQL query to select the user by email
         $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
         $stmt = $this->conn->prepare($query);
-        
-        // Bind the email parameter
         $stmt->bindParam(":email", $this->email);
         
         $stmt->execute();
         
         
         if ($stmt->rowCount() > 0) {
-            // Fetch  user data
+            // Fetch  data if tge yser
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
             
@@ -65,14 +62,12 @@ class User{
                     "user" => $user 
                 ];
             } else {
-                // Password is incorrect
                 return [
                     "success" => false,
                     "message" => "Invalid password."
                 ];
             }
         } else {
-            // No user found with that email
             return [
                 "success" => false,
                 "message" => "User  not found."
