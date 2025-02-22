@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PostCategories;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
@@ -24,3 +25,8 @@ Route::get('/home', function () {
 Route::post('/registerapi', [UserController::class, 'register']);
 Route::post('/loginapi', [UserController::class,'login']);
 Route::post('/logout', [UserController::class,'logout']);
+
+
+//CATEGORY ROUTES
+
+Route::post('/create-category', [PostCategories::class,'createCategory']);
