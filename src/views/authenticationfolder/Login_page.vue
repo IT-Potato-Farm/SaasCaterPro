@@ -8,7 +8,6 @@
            
         <Navbar1></Navbar1>
 
-
         <section class="bg-red-100 dark:bg-gray-900 min-h-screen">
             <div class="flex flex-col items-center justify-center px-0   py-8 mx-auto lg:py-3 mr-8">
                 
@@ -39,9 +38,9 @@
                             <div class="flex justify-end">
                                 <a class=" font-light text-gray-500 dark:text-gray-300  text-primary-600 hover:underline dark:text-primary-500" href="#">Forgot password</a>
                             </div>
-                            <button type="submit" class="w-full text-white bg-pink-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
+                            <button type="submit" class="w-full text-white bg-pink-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Login</button>
                             <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Already have an account? <router-link to="/register" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</router-link>
+                                Don't have an account? <router-link to="/register" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up here</router-link>
                             </p>
                         </form>
                     </div>
