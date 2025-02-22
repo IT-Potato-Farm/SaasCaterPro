@@ -1,11 +1,11 @@
 <script setup>
-import HelloWorld from './views/HelloWorld.vue'
+import Landing_page from './views/Landing_page.vue'
 
 </script>
 
 <template>
   
-  <HelloWorld msg="Vite + Vue" />
+  <Landing_page></Landing_page>
 </template>
 
 <style scoped>
