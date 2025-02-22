@@ -1,11 +1,9 @@
 <script setup>
-import Landing_page from './views/Landing_page.vue'
 
 </script>
 
 <template>
-  
-  <Landing_page></Landing_page>
+  <router-view></router-view>
 </template>
 
 <style scoped>
