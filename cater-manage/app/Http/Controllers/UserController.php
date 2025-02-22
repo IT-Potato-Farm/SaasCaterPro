@@ -44,8 +44,8 @@ class UserController extends Controller
         $credentials['password'] =bcrypt($credentials['password']); //built in rin ng laravel yung bcrypt
         $user = User::create($credentials); //yung user is built-in ng laravel
 
-        Auth::login($user);
-        return redirect('/');
+        // Auth::login($user);
+        return redirect('/')->with('success', 'Registration successful! Please log in.');
     }
 
 }
