@@ -5,6 +5,10 @@ use Illuminate\Http\Request;
 
 //GET route example
 Route::get('/', function () {
+    return view('landing');
+});
+
+Route::get('/home', function () {
     return view('home');
 });
 
