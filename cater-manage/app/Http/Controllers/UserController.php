@@ -18,7 +18,7 @@ class UserController extends Controller
         if(Auth::attempt(['email' => $loginInfo['loginemail'], 'password'=> $loginInfo['loginpassword']])){
             $request->session()->regenerate();
         }
-        return redirect('/');
+        return redirect('/home');
     }
     public function logout(){
         Auth::logout();
@@ -37,15 +37,14 @@ class UserController extends Controller
                 'max:16',
                 'regex:/[a-z]/', // At least one lowercase letter
                 'regex:/[A-Z]/', // At least one uppercase letter
-                'regex:/[0-9]/', // At least one number
-                'regex:/[@$!%*?&]/' // At least one special character
+                'regex:/[0-9]/' // At least one number
                 ]
         ]);
         $credentials['password'] =bcrypt($credentials['password']); //built in rin ng laravel yung bcrypt
         $user = User::create($credentials); //yung user is built-in ng laravel
 
-        Auth::login($user);
-        return redirect('/');
+        // Auth::login($user); hayaan mo lng to optional lng to para ilogin agad
+        return redirect('/login');
     }
 
 }
