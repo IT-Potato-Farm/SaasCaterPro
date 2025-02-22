@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 //GET route example
-Route::get('/', function () {
+Route::get('/landing', function () {
     return view('landing');
 });
 
@@ -14,6 +14,14 @@ Route::get('/home', function () {
 
 Route::get('/contact', function () {
     return view('contact');
+});
+
+Route::get('/login', function () {
+    return view('login');
+});
+
+Route::get('/register', function () {
+    return view('register');
 });
 
 //Parameters using routes
@@ -55,3 +63,30 @@ Route::post("/formsubmitted", function (Request $request) {
     
     return "Your full name is {$request->input('fullname')}, and your email is $email!";
 })->name("formsubmitted");
+
+
+
+
+
+
+
+
+
+//Traversy Media Example
+
+use App\Models\Listing;
+
+//All Listings
+Route::get('/', function() {
+    return view('listings', [
+        'heading' => 'Latest Listings',
+        'listings' => Listing::all()
+    ]);
+});
+
+//Single Listing
+Route::get('/listings/{id}', function($id) {
+    return view('listing', [
+        'listing' => Listing::find($id)
+    ]);
+}); 
