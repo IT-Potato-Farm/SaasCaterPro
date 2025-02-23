@@ -19,10 +19,10 @@
                         <router-link to="/" class="block py-2 px-3  text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Home</router-link>
                     </li>
                     <li>
-                        <a href="#" class="block py-2 px-3  text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">About Us</a>
+                        <a href="#" @click.prevent="scrollToSection('aboutus')" class="block py-2 px-3  text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">About Us</a>
                     </li>
                     <li>
-                        <a href="#" class="block py-2 px-3  text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Menu</a>
+                        <a href="#" @click.prevent="scrollToSection('menu')" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Menu</a>
                     </li>
                     <li>
                         <a href="#" class="flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 cursor-pointer">
@@ -47,3 +47,34 @@
     </div>
     
 </template>
+
+<script>
+export default {
+    methods: {
+        scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                const targetPos = element.getBoundingClientRect().top + window.scrollY; // updated
+                const startPos = window.scrollY; // updated
+                const distance = targetPos - startPos;
+                const duration = 600; // ms
+                let startTime = null;
+                function easeInOutQuad(t) { 
+                    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; 
+                }
+                function animate(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    const timeElapsed = currentTime - startTime;
+                    const progress = Math.min(timeElapsed / duration, 1);
+                    const easing = easeInOutQuad(progress);
+                    window.scrollTo(0, startPos + distance * easing);
+                    if (timeElapsed < duration) {
+                        requestAnimationFrame(animate);
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+        }
+    }
+}
+</script>

@@ -1,13 +1,7 @@
-<script setup>
-
-    import Navbar1 from '../landingfolder/Navbar1.vue';
-</script>
 
 <template>
     <div>
              
-        <Navbar1></Navbar1>
-
 
         <section class="bg-red-100 dark:bg-gray-900">
             <div class="flex flex-col items-center justify-center px-0   py-8 mx-auto lg:py-3 mr-8">

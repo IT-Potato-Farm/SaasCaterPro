@@ -1,5 +1,5 @@
 <template>
-    <section class="flex flex-col items-center justify-center text-center bg-white min-h-[50vh]">
+    <section id="aboutus" class="flex flex-col items-center justify-center text-center bg-white min-h-[50vh]">
         <div class="max-w-xl">
             <h2 class="text-4xl font-extrabold text-gray-900 mb-6">About Us</h2>
             <p class="text-lg text-gray-700 leading-relaxed ">
@@ -8,8 +8,6 @@
                 tailored to your events. Whether it's a wedding, corporate gathering, or private party, our team ensures an 
                 unforgettable dining experience. Let us bring the perfect taste to your special occasions!
             </p>
-            
         </div>
     </section>
-
 </template>
