@@ -3,6 +3,8 @@ import Landing_page from '../views/Landing_page.vue';  // Import your pages/comp
 import Register_page from '../views/authenticationfolder/Register_page.vue';
 import Login_page from '../views/authenticationfolder/Login_page.vue';
 import MenuAll_page from '../views/MenuAll_page.vue';
+import Cart_page from '../views/Cart_page.vue';
+import Orderdetails_page from '../views/Orderdetails_page.vue';
 
 const routes = [
   {
@@ -17,6 +19,12 @@ const routes = [
   },
   { path: '/menu-all',
     component: MenuAll_page 
+  },
+  { path: '/cart',
+    component: Cart_page 
+  },
+  { path: '/order-details',
+    component: Orderdetails_page 
   },
 ];
 
