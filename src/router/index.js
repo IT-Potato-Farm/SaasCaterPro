@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Landing_page from '../views/Landing_page.vue';  // Import your pages/components
 import Register_page from '../views/authenticationfolder/Register_page.vue';
 import Login_page from '../views/authenticationfolder/Login_page.vue';
+import MenuAll_page from '../views/MenuAll_page.vue';
 
 const routes = [
   {
@@ -13,6 +14,9 @@ const routes = [
   },
   { path: '/register',
     component: Register_page 
+  },
+  { path: '/menu-all',
+    component: MenuAll_page 
   },
 ];
 
