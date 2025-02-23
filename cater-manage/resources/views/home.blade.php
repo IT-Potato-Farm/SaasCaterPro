@@ -15,7 +15,7 @@
     </header>
 
     @auth
-    <a href="/dashboard" class="text-blue-500 hover:underline mt-2 inline-block">View Dashboard</a>
+    <a href="admin/dashboard" class="text-blue-500 hover:underline mt-2 inline-block">View Dashboard</a>
         <h2>You are logged in</h2>
         <form action="/logout" method="post">
         @csrf
@@ -27,6 +27,8 @@
             <a href="/register" class="px-4 bg-cyan-200">Go Signup</a>
         </div>
     @endauth
+
+    
     
 
 </body>
