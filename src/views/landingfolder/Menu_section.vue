@@ -1,3 +1,9 @@
+<script setup>
+
+const emit = defineEmits(['openModal']);
+    
+</script>
+
 <template>
     <h2 class="text-center font-bold text-6xl mt-20 ">MENU</h2>
     <div class="cardholder flex p-4 mt-5 justify-center gap-8 ">
@@ -41,7 +47,7 @@
             <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Package A - Classic Delight</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Includes 1 appetizer, 2 main courses, 1 dessert, and drinks. Perfect for small gatherings.</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400"> (Serves 5-10 people)</p>
-            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+            <button @click="emit('openModal')" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
                 Show Details
             </button>
             
