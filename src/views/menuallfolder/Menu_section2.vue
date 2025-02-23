@@ -39,14 +39,13 @@
         
         <!-- SECOND STYLE OPTION -->
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food1.jpg" alt="" />
-            </a>
+            <img class="rounded-t-lg" src="/assets/food1.jpg" alt="" />
+            
             <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Grilled Chicken Tikka</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Boneless chicken chunks marinated in yogurt and spices, grilled to perfection.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
@@ -55,14 +54,13 @@
         </div>
         
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food2.jpg" alt="" />
-            </a>
+            <img class="rounded-t-lg" src="/assets/food2.jpg" alt="" />
+            
             <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Butter Chicken</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">A mildly spiced, creamy tomato-based curry with tender, boneless chicken pieces.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
@@ -70,14 +68,13 @@
         </div>
         
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
+            <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
+            
             <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
@@ -85,14 +82,42 @@
         </div>
 
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
+            <img class="rounded-t-lg" src="/assets/food1.jpg" alt="" />
+            
+            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Grilled Chicken Tikka</p>
+            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Boneless chicken chunks marinated in yogurt and spices, grilled to perfection.</p>
+            
+            <div class="buttonholder flex justify-center">
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
+                    Add Order
+                </button>
+
+            </div>
+            
+        </div>
+        
+        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <img class="rounded-t-lg" src="/assets/food2.jpg" alt="" />
+            
+            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Butter Chicken</p>
+            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">A mildly spiced, creamy tomato-based curry with tender, boneless chicken pieces.</p>
+            
+            <div class="buttonholder flex justify-center">
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
+                    Add Order
+                </button>
+
+            </div>
+        </div>
+        
+        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
+            
             <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
@@ -100,79 +125,48 @@
         </div>
 
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
-            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
-            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
+            <img class="rounded-t-lg" src="/assets/food1.jpg" alt="" />
+            
+            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Grilled Chicken Tikka</p>
+            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Boneless chicken chunks marinated in yogurt and spices, grilled to perfection.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
             </div>
+            
         </div>
-
+        
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
-            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
-            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
+            <img class="rounded-t-lg" src="/assets/food2.jpg" alt="" />
+            
+            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Butter Chicken</p>
+            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">A mildly spiced, creamy tomato-based curry with tender, boneless chicken pieces.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
             </div>
         </div>
-
+        
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
+            <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
+            
             <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
             
             <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
+                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 cursor-pointer">  
                     Add Order
                 </button>
 
             </div>
         </div>
-
-        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
-            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
-            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
-            
-            <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
-                    Add Order
-                </button>
-
-            </div>
-        </div>
-
-        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="rounded-t-lg" src="/assets/food3.jpg" alt="" />
-            </a>
-            <p class="mt-5 ml-3 font-extrabold text-gray-700 dark:text-gray-400">Shawarma Wrap</p>
-            <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Thinly sliced marinated chicken or beef wrapped in pita bread with garlic sauce and veggies.</p>
-            
-            <div class="buttonholder flex justify-center">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
-                    Add Order
-                </button>
-
-            </div>
-        </div>
+        
 
         
     </div>
