@@ -42,7 +42,7 @@
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">Includes 1 appetizer, 2 main courses, 1 dessert, and drinks. Perfect for small gatherings.</p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400"> (Serves 5-10 people)</p>
             <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
-                Show full information
+                Show Details
             </button>
             
         </div>
@@ -55,7 +55,7 @@
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">A balanced meal with 2 appetizers, 3 main courses, 2 desserts, and drinks. Ideal for family celebrations. </p>
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400"> (Serves 10-15 people)</p>
             <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
-                Show full information
+                Show Details
             </button>
         </div>
         
@@ -67,7 +67,7 @@
             <p class="mt-2 ml-3 font-normal text-gray-700 dark:text-gray-400">A lavish spread featuring 3 appetizers, 4 main courses, 3 desserts, and unlimited drinks. Great for large events. (Serves 20+ people)</p>
             
             <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-3.5 my-8 ml-3 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">  
-                Show full information
+                Show Details
             </button>
         </div>
 
