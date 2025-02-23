@@ -10,6 +10,9 @@ use App\Http\Controllers\CategoryController;
 Route::get('/', function () {
     return view('home');
 });
+Route::get('/testhome', function () {
+    return view('homepage');
+});
 Route::get('/register', function () {
     return view('register');
 });
@@ -26,6 +29,7 @@ Route::get('/home', function () {
     
     return view('home');
 });
+
 
 Route::post('/registerapi', [UserController::class, 'register']);
 Route::post('/loginapi', [UserController::class,'login']);
