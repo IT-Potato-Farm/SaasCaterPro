@@ -1,5 +1,5 @@
-<section id="menu" class="menu-section">
-    <h2 class="text-center font-bold text-6xl mt-20">MENU</h2>
+<section id="menu" class="menu-section h-screen">
+    <h2 class="text-center font-bold text-6xl mt-2">MENU</h2>
     <div class="cardholder flex p-4 mt-5 justify-center gap-8">
         @foreach([1, 2, 3] as $package)
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">

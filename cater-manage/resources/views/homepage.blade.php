@@ -10,11 +10,15 @@
 
 
 </head>
-<body class="bg-gray-400">
+<body class="">
     <x-navbar />
     <x-hero/>
     <x-menu-section/>
     {{-- <x-menu-modal /> --}}
     <x-sweet-alert-menu />
+    <x-why-choose-us />
+    <x-ratingsection/>
+    <x-about-us/>
+    <x-footer/>
 </body>
 </html>
