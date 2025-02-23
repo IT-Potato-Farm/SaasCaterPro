@@ -5,6 +5,7 @@ import Login_page from '../views/authenticationfolder/Login_page.vue';
 import MenuAll_page from '../views/MenuAll_page.vue';
 import Cart_page from '../views/Cart_page.vue';
 import Orderdetails_page from '../views/Orderdetails_page.vue';
+import Checkout_page from '../views/Checkout_page.vue';
 
 const routes = [
   {
@@ -25,6 +26,9 @@ const routes = [
   },
   { path: '/order-details',
     component: Orderdetails_page 
+  },
+  { path: '/checkout',
+    component: Checkout_page 
   },
 ];
 

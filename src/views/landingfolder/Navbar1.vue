@@ -33,7 +33,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/register" class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 cursor-pointer">
+                        <router-link to="/login" class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 cursor-pointer">
                             Login
                         </router-link>
                     </li>
