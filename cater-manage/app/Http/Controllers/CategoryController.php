@@ -24,7 +24,7 @@ class CategoryController extends Controller
         $categories = Category::all(); 
         return view('admin.dashboard', compact('categories')); // Pass sa view
     }
-    public function editCategory(Request $request, $category_id) {
+    public function editCategory(Request $request, $id) {
         $categoryFields = $request->validate([
             'name' => 'required',
             'description' => 'required'
@@ -32,16 +32,16 @@ class CategoryController extends Controller
         $categoryFields['name'] = strip_tags($categoryFields['name']);
         $categoryFields['description'] = strip_tags($categoryFields['description']);
         // hanapin nya muna ung id
-        $category = Category::findOrFail($category_id);
+        $category = Category::findOrFail($id);
 
         // Update sa db
         $category->update($categoryFields);
         return redirect()->back()->with('success', 'Category updated successfully!');
     }
     
-    public function deleteCategory($category_id)
+    public function deleteCategory($id)
     {
-        $category = Category::findOrFail($category_id);
+        $category = Category::findOrFail($id);
         $category->delete();
         return redirect()->back()->with('success', 'Category deleted successfully!');
     }

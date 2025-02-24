@@ -77,7 +77,7 @@
                     <div class="flex space-x-2">
                         <!-- Edit Button -->
                         <button onclick="openEditModal(
-                            {{ $category->category_id }}, 
+                            {{ $category->id }}, 
                             {{ json_encode($category->name) }}, 
                             {{ json_encode($category->description) }}
                         )" 
@@ -86,7 +86,7 @@
                         </button>
 
                         <!-- Delete Button -->
-                        <form action="{{ route('categories.delete', $category->category_id) }}" method="POST" class="delete-form">
+                        <form action="{{ route('categories.delete', $category->id) }}" method="POST" class="delete-form">
                             @csrf
                             @method('DELETE')
                             <button type="button" onclick="confirmDelete(this)" 
