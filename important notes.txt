@@ -1,4 +1,4 @@
-Laravel Migrations
+Laravel Commands
 
 Creating table for migrations command:
 
@@ -7,3 +7,23 @@ php artisan make:migration create_(name)_table
 Running the migrations command:
 
 php artisan migrate
+
+Running database seeding commang:
+
+php artisan db:seed
+
+Clearing out the seeds command:
+
+php artisan migrate:refresh
+
+Rolling seeds again command:
+
+php artisan migrate:refresh --seed
+
+Creating models command:
+
+php artisan make:model (name)
+
+Creating factories command:
+
+php artisan make:factory (name)
