@@ -7,6 +7,7 @@ import Cart_page from '../views/Cart_page.vue';
 import Orderdetails_page from '../views/Orderdetails_page.vue';
 import Checkout_page from '../views/Checkout_page.vue';
 import Dashboard_page from '../views/Dashboard_page.vue';
+import Ultimatepackage_page from '../views/Ultimatepackage_page.vue';
 
 const routes = [
   {
@@ -34,6 +35,10 @@ const routes = [
   { path: '/dashboard',
     component: Dashboard_page 
   },
+  { path: '/ultimate-package',
+    component: Ultimatepackage_page
+  },
+
 ];
 
 const router = createRouter({
