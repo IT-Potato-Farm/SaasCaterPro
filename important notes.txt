@@ -1,0 +1,9 @@
+Laravel Migrations
+
+Creating table for migrations command:
+
+php artisan make:migration create_(name)_table
+
+Running the migrations command:
+
+php artisan migrate
