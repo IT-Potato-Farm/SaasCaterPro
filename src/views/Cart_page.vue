@@ -10,7 +10,7 @@ import MiniNav_section from './menuallfolder/MiniNav_section.vue';
 
     <div class="holder relative top-20 left-20">
         <h1 class="text-5xl font-bold text-red-600 ">Food Cart</h1>
-        <p class="text-2xl">Your cart is empty</p>
+        <p class="text-2xl">Your cart is currently empty</p>
 
     </div>
 
