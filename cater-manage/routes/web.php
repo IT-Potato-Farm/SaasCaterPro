@@ -38,7 +38,15 @@ Route::post('/logout', [UserController::class,'logout']);
 
 //CATEGORY ROUTES
 // Route::post('/create-category', [PostCategories::class,'createCategory']);
+// add
 Route::post('/categories/store', [CategoryController::class, 'addCategory'])->name('categories.addCategory');
+
+// edit
+Route::put('/categories/{category_id}/edit', [CategoryController::class, 'editCategory'])->name('categories.edit');
+
+// delete
+Route::delete('/categories/{category_id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
+
 
 
 // middleware 

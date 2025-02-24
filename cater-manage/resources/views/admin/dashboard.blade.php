@@ -7,6 +7,36 @@
     <title>Admin Dashboard</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @keyframes slide-in {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slide-out {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(150%);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slide-in 0.3s ease-out;
+        }
+
+        .animate-slide-out {
+            animation: slide-out 0.3s ease-in;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-500 p-5">
@@ -22,8 +52,10 @@
             </form>
 
             {{-- category formm --}}
-            <x-category-form />
-
+            {{-- <x-category-form /> --}}
+            <x-category.add-category />
+            <x-category.category-list />
+            <x-category.edit-category />
         @else
             <script>
                 window.location.href = "/";
@@ -33,12 +65,35 @@
         <script>
             window.location.href = "/";
         </script>
-    @endauth    
+    @endauth
 
     <main class="mt-5">
-        <x-show-category/>
+
 
     </main>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#f0fdfa',
+                iconColor: '#06b6d4',
+                color: '#164e63',
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'swal2-show animate-slide-in'
+                },
+                hideClass: {
+                    popup: 'swal2-hide animate-slide-out'
+                }
+            });
+        </script>
+    @endif
 </body>
 
 </html>

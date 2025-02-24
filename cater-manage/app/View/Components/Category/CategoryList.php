@@ -1,19 +1,21 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Category;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\Category;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
-class CategoryForm extends Component
+class CategoryList extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $categories;
     public function __construct()
     {
-        //
+        $this->categories = Category::all();
     }
 
     /**
@@ -21,6 +23,6 @@ class CategoryForm extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.category-form');
+        return view('components.category.category-list');
     }
 }
