@@ -54,8 +54,8 @@
             {{-- category formm --}}
             {{-- <x-category-form /> --}}
             <x-category.add-category />
-            <x-category.category-list />
-            <x-category.edit-category />
+             <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
+            
         @else
             <script>
                 window.location.href = "/";
