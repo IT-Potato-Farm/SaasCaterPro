@@ -1,5 +1,9 @@
 Laravel Commands
 
+dd()
+
+ddd()
+
 Creating table for migrations command:
 
 php artisan make:migration create_(name)_table
@@ -7,6 +11,14 @@ php artisan make:migration create_(name)_table
 Running the migrations command:
 
 php artisan migrate
+
+Updating tables in migrations command:
+
+php artisan make:migraton create_name_table --table=(name)
+
+Rolling back if there are mistakes in migrations command:
+
+php artisan migrate:rollback
 
 Running database seeding commang:
 
@@ -27,3 +39,19 @@ php artisan make:model (name)
 Creating factories command:
 
 php artisan make:factory (name)
+
+Creating controller command: 
+
+php artisan make:controller (name)
+
+Creating components command:
+
+php artisan make:component ComponentName
+example:
+php artisan make:component Navbar
+or pede rin 
+php artisan make:component Pages/Navbar
+
+Creating middleware command:
+
+php artisan make:middleware (name)

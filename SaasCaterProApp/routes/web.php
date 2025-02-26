@@ -1,38 +1,55 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use App\Http\Controllers\PostCategories;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CategoryController;
 
-//GET route example
-Route::get('/landing', function () {
-    return view('landing');
+Route::get('/', function () {
+    return view('home');
 });
-
+Route::get('/testhome', function () {
+    return view('homepage');
+});
+Route::get('/register', function () {
+    return view('register');
+});
 Route::get('/login', function () {
     return view('login');
 });
 
-Route::get('/register', function () {
-    return view('register');
+// Route::get('/dashboard', function () {
+    
+//     return view('dashboard');
+// });
+
+Route::get('/home', function () {
+    
+    return view('home');
 });
 
 
+Route::post('/registerapi', [UserController::class, 'register']);
+Route::post('/loginapi', [UserController::class,'login']);
+Route::post('/logout', [UserController::class,'logout']);
 
-//Traversy Media Example
 
-use App\Models\listing;
+//CATEGORY ROUTES
+// Route::post('/create-category', [PostCategories::class,'createCategory']);
+// add
+Route::post('/categories/store', [CategoryController::class, 'addCategory'])->name('categories.addCategory');
 
-//All Listings
-Route::get('/', function() {
-    return view('listings', [
-        'heading' => 'Latest Listings',
-        'listings' => Listing::all()
-    ]);
+// edit
+Route::put('/categories/{id}/edit', [CategoryController::class, 'editCategory'])->name('categories.edit');
+
+// delete
+Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
+
+
+
+// middleware 
+Route::middleware([AdminMiddleware::class])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 });
-
-//Single Listing
-Route::get('/listings/{id}', function($id) {
-    return view('listing', [
-        'listing' => Listing::find($id)
-    ]);
-}); 
