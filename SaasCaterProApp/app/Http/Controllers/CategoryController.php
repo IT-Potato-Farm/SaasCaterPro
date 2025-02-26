@@ -7,18 +7,29 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function addCategory(Request $request)
-    {
-        $categoryFields = $request->validate([
-            'name' => 'required',
-            'description' => 'required'
-        ]);
-        $categoryFields['name'] = strip_tags($categoryFields['name']);
-        $categoryFields['description'] = strip_tags($categoryFields['description']);
-        Category::create($categoryFields);
-
-        return redirect()->back()->with('success', 'Category added successfully!');
+    public function index(){
+        $categories = Category::orderBy("created_at","desc")->get();
+        return view('testindex', ['categories'=> $categories]);
     }
+
+        public function addCategory(Request $request)
+        {
+            $categoryFields = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string'
+            ]);
+        
+            $categoryFields['name'] = strip_tags($categoryFields['name']);
+            $categoryFields['description'] = strip_tags($categoryFields['description']);
+        
+            $category = Category::create($categoryFields);
+        
+            return response()->json([
+                'success' => true,
+                'message' => 'Category added successfully!',
+                'category' => $category
+            ]);
+        }
     public function showCategories()
     {
         $categories = Category::all(); 
@@ -31,10 +42,10 @@ class CategoryController extends Controller
         ]);
         $categoryFields['name'] = strip_tags($categoryFields['name']);
         $categoryFields['description'] = strip_tags($categoryFields['description']);
-        // Looking first for the id
+        // hanapin nya muna ung id
         $category = Category::findOrFail($id);
 
-        // Updating the db
+        // Update sa db
         $category->update($categoryFields);
         return redirect()->back()->with('success', 'Category updated successfully!');
     }
@@ -45,5 +56,4 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->back()->with('success', 'Category deleted successfully!');
     }
-
 }

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class AddCategory extends Component
+class categoryButton extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class AddCategory extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.category.add-category');
+        return view('components.category.category-button');
     }
 }
