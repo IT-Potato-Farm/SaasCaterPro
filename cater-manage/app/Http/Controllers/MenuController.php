@@ -87,6 +87,6 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
         $menu->delete();
-        return redirect()->back()->with('success', 'Category deleted successfully!');
+        return redirect()->back()->with('success', 'Menu deleted successfully!');
     }
 }

@@ -3,7 +3,7 @@
 <script>
     function addMenu() {
         Swal.fire({
-            title: 'Add Category',
+            title: 'Add Menu',
             html: `
                 <div class="space-y-4">
                     <label for="name" class="text-left block text-gray-700 font-medium">Menu Name</label>

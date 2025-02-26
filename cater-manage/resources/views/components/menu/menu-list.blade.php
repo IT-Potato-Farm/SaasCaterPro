@@ -63,7 +63,7 @@
     @else
         <ul class="space-y-3 list-none p-0">
             @foreach ($menus as $menu)
-                <li class="bg-white p-4 rounded-lg shadow-sm hover:bg-cyan-50 transition-colors border-l-4 border-cyan-400 flex justify-between items-center">
+                <li class="bg-white p-4 rounded-lg shadow-sm hover:bg-cyan-50 transition-colors border-l-4 border-orange-300 flex justify-between items-center">
                     <div>
                         <span class="font-semibold text-cyan-700 text-lg">{{ $menu->name }}</span>
                         <p class="text-cyan-600 mt-1 text-sm">{{ $menu->description }}</p>

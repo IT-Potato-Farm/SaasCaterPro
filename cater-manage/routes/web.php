@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MenuItemController;
 
 Route::get('/', function () {
     return view('home');
@@ -63,6 +64,9 @@ Route::post('/menu/store', [MenuController::class, 'addMenu'])->name('menu.addMe
 Route::put('/menu/{id}/edit', [MenuController::class, 'editMenu'])->name('menu.edit');
 Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
 
+// menu items
+Route::resource('menu-items', MenuItemController::class);
+Route::post('/menuitems/store', [MenuItemController::class, 'store'])->name('menuitems.addMenu');
 
 // middleware 
 Route::middleware([AdminMiddleware::class])->group(function () {

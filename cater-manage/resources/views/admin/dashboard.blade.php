@@ -52,6 +52,7 @@
             </form>
             <x-category.category-button />
             <x-menu.menu-button />
+            <x-items.item-button />
             <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
 
 
@@ -60,6 +61,7 @@
            
             <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
             <x-menu.menu-list /> 
+            <x-items.item-list /> 
         @else
             <script>
                 window.location.href = "/";
