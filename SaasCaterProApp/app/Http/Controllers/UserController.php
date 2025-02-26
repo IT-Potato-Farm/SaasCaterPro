@@ -88,6 +88,7 @@ class UserController extends Controller
         $user = User::create($credentials); //yung user is built-in ng laravel
 
         // Auth::login($user); hayaan mo lng to optional lng to para ilogin agad
-        return redirect('/login');
+        // Gawin ko muna papunta sa home - Marjouk
+        return redirect('/home');
     }
 }

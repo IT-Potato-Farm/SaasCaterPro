@@ -10,8 +10,14 @@ use App\Http\Controllers\CategoryController;
 Route::get('/', function () {
     return view('home');
 });
-Route::get('/testhome', function () {
-    return view('homepage');
+
+Route::get('/home', function () {
+    return view('home');
+});
+
+
+Route::get('/user', function () {
+    return view('user');
 });
 Route::get('/register', function () {
     return view('register');
@@ -20,15 +26,10 @@ Route::get('/login', function () {
     return view('login');
 });
 
-// Route::get('/dashboard', function () {
-    
-//     return view('dashboard');
-// });
-
-Route::get('/home', function () {
-    
-    return view('home');
+Route::get('/profile', function () {
+    return view('profile');
 });
+
 
 
 Route::post('/registerapi', [UserController::class, 'register']);
@@ -53,3 +54,4 @@ Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])
 Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 });
+

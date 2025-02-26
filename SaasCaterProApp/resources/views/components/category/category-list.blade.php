@@ -76,14 +76,14 @@
                     </div>
                     <div class="flex space-x-2">
                         <!-- Edit Button -->
-                        <button onclick="openEditModal(
+                        <!-- <button onclick="openEditModal(
                             {{ $category->id }}, 
                             {{ json_encode($category->name) }}, 
                             {{ json_encode($category->description) }}
                         )" 
                             class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition hover:cursor-pointer">
                             Edit
-                        </button>
+                        </button> -->
 
                         <!-- Delete Button -->
                         <form action="{{ route('categories.delete', $category->id) }}" method="POST" class="delete-form">
@@ -118,7 +118,7 @@
         });
     }
 </script>
-{{-- @if (session('success'))
+<!-- {{-- @if (session('success'))
 <script>
     Swal.fire({
         icon: 'success',
@@ -140,4 +140,4 @@
         }
     });
 </script>
-@endif --}}
+@endif --}} -->

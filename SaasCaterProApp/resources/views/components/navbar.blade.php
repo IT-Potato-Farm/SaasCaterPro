@@ -48,10 +48,28 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url('/register') }}"
+
+                @auth
+                    @if (Auth::user()->role === config('roles.admin'))
+                        <a href="/admin/dashboard"
+                            class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Admin
+                        </a>
+                    
+                    @else
+                        <a href="{{ url('/profile') }}"
+                            class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Profile
+                        </a>
+                    @endif
+                    
+                @else
+                    <a href="{{ url('/user') }}"
                         class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
-                        Login
+                        User
                     </a>
+                @endauth
+
                 </li>
             </ul>
         </div>
