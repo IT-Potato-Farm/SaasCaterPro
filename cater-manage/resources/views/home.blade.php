@@ -19,7 +19,7 @@
 
     @auth
         @if (Auth::user()->role === config('roles.admin'))
-            <a href="/admin/dashboard" class="text-blue-500 hover:underline mt-2 inline-block">View Dashboard</a>
+            <a href="{{route('admin.dashboard')}}" class="text-blue-500 hover:underline mt-2 inline-block">View Dashboard</a>
         @endif
 
         <h2>You are logged in</h2>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -46,13 +47,22 @@
                             </ul>
                         </div>
                     @endif
-
                     @if (session('success'))
+                        <script>
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Account Created!',
+                                text: '{{ session('success') }}',
+                                confirmButtonText: 'OK'
+                            });
+                        </script>
+                    @endif
+                    {{-- @if (session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
                             {{ session('success') }}
                         </div>
-                    @endif
-                    <form class="space-y-4 md:space-y-6" action="{{ url('/registerapi') }}" method="POST">
+                    @endif --}}
+                    <form class="space-y-4 md:space-y-6" action="{{ route('user.register') }}" method="POST">
                         @csrf
                         <div>
                             <label for="first_name"

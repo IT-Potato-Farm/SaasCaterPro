@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
-<body class="bg-gray-400 flex justify-center items-center h-screen">
+<body class="">
+    <main class="bg-gray-400 flex justify-center items-center h-screen">
+
+    
     <div class="w-full max-w-sm bg-gray-300 p-6 rounded-lg shadow-md">
         <h2 class="text-3xl font-bold text-center text-gray-700 mb-4">Login</h2>
 
@@ -23,14 +27,25 @@
                 </ul>
             </div>
         @endif
-        {{-- success validation --}}
+
         @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Created!',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        @endif
+        {{-- success validation --}}
+        {{-- @if (session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
                 {{ session('success') }}
             </div>
-        @endif
+        @endif --}}
 
-        <form id="loginForm" action="{{ url('/loginapi') }}" class="space-y-4" method="post" novalidate>
+        <form id="loginForm" action="{{ route('user.login') }}" class="space-y-4" method="post" novalidate>
             @csrf
             <div>
                 <input type="email" name="loginemail" id="loginemail" placeholder="Email Address"
@@ -49,7 +64,7 @@
         <span class="">Dont have an account? <a href="/register" class="hover:underline">Register here</a></span>
 
     </div>
-    
+</main>
 </body>
 
 </html>

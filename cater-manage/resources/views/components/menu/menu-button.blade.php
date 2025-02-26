@@ -1,13 +1,13 @@
 {{-- ANDTO YUNG POP UP MODAL FOR ADDING NG CATEGORY TAPOS ID-DELIVER NYA YUNG DATA  --}}
 
 <script>
-    function addCat() {
+    function addMenu() {
         Swal.fire({
             title: 'Add Category',
             html: `
                 <div class="space-y-4">
-                    <label for="name" class="text-left block text-gray-700 font-medium">Category Name</label>
-                    <input type="text" id="swal-name" name="name" required
+                    <label for="name" class="text-left block text-gray-700 font-medium">Menu Name</label>
+                    <input type="text" id="swal-name" name="name" required placeholder="(Can be a package name or set)"
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
 
                     <label for="description" class="text-left block text-gray-700 font-medium">Description</label>
@@ -15,7 +15,7 @@
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>`,
             showCancelButton: true,
-            confirmButtonText: 'Save Category',
+            confirmButtonText: 'Add Menu',
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#3b82f6', // Tailwind blue-500
             cancelButtonColor: '#ef4444',   // Tailwind red-500
@@ -28,7 +28,7 @@
                     return false;
                 }
                 // nagp-point to sa category controller -> pati models  
-                return fetch("{{ route('categories.addCategory') }}", {
+                return fetch("{{ route('menu.addMenu') }}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -39,7 +39,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (!data.success) {
-                        throw new Error(data.message || 'Error adding category');
+                        throw new Error(data.message || 'Error adding menu');
                     }
                     return data;
                 })
@@ -52,8 +52,8 @@
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Category Added',
-                    text: 'The category was successfully added!',
+                    title: 'Menu Added',
+                    text: 'The Menu was successfully added!',
                     showConfirmButton: false,
                     timer: 2000
                 }).then(() => {
@@ -64,4 +64,5 @@
     }
 </script>
 
-<button onclick="addCat()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a category</button>
+
+<button onclick="addMenu()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a Menu here</button>

@@ -86,6 +86,10 @@ class UserController extends Controller
         $user = User::create($credentials); //yung user is built-in ng laravel
 
         // Auth::login($user); hayaan mo lng to optional lng to para ilogin agad
+
+        session()->flash('success', 'Account created successfully. Please log in.');
+
+        // return redirect('/login')->with('success', 'Account created successfully');
         return redirect('/login');
     }
 }

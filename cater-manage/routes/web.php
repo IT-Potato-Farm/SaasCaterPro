@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PostCategories;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
@@ -13,17 +14,24 @@ Route::get('/', function () {
 Route::get('/testhome', function () {
     return view('homepage');
 });
-Route::get('/register', function () {
-    return view('register');
-});
+
+// Route::get('/login', function () {
+//     return view('login');
+// });
+
+// user route
 Route::get('/login', function () {
     return view('login');
 });
+Route::get('/register', function () {
+    return view('register');
+});
+Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.login');
+Route::post('/register/registeracc', [UserController::class, 'register'])->name('user.register');
+// Route::post('/register/registerapi', [UserController::class, 'register']);
+// Route::post('/loginapi', [UserController::class,'login']);
+Route::post('/logout', [UserController::class,'logout']);
 
-// Route::get('/dashboard', function () {
-    
-//     return view('dashboard');
-// });
 
 Route::get('/home', function () {
     
@@ -31,9 +39,7 @@ Route::get('/home', function () {
 });
 
 
-Route::post('/registerapi', [UserController::class, 'register']);
-Route::post('/loginapi', [UserController::class,'login']);
-Route::post('/logout', [UserController::class,'logout']);
+
 
 
 //CATEGORY ROUTES
@@ -51,6 +57,11 @@ Route::put('/categories/{id}/edit', [CategoryController::class, 'editCategory'])
 // delete
 Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
 
+// MENUU ROUTE
+Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
+Route::post('/menu/store', [MenuController::class, 'addMenu'])->name('menu.addMenu');
+Route::put('/menu/{id}/edit', [MenuController::class, 'editMenu'])->name('menu.edit');
+Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
 
 
 // middleware 
