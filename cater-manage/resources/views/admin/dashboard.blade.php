@@ -50,11 +50,13 @@
                 @csrf
                 <button class="hover:cursor-pointer px-4 bg-red-500 rounded">Logout</button>
             </form>
+            <x-category.category-button />
+            <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
 
             {{-- category formm --}}
             {{-- <x-category-form /> --}}
             <x-category.add-category />
-             <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
+            <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
             
         @else
             <script>

@@ -38,6 +38,10 @@ Route::post('/logout', [UserController::class,'logout']);
 
 //CATEGORY ROUTES
 // Route::post('/create-category', [PostCategories::class,'createCategory']);
+
+
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+
 // add
 Route::post('/categories/store', [CategoryController::class, 'addCategory'])->name('categories.addCategory');
 
