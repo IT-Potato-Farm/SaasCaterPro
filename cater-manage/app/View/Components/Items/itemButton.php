@@ -2,6 +2,7 @@
 
 namespace App\View\Components\Items;
 
+use App\Models\Category;
 use Closure;
 use App\Models\Menu;
 use App\Models\MenuItem;
@@ -14,9 +15,11 @@ class itemButton extends Component
      * Create a new component instance.
      */
     public $items;
+    public $categories;
     public function __construct()
     {
         $this->items = Menu::all();
+        $this->categories = Category::all();
     }
 
     /**

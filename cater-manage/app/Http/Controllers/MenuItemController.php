@@ -33,10 +33,11 @@ class MenuItemController extends Controller
         try {
             $menuitemFields = $request->validate([
                 'menu_id' => 'required|exists:menus,id',
+                'category_id' => 'required|exists:categories,id',
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
                 'price' => 'required|numeric|min:0',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
                 'status' => 'required|in:available,unavailable',
             ]);
 
@@ -44,8 +45,8 @@ class MenuItemController extends Controller
             $menuitemFields['description'] = strip_tags($menuitemFields['description']);
 
             $imageFolder = public_path('ItemsStored');
-            if (!file_exists($imageFolder)) {
-                mkdir($imageFolder, 0777, true);
+            if (!is_dir(public_path('ItemsStored'))) {
+                mkdir(public_path('ItemsStored'), 0777, true);
             }
 
             if ($request->hasFile('image')) {

@@ -18,7 +18,7 @@
         Swal.fire({
             title: '<span class="text-2xl font-bold text-gray-800">Add Menu Item</span>',
             html: `
-                <form id="addItemForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form id="addItemForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
                     <div class="flex flex-col items-center justify-center">
                         <img id="image-preview" src="#" alt="Image Preview" class="image-preview">
                         <label for="swal-image" class="mt-4 block text-sm font-medium text-gray-700">Upload Image</label>
@@ -27,6 +27,16 @@
                     </div>
 
                     <div class="space-y-4">
+                        <div>
+                            <label for="swal-category" class="block text-sm font-medium text-gray-700">Select Category:</label>
+                            <select id="swal-category" name="category_id" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div>
                             <label for="swal-menu" class="block text-sm font-medium text-gray-700">Select Menu:</label>
                             <select id="swal-menu" name="menu_id" required
@@ -87,9 +97,27 @@
             preConfirm: () => {
                 const form = document.getElementById('addItemForm');
                 const formData = new FormData(form);
+                const imageInput = document.getElementById('swal-image');
 
-                // Ensure menu_id is explicitly set
+                // validate file size
+                if (imageInput.files[0]) {
+                    const file = imageInput.files[0];
+                    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+
+                    if (file.size > maxSize) {
+                        Swal.showValidationMessage("Image size must not exceed 10MB");
+                        return false;
+                    }
+
+                    formData.append('image', file);
+                }
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+
+                const selectedCategory = document.getElementById('swal-category').value;
                 const selectedMenu = document.getElementById('swal-menu').value;
+                formData.append('category_id', selectedCategory);
                 formData.append('menu_id', selectedMenu);
 
                 return fetch("{{ route('menu-items.store') }}", {
