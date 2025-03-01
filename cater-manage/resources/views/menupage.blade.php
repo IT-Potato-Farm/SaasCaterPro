@@ -10,7 +10,7 @@
 </head>
 <body>
     <x-customer.navbar />
-    <x-allmenu.mini-nav />
+    {{-- <x-allmenu.mini-nav /> --}}
     <x-allmenu.menusection />
 </body>
 </html>

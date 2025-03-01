@@ -3,17 +3,23 @@
 namespace App\View\Components\Customer;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\Category;
+use App\Models\MenuItem;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class MenuSection extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $packageCategory;
+    public $packages;
+
     public function __construct()
     {
-        //
+        $this->packageCategory = Category::where('name', 'Packages')->first();
+        $this->packages = MenuItem::where('category_id', $this->packageCategory->id)->get();
     }
 
     /**

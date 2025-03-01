@@ -1,4 +1,4 @@
-<nav class="bg-red-600 border-gray-200 dark:bg-gray-900">
+<nav class="bg-red-600 border-gray-200 dark:bg-gray-900 ">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="#" class="flex items-center space-x-3">
             <img src="{{ asset('images/saaslogo.png') }}" class="h-12" alt="Saas Logo" />
@@ -16,8 +16,7 @@
         </button>
 
         <div class="hidden w-full md:block md:w-auto" id="navbar-default">
-            <ul
-                class="font-medium flex flex-col items-center p-4 md:p-0 mt-4 border border-green-100 rounded-lg bg-red-600 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-red-600 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul class="font-medium flex flex-col items-center p-4 md:p-0 mt-4 border border-green-100 rounded-lg bg-red-600 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-red-600 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
                     <a href="{{ url('/landing') }}"
                         class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
@@ -47,19 +46,50 @@
                         </svg>
                     </a>
                 </li>
+
+                {{-- if naka log in yung user eto magd-display --}}
+                @auth
+                <li class="relative">
+                    <button onclick="toggleDropdown()" class="flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                        <span>Hello, {{ auth()->user()->first_name }}</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <!-- dropdown -->
+                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow z-50">
+                        <a href="profilepageto" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                            My Account
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </li>
+                @endauth
+
+                {{-- if de naka log in eto lalabas --}}
+                @guest
                 <li>
                     <a href="{{ url('/register') }}"
                         class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
                         Login
                     </a>
                 </li>
+                @endguest
             </ul>
         </div>
     </div>
 </nav>
 
 <script>
-    
+    //dropdown toggle
+    function toggleDropdown() {
+        document.getElementById('accountDropdown').classList.toggle('hidden');
+    }
 
     function scrollToSection(id) {
         const element = document.getElementById(id);

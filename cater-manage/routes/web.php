@@ -33,7 +33,7 @@ Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.log
 Route::post('/register/registeracc', [UserController::class, 'register'])->name('user.register');
 // Route::post('/register/registerapi', [UserController::class, 'register']);
 // Route::post('/loginapi', [UserController::class,'login']);
-Route::post('/logout', [UserController::class,'logout']);
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 
 Route::get('/home', function () {
