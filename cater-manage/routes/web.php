@@ -12,10 +12,12 @@ use App\Http\Controllers\MenuItemController;
 Route::get('/', function () {
     return view('home');
 });
-Route::get('/testhome', function () {
+Route::get('/landing', function () {
     return view('homepage');
 });
-
+Route::get('/all-menus', function () {
+    return view('menupage');
+});
 // Route::get('/login', function () {
 //     return view('login');
 // });
@@ -67,7 +69,11 @@ Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.d
 // menu items
 Route::resource('menu-items', MenuItemController::class);
 Route::post('/menuitems/store', [MenuItemController::class, 'store'])->name('menuitems.addMenu');
+Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAvailability'])
+    ->name('check-name-availability');
 
+
+    
 // middleware 
 Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

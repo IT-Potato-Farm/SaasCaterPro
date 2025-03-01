@@ -7,18 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 </head>
-<body class="">
+<body>
     <x-customer.navbar />
-    <x-customer.hero/>
-    <x-customer.menu-section/>
-    {{-- <x-menu-modal /> --}}
-    <x-customer.sweet-alert-menu />
-    <x-customer.why-choose-us />
-    <x-customer.ratingsection/>
-    <x-customer.about-us/>
-    <x-customer.footer/>
+    <x-allmenu.mini-nav />
+    <x-allmenu.menusection />
 </body>
 </html>

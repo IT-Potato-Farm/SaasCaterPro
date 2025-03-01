@@ -1,19 +1,21 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Allmenu;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\Category;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
-class SweetAlertMenu extends Component
+class MiniNav extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $categories;
     public function __construct()
     {
-        //
+        $this->categories = Category::all();
     }
 
     /**
@@ -21,6 +23,6 @@ class SweetAlertMenu extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.sweet-alert-menu');
+        return view('components.allmenu.mini-nav');
     }
 }

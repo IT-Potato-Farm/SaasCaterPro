@@ -19,7 +19,7 @@
             <ul
                 class="font-medium flex flex-col items-center p-4 md:p-0 mt-4 border border-green-100 rounded-lg bg-red-600 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-red-600 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                    <a href="{{ url('/') }}"
+                    <a href="{{ url('/landing') }}"
                         class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
                         Home
                     </a>

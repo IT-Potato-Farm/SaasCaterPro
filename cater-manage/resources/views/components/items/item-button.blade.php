@@ -10,8 +10,13 @@
         border: 2px dashed #ccc;
         padding: 0.5rem;
     }
+    
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
 </style>
-
 
 <script>
     function addItem() {
@@ -24,6 +29,7 @@
                         <label for="swal-image" class="mt-4 block text-sm font-medium text-gray-700">Upload Image</label>
                         <input type="file" id="swal-image" name="image" accept="image/*"
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="image-error" class="error-message"></div>
                     </div>
 
                     <div class="space-y-4">
@@ -35,6 +41,7 @@
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
+                            <div id="category-error" class="error-message"></div>
                         </div>
 
                         <div>
@@ -45,21 +52,25 @@
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
+                            <div id="menu-error" class="error-message"></div>
                         </div>
                         <div>
                             <label for="swal-name" class="block text-sm font-medium text-gray-700">Item Name:</label>
                             <input type="text" id="swal-name" name="name" required
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div id="name-error" class="error-message"></div>
                         </div>
                         <div>
                             <label for="swal-description" class="block text-sm font-medium text-gray-700">Description:</label>
                             <textarea id="swal-description" name="description"
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            <div id="description-error" class="error-message"></div>
                         </div>
                         <div>
                             <label for="swal-price" class="block text-sm font-medium text-gray-700">Price:</label>
-                            <input type="number" step="0.01" id="swal-price" name="price" required
+                            <input type="number" step="0.01" id="swal-price" name="price" required min="0.01"
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div id="price-error" class="error-message"></div>
                         </div>
                         <div>
                             <label for="swal-status" class="block text-sm font-medium text-gray-700">Status:</label>
@@ -68,6 +79,7 @@
                                 <option value="available">Available</option>
                                 <option value="unavailable">Unavailable</option>
                             </select>
+                            <div id="status-error" class="error-message"></div>
                         </div>
                     </div>
                 </form>`,
@@ -79,7 +91,10 @@
             didOpen: () => {
                 const imageInput = document.getElementById('swal-image');
                 const imagePreview = document.getElementById('image-preview');
+                const nameInput = document.getElementById('swal-name');
+                const priceInput = document.getElementById('swal-price');
 
+                // Image preview 
                 imageInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
@@ -89,53 +104,116 @@
                             imagePreview.style.display = 'block';
                         };
                         reader.readAsDataURL(file);
+                        
+                        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                        if (!validTypes.includes(file.type)) {
+                            document.getElementById('image-error').textContent = 'Please upload a valid image file (JPEG, PNG, GIF, WEBP)';
+                        } else {
+                            document.getElementById('image-error').textContent = '';
+                        }
                     } else {
                         imagePreview.style.display = 'none';
                     }
                 });
+
+                // Name field real-time validation
+                nameInput.addEventListener('blur', function() {
+                    if (nameInput.value.trim() === '') {
+                        document.getElementById('name-error').textContent = 'Item name is required';
+                        return;
+                    }
+                    
+                    // validation for name check
+                    fetch(`{{ route('check-name-availability') }}?name=${encodeURIComponent(nameInput.value)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.available) {
+                                document.getElementById('name-error').textContent = 'This item name is already taken';
+                            } else {
+                                document.getElementById('name-error').textContent = '';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error checking name availability:', error);
+                        });
+                });
+
+                // Price validation
+                priceInput.addEventListener('input', function() {
+                    if (priceInput.value <= 0) {
+                        document.getElementById('price-error').textContent = 'Price must be greater than zero';
+                    } else {
+                        document.getElementById('price-error').textContent = '';
+                    }
+                });
             },
             preConfirm: () => {
+                // Clear all previous error messages
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+                
                 const form = document.getElementById('addItemForm');
                 const formData = new FormData(form);
                 const imageInput = document.getElementById('swal-image');
+                const nameInput = document.getElementById('swal-name');
+                const priceInput = document.getElementById('swal-price');
+                const descriptionInput = document.getElementById('swal-description');
+                
+                let hasErrors = false;
+                
+                
+                if (!nameInput.value.trim()) {
+                    document.getElementById('name-error').textContent = 'Item name is required';
+                    hasErrors = true;
+                }
+                
+                if (!priceInput.value || priceInput.value <= 0) {
+                    document.getElementById('price-error').textContent = 'Valid price is required';
+                    hasErrors = true;
+                }
+                
+                if (descriptionInput.value.trim().length > 1000) {
+                    document.getElementById('description-error').textContent = 'Description is too long (max 1000 characters)';
+                    hasErrors = true;
+                }
 
-                // validate file size
-                if (imageInput.files[0]) {
+                // Image validation
+                if (imageInput.files.length === 0) {
+                    document.getElementById('image-error').textContent = 'Please upload an image';
+                    hasErrors = true;
+                } else if (imageInput.files[0]) {
                     const file = imageInput.files[0];
                     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    
                     if (file.size > maxSize) {
-                        Swal.showValidationMessage("Image size must not exceed 10MB");
-                        return false;
+                        document.getElementById('image-error').textContent = 'Image size must not exceed 10MB';
+                        hasErrors = true;
                     }
-
-                    formData.append('image', file);
+                    
+                    if (!validTypes.includes(file.type)) {
+                        document.getElementById('image-error').textContent = 'Please upload a valid image file (JPEG, PNG, GIF, WEBP)';
+                        hasErrors = true;
+                    }
                 }
-                for (let [key, value] of formData.entries()) {
-                    console.log(key, value);
+                
+                if (hasErrors) {
+                    return false;
                 }
 
-                const selectedCategory = document.getElementById('swal-category').value;
-                const selectedMenu = document.getElementById('swal-menu').value;
-                formData.append('category_id', selectedCategory);
-                formData.append('menu_id', selectedMenu);
-
-                return fetch("{{ route('menu-items.store') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                        },
-                        body: formData
-                    })
+                // Name availability check
+                return fetch(`{{ route('check-name-availability') }}?name=${encodeURIComponent(nameInput.value)}`)
                     .then(response => response.json())
                     .then(data => {
-                        if (!data.success) {
-                            throw new Error(data.message || 'Error adding menu item');
+                        if (!data.available) {
+                            document.getElementById('name-error').textContent = 'This item name is already taken';
+                            return false;
                         }
-                        return data;
+                        
+                        //  submit the form
+                        return submitForm(formData);
                     })
                     .catch(error => {
-                        Swal.showValidationMessage(error.message);
+                        Swal.showValidationMessage('Error checking name availability');
                         return false;
                     });
             }
@@ -151,6 +229,49 @@
                     location.reload();
                 });
             }
+        });
+    }
+    
+    function submitForm(formData) {
+        const selectedCategory = document.getElementById('swal-category').value;
+        const selectedMenu = document.getElementById('swal-menu').value;
+        formData.append('category_id', selectedCategory);
+        formData.append('menu_id', selectedMenu);
+        
+        return fetch("{{ route('menu-items.store') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Server error');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        const errorElement = document.getElementById(`${field}-error`);
+                        if (errorElement) {
+                            errorElement.textContent = data.errors[field][0];
+                        }
+                    });
+                    throw new Error('Please fix the validation errors');
+                } else {
+                    throw new Error(data.message || 'Error adding menu item');
+                }
+            }
+            return data;
+        })
+        .catch(error => {
+            Swal.showValidationMessage(error.message);
+            return false;
         });
     }
 </script>

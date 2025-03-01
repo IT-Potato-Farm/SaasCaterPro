@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Customer;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class WhyChooseUs extends Component
+class MenuSection extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class WhyChooseUs extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.why-choose-us');
+        return view('components.customer.menu-section');
     }
 }

@@ -51,9 +51,10 @@ class MenuItemController extends Controller
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName(); // Unique name
-                $image->move($imageFolder, $imageName); // Move image to ItemsStored
-                $menuitemFields['image'] = 'ItemsStored/' . $imageName; // Save relative path in DB
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move($imageFolder, $imageName);
+                // Store only the filename, not the full path
+                $menuitemFields['image'] = $imageName; // Remove 'ItemsStored/' from here
             }
 
             $menu = MenuItem::create($menuitemFields);
@@ -69,6 +70,15 @@ class MenuItemController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function checkNameAvailability(Request $request)
+    {
+        $name = $request->input('name');
+        $exists = MenuItem::where('name', $name)->exists();
+
+        return response()->json([
+            'available' => !$exists
+        ]);
     }
 
     /**

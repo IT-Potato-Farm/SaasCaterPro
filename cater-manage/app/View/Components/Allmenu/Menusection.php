@@ -1,19 +1,21 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Allmenu;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\MenuItem;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
-class Hero extends Component
+class Menusection extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $menuItems;
     public function __construct()
     {
-        //
+        $this->menuItems = MenuItem::where('status', 'available')->get();
     }
 
     /**
@@ -21,6 +23,6 @@ class Hero extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.hero');
+        return view('components.allmenu.menusection');
     }
 }
