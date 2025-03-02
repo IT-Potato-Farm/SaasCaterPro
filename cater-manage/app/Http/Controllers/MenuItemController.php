@@ -98,7 +98,8 @@ class MenuItemController extends Controller
         $itemFields = $request->validate([
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required|numeric|min:0'
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id' 
         ]);
         $itemFields['name'] = strip_tags($itemFields['name']);
         $itemFields['description'] = strip_tags($itemFields['description']);

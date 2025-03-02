@@ -2,6 +2,7 @@
 
 namespace App\View\Components\items;
 
+use App\Models\Category;
 use Closure;
 use App\Models\MenuItem;
 use Illuminate\View\Component;
@@ -13,9 +14,11 @@ class ItemList extends Component
      * Create a new component instance.
      */
     public $menuItems;
+    public $categories;
     public function __construct()
     {
         $this->menuItems=MenuItem::all();
+        $this->categories=Category::all();
     }
 
     /**

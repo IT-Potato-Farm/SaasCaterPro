@@ -2,7 +2,7 @@
     <h2 class="text-center font-bold text-4xl md:text-5xl lg:text-6xl mt-2 px-4">MENU</h2>
     
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"> 
             @foreach($packages as $package)
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 flex flex-col h-full">
                 <a href="#">
