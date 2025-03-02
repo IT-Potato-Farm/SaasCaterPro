@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class MenuItemController extends Controller
 {
@@ -54,7 +55,7 @@ class MenuItemController extends Controller
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move($imageFolder, $imageName);
                 // Store only the filename, not the full path
-                $menuitemFields['image'] = $imageName; // Remove 'ItemsStored/' from here
+                $menuitemFields['image'] = $imageName; 
             }
 
             $menu = MenuItem::create($menuitemFields);
@@ -92,9 +93,19 @@ class MenuItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function editItem(Request $request,  $id)
     {
-        //
+        $itemFields = $request->validate([
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required|numeric|min:0'
+        ]);
+        $itemFields['name'] = strip_tags($itemFields['name']);
+        $itemFields['description'] = strip_tags($itemFields['description']);
+
+        $item = MenuItem::findOrFail($id);
+        $item->update($itemFields);
+        return redirect()->back()->with('success', 'Item updated successfully!');
     }
 
     /**
@@ -108,8 +119,13 @@ class MenuItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deleteItem($id)
     {
-        //
+        $menuItem = MenuItem::findOrFail($id);
+        if ($menuItem->image && File::exists(public_path('ItemsStored/' . $menuItem->image))) {
+            File::delete(public_path('ItemsStored/' . $menuItem->image));
+        }
+        $menuItem->delete();
+        return redirect()->back()->with('success', 'Menu Item deleted successfully!');
     }
 }

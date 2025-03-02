@@ -176,7 +176,7 @@
                     hasErrors = true;
                 }
 
-                // Image validation
+                //img validation
                 if (imageInput.files.length === 0) {
                     document.getElementById('image-error').textContent = 'Please upload an image';
                     hasErrors = true;

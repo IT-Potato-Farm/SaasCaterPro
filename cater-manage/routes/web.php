@@ -26,6 +26,9 @@ Route::get('/all-menus', function () {
 Route::get('/login', function () {
     return view('login');
 });
+Route::get('/loginpage', function () {
+    return view('loginpage');
+});
 Route::get('/register', function () {
     return view('register');
 });
@@ -69,6 +72,9 @@ Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.d
 // menu items
 Route::resource('menu-items', MenuItemController::class);
 Route::post('/menuitems/store', [MenuItemController::class, 'store'])->name('menuitems.addMenu');
+Route::put('/menuitems/{id}/edit', [MenuItemController::class, 'editItem'])->name('menuitems.edit');
+Route::delete('/menuitems/{id}', [MenuItemController::class, 'deleteItem'])->name('menuitems.deleteItem');
+
 Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAvailability'])
     ->name('check-name-availability');
 

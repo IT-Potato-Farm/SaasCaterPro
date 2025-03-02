@@ -1,3 +1,69 @@
+<script>
+    function openEditModalItem(id, name, description, price) {
+        console.log("item clicked edit");
+        
+        let editUrl = "{{ url('/menuitems/') }}/" + id + "/edit";
+        Swal.fire({
+            title: '<div class="flex items-center gap-2"><svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg><span class="text-cyan-600 font-semibold text-xl">Edit Item</span></div>',
+            html: `
+                <form id="editItemForm-${id}" action="${editUrl}" method="POST" class="text-left">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Name</label>
+                        <div class="relative">
+                            <input type="text" name="name" value="${name}" 
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                                required>
+                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                                <!-- Optional icon -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
+                        <div class="relative">
+                            <textarea name="description" 
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
+                                required>${description}</textarea>
+                            <div class="absolute top-3 right-3">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Price</label>
+                        <div class="relative">
+                            <input type="number" step="0.01" name="price" value="${price}" 
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                                required>
+                        </div>
+                    </div>
+                </form>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Save Changes',
+            cancelButtonText: 'Cancel',
+            focusConfirm: false,
+            customClass: {
+                popup: 'rounded-xl shadow-2xl',
+                confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
+                cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all',
+                input: 'focus:ring-2 focus:ring-cyan-200 focus:border-cyan-500'
+            },
+            preConfirm: () => {
+                const form = document.getElementById(`editItemForm-${id}`);
+                if (form.reportValidity()) {
+                    form.submit();
+                }
+            }
+        });
+    }
+</script>
+
+
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Menu Items</h1>
 
@@ -29,16 +95,20 @@
                             {{ ucfirst($menuItem->status) }}
                         </p>
                         <div class="mt-4 flex justify-between">
-                            <a href="{{ route('menu-items.edit', $menuItem->id) }}"
-                                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm transition-colors duration-200">
+                                <button onclick="openEditModalItem(
+                                {{ $menuItem->id }}, 
+                                {{ json_encode($menuItem->name) }}, 
+                                {{ json_encode($menuItem->description) }},
+                                {{ json_encode($menuItem->price) }}
+                                )" 
+                                class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition hover:cursor-pointer">
                                 Edit
-                            </a>
-                            <form action="{{ route('menu-items.destroy', $menuItem->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure you want to delete this item?');">
+                            </button>
+                            <form action="{{ route('menuitems.deleteItem', $menuItem->id) }}" method="POST" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit"
-                                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm transition-colors duration-200">
+                                <button type="button" onclick="confirmDelete(this)" 
+                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition hover:cursor-pointer">
                                     Delete
                                 </button>
                             </form>
