@@ -68,7 +68,7 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Menu Items</h1>
 
     @if ($menuItems->isEmpty())
-        <p class="text-gray-500 text-center">No menu items available.</p>
+        <p class="text-cyan-500 text-center">No menu items available.</p>
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach ($menuItems as $menuItem)

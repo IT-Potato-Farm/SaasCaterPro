@@ -54,6 +54,7 @@
             <x-menu.menu-button />
             <x-items.item-button />
             <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
+            <a href="/landing" class="px-4 py-1 bg-green-300 rounded">main home</a>
 
 
             {{-- category formm --}}

@@ -16,7 +16,7 @@ class CustomerMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || Auth::user()->role !== config('roles.customer')) {
+        if (!Auth::check() || Auth::user()->role !== 'customer') {
             return redirect('/home')->with('error', 'Unauthorized access.');
         }
         return $next($request);
