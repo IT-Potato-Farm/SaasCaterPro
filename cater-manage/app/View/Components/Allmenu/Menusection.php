@@ -18,7 +18,7 @@ class Menusection extends Component
     public function __construct()
     {
         $this->menuItems = MenuItem::where('status', 'available')->get();
-        $this->categories = Category::all();
+        $this->categories = Category::orderBy('name', 'asc')->get();
     }
 
     /**
