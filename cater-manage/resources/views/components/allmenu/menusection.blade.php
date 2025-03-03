@@ -41,7 +41,7 @@
                             class="quantity-btn flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-bold transition-colors duration-200">
                             -
                         </button>
-                        <span
+                        <span id="quantity"
                             class="quantity text-lg font-semibold text-gray-800 dark:text-gray-100 min-w-[2rem] text-center">0</span>
                         <button type="button" onclick="incrementQuantity(this)"
                             class="quantity-btn flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-bold transition-colors duration-200">
@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="p-4 pt-0 mt-auto">
-                    <button type="button"
+                    <button type="button" onclick="addToCart({{ $item->id }})"
                         class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                         Add to Cart
                     </button>
@@ -67,6 +67,37 @@
 </div>
 
 <script>
+    function addToCart(id) {
+        const button = event.target;
+        const parent = button.closest('.menu-item'); 
+        const quantityElement = parent.querySelector('.quantity'); 
+        const quantity = parseInt(quantityElement.textContent, 10); // Convert to number
+
+        if (quantity <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select at least 1 item!',
+            });
+            return;
+        }
+
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: `${quantity} item(s) added to cart`,
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true,
+            customClass: {
+                popup: 'rounded-none shadow-xl'
+            }
+        });
+
+        console.log(`Adding ${quantity} of item ${id} to cart`);
+        quantityElement.textContent = "0";
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
         const filterLinks = document.querySelectorAll('.filter-link');
         const menuItems = document.querySelectorAll('.menu-item');

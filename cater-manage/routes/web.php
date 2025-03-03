@@ -69,6 +69,8 @@ Route::post('/menu/store', [MenuController::class, 'addMenu'])->name('menu.addMe
 Route::put('/menu/{id}/edit', [MenuController::class, 'editMenu'])->name('menu.edit');
 Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
 
+Route::get('/menu-details/{id}', [MenuController::class, 'getMenuDetails']);
+
 // menu items
 Route::resource('menu-items', MenuItemController::class);
 Route::post('/menuitems/store', [MenuItemController::class, 'store'])->name('menuitems.addMenu');

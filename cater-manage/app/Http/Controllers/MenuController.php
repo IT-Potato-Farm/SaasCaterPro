@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuItem;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -88,5 +89,23 @@ class MenuController extends Controller
         $menu = Menu::findOrFail($id);
         $menu->delete();
         return redirect()->back()->with('success', 'Menu deleted successfully!');
+    }
+    public function getMenuDetails($id)
+    {
+        $menu = MenuItem::with('category')->find($id);
+
+        if (!$menu) {
+            return response()->json(['error' => 'Menu item not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $menu->id,
+            'name' => $menu->name,
+            'description' => $menu->description,
+            'price' => $menu->price,
+            'image' => asset("ItemsStored/" . $menu->image),
+            'category' => $menu->category->name ?? 'Uncategorized',
+            'items' => json_decode($menu->items, true) ?? []
+        ]);
     }
 }

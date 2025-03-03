@@ -1,4 +1,4 @@
-<script>
+{{-- <script>
     function showMenuModal() {
         Swal.fire({
             title: `<h3 class="text-2xl font-semibold text-gray-200">
@@ -58,4 +58,4 @@
     .custom-swal-title {
         color: #E5E7EB !important; /* Light gray title */
     }
-</style>
+</style> --}}
