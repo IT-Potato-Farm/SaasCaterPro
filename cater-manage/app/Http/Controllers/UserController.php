@@ -34,7 +34,7 @@ class UserController extends Controller
         if (Auth::attempt(['email' => $loginInfo['loginemail'], 'password' => $loginInfo['loginpassword']])) {
             $request->session()->regenerate();
 
-            return redirect('/home')->with('success', 'Login successful!');
+            return redirect('/landing')->with('success', 'Login successful!');
         }
         // pag mali pass 
         return back()->withErrors([

@@ -29,17 +29,17 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" onclick="scrollToSection('aboutus')"
-                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                        About Us
-                    </a>
-                </li>
-                <li>
                     <a href="#" onclick="scrollToSection('menu')"
-                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                        Menu
-                    </a>
-                </li>
+                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
+                    Menu
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="scrollToSection('aboutus')"
+                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
+                    About Us
+                </a>
+            </li>
                 <a href="{{ route('cartpage') }}" class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
                     <span>Cart</span>
                     <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">

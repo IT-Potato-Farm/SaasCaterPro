@@ -93,6 +93,11 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
+// order
+Route::get('/cart/checkout', function () {
+    return view('checkoutpage');
+    })->name('checkoutpage');
+
 
 
 
@@ -100,4 +105,6 @@ Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 // middleware 
 Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
+    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 });

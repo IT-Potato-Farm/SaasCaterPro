@@ -21,6 +21,7 @@
         </svg>
         <h1 class="text-xl font-semibold text-gray-700">Your Cart is currently empty</h1>
         <a class="px-5 py-2 text-white bg-lime-500 rounded-md shadow hover:bg-lime-600 transition" href="{{ route('all-menu') }}">Browse Menus</a>
+        <a class="px-5 py-2 bg-cyan-200 rounded-md" href="{{route('checkoutpage')}}">Checkout</a>
     </div>
 </body>
 

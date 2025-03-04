@@ -17,4 +17,21 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
+
+    public function test()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.finaldashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function dashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.admindashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
 }
