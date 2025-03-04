@@ -1,4 +1,5 @@
 <script>
+    
     function openItem(id) {
         console.log("Fetching menu details for ID:", id);
 
@@ -92,6 +93,8 @@
                 });
             });
     }
+
+    
 
     function addToCart(id) {
         const quantityInput = document.getElementById('quantity');

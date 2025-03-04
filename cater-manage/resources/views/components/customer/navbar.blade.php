@@ -1,3 +1,7 @@
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<script src="{{ asset('js/cart.js') }}"></script>
+
 <nav class="bg-red-600 border-gray-200 dark:bg-gray-900 ">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="/landing" class="flex items-center space-x-3">
@@ -36,17 +40,14 @@
                         Menu
                     </a>
                 </li>
-                <li>
-                    <a href="{{ url('/cart') }}"
-                        class="flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
-                        Cart
-                        <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                            fill="currentColor">
-                            <path
-                                d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
-                        </svg>
-                    </a>
-                </li>
+                <a href="{{ route('cartpage') }}" class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                    <span>Cart</span>
+                    <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                        <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
+                    </svg>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </a>
+                
 
                 {{-- if naka log in yung user eto magd-display --}}
                 @auth
@@ -69,7 +70,7 @@
                                     Dashboard
                                 </a>
                             @endif
-                            
+
                             <a href="profilepageto" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                 My Account
                             </a>
@@ -99,6 +100,8 @@
 </nav>
 
 <script>
+    // cart function live update without refresh 
+    
     //dropdown toggle
     function toggleDropdown() {
         document.getElementById('accountDropdown').classList.toggle('hidden');

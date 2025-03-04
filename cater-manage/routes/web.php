@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PostCategories;
 use App\Http\Controllers\UserController;
@@ -9,18 +10,24 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuItemController;
 
+// route navigation each page
 Route::get('/', function () {
     return view('home');
 });
 Route::get('/landing', function () {
     return view('homepage');
-});
+})->name('landing');
 Route::get('/all-menus', function () {
     return view('menupage');
-});
+})->name('all-menu');
 // Route::get('/login', function () {
 //     return view('login');
 // });
+
+Route::get('/cart', function () {
+    return view('cartpage');
+})->name('cartpage');
+
 
 // user route
 Route::get('/login', function () {
@@ -79,6 +86,14 @@ Route::delete('/menuitems/{id}', [MenuItemController::class, 'deleteItem'])->nam
 
 Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAvailability'])
     ->name('check-name-availability');
+
+// ORDERS
+
+// cart
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+
+
 
 
     

@@ -15,6 +15,7 @@ class MenuSection extends Component
      */
     public $packageCategory;
     public $packages;
+    
 
     public function __construct()
     {
