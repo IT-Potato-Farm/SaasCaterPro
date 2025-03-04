@@ -3,17 +3,19 @@
 namespace App\View\Components\Dashboard;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\User;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class FirstSection extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $totalUsers;
     public function __construct()
     {
-        //
+        $this->totalUsers = User::count();
     }
 
     /**

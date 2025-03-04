@@ -9,7 +9,10 @@
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        [x-cloak] { display: none !important; }
         @keyframes slide-in {
             from {
                 transform: translateX(100%);
@@ -109,6 +112,7 @@
                             <span x-show="isSidebarOpen">Users</span>
                         </a>
                     </li>
+                    
                 </ul>
             </nav>
         </aside>
@@ -133,6 +137,7 @@
 
                     </div>
                     <x-dashboard.products />
+                    <x-menu.menu-list /> 
                 </div>
 
                 <div x-show="activeScreen === 'categories'" x-cloak>
@@ -180,6 +185,8 @@
             });
         </script>
     @endif
+
+    
 </body>
 
 </html>
