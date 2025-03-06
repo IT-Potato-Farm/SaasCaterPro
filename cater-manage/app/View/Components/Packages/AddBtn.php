@@ -1,21 +1,21 @@
 <?php
 
-namespace App\View\Components\menu;
+namespace App\View\Components\Packages;
 
 use Closure;
-use App\Models\Menu;
+use App\Models\Category;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 
-class MenuList extends Component
+class AddBtn extends Component
 {
     /**
      * Create a new component instance.
      */
-    public $menus;
+    public $categories;
     public function __construct()
     {
-        $this->menus = Menu::all();
+        $this->categories = Category::all();
     }
 
     /**
@@ -23,6 +23,6 @@ class MenuList extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.menu.menu-list');
+        return view('components.packages.add-btn');
     }
 }

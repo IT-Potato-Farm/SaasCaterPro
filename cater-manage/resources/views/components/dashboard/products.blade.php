@@ -2,8 +2,6 @@
     function openEditModalItem(id, name, description, price, categoryId) {
         console.log("item clicked edit");
 
-
-
         let editUrl = "{{ url('/menuitems/') }}/" + id + "/edit";
         Swal.fire({
             title: '<div class="flex items-center gap-2"><svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg><span class="text-cyan-600 font-semibold text-xl">Edit Item</span></div>',
@@ -35,14 +33,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Price</label>
-                        <div class="relative">
-                            <input type="number" step="0.01" name="price" value="${price}" 
-                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
-                                required>
-                        </div>
-                    </div>
+                    
                   
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Category</label>
@@ -121,9 +112,7 @@
                         </p>
 
                         <div class="flex items-center justify-between mb-4">
-                            <p class="text-2xl font-bold text-emerald-700">
-                                ₱{{ number_format($menuItem->price, 2) }}
-                            </p>
+                            
                             <span
                                 class="px-2.5 py-1 rounded-full text-sm font-medium {{ $menuItem->status == 'available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ ucfirst($menuItem->status) }}
@@ -136,7 +125,7 @@
                                 {{ $menuItem->id }}, 
                                 {{ json_encode($menuItem->name) }}, 
                                 {{ json_encode($menuItem->description) }},
-                                {{ json_encode($menuItem->price) }},
+                                
                                 {{ $menuItem->category_id }}  
                                 )" 
                                 class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">

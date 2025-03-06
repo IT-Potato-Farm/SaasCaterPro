@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class MenuItem extends Model
+class Package extends Model
 {
-    //
+    use HasFactory;
+
     protected $fillable = [
-        'menu_id',
         'category_id',
         'name',
         'description',
-        'price',
+        'price_per_person',
+        'min_pax',
         'image',
-        'status'
+        'status',
     ];
 
-   
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
-
 }

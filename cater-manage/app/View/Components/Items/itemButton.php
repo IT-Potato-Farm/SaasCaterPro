@@ -14,11 +14,11 @@ class itemButton extends Component
     /**
      * Create a new component instance.
      */
-    public $items;
+    
     public $categories;
     public function __construct()
     {
-        $this->items = Menu::all();
+        
         $this->categories = Category::all();
     }
 

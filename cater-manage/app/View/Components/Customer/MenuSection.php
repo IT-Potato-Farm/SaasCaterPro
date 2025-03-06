@@ -13,14 +13,12 @@ class MenuSection extends Component
     /**
      * Create a new component instance.
      */
-    public $packageCategory;
-    public $packages;
+   
     
 
     public function __construct()
     {
-        $this->packageCategory = Category::where('name', 'Packages')->first();
-        $this->packages = MenuItem::where('category_id', $this->packageCategory->id)->get();
+        
     }
 
     /**

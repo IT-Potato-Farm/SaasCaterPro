@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menu_items', function (Blueprint $table) {
+        Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete(); 
-            $table->string('name', 255);
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price',10,2);
+            $table->decimal('price_per_person', 10, 2);
+            $table->unsignedInteger('min_pax')->default(1); 
             $table->string('image')->nullable();
-            $table->enum('status', ['available', 'unavailable'])->default('available');
+            $table->enum('status', ['available', 'not available'])->default('available');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menu_items');
+        Schema::dropIfExists('packages');
     }
 };

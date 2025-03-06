@@ -132,12 +132,12 @@
                 <div x-show="activeScreen === 'products'" x-cloak>
                     <div class="mt-5">
                         <x-category.category-button />
-                        <x-menu.menu-button />
+                        <x-packages.addbtn />
                         <x-items.item-button />
 
                     </div>
+                    <x-dashboard.packages />
                     <x-dashboard.products />
-                    <x-menu.menu-list /> 
                 </div>
 
                 <div x-show="activeScreen === 'categories'" x-cloak>

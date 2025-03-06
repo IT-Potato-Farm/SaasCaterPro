@@ -21,7 +21,7 @@
 <script>
     function addItem() {
         Swal.fire({
-            title: '<span class="text-2xl font-bold text-gray-800">Add Menu Item</span>',
+            title: '<span class="text-2xl font-bold text-gray-800">Add Item</span>',
             html: `
                 <form id="addItemForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
                     <div class="flex flex-col items-center justify-center">
@@ -44,16 +44,7 @@
                             <div id="category-error" class="error-message"></div>
                         </div>
 
-                        <div>
-                            <label for="swal-menu" class="block text-sm font-medium text-gray-700">Select Menu:</label>
-                            <select id="swal-menu" name="menu_id" required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                @foreach ($items as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                            <div id="menu-error" class="error-message"></div>
-                        </div>
+                       
                         <div>
                             <label for="swal-name" class="block text-sm font-medium text-gray-700">Item Name:</label>
                             <input type="text" id="swal-name" name="name" required
@@ -234,9 +225,7 @@
     
     function submitForm(formData) {
         const selectedCategory = document.getElementById('swal-category').value;
-        const selectedMenu = document.getElementById('swal-menu').value;
         formData.append('category_id', selectedCategory);
-        formData.append('menu_id', selectedMenu);
         
         return fetch("{{ route('menu-items.store') }}", {
             method: "POST",

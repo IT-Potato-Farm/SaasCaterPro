@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -22,8 +21,7 @@ class MenuItemController extends Controller
      */
     public function create()
     {
-        $menus = Menu::all();
-        return view('menu-items.create', compact('menus'));
+        
     }
 
     /**
@@ -33,11 +31,9 @@ class MenuItemController extends Controller
     {
         try {
             $menuitemFields = $request->validate([
-                'menu_id' => 'required|exists:menus,id',
                 'category_id' => 'required|exists:categories,id',
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
-                'price' => 'required|numeric|min:0',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
                 'status' => 'required|in:available,unavailable',
             ]);

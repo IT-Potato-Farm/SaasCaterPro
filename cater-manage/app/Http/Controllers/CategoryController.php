@@ -16,12 +16,11 @@ class CategoryController extends Controller
     public function addCategory(Request $request)
     {
         $categoryFields = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string'
+            'name' => 'required|string|max:255'
+            
         ]);
 
         $categoryFields['name'] = strip_tags($categoryFields['name']);
-        $categoryFields['description'] = strip_tags($categoryFields['description']);
 
         $category = Category::create($categoryFields);
 
@@ -39,11 +38,9 @@ class CategoryController extends Controller
     public function editCategory(Request $request, $id)
     {
         $categoryFields = $request->validate([
-            'name' => 'required',
-            'description' => 'required'
+            'name' => 'required'
         ]);
         $categoryFields['name'] = strip_tags($categoryFields['name']);
-        $categoryFields['description'] = strip_tags($categoryFields['description']);
         // hanapin nya muna ung id
         $category = Category::findOrFail($id);
 

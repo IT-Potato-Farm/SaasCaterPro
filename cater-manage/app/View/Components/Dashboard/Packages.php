@@ -1,19 +1,24 @@
 <?php
 
-namespace App\View\Components\Menu;
+namespace App\View\Components\dashboard;
 
+use App\Models\Category;
+use App\Models\Package;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class menuButton extends Component
+class Packages extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $packages;
+    public $categories;
     public function __construct()
     {
-        //
+        $this->packages=Package::all(); 
+        $this->categories=Category::all(); 
     }
 
     /**
@@ -21,6 +26,6 @@ class menuButton extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.menu.menu-button');
+        return view('components.dashboard.packages');
     }
 }

@@ -7,12 +7,13 @@ use App\Http\Controllers\PostCategories;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuItemController;
 
 // route navigation each page
 Route::get('/', function () {
-    return view('home');
+    return view('homepage');
 });
 Route::get('/landing', function () {
     return view('homepage');
@@ -70,13 +71,18 @@ Route::put('/categories/{id}/edit', [CategoryController::class, 'editCategory'])
 // delete
 Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
 
-// MENUU ROUTE
-Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
-Route::post('/menu/store', [MenuController::class, 'addMenu'])->name('menu.addMenu');
-Route::put('/menu/{id}/edit', [MenuController::class, 'editMenu'])->name('menu.edit');
-Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
 
-Route::get('/menu-details/{id}', [MenuController::class, 'getMenuDetails']);
+// MENUU ROUTE
+// Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
+// Route::post('/menu/store', [MenuController::class, 'addMenu'])->name('menu.addMenu');
+// Route::put('/menu/{id}/edit', [MenuController::class, 'editMenu'])->name('menu.edit');
+// Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
+
+// Route::get('/menu-details/{id}', [MenuController::class, 'getMenuDetails']);
+// void na yung MENUU 
+
+// package route
+Route::post('/package/store', [PackageController::class, 'store'])->name('package.store');
 
 // menu items
 Route::resource('menu-items', MenuItemController::class);
@@ -86,6 +92,9 @@ Route::delete('/menuitems/{id}', [MenuItemController::class, 'deleteItem'])->nam
 
 Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAvailability'])
     ->name('check-name-availability');
+
+Route::get('/check-package-name', [PackageController::class, 'checkName'])->name('package-name-availability');
+
 
 // ORDERS
 
