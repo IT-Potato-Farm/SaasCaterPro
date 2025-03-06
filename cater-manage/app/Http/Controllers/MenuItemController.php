@@ -34,6 +34,7 @@ class MenuItemController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
+                'price' => 'required|numeric|min:0',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
                 'status' => 'required|in:available,unavailable',
             ]);

@@ -137,6 +137,7 @@
 
                     </div>
                     <x-dashboard.packages />
+                    <x-packages.add-package-item />
                     <x-dashboard.products />
                 </div>
 

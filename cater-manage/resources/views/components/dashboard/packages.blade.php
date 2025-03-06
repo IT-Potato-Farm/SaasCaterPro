@@ -81,7 +81,7 @@
                     <div class="h-48 bg-gray-100 relative">
                         @if ($package->image)
                             <img src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}"
-                                class="w-full h-full object-cover">
+                                class="w-full h-full object-fill ">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-400">
                                 <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -13,7 +13,7 @@ class PackageController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -91,7 +91,6 @@ class PackageController extends Controller
     public function editPackage(Request $request, $id)
     {
         try {
-            // Validate incoming data (without image and status)
             $data = $request->validate([
                 'category_id'       => 'nullable|exists:categories,id',
                 'name'              => 'required|string|max:255',

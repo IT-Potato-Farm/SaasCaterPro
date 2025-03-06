@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuItemController;
+use App\Http\Controllers\PackageItemController;
 
 // route navigation each page
 Route::get('/', function () {
@@ -88,6 +89,10 @@ Route::post('/package/store', [PackageController::class, 'store'])->name('packag
 Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
 Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
 
+
+// package item route
+Route::resource('package_items', PackageItemController::class);
+Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
 
 // menu items
 Route::resource('menu-items', MenuItemController::class);
