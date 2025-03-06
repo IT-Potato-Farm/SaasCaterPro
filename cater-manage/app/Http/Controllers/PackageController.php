@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Package;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class PackageController extends Controller
 {
@@ -87,9 +88,30 @@ class PackageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function editPackage(Request $request, $id)
     {
-        //
+        try {
+            // Validate incoming data (without image and status)
+            $data = $request->validate([
+                'category_id'       => 'nullable|exists:categories,id',
+                'name'              => 'required|string|max:255',
+                'description'       => 'nullable|string',
+                'price_per_person'  => 'required|numeric|min:0',
+                'min_pax'           => 'required|integer|min:1',
+            ]);
+    
+            $data['name'] = strip_tags($data['name']);
+            $data['description'] = isset($data['description']) ? strip_tags($data['description']) : null;
+            $package = Package::findOrFail($id);
+
+            $package->update($data);
+            return redirect()->back()->with('success', 'Package updated successfully!');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -103,8 +125,13 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deletePackage( $id)
     {
-        //
+        $package = Package::findOrFail($id);
+        if ($package->image && File::exists(public_path('packagePics/' . $package->image))) {
+            File::delete(public_path('packagePics/' . $package->image));
+        }
+        $package->delete();
+        return redirect()->back()->with('success', 'Package deleted successfully!');
     }
 }

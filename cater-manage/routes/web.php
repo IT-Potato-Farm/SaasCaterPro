@@ -81,8 +81,13 @@ Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])
 // Route::get('/menu-details/{id}', [MenuController::class, 'getMenuDetails']);
 // void na yung MENUU 
 
+
+
 // package route
 Route::post('/package/store', [PackageController::class, 'store'])->name('package.store');
+Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
+Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
+
 
 // menu items
 Route::resource('menu-items', MenuItemController::class);

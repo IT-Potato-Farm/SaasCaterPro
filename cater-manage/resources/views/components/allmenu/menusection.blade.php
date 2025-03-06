@@ -32,12 +32,12 @@
                         <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-3">{{ $item->description }}</p>
 
                         <!-- Price -->
-                        <div class="mt-2">
+                        {{-- <div class="mt-2">
                             <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
                                 ₱{{ number_format($item->price, 2) }}
                             </span>
                             <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">(per order)</span>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <!-- Quantity Controls -->
