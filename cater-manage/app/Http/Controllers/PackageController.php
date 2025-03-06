@@ -5,16 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-
+use Illuminate\Support\Facades\Log;
 class PackageController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        
-    }
+    public function index() {}
 
     /**
      * Show the form for creating a new resource.
@@ -70,12 +67,62 @@ class PackageController extends Controller
             ], 500);
         }
     }
+    public function showPackageDetails($id)
+    {
+        // Load the package along with package items, each item's menu item, and the menu item's category.
+        $package = Package::with('package_items.menu_item.category')->findOrFail($id);
+
+        // Filter package items dynamically by category name.
+        $foods = $package->package_items->filter(function ($packageItem) {
+            return optional($packageItem->menu_item->category)->name === 'Foods';
+        });
+
+        $utilities = $package->package_items->filter(function ($packageItem) {
+            return optional($packageItem->menu_item->category)->name === 'Utilities';
+        });
+
+        return response()->json([
+            'success'   => true,
+            'package'   => $package,
+            'foods'     => $foods,
+            'utilities' => $utilities,
+        ]);
+    }
+    public function showDetails($id)
+    {
+        try {
+            $package = Package::with(['packageItems.menuItem.category'])
+                ->findOrFail($id);
+
+            // Filter items using collection methods
+            $filterItems = function ($categoryName) use ($package) {
+                return $package->packageItems->filter(function ($item) use ($categoryName) {
+                    return optional($item->menuItem->category)->name === $categoryName;
+                })->values(); // Reset keys for proper JSON array
+            };
+
+            return response()->json([
+                'success' => true,
+                'package' => $package,
+                'foods' => $filterItems('Foods'),
+                'utilities' => $filterItems('Utilities')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Package details error: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load package details. Please try again.'
+            ], 500);
+        }
+    }
+
     public function checkName(Request $request)
-{
-    $name = $request->query('name');
-    $exists = Package::where('name', $name)->exists();
-    return response()->json(['available' => !$exists]);
-}
+    {
+        $name = $request->query('name');
+        $exists = Package::where('name', $name)->exists();
+        return response()->json(['available' => !$exists]);
+    }
 
     /**
      * Display the specified resource.
@@ -98,7 +145,7 @@ class PackageController extends Controller
                 'price_per_person'  => 'required|numeric|min:0',
                 'min_pax'           => 'required|integer|min:1',
             ]);
-    
+
             $data['name'] = strip_tags($data['name']);
             $data['description'] = isset($data['description']) ? strip_tags($data['description']) : null;
             $package = Package::findOrFail($id);
@@ -124,7 +171,7 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function deletePackage( $id)
+    public function deletePackage($id)
     {
         $package = Package::findOrFail($id);
         if ($package->image && File::exists(public_path('packagePics/' . $package->image))) {

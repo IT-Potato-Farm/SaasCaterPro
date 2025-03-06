@@ -3,6 +3,7 @@
 namespace App\View\Components\Customer;
 
 use Closure;
+use App\Models\Package;
 use App\Models\Category;
 use App\Models\MenuItem;
 use Illuminate\View\Component;
@@ -14,11 +15,11 @@ class MenuSection extends Component
      * Create a new component instance.
      */
    
-    
+    public $packages;
 
     public function __construct()
     {
-        
+        $this->packages =Package::all();
     }
 
     /**

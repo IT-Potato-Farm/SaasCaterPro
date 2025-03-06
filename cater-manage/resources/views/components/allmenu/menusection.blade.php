@@ -13,10 +13,9 @@
     {{-- Packages Section --}}
     @if($packages->count())
     <div class="mt-10">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-black-200 mb-6 text-center">
-            All Packages
-        </h2>
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="packages-container">
+            
             @foreach ($packages as $package)
             <div class="package-item bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 flex flex-col h-full hover:shadow-xl transition-shadow duration-300"
                 data-category="{{ $package->category_id }}">
@@ -50,10 +49,9 @@
     {{-- Menu Items Section --}}
     @if($menuItems->count())
     <div class="mt-10">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-black-200 mb-6 text-center">
-            Other Items
-        </h2>
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="menu-container">
+            
             @foreach ($menuItems as $item)
             <div class="menu-item bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 flex flex-col h-full hover:shadow-xl transition-shadow duration-300"
                 data-category="{{ $item->category_id }}">

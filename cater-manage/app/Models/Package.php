@@ -18,6 +18,10 @@ class Package extends Model
         'image',
         'status',
     ];
+    public function packageItems()
+    {
+        return $this->hasMany(PackageItem::class);
+    }
 
     public function category()
     {

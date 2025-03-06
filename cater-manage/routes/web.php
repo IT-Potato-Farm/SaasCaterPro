@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Package;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MenuController;
@@ -25,6 +26,16 @@ Route::get('/all-menus', function () {
 // Route::get('/login', function () {
 //     return view('login');
 // });
+
+
+
+// landing menu fetch package
+Route::get('/get-package/{id}', function ($id) {
+    return response()->json(Package::findOrFail($id));
+});
+Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails']) ->name('displayPackage');
+Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
+
 
 Route::get('/cart', function () {
     return view('cartpage');
@@ -89,6 +100,8 @@ Route::post('/package/store', [PackageController::class, 'store'])->name('packag
 Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
 Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
 
+Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
+     ->name('package.details');
 
 // package item route
 Route::resource('package_items', PackageItemController::class);
