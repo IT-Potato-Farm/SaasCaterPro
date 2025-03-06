@@ -40,7 +40,7 @@
                         @endif
 
 
-                        <form action="{{ url('/registerapi') }}" method="POST">
+                        <form action="{{ route('user.register') }}" method="POST">
                             @csrf
 
                             <div>

@@ -1,21 +1,22 @@
 <?php
 
-namespace App\View\Components\Category;
+namespace App\View\Components\Items;
 
 use Closure;
-use App\Models\Category;
+use App\Models\Menu;
+use App\Models\MenuItem;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 
-class CategoryList extends Component
+class itemButton extends Component
 {
     /**
      * Create a new component instance.
      */
-    public $categories;
+    public $items;
     public function __construct()
     {
-        $this->categories = Category::all();
+        $this->items = Menu::all();
     }
 
     /**
@@ -23,6 +24,6 @@ class CategoryList extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.category.category-list');
+        return view('components.items.item-button');
     }
 }

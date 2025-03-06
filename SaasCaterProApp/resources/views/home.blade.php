@@ -6,14 +6,13 @@
 
 
 @section ('body')
-    <x-navbar />
-    <x-hero/>
-    <x-menu-section/>
+    <x-customer.navbar />
+    <x-customer.hero/>
+    <x-customer.menu-section/>
     {{-- <x-menu-modal /> --}}
-    <x-sweet-alert-menu />
-    <x-why-choose-us />
-    <x-ratingsection/>
-    <x-about-us/>
-    <x-footer/>
-
+    <x-customer.sweet-alert-menu />
+    <x-customer.why-choose-us />
+    <x-customer.ratingsection/>
+    <x-customer.about-us/>
+    <x-customer.footer/>
 @endsection

@@ -21,6 +21,6 @@ class RatingSection extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.rating-section');
+        return view('components.ratingsection');
     }
 }

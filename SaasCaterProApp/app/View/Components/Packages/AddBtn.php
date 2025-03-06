@@ -1,13 +1,13 @@
 <?php
 
-namespace App\View\Components\Category;
+namespace App\View\Components\Packages;
 
 use Closure;
 use App\Models\Category;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 
-class CategoryList extends Component
+class AddBtn extends Component
 {
     /**
      * Create a new component instance.
@@ -23,6 +23,6 @@ class CategoryList extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.category.category-list');
+        return view('components.packages.add-btn');
     }
 }

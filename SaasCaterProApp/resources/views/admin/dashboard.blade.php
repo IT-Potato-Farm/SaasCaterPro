@@ -51,13 +51,18 @@
                 <button class="hover:cursor-pointer px-4 bg-red-500 rounded">Logout</button>
             </form>
             <x-category.category-button />
+            <x-menu.menu-button />
+            <x-items.item-button />
             <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
+            <a href="/landing" class="px-4 py-1 bg-green-300 rounded">main home</a>
 
-            {{-- category form --}}
-            <!-- {{-- <x-category-form /> --}} -->
-            <x-category.add-category />
+
+            {{-- category formm --}}
+            {{-- <x-category-form /> --}}
+           
             <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
-            
+            <x-menu.menu-list /> 
+            <x-items.item-list /> 
         @else
             <script>
                 window.location.href = "/";

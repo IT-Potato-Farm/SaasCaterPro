@@ -1,21 +1,24 @@
 <?php
 
-namespace App\View\Components\Category;
+namespace App\View\Components\dashboard;
 
-use Closure;
 use App\Models\Category;
-use Illuminate\View\Component;
+use App\Models\Package;
+use Closure;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\Component;
 
-class CategoryList extends Component
+class Packages extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $packages;
     public $categories;
     public function __construct()
     {
-        $this->categories = Category::all();
+        $this->packages=Package::all(); 
+        $this->categories=Category::all(); 
     }
 
     /**
@@ -23,6 +26,6 @@ class CategoryList extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.category.category-list');
+        return view('components.dashboard.packages');
     }
 }

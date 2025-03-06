@@ -8,13 +8,30 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    public function index(){
-
-        //Ensuring the user is logged in and is an admin before showing the dashboard
-        if (Auth::check() && Auth::user()->role === 'admin'){
+    public function index()
+    {
+        // Ensure user is logged in and is an admin before showing the dashboard
+        if (Auth::check() && Auth::user()->role === 'admin') {
             return view('admin.dashboard');
         }
 
-        return redirect('/')->with('error', 'Access denied! Only Admins can access this page.');
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+
+    public function test()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.finaldashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function dashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.admindashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
 }

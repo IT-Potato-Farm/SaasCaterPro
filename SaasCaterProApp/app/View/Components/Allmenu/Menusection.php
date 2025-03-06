@@ -1,20 +1,26 @@
 <?php
 
-namespace App\View\Components\Category;
+namespace App\View\Components\Allmenu;
 
 use Closure;
 use App\Models\Category;
+use App\Models\MenuItem;
+use App\Models\Package;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 
-class CategoryList extends Component
+class Menusection extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $menuItems;
+    public $packages;
     public $categories;
     public function __construct()
     {
+        $this->packages = Package::with('category')->get();
+        $this->menuItems = MenuItem::with('category')->get();
         $this->categories = Category::all();
     }
 
@@ -23,6 +29,6 @@ class CategoryList extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.category.category-list');
+        return view('components.allmenu.menusection');
     }
 }
