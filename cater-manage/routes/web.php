@@ -27,7 +27,12 @@ Route::get('/all-menus', function () {
 //     return view('login');
 // });
 
-
+Route::get('/userdashboard', function () {
+    return view('userdashboard');
+})->name('userdashboard');
+Route::get('/userdashboard/order-details', function () {
+    return view('order-process');
+})->name('orderdetails');
 
 // landing menu fetch package
 Route::get('/get-package/{id}', function ($id) {

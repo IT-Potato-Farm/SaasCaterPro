@@ -1,6 +1,19 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    function addToCart() {
+        Swal.fire({
+            position: 'top-end', 
+            icon: 'success',
+            title: '<span class="text-gray-200">Added to Cart!</span>',
+            text: 'SET A has been added to your cart.',
+            timer: 2000,
+            showConfirmButton: false,
+            background: '#1F2937',
+            color: '#E5E7EB',
+            toast: true 
+        });
+    }
     const packageCache = new Map();
 
     async function fetchPackageData(packageId) {
@@ -15,9 +28,9 @@
                 throw new Error(`Server error: ${errorText.slice(0, 100)}`);
             }
             const data = await response.json();
-            
+
             if (!data.success) throw new Error(data.message);
-            
+
             packageCache.set(packageId, data);
             return data;
         } catch (error) {
@@ -26,16 +39,20 @@
         }
     }
 
-    async function openItem(packageId) {
-        Swal.fire({
-            title: 'Loading...',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
 
+    async function openItem(packageId) {
+        // Swal.fire({
+        //     title: 'Loading...',
+        //     allowOutsideClick: false,
+        //     didOpen: () => Swal.showLoading()
+        // });
         try {
-            const { package: pkg, foods, utilities } = await fetchPackageData(packageId);
-            
+            const {
+                package: pkg,
+                foods,
+                utilities
+            } = await fetchPackageData(packageId);
+
             const htmlContent = `
             <div class="max-h-[80vh] overflow-y-auto">
                 <!-- Header Section -->
@@ -95,7 +112,7 @@
                 </div>
                 
                 <div class="mt-6 text-center">
-                    <button class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                    <button onclick="addToCart()" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
                         Select Package
                     </button>
                 </div>
@@ -119,6 +136,7 @@
                 if (result.isConfirmed) openItem(packageId);
             });
         }
+
     }
 </script>
 
