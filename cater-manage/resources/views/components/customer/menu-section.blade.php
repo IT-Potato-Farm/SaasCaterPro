@@ -26,7 +26,7 @@
 
             const data = await response.json();
 
-            // Show a success toast message
+            // notification
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',

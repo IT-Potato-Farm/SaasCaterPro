@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
@@ -131,7 +132,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
+    // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
+    Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
+
+
 });
 
 

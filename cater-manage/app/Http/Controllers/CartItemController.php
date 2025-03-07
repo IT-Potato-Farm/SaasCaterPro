@@ -51,47 +51,38 @@ class CartItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CartItem $cartItem)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1'
-        ]);
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'You need to log in first.');
+        $cartItem = CartItem::findOrFail($id);
+
+        $action = $request->input('action');
+        $currentQuantity = $cartItem->quantity;
+        if ($action === 'decrement') {
+            // bawas quantity
+            if ($currentQuantity > 1) {
+                $cartItem->quantity = $currentQuantity - 1;
+                $cartItem->save();
+            } else {
+                // delete nya if maging 0 yung quantity sa cart
+                $cartItem->delete();
+            }
+        } elseif ($action === 'increment') {
+            $cartItem->quantity = $currentQuantity + 1;
+            $cartItem->save();
         }
 
-        // Ensure the cart item belongs to the authenticated user's cart.
-        if ($cartItem->cart->user_id !== $user->id) {
-            return redirect()->route('cart.index')->with('error', 'Unauthorized action.');
-        }
-
-        // Update the cart item's quantity.
-        $cartItem->update([
-            'quantity' => $request->quantity,
-        ]);
-
-        return redirect()->route('cart.index')->with('success', 'Cart item updated.');
+        return redirect()->back()->with('success', 'Cart updated successfully.');
     }
-    
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CartItem $cartItem)
+    public function destroy($id)
     {
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'You need to log in first.');
-        }
-
-        // Ensure the cart item belongs to the authenticated user's cart.
-        if ($cartItem->cart->user_id !== $user->id) {
-            return redirect()->route('cart.index')->with('error', 'Unauthorized action.');
-        }
-
+        $cartItem = CartItem::findOrFail($id);
         $cartItem->delete();
 
-        return redirect()->route('cart.index')->with('success', 'Cart item removed.');
+        return redirect()->back()->with('success', 'Item removed from cart.');
     }
 }
