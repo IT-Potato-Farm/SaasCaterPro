@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->decimal('total', 10, 2);
+            $table->string('status')->default('pending');
+            $table->string('event_type');
+            $table->date('event_date');
+            $table->text('event_address');
+            $table->integer('total_guests');
+            $table->text('concerns')->nullable();
             $table->timestamps();
         });
     }
