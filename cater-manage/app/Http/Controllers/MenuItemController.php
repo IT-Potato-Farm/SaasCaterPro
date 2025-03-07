@@ -34,7 +34,7 @@ class MenuItemController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
-                'price' => 'required|numeric|min:0',
+                // 'price' => 'required|numeric|min:0',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
                 'status' => 'required|in:available,unavailable',
             ]);
@@ -51,7 +51,7 @@ class MenuItemController extends Controller
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move($imageFolder, $imageName);
-                // Store only the filename, not the full path
+                // store onlyfilename not the full path
                 $menuitemFields['image'] = $imageName; 
             }
 
@@ -95,7 +95,7 @@ class MenuItemController extends Controller
         $itemFields = $request->validate([
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required|numeric|min:0',
+            // 'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id' 
         ]);
         $itemFields['name'] = strip_tags($itemFields['name']);

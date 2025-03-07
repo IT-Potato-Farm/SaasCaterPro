@@ -18,7 +18,7 @@ class AdminMiddleware
     {
         
         if (!Auth::check() || Auth::user()->role !== 'admin') {
-            return redirect('/landing')->with('error', 'Unauthorized access.');
+            return redirect('/')->with('error', 'Unauthorized access.');
         }
     
         return $next($request);

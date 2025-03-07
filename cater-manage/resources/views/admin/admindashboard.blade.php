@@ -81,6 +81,16 @@
                         </a>
                     </li>
                     <li>
+                        <a href="#" :class="{ 'bg-gray-700': activeScreen === 'packages' }"
+                            class="flex items-center p-3 hover:bg-gray-700" @click.prevent="activeScreen = 'packages'">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span x-show="isSidebarOpen">Packages</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" :class="{ 'bg-gray-700': activeScreen === 'categories' }"
                             class="flex items-center p-3 hover:bg-gray-700"
                             @click.prevent="activeScreen = 'categories'">
@@ -112,7 +122,17 @@
                             <span x-show="isSidebarOpen">Users</span>
                         </a>
                     </li>
-                    
+                    <li>
+                        <a href="{{ route('landing') }}" :class="bg-gray-700"
+                            class="flex items-center p-3 hover:bg-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 9.75L12 3l9 6.75M4.5 10.5V21h15V10.5M9 21V15h6v6" />
+                            </svg>
+                            <span x-show="isSidebarOpen">Home</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </aside>
@@ -124,8 +144,7 @@
                 <x-dashboard.header />
                 <!-- conditional -->
                 <div x-show="activeScreen === 'dashboard'" x-cloak>
-                    <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
-                    <a href="/landing" class="px-4 py-1 bg-green-300 rounded">main home</a>
+                   
                     <x-dashboard.first-section />
                 </div>
 
@@ -136,11 +155,15 @@
                         <x-items.item-button />
 
                     </div>
-                    <x-dashboard.packages />
-                    <x-packages.add-package-item />
+                    
                     <x-dashboard.products />
                 </div>
 
+                <div x-show="activeScreen === 'packages'" x-cloak>
+                    <x-dashboard.packages />
+                    <x-packages.add-package-item />
+                    <x-packages.view-items-package  />
+                </div>
                 <div x-show="activeScreen === 'categories'" x-cloak>
                     <x-dashboard.categories />
                 </div>

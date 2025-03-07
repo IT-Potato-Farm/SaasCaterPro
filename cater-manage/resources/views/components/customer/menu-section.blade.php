@@ -3,7 +3,7 @@
 <script>
     function addToCart() {
         Swal.fire({
-            position: 'top-end', 
+            position: 'top-end',
             icon: 'success',
             title: '<span class="text-gray-200">Added to Cart!</span>',
             text: 'SET A has been added to your cart.',
@@ -11,7 +11,7 @@
             showConfirmButton: false,
             background: '#1F2937',
             color: '#E5E7EB',
-            toast: true 
+            toast: true
         });
     }
     const packageCache = new Map();
@@ -87,7 +87,7 @@
                                     <svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span class="text-gray-700">${item.menu_item.name}</span>
+                                    <span class="text-gray-700">${item.menu_item.name} - (${item.menu_item.description})</span>
                                 </div>
                             `).join('') : '<p class="text-gray-500">No food items</p>'}
                         </div>
@@ -150,54 +150,69 @@
     </h2>
 
     <div class="container mx-auto px-4 max-w-6xl">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-            @foreach ($packages as $package)
-                <div
-                    class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:-translate-y-2 transition-transform">
-                    <div class="relative h-56">
-                        <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}" />
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
-                            <h3 class="text-2xl font-bold text-white">{{ $package->name }}</h3>
-                        </div>
-                    </div>
-
-                    <div class="p-6 flex flex-col h-full">
-                        <div class="flex-grow">
-                            <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
-                                {{ $package->description }}
-                            </p>
-
-                            <div class="space-y-3 mb-6">
-                                <div
-                                    class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Price per
-                                        Pax</span>
-                                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
-                                        ₱{{ number_format($package->price_per_person, 2) }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Minimum
-                                        Pax</span>
-                                    <span class="text-lg font-bold text-purple-600 dark:text-purple-400">
-                                        {{ $package->min_pax }}
-                                    </span>
-                                </div>
+        @if ($packages->isNotEmpty())
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                @foreach ($packages as $package)
+                    <div
+                        class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:-translate-y-2 transition-transform">
+                        <div class="relative h-56">
+                            <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}" />
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
+                                <h3 class="text-2xl font-bold text-white">{{ $package->name }}</h3>
                             </div>
-                            <button type="button" onclick="openItem({{ $package->id }})"
-                                class="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02]">
-                                Show More Details
-                            </button>
                         </div>
 
+                        <div class="p-6 flex flex-col h-full">
+                            <div class="flex-grow">
+                                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                                    {{ $package->description }}
+                                </p>
 
+                                <div class="space-y-3 mb-6">
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Price per
+                                            Pax</span>
+                                        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                            ₱{{ number_format($package->price_per_person, 2) }}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Minimum
+                                            Pax</span>
+                                        <span class="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                            {{ $package->min_pax }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="openItem({{ $package->id }})"
+                                    class="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02]">
+                                    Show More Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-12">
+                <div class="inline-flex flex-col items-center">
+                    <svg class="w-24 h-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <h3 class="text-xl font-semibold text-gray-500 dark:text-gray-400">
+                        No available packages at the moment
+                    </h3>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2">
+                        Check back later for new packages!
+                    </p>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endif
     </div>
 
     <div class="flex justify-center mt-12">

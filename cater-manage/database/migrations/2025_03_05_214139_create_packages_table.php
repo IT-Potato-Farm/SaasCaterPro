@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('price_per_person', 10, 2);
             $table->unsignedInteger('min_pax')->default(1); 
             $table->string('image')->nullable();
-            $table->enum('status', ['available', 'not available'])->default('available');
+            $table->enum('status', ['available', 'unavailable'])->default('available');
             $table->timestamps();
         });
     }

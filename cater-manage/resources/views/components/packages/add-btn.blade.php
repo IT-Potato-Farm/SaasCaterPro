@@ -33,16 +33,8 @@
                     </div>
 
                     <div class="space-y-4">
-                        <div>
-                            <label for="swal-category" class="block text-sm font-medium text-gray-700">Select Category:</label>
-                            <select id="swal-category" name="category_id" required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                            <div id="category_id-error" class="error-message"></div>
-                        </div>
+                        
+                        
 
                         <div>
                             <label for="swal-name" class="block text-sm font-medium text-gray-700">Package Name:</label>
@@ -73,7 +65,7 @@
                             <select id="swal-status" name="status"
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="available">Available</option>
-                                <option value="not available">Not Available</option>
+                                <option value="unavailable">Not Available</option>
                             </select>
                             <div id="status-error" class="error-message"></div>
                         </div>

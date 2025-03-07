@@ -53,7 +53,8 @@ Route::get('/login', function () {
 });
 Route::get('/loginpage', function () {
     return view('loginpage');
-});
+}) ->name('loginpage');
+
 Route::get('/register', function () {
     return view('register');
 });
@@ -104,6 +105,7 @@ Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])
 Route::post('/package/store', [PackageController::class, 'store'])->name('package.store');
 Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
 Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
+
 
 Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
      ->name('package.details');

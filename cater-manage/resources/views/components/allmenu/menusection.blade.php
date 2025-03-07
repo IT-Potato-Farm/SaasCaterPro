@@ -68,8 +68,9 @@
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">{{ $item->name }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-3">{{ $item->description }}</p>
                 </div>
-
-                <div class="px-4 pb-4">
+                
+                {{-- incre and decre --}}
+                {{-- <div class="px-4 pb-4">
                     <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
                         <button type="button" onclick="decrementQuantity(this)"
                             class="quantity-btn flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-bold transition-colors duration-200">
@@ -82,7 +83,7 @@
                             +
                         </button>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Add to Cart Button -->
                 <div class="p-4 pt-0 mt-auto">

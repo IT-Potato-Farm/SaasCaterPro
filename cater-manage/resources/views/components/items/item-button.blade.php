@@ -57,12 +57,7 @@
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                             <div id="description-error" class="error-message"></div>
                         </div>
-                        <div>
-                            <label for="swal-price" class="block text-sm font-medium text-gray-700">Price:</label>
-                            <input type="number" step="0.01" id="swal-price" name="price" required min="0.01"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="price-error" class="error-message"></div>
-                        </div>
+                        
                         <div>
                             <label for="swal-status" class="block text-sm font-medium text-gray-700">Status:</label>
                             <select id="swal-status" name="status"
@@ -83,7 +78,7 @@
                 const imageInput = document.getElementById('swal-image');
                 const imagePreview = document.getElementById('image-preview');
                 const nameInput = document.getElementById('swal-name');
-                const priceInput = document.getElementById('swal-price');
+                // const priceInput = document.getElementById('swal-price');
 
                 // Image preview 
                 imageInput.addEventListener('change', function(e) {
@@ -130,13 +125,7 @@
                 });
 
                 // Price validation
-                priceInput.addEventListener('input', function() {
-                    if (priceInput.value <= 0) {
-                        document.getElementById('price-error').textContent = 'Price must be greater than zero';
-                    } else {
-                        document.getElementById('price-error').textContent = '';
-                    }
-                });
+               
             },
             preConfirm: () => {
                 // Clear all previous error messages
@@ -146,7 +135,7 @@
                 const formData = new FormData(form);
                 const imageInput = document.getElementById('swal-image');
                 const nameInput = document.getElementById('swal-name');
-                const priceInput = document.getElementById('swal-price');
+                // const priceInput = document.getElementById('swal-price');
                 const descriptionInput = document.getElementById('swal-description');
                 
                 let hasErrors = false;
@@ -157,10 +146,10 @@
                     hasErrors = true;
                 }
                 
-                if (!priceInput.value || priceInput.value <= 0) {
-                    document.getElementById('price-error').textContent = 'Valid price is required';
-                    hasErrors = true;
-                }
+                // if (!priceInput.value || priceInput.value <= 0) {
+                //     document.getElementById('price-error').textContent = 'Valid price is required';
+                //     hasErrors = true;
+                // }
                 
                 if (descriptionInput.value.trim().length > 1000) {
                     document.getElementById('description-error').textContent = 'Description is too long (max 1000 characters)';

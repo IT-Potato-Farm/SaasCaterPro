@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Package;
+use App\Models\PackageItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
+
 class PackageController extends Controller
 {
     /**
@@ -20,7 +22,7 @@ class PackageController extends Controller
     {
         //
     }
-
+    
     /**
      * Store a newly created resource in storage.
      */
@@ -72,7 +74,7 @@ class PackageController extends Controller
         // Load the package along with package items, each item's menu item, and the menu item's category.
         $package = Package::with('package_items.menu_item.category')->findOrFail($id);
 
-        // Filter package items dynamically by category name.
+        // filter package items dynamically by category name.
         $foods = $package->package_items->filter(function ($packageItem) {
             return optional($packageItem->menu_item->category)->name === 'Foods';
         });
@@ -107,7 +109,6 @@ class PackageController extends Controller
                 'foods' => $filterItems('Foods'),
                 'utilities' => $filterItems('Utilities')
             ]);
-
         } catch (\Exception $e) {
             Log::error("Package details error: " . $e->getMessage());
             return response()->json([

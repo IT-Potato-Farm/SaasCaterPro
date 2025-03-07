@@ -90,6 +90,6 @@ class UserController extends Controller
         session()->flash('success', 'Account created successfully. Please log in.');
 
         // return redirect('/login')->with('success', 'Account created successfully');
-        return redirect('/login');
+        return redirect() ->route('loginpage');
     }
 }

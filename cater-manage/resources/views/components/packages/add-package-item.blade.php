@@ -20,7 +20,9 @@
             <label class="block text-sm font-medium text-gray-700">Select Items</label>
             <select name="menu_item_ids[]" id="menuItemsSelect" multiple required class="w-full border rounded p-2">
                 @foreach($menu_items as $menu_item)
-                    <option value="{{ $menu_item->id }}">{{ $menu_item->name }}</option>
+                    <option value="{{ $menu_item->id }}">
+                        {{ $menu_item->name }} - ({{$menu_item->description}})
+                    </option>
                 @endforeach
             </select>
             <small class="text-gray-500">Hold Ctrl (Windows) or Command (Mac) to select multiple.</small>

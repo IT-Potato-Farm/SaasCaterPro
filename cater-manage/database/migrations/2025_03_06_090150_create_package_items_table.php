@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('package_items', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('package_id')->constrained()->onDelete('cascade');
-            $table->foreignId('menu_item_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
+            $table->foreignId('menu_item_id')->constrained('menu_items')->onDelete('cascade');
+            $table->primary(['package_id', 'menu_item_id']);
+            $table->timestamps(); 
         });
     }
 

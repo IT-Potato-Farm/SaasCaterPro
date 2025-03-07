@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete(); 
             $table->string('name', 255);
             $table->text('description')->nullable();
-            $table->decimal('price',10,2);
+            
             $table->string('image')->nullable();
             $table->enum('status', ['available', 'unavailable'])->default('available');
             $table->timestamps();
