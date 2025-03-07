@@ -27,7 +27,7 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <nav class="bg-white p-4 shadow-md">
-                <h2 class="text-lg font-semibold text-center">Jimmuel's Orders</h2>
+                <h2 class="text-lg font-semibold text-center">current logged in user Orders</h2>
             </nav>
 
             <div class="flex-1 overflow-auto p-6">

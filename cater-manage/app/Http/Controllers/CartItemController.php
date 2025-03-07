@@ -54,9 +54,9 @@ class CartItemController extends Controller
     public function update(Request $request, $id)
     {
         $cartItem = CartItem::findOrFail($id);
-
         $action = $request->input('action');
         $currentQuantity = $cartItem->quantity;
+
         if ($action === 'decrement') {
             // bawas quantity
             if ($currentQuantity > 1) {
@@ -67,6 +67,15 @@ class CartItemController extends Controller
                 $cartItem->delete();
             }
         } elseif ($action === 'increment') {
+            // sa mga package if mag lampas 2 de pede ksi 2 package lng ang kaya per event
+            if ($cartItem->package_id) {
+            //    CALCULATING TOTAL NG QUANTITY
+                $totalPackages = $cartItem->cart->items()->whereNotNull('package_id')->sum('quantity');
+                // CHECK NYA IF MAG INCREMENT MAG EXCEED SA OVERALL LIMIT NG 2 
+                if ($totalPackages + 1 > 2) {
+                    return redirect()->back()->with('error', 'You can only have a total of 2 package sets per event.');
+                }
+            }
             $cartItem->quantity = $currentQuantity + 1;
             $cartItem->save();
         }

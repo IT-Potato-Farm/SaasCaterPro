@@ -32,9 +32,9 @@ class CartController extends Controller
             }
             return redirect()->route('login')->with('error', 'You need to log in first.');
         }
-    
+
         $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
-    
+
         $validated = $request->validate([
             'menu_item_id' => 'nullable|exists:menu_items,id',
             'package_id'   => 'nullable|exists:packages,id',
@@ -47,30 +47,72 @@ class CartController extends Controller
             }
             return redirect()->back()->with('error', 'Please select an item or package.');
         }
-    
-        // Check if a similar cart item already exists.
-        $query = $cart->items();
-        if (!empty($validated['menu_item_id'])) {
-            $query->where('menu_item_id', $validated['menu_item_id']);
-        }
+
+        $errors = [];
+        $successMessages = [];
+
+        
         if (!empty($validated['package_id'])) {
-            $query->where('package_id', $validated['package_id']);
+            // CALCULATE LAHAT NG QUANTITY NG PACKAGE SA CART 
+            $totalPackageCount = $cart->items()->whereNotNull('package_id')->sum('quantity');
+
+            if ($totalPackageCount >= 2) {
+                $errors[] = 'You can only add up to 2 package sets per event.';
+            } else {
+            //  maximum quantity 
+                $available = 2 - $totalPackageCount;
+                
+                $quantityToAdd = min($validated['quantity'], $available);
+
+                // CHECK IF MERON NA EXISTING PACKAGE SA CART 
+                $existingPackageItem = $cart->items()->where('package_id', $validated['package_id'])->first();
+                if ($existingPackageItem) {
+                    // UPDATE NG QUANTITY AND GINA MAKE SURE NA HINDI MAG EXCEED SA OVERALL LIMIT NA 2 
+                    $newQuantity = min($existingPackageItem->quantity + $quantityToAdd, 2);
+                    $existingPackageItem->update(['quantity' => $newQuantity]);
+                    $successMessages[] = 'Package updated in cart.';
+                } else {
+                    // Create a new package cart item with the allowed quantity.
+                    $validated['quantity'] = $quantityToAdd;
+                    $cart->items()->create($validated);
+                    $successMessages[] = 'Package added to cart.';
+                }
+            }
         }
-        $existingCartItem = $query->first();
-    
-        if ($existingCartItem) {
-            $existingCartItem->update([
-                'quantity' => $existingCartItem->quantity + $validated['quantity']
-            ]);
-        } else {
-            $cart->items()->create($validated);
+
+        
+        if (!empty($validated['menu_item_id'])) {
+            $menuData = [
+                'menu_item_id' => $validated['menu_item_id'],
+                'quantity'     => $validated['quantity']
+            ];
+
+            $existingMenuItem = $cart->items()->where('menu_item_id', $validated['menu_item_id'])->first();
+
+            if ($existingMenuItem) {
+                $existingMenuItem->update([
+                    'quantity' => $existingMenuItem->quantity + $validated['quantity']
+                ]);
+                $successMessages[] = 'Menu item updated in cart.';
+            } else {
+                $cart->items()->create($menuData);
+                $successMessages[] = 'Menu item added to cart.';
+            }
         }
-    
+
+        if (!empty($errors)) {
+            $errorMessage = implode(' ', $errors);
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $errorMessage], 422);
+            }
+            return redirect()->back()->with('error', $errorMessage);
+        }
+
+        $message = implode(' ', $successMessages);
         if ($request->expectsJson()) {
-            return response()->json(['message' => 'Item added to cart.'], 200);
+            return response()->json(['message' => $message], 200);
         }
-    
-        return redirect()->route('cart.index')->with('success', 'Item added to cart.');
+        return redirect()->route('cart.index')->with('success', $message);
     }
 
 
@@ -118,8 +160,5 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cart $cart)
-    {
-        
-    }
+    public function destroy(Cart $cart) {}
 }
