@@ -42,18 +42,14 @@ Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetai
 Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 
-Route::get('/cart', function () {
-    return view('cartpage');
-})->name('cartpage');
+
 
 
 // user route
-Route::get('/login', function () {
-    return view('login');
-});
+
 Route::get('/loginpage', function () {
     return view('loginpage');
-}) ->name('loginpage');
+}) ->name('login');
 
 Route::get('/register', function () {
     return view('register');
@@ -128,7 +124,17 @@ Route::get('/check-package-name', [PackageController::class, 'checkName'])->name
 
 // ORDERS
 
+
+
 // cart
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
+});
+
+
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 

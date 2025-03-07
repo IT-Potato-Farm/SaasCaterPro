@@ -96,7 +96,7 @@
 
         <p class="text-center text-gray-600 mt-6">
             Already have an account?
-            <a href="{{ route('loginpage') }}" class="text-blue-600 hover:underline">Login here</a>
+            <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Login here</a>
         </p>
     </div>
 

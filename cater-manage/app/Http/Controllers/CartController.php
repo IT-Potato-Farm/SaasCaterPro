@@ -4,34 +4,75 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function addToCart(Request $request)
-    {
-        $id = $request->input('id');
-        $quantity = $request->input('quantity');
-
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$id])) {
-            $cart[$id] += $quantity;
-        } else {
-            $cart[$id] = $quantity;
-        }
-
-        session()->put('cart', $cart);
-        $cartCount = array_sum($cart);
-
-        return response()->json(['success' => true, 'cartCount' => $cartCount]);
-    }
     public function index()
     {
-        //
+        $user = Auth::user();
+
+
+        // fetch or crreate cart
+        $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
+
+        return view('cart.index', compact('cart'));
     }
+
+    public function add(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'You need to log in first.'], 401);
+            }
+            return redirect()->route('login')->with('error', 'You need to log in first.');
+        }
+    
+        $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
+    
+        $validated = $request->validate([
+            'menu_item_id' => 'nullable|exists:menu_items,id',
+            'package_id'   => 'nullable|exists:packages,id',
+            'quantity'     => 'required|integer|min:1'
+        ]);
+
+        if (empty($validated['menu_item_id']) && empty($validated['package_id'])) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Please select an item or package.'], 422);
+            }
+            return redirect()->back()->with('error', 'Please select an item or package.');
+        }
+    
+        // Check if a similar cart item already exists.
+        $query = $cart->items();
+        if (!empty($validated['menu_item_id'])) {
+            $query->where('menu_item_id', $validated['menu_item_id']);
+        }
+        if (!empty($validated['package_id'])) {
+            $query->where('package_id', $validated['package_id']);
+        }
+        $existingCartItem = $query->first();
+    
+        if ($existingCartItem) {
+            $existingCartItem->update([
+                'quantity' => $existingCartItem->quantity + $validated['quantity']
+            ]);
+        } else {
+            $cart->items()->create($validated);
+        }
+    
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Item added to cart.'], 200);
+        }
+    
+        return redirect()->route('cart.index')->with('success', 'Item added to cart.');
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -79,6 +120,6 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart)
     {
-        //
+        
     }
 }

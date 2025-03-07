@@ -1,69 +1,52 @@
-function addToCart(id) {
-    const button = event.target;
-    const parent = button.closest(".menu-item");
-    const quantityElement = parent.querySelector(".quantity");
-    const quantity = parseInt(quantityElement.textContent, 10); // Convert to number
+async function addToCart(itemId, type = 'menu_item') {
+    // Retrieve CSRF token from the meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    if (quantity <= 0) {
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please select at least 1 item!",
+    // Prepare the payload based on type
+    const payload = { quantity: 1 };
+    if (type === 'package') {
+        payload.package_id = itemId;
+    } else {
+        // Default to menu item if not package
+        payload.menu_item_id = itemId;
+    }
+
+    try {
+        const response = await fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
-        return;
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Something went wrong.');
+        }
+
+        const data = await response.json();
+
+        // Show a success toast message using SweetAlert2
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '<span class="text-gray-200">Added to Cart!</span>',
+            text: data.message || 'Item added to your cart.',
+            timer: 2000,
+            showConfirmButton: false,
+            background: '#1F2937',
+            color: '#E5E7EB',
+            toast: true
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message,
+            confirmButtonText: 'OK'
+        });
     }
-
-    Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: `${quantity} item(s) added to cart`,
-        showConfirmButton: false,
-        timer: 1500,
-        toast: true,
-        customClass: {
-            popup: "rounded-none shadow-xl",
-        },
-    });
-
-    console.log(`Adding ${quantity} of item ${id} to cart`);
-    quantityElement.textContent = "0";
-
-    console.log("yawa uy");
-
-    quantityElement.textContent = "0";
-
-    const cartCountElement = document.getElementById("cart-count");
-    if (cartCountElement) {
-        let currentCount = parseInt(cartCountElement.textContent, 10) || 0;
-        cartCountElement.textContent = currentCount + quantity;
-    }
-
-    console.log("Cart updated successfully");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-function incrementQuantity(button) {
-    const quantitySpan = button.parentElement.querySelector(".quantity");
-    let currentQuantity = parseInt(quantitySpan.textContent);
-    currentQuantity++;
-    quantitySpan.textContent = currentQuantity;
-}
-
-function decrementQuantity(button) {
-    const quantitySpan = button.parentElement.querySelector(".quantity");
-    let currentQuantity = parseInt(quantitySpan.textContent);
-    if (currentQuantity > 0) {
-        currentQuantity--;
-    }
-    quantitySpan.textContent = currentQuantity;
 }

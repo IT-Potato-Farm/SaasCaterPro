@@ -1,18 +1,51 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    function addToCart() {
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: '<span class="text-gray-200">Added to Cart!</span>',
-            text: 'SET A has been added to your cart.',
-            timer: 2000,
-            showConfirmButton: false,
-            background: '#1F2937',
-            color: '#E5E7EB',
-            toast: true
-        });
+    async function addToCart(packageId) {
+        // Retrieve CSRF token from the meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        try {
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    package_id: packageId,
+                    quantity: 1 
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Something went wrong.');
+            }
+
+            const data = await response.json();
+
+            // Show a success toast message
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: '<span class="text-gray-200">Added to Cart!</span>',
+                text: data.message || 'Package added to your cart.',
+                timer: 2000,
+                showConfirmButton: false,
+                background: '#1F2937',
+                color: '#E5E7EB',
+                toast: true
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                confirmButtonText: 'OK'
+            });
+        }
     }
     const packageCache = new Map();
 
@@ -112,7 +145,7 @@
                 </div>
                 
                 <div class="mt-6 text-center">
-                    <button onclick="addToCart()" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                    <button onclick="addToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
                         Select Package
                     </button>
                 </div>

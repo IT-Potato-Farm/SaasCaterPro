@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Cart;
+
 
 class User extends Authenticatable
 {
@@ -18,11 +20,11 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'first_name', 
-        'last_name', 
-        'email', 
-        'password', 
-        'mobile', 
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'mobile',
         'role'
     ];
 
@@ -35,6 +37,10 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
 
     /**
      * Get the attributes that should be cast.

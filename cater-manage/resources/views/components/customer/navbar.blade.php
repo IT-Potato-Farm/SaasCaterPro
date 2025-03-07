@@ -1,7 +1,14 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script src="{{ asset('js/cart.js') }}"></script>
-
+@php
+    $cartCount = 0;
+    // check if the user is logged in and has a cart
+    if (Auth::check() && Auth::user()->cart) {
+        // Sum up all item quantities
+        $cartCount = Auth::user()->cart->items->sum('quantity');
+    }
+@endphp
 <nav class="bg-red-600 border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
         <!-- Left: Logo -->
@@ -36,12 +43,18 @@
 
         <!-- Right: Cart and Account/Login -->
         <div class="flex items-center space-x-4">
-            <a href="{{ route('cartpage') }}" class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+            <a href="{{ route('cart.index') }}"
+                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
                 <span>Cart</span>
-                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-                    <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
+                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                    fill="currentColor">
+                    <path
+                        d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
                 </svg>
-                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                <span id="cart-count"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {{ $cartCount }}
+                </span>
             </a>
 
             @auth
@@ -69,15 +82,14 @@
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit"
-                                class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
                                 Logout
                             </button>
                         </form>
                     </div>
                 </div>
             @else
-                <a href="{{route('loginpage')}}"
+                <a href="{{ route('login') }}"
                     class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
                     Login
                 </a>
@@ -99,9 +111,10 @@
 
     <!-- Mobile menu, hidden by default -->
     <div class="hidden w-full md:hidden" id="mobile-menu">
-        <ul class="font-medium flex flex-col p-4 border border-green-100 rounded-lg bg-red-600 dark:bg-gray-800 dark:border-gray-700">
+        <ul
+            class="font-medium flex flex-col p-4 border border-green-100 rounded-lg bg-red-600 dark:bg-gray-800 dark:border-gray-700">
             <li>
-                <a href="{{ url('/landing') }}"
+                <a href="{{ route('landing') }}"
                     class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
                     Home
                 </a>
@@ -129,7 +142,7 @@
         document.getElementById('accountDropdown').classList.toggle('hidden');
     }
 
-    
+
 
     function scrollToSection(id) {
         const element = document.getElementById(id);

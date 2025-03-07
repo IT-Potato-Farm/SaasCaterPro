@@ -85,7 +85,7 @@
                     </div>
                 </div> --}}
 
-                <!-- Add to Cart Button -->
+                <!-- Add to Cart for menu items -->
                 <div class="p-4 pt-0 mt-auto">
                     <button id="allmenubtn" type="button" onclick="addToCart({{ $item->id }})"
                         class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-300 focus:outline-none">
@@ -110,21 +110,6 @@
         No items available in this category.
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
