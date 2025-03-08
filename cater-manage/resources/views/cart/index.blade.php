@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
@@ -13,23 +13,40 @@
 <body>
     <x-customer.navbar />
     <div class="container mx-auto py-8 px-4">
-       
-
+        @if (isset($pendingOrder))
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            role="alert">
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="sr-only">Info</span>
+                <div>
+                    <span class="font-medium">Alert!</span> You already have a pending order (Order
+                    #{{ $pendingOrder->id }}). Please review or complete that order before placing a new one.
+                </div>
+            </div>
+        </div>
+    @endif
         @if ($cart->items->isEmpty())
             <!-- Empty Cart Message -->
             <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-gray-500" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1" />
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H5" />
                 </svg>
                 <h1 class="text-xl font-semibold text-gray-700">Your Cart is currently empty</h1>
-                <a class="px-5 py-2 text-white bg-lime-500 rounded-md shadow hover:bg-lime-600 transition" href="{{ route('all-menu') }}">Browse Menus</a>
+                <a class="px-5 py-2 text-white bg-lime-500 rounded-md shadow hover:bg-lime-600 transition"
+                    href="{{ route('all-menu') }}">Browse Menus</a>
             </div>
         @else
-        <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
+            <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
             <div class="flex flex-col md:flex-row gap-8">
-                <!-- Left Section: Cart Items -->
+                <!-- Left Section: Cart Items Table -->
                 <div class="md:w-3/4">
                     <div class="bg-white shadow-md rounded p-4">
                         <table class="w-full border-collapse">
@@ -41,33 +58,44 @@
                                     <th class="py-2 text-left">Product</th>
                                     <th class="py-2 text-left">Name</th>
                                     <th class="py-2 text-center">Quantity</th>
-                                    <th class="py-2 text-left">Total</th>
+                                    <th class="py-2 text-left">Price per pax</th>
+                                    <th class="py-2 text-left">Min pax</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php
-                                    $totalPrice = 0;
+                                    $extendedTotal = 0; // Extended estimation for order summary
                                 @endphp
 
                                 @foreach ($cart->items as $cartItem)
                                     @php
-                                        // check nya if yung cart item ay from a package or just a menu item
-                                        $itemName = '';
-                                        $itemPrice = 0;
-                                        $itemImage = null;
-
                                         if ($cartItem->menu_item_id && $cartItem->menuItem) {
                                             $itemName = $cartItem->menuItem->name;
                                             $itemPrice = $cartItem->menuItem->price ?? 0;
                                             $itemImage = $cartItem->menuItem->image ?? null;
+
+                                            // For menu items, both display and extended total are the same.
+                                            $displayPrice = $itemPrice;
+                                            $lineTotal = $itemPrice * $cartItem->quantity;
                                         } elseif ($cartItem->package_id && $cartItem->package) {
                                             $itemName = $cartItem->package->name;
                                             $itemPrice = $cartItem->package->price_per_person ?? 0;
                                             $itemImage = $cartItem->package->image ?? null;
-                                        }
 
-                                        $lineTotal = $itemPrice * $cartItem->quantity;
-                                        $totalPrice += $lineTotal;
+                                            // For packages, display price shows only the price per person.
+                                            $displayPrice = $itemPrice;
+                                            // Extended estimation: price per pax * min pax * quantity.
+                                            $minPax = $cartItem->package->min_pax ?? 1;
+                                            $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
+                                        } else {
+                                            $itemName = 'Unknown';
+                                            $itemPrice = 0;
+                                            $itemImage = null;
+                                            $displayPrice = 0;
+                                            $lineTotal = 0;
+                                            $minPax = '-';
+                                        }
+                                        $extendedTotal += $lineTotal;
                                     @endphp
 
                                     <tr class="border-b">
@@ -77,7 +105,7 @@
                                                 value="{{ $cartItem->id }}" />
                                         </td>
 
-                                        <!--prod img -->
+                                        <!-- Product Image -->
                                         <td class="py-3">
                                             @if ($itemImage)
                                                 <img src="{{ asset(isset($cartItem->menu_item_id) ? 'ItemsStored/' . $itemImage : 'packagePics/' . $itemImage) }}"
@@ -93,45 +121,39 @@
                                             {{ $itemName }}
                                         </td>
 
-                                        <!-- edit quantity -->
+                                        <!-- Edit Quantity -->
                                         <td class="py-3 text-center align-middle">
                                             <div class="flex flex-col items-center space-y-2">
-
-                                                <!-- quantity button -->
                                                 <form action="{{ route('cart.item.update', $cartItem->id) }}"
                                                     method="POST" class="flex items-center">
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="submit" name="action" value="decrement"
-                                                        class="px-2 border border-gray-300 rounded-l">
-                                                        -
-                                                    </button>
+                                                        class="px-2 border border-gray-300 rounded-l">-</button>
                                                     <input type="text" name="quantity"
                                                         value="{{ $cartItem->quantity }}"
                                                         class="w-12 text-center border-t border-b border-gray-300"
                                                         readonly />
                                                     <button type="submit" name="action" value="increment"
-                                                        class="px-2 border border-gray-300 rounded-r">
-                                                        +
-                                                    </button>
+                                                        class="px-2 border border-gray-300 rounded-r">+</button>
                                                 </form>
-
-                                                <!-- Remove Form -->
                                                 <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                        class="text-red-600 hover:text-red-800 underline">
-                                                        Remove
-                                                    </button>
+                                                        class="text-red-600 hover:text-red-800 underline">Remove</button>
                                                 </form>
                                             </div>
                                         </td>
 
-                                        <!--  total -->
+                                        <!-- Price per pax (Base Price) -->
                                         <td class="py-3">
-                                            ₱{{ number_format($lineTotal, 2) }}
+                                            ₱{{ number_format($displayPrice, 2) }}
+                                        </td>
+                                        {{-- min pax --}}
+                                        <td class="py-3">
+                                            {{ $minPax }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -140,52 +162,51 @@
                     </div>
                 </div>
 
-                <!-- right side  Order Summary -->
+                <!-- Order Summary -->
                 <div class="md:w-1/4">
                     <div class="bg-white shadow-md rounded p-4">
                         <h2 class="text-xl font-bold mb-4">Order Summary</h2>
-
-                        <!-- total items sa cart -->
                         <p class="mb-2">
                             <span class="font-semibold">Selected Items:</span>
-
                             <span id="selectedItemsCount">0</span>
                         </p>
-
                         <p class="mb-2">
                             <span class="font-semibold">Total Price:</span>
-                            ₱{{ number_format($totalPrice, 2) }}
+                            ₱{{ number_format($extendedTotal, 2) }}
                         </p>
-
                         <!-- checkout -->
-                        <button class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">
+                        <a href="{{ isset($pendingOrder) ? '#' : route('checkout.show') }}"
+                            title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
+                            class="mt-4 w-full bg-green-600 text-white py-2 rounded transition text-center inline-block 
+                            {{ isset($pendingOrder) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700 hover:cursor-pointer' }}"
+                            @if (isset($pendingOrder)) onclick="return false;" @endif>
                             Checkout
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
         @endif
     </div>
 
-    @if(session('error'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: "{{ session('error') }}"
-    });
-</script>
-@endif
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: "{{ session('error') }}"
+            });
+        </script>
+    @endif
 
-@if(session('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: "{{ session('success') }}"
-    });
-</script>
-@endif
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: "{{ session('success') }}"
+            });
+        </script>
+    @endif
 </body>
 
 </html>

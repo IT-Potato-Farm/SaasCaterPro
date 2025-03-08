@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,8 +19,8 @@ class CartController extends Controller
 
         // fetch or crreate cart
         $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
-
-        return view('cart.index', compact('cart'));
+        $pendingOrder = Order::where('user_id', Auth::id())->where('status', 'pending')->first();
+        return view('cart.index', compact('cart', 'pendingOrder'));
     }
 
     public function add(Request $request)

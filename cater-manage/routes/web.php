@@ -8,6 +8,7 @@ use App\Http\Controllers\PostCategories;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
@@ -145,9 +146,9 @@ Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
 // order
-// Route::get('/cart/checkout', function () {
-//     return view('checkoutpage');
-//     })->name('checkoutpage');
+Route::get('/checkoutpage', function () {
+    return view('checkoutpage');
+    });
 
 
 // CHECKOUT ROUTEE
@@ -156,7 +157,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
     // After order creation, a confirmation page.
-    // Route::get('/order/confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
+    Route::get('/order/confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
 });
 
 

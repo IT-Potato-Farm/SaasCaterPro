@@ -163,7 +163,7 @@
                     }
                 });
 
-                // Toggle empty message
+                
                 emptyMessage.classList.toggle('hidden', visibleCount > 0);
             });
         });
