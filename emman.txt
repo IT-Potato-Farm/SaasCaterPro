@@ -1,1 +1,11 @@
 awdwadawdaw
+
+shortcut 
+App\Models\User::create([
+    'first_name' => 'John Emman',
+    'last_name' => 'Juaquera',
+    'email' => 'jjohnemman@gmail.com',
+'role' => 'admin',
+    'mobile' => '09158500364',
+    'password' => bcrypt('Johnemman1'),
+]);
