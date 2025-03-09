@@ -1,93 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Order Details - Order #{{ $order->id }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
 </head>
-<<body class="bg-gray-100">
+
+<body class="bg-gray-100">
     <div class="flex h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-gray-900 text-white px-6 shadow-lg">
-            <h2 class="text-2xl font-bold mb-6 text-center">User Dashboard</h2>
-            <ul class="space-y-4">
-                <li>
-                    <a href="#" class="block py-2 px-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="block py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 transition">
-                        My Orders
-                    </a>
-                </li>
-            </ul>
+            <div class="py-6">
+                <h2 class="text-2xl font-bold text-center">User Dashboard</h2>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ route('landing') }}"
+                            class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
+                            </svg>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('userdashboard') }}"
+                            class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-gray-800 text-blue-400 font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                            My Orders
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </aside>
 
         <div class="flex-1 flex flex-col">
-            <nav class="bg-white p-4 shadow-md flex justify-between items-center border-b">
-                <h2 class="text-xl font-bold text-gray-700">Jimmuel's Order</h2>
-            </nav>
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b">
+                <div class="flex items-center justify-between px-8 py-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Order #{{ $order->id }}</h1>
+                        <p class="text-sm text-gray-600 mt-1">Order placed on {{ $order->created_at->format('M d, Y') }}
+                        </p>
+                    </div>
+                    <nav class="hidden sm:block">
+                        <ol class="flex items-center space-x-2 text-gray-600 text-sm">
+                            <li>
+                                <a href="{{ route('landing') }}" class="hover:underline hover:text-blue-600">Home</a>
+                            </li>
+                            <li>/</li>
+                            <li>
+                                <a href="{{ route('userdashboard') }}" class="hover:underline hover:text-blue-600">My
+                                    Orders</a>
+                            </li>
+                            <li>/</li>
+                            <li class="text-gray-800 font-medium">Order #{{ $order->id }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </header>
 
-            <div class="p-6">
-                <!-- Breadcrumbs -->
-                <nav class="mb-6">
-                    <ol class="flex items-center space-x-2 text-gray-600 text-sm">
-                        <li>
-                            <a href="{{route('landing')}}" class="hover:underline hover:text-blue-600">Home</a>
-                        </li>
-                        <li>/</li>
-                        <li>
-                            <a href="{{route('userdashboard')}}" class="hover:underline hover:text-blue-600">My Orders</a>
-                        </li>
-                        <li>/</li>
-                        <li class="text-gray-800 font-medium">Order #12345</li>
-                    </ol>
-                </nav>
+            <!-- Main Content -->
+            <main class="flex-1 overflow-auto p-8">
+                <!-- Progress Bar -->
+                <div class="max-w-4xl mx-auto mb-12">
+                    <h2 class="text-xl font-bold mb-6 text-gray-800">Order Progress</h2>
+                    <div class="relative">
+                        <div class="flex justify-between">
+                            @php
+                                $steps = [
+                                    'placed' => [
+                                        'title' => 'Order Placed',
+                                        'status' => in_array($order->status, [
+                                            'placed',
+                                            'pending',
+                                            'processing',
+                                            'paid',
+                                        ]),
+                                    ],
+                                    'pending' => [
+                                        'title' => 'Pending',
+                                        'status' => in_array($order->status, ['pending', 'processing', 'paid']),
+                                    ],
+                                    'processing' => [
+                                        'title' => 'Processing',
+                                        'status' => in_array($order->status, ['processing', 'paid']),
+                                    ],
+                                    'paid' => [
+                                        'title' => 'Paid',
+                                        'status' => $order->status === 'paid',
+                                    ],
+                                ];
+                            @endphp
 
-                <!-- progress bar-->
-                <h3 class="text-2xl font-bold mb-6 text-gray-800">Order Status</h3>
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-6 h-6 rounded-full bg-green-500 border-2 border-green-700"></div>
-                        <span class="text-lg font-medium text-gray-700">Order Placed</span>
-                    </div>
-                    <span class="text-xl text-gray-500">&rarr;</span>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-6 h-6 rounded-full bg-gray-300 border-2 border-gray-400"></div>
-                        <span class="text-lg font-medium text-gray-500">Processing</span>
-                    </div>
-                    <span class="text-xl text-gray-500">&rarr;</span>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-6 h-6 rounded-full bg-gray-300 border-2 border-gray-400"></div>
-                        <span class="text-lg font-medium text-gray-500">Waiting</span>
-                    </div>
-                    <span class="text-xl text-gray-500">&rarr;</span>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-6 h-6 rounded-full bg-gray-300 border-2 border-gray-400"></div>
-                        <span class="text-lg font-medium text-gray-500">Paid</span>
+                            @foreach ($steps as $key => $step)
+                                <div class="flex flex-col items-center w-1/4">
+                                    <div class="relative mb-2">
+                                        <!-- Progress line -->
+                                        @if (!$loop->first)
+                                            <div
+                                                class="absolute h-[2px] w-full -left-1/2 top-1/2 transform -translate-y-1/2">
+                                                <div
+                                                    class="h-full {{ $steps[array_keys($steps)[$loop->index - 1]]['status'] ? 'bg-green-500' : 'bg-gray-200' }}">
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <!-- Step circle -->
+                                        <div
+                                            class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center 
+                                        {{ $step['status'] ? 'bg-green-500 border-2 border-green-600' : 'bg-white border-2 border-gray-300' }}">
+                                            @if ($step['status'])
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <span
+                                            class="text-sm font-medium {{ $step['status'] ? 'text-gray-900' : 'text-gray-500' }}">
+                                            {{ $step['title'] }}
+                                        </span>
+                                        @if ($key === 'pending' && $order->status === 'pending')
+                                            <div class="mt-1 text-xs text-blue-600">Awaiting confirmation</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
-                <!--  Details -->
-                <div class="mt-12 bg-white p-6 shadow-lg rounded-xl border border-gray-200">
-                    <h3 class="text-xl font-bold mb-4 text-gray-800">Package Details</h3>
-                    <div class="grid grid-cols-3 border-b pb-3 font-semibold text-gray-600">
-                        <div>Package Name</div>
-                        <div>Date Availed</div>
-                        <div>Price</div>
+                <!-- Order Details -->
+                <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6 border-b">
+                        <h3 class="text-lg font-semibold text-gray-800">Order Details</h3>
                     </div>
-                    <div class="grid grid-cols-3 pt-3 text-gray-700 text-lg font-medium">
-                        <div>Set A</div>
-                        <div>March 6, 2025</div>
-                        <div class="text-green-600">₱16,800</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr class="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-4 text-left">Product</th>
+                                    <th class="px-6 py-4 text-left">Type</th>
+                                    <th class="px-6 py-4 text-center">Quantity</th>
+                                    <th class="px-6 py-4 text-left">Variant</th>
+                                    <th class="px-6 py-4 text-right">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach ($order->orderItems as $item)
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium text-gray-900">
+                                            @if ($item->item_type === 'menu_item')
+                                                {{ $item->itemable->name ?? 'N/A' }}
+                                            @elseif($item->item_type === 'package')
+                                                {{ $item->itemable->name ?? 'N/A' }}
+                                            @else
+                                                Unknown
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 text-left">
+                                            @if ($item->item_type === 'menu_item')
+                                                Menu Item
+                                            @elseif ($item->item_type === 'package')
+                                                Package
+                                            @else
+                                                Unknown
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 text-center">{{ $item->quantity }}</td>
+                                        <td class="px-6 py-4">
+                                            @if ($item->item_type === 'menu_item')
+                                                @if (!empty($item->variant))
+                                                    {{ $item->variant }} per pax
+                                                @else
+                                                    -
+                                                @endif
+                                            @elseif ($item->item_type === 'package')
+                                                @if (!empty($item->variant))
+                                                    {{ $item->variant }} guests
+                                                @else
+                                                    -
+                                                @endif
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 text-right">₱{{ number_format($item->price, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-6 border-t">
+                        <div class="flex justify-end items-center">
+                            <div class="text-lg font-semibold text-gray-800 mr-4">Total:</div>
+                            <div class="text-2xl font-bold text-gray-900">₱{{ number_format($order->total, 2) }}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 </body>
+
 </html>

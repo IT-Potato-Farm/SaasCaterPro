@@ -18,9 +18,9 @@ class CheckoutController extends Controller
 
         // de maka order ung user if may pending order na sya
         $pendingOrder = Order::where('user_id', $user->id)
-        ->where('status', 'pending')
-        ->first();
-        
+            ->where('status', 'pending')
+            ->first();
+
 
         $cart = $user->cart;
         if (!$cart || $cart->items->isEmpty()) {
@@ -38,10 +38,10 @@ class CheckoutController extends Controller
     {
         $user = Auth::user();
         $pendingOrder = Order::where('user_id', $user->id)
-        ->where('status', 'pending')
-        ->first();
+            ->where('status', 'pending')
+            ->first();
         if ($pendingOrder) {
-            // de maka order ulit
+            // de maka order ulit if may pending
             return redirect()->back()->with('error', 'You already have a pending order. Please review or complete that order before placing a new one.');
         }
 
@@ -62,20 +62,27 @@ class CheckoutController extends Controller
 
         // final order total.
         $total = $cart->items->sum(function ($item) use ($data) {
-            //  menu items multiply price * quantity.
+            // sa menu items, check if a variant is set and use its price from the JSON pricing.
             if ($item->menu_item_id && $item->menuItem) {
-                return $item->menuItem->price * $item->quantity;
+                $pricingTiers = $item->menuItem->pricing; 
+                if (!empty($item->variant) && isset($pricingTiers[$item->variant])) {
+                    $price = $pricingTiers[$item->variant];
+                } else {
+                    //  default price
+                    $price = $item->menuItem->price;
+                }
+                return $price * $item->quantity;
             }
-            //  based on number of guests.
+            // sa packages naka based on price per person, minimum pax, and quantity.
             if ($item->package_id && $item->package) {
-                // if ni type ni user is below the minimum pax then ic-count based on the min pax of the package
+                // if less than yung total guest sa package min pax, ic-count based on the min pax lagi
                 $guests = max($data['total_guests'], $item->package->min_pax);
                 return $item->package->price_per_person * $guests * $item->quantity;
             }
             return 0;
         });
 
-        // Order record with event details.
+        // order record with event details.
         $order = Order::create([
             'user_id'         => $user->id,
             'total'           => $total,
@@ -87,32 +94,43 @@ class CheckoutController extends Controller
             'status'          => 'pending'
         ]);
 
-        // Create OrderItem records based on cart items.
+        //  OrderItem records based sa cart items.
         foreach ($cart->items as $cartItem) {
             if ($cartItem->menu_item_id && $cartItem->menuItem) {
-                $price = $cartItem->menuItem->price;
+                $pricingTiers = $cartItem->menuItem->pricing;
+                if (!empty($cartItem->variant) && isset($pricingTiers[$cartItem->variant])) {
+                    $price = $pricingTiers[$cartItem->variant];
+                } else {
+                    $price = $cartItem->menuItem->price;
+                }
                 $itemType = 'menu_item';
+                $refId = $cartItem->menu_item_id;
+                $variantValue = $cartItem->variant;
             } elseif ($cartItem->package_id && $cartItem->package) {
                 $price = $cartItem->package->price_per_person;
                 $itemType = 'package';
+                $refId = $cartItem->package_id;
+                $variantValue = (string) max($data['total_guests'], $cartItem->package->min_pax);
             } else {
                 continue;
             }
 
             OrderItem::create([
                 'order_id'          => $order->id,
-                'item_reference_id' => $cartItem->id,
+                'item_reference_id' => $refId,
                 'item_type'         => $itemType,
                 'quantity'          => $cartItem->quantity,
                 'price'             => $price,
+                'variant'           => $variantValue,
             ]);
         }
 
-        // clear cart items
+        // clear cart items.
         $cart->items()->delete();
 
         // order confirmation page.
         return redirect()->route('order.confirmation', $order->id)
             ->with('success', 'Your order has been placed!');
     }
+
 }

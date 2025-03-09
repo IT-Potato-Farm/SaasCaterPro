@@ -77,7 +77,7 @@
                             </a>
                         @endif
 
-                        <a href="/userdashboard" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                        <a href="{{route('userdashboard')}}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                             My Account
                         </a>
                         <form method="POST" action="{{ route('logout') }}">

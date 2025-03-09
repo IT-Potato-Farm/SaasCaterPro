@@ -19,10 +19,7 @@ class MenuItemController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -34,9 +31,10 @@ class MenuItemController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
-                // 'price' => 'required|numeric|min:0',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
                 'status' => 'required|in:available,unavailable',
+                'pricing.10-15'    => 'required|numeric|min:1',
+                'pricing.15-20'    => 'required|numeric|min:1',
             ]);
 
             $menuitemFields['name'] = strip_tags($menuitemFields['name']);
@@ -52,7 +50,7 @@ class MenuItemController extends Controller
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move($imageFolder, $imageName);
                 // store onlyfilename not the full path
-                $menuitemFields['image'] = $imageName; 
+                $menuitemFields['image'] = $imageName;
             }
 
             $menu = MenuItem::create($menuitemFields);
@@ -96,7 +94,9 @@ class MenuItemController extends Controller
             'name' => 'required',
             'description' => 'required',
             // 'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id' 
+            'category_id' => 'required|exists:categories,id',
+            'pricing.10-15'     => 'required|numeric|min:1',
+            'pricing.15-20'     => 'required|numeric|min:1',
         ]);
         $itemFields['name'] = strip_tags($itemFields['name']);
         $itemFields['description'] = strip_tags($itemFields['description']);

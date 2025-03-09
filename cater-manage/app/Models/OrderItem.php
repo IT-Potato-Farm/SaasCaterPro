@@ -10,8 +10,12 @@ class OrderItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 'item_reference_id', 'item_type', 'quantity', 'price'
+        'order_id', 'item_reference_id', 'item_type', 'quantity', 'price', 'variant'
     ];
+    public function itemable()
+    {
+        return $this->morphTo(null, 'item_type', 'item_reference_id');
+    }
 
     public function order()
     {

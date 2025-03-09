@@ -15,6 +15,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
+use App\Http\Controllers\UserDashboardController;
 
 // route navigation each page
 Route::get('/', function () {
@@ -30,12 +31,13 @@ Route::get('/all-menus', function () {
 //     return view('login');
 // });
 
-Route::get('/userdashboard', function () {
-    return view('userdashboard');
-})->name('userdashboard');
-Route::get('/userdashboard/order-details', function () {
-    return view('order-process');
-})->name('orderdetails');
+Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('userdashboard');
+Route::get('/user/dashboard/order/{id}', [UserDashboardController::class, 'show'])->name('order.show');
+
+
+// Route::get('/userdashboard/order-details', function () {
+//     return view('order-process');
+// })->name('orderdetails');
 
 // landing menu fetch package
 Route::get('/get-package/{id}', function ($id) {

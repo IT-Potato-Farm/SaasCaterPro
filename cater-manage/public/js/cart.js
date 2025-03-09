@@ -4,13 +4,20 @@ async function addToCart(itemId, type = 'menu_item') {
 
     // Prepare the payload based on type
     const payload = { quantity: 1 };
+    
     if (type === 'package') {
         payload.package_id = itemId;
     } else {
         // Default to menu item if not package
         payload.menu_item_id = itemId;
+        
+        // Check if a variant selection exists for this menu item
+        const variantSelect = document.getElementById('variant-' + itemId);
+        if (variantSelect) {
+            payload.variant = variantSelect.value; // e.g. "10-15" or "15-20"
+        }
     }
-
+    console.log("Payload being sent:", payload);
     try {
         const response = await fetch('/cart/add', {
             method: 'POST',

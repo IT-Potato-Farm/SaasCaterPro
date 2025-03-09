@@ -1,10 +1,12 @@
 <script>
-    function openEditModalItem(id, name, description, price, categoryId) {
-        console.log("item clicked edit");
-
+    function openEditModalItem(id, name, description, pricing10_15, pricing15_20, categoryId) {
+        console.log("Editing item:", id);
         let editUrl = "{{ url('/menuitems/') }}/" + id + "/edit";
         Swal.fire({
-            title: '<div class="flex items-center gap-2"><svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg><span class="text-cyan-600 font-semibold text-xl">Edit Item</span></div>',
+            title: `<div class="flex items-center gap-2">
+                        
+                        <span class="text-cyan-600 font-semibold text-xl">Edit Item</span>
+                    </div>`,
             html: `
                 <form id="editItemForm-${id}" action="${editUrl}" method="POST" class="text-left">
                     @csrf
@@ -15,9 +17,6 @@
                             <input type="text" name="name" value="${name}" 
                                 class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                                 required>
-                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                                <!-- Optional icon -->
-                            </div>
                         </div>
                     </div>
                     <div class="mb-5">
@@ -26,22 +25,20 @@
                             <textarea name="description" 
                                 class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
                                 required>${description}</textarea>
-                            <div class="absolute top-3 right-3">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-                                </svg>
-                            </div>
                         </div>
                     </div>
-                    
-                  <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Price</label>
-                        <input type="number" step="0.01" name="price" value="${price}" 
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Price for 10-15 Pax</label>
+                        <input type="number" step="0.01" name="pricing[10-15]" value="${pricing10_15}" 
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                             required>
                     </div>
-
-
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Price for 15-20 Pax</label>
+                        <input type="number" step="0.01" name="pricing[15-20]" value="${pricing15_20}" 
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                            required>
+                    </div>
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Category</label>
                         <select name="category_id" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
@@ -50,8 +47,7 @@
                             @endforeach
                         </select>
                     </div>
-                </form>
-            `,
+                </form>`,
             showCancelButton: true,
             confirmButtonText: 'Save Changes',
             cancelButtonText: 'Cancel',
@@ -71,7 +67,6 @@
         });
     }
 </script>
-
 
 <div class="container mx-auto px-4 py-8">
     <header class="mb-8">
@@ -118,6 +113,15 @@
                         <p class="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-4 min-h-[3rem]">
                             {{ $menuItem->description }}
                         </p>
+                        {{-- pricing --}}
+                        <div class="mb-4">
+                            <p class="text-gray-700 text-sm">
+                                <strong>Price for 10-15 pax is:</strong> ₱{{ number_format($menuItem->pricing['10-15'] ?? 0, 2) }}
+                            </p>
+                            <p class="text-gray-700 text-sm">
+                                <strong>Price for 15-20 pax is:</strong> ₱{{ number_format($menuItem->pricing['15-20'] ?? 0, 2) }}
+                            </p>
+                        </div>
 
                         <div class="flex items-center justify-between mb-4">
 
@@ -134,8 +138,8 @@
                                 {{ $menuItem->id }}, 
                                 {{ json_encode($menuItem->name) }}, 
                                 {{ json_encode($menuItem->description) }},
-                                {{ json_encode($menuItem->price) }},
-                                
+                                {{ json_encode($menuItem->pricing['10-15'] ?? 0) }},
+                                {{ json_encode($menuItem->pricing['15-20'] ?? 0) }},
                                 {{ $menuItem->category_id }}  
                                 )"
                                 class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">

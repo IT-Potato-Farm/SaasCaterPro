@@ -14,11 +14,12 @@ class Order extends Model
         'event_type', 'event_date', 'event_address',
         'total_guests', 'concerns'
     ];
-
+    
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
+    
     public function user()
     {
         return $this->belongsTo(User::class);

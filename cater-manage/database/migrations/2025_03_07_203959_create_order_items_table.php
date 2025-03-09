@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->unsignedBigInteger('item_reference_id')->nullable();
             $table->string('item_type'); // 'menu_item' or 'package'
+            $table->string('variant')->nullable();
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->timestamps();

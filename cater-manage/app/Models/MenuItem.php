@@ -13,11 +13,13 @@ class MenuItem extends Model
         'category_id',
         'name',
         'description',
-        
         'image',
-        'status'
+        'status',
+        'pricing'
     ];
-
+    protected $casts = [
+        'pricing' => 'array', //  converts JSON to an array
+    ];
    
     public function category(){
         return $this->belongsTo(Category::class);

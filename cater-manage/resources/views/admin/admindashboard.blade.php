@@ -71,6 +71,17 @@
                         </a>
                     </li>
                     <li>
+                        <a href="#" :class="{ 'bg-gray-700': activeScreen === 'categories' }"
+                            class="flex items-center p-3 hover:bg-gray-700"
+                            @click.prevent="activeScreen = 'categories'">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <span x-show="isSidebarOpen">Categories</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" :class="{ 'bg-gray-700': activeScreen === 'products' }"
                             class="flex items-center p-3 hover:bg-gray-700" @click.prevent="activeScreen = 'products'">
                             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,17 +101,7 @@
                             <span x-show="isSidebarOpen">Packages</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#" :class="{ 'bg-gray-700': activeScreen === 'categories' }"
-                            class="flex items-center p-3 hover:bg-gray-700"
-                            @click.prevent="activeScreen = 'categories'">
-                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            <span x-show="isSidebarOpen">Categories</span>
-                        </a>
-                    </li>
+                    
                     <li>
                         <a href="#" :class="{ 'bg-gray-700': activeScreen === 'bookings' }"
                             class="flex items-center p-3 hover:bg-gray-700" @click.prevent="activeScreen = 'bookings'">
@@ -150,8 +151,8 @@
 
                 <div x-show="activeScreen === 'products'" x-cloak>
                     <div class="mt-5">
-                        <x-category.category-button />
-                        <x-packages.addbtn />
+                        
+                        
                         <x-items.item-button />
 
                     </div>
@@ -160,11 +161,13 @@
                 </div>
 
                 <div x-show="activeScreen === 'packages'" x-cloak>
+                    <x-packages.addbtn />
                     <x-dashboard.packages />
                     <x-packages.add-package-item />
                     <x-packages.view-items-package  />
                 </div>
                 <div x-show="activeScreen === 'categories'" x-cloak>
+                    <x-category.category-button />
                     <x-dashboard.categories />
                 </div>
 

@@ -39,7 +39,8 @@ class CartController extends Controller
         $validated = $request->validate([
             'menu_item_id' => 'nullable|exists:menu_items,id',
             'package_id'   => 'nullable|exists:packages,id',
-            'quantity'     => 'required|integer|min:1'
+            'quantity'     => 'required|integer|min:1',
+            'variant'      => 'nullable|string'
         ]);
 
         if (empty($validated['menu_item_id']) && empty($validated['package_id'])) {
@@ -87,8 +88,14 @@ class CartController extends Controller
                 'menu_item_id' => $validated['menu_item_id'],
                 'quantity'     => $validated['quantity']
             ];
+            if (!empty($validated['variant'])) {
+                $menuData['variant'] = $validated['variant'];
+            }
 
-            $existingMenuItem = $cart->items()->where('menu_item_id', $validated['menu_item_id'])->first();
+            $existingMenuItem = $cart->items()
+            ->where('menu_item_id', $validated['menu_item_id'])
+            ->where('variant', $validated['variant'] ?? null)
+            ->first();
 
             if ($existingMenuItem) {
                 $existingMenuItem->update([

@@ -39,7 +39,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Order Confirmed!</h1>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Booking Confirmed!</h1>
             <p class="text-gray-600">Thank you for your purchase, {{ $order->user->name }}!</p>
             <p class="text-gray-600">A confirmation email has been sent to {{ $order->user->email }}</p>
         </div>
@@ -83,8 +83,7 @@
 
 
         <div class="text-center">
-            <p class="text-gray-600 mb-4">We'll send you a confirmation email with tracking information when your order
-                ships.</p>
+            <p class="text-gray-600 mb-4">We'll send you a confirmation email with the status of your order.</p>
             <div class="flex justify-center gap-4">
                 <a href="{{ route('landing') }}"
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">

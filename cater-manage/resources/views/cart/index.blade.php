@@ -14,27 +14,28 @@
     <x-customer.navbar />
     <div class="container mx-auto py-8 px-4">
         @if (isset($pendingOrder))
-        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-            role="alert">
-            <div class="flex items-center">
-                <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                </svg>
-                <span class="sr-only">Info</span>
-                <div>
-                    <span class="font-medium">Alert!</span> You already have a pending order (Order
-                    #{{ $pendingOrder->id }}). Please review or complete that order before placing a new one.
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert">
+                <div class="flex items-center">
+                    <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                        <span class="font-medium">Alert!</span> You already have a pending order (Order
+                        #{{ $pendingOrder->id }}). Please review or complete that order before placing a new one.
+                    </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
         @if ($cart->items->isEmpty())
             <!-- Empty Cart Message -->
             <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-gray-500" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-gray-500" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1" />
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H5" />
@@ -58,8 +59,8 @@
                                     <th class="py-2 text-left">Product</th>
                                     <th class="py-2 text-left">Name</th>
                                     <th class="py-2 text-center">Quantity</th>
-                                    <th class="py-2 text-left">Price per pax</th>
-                                    <th class="py-2 text-left">Min pax</th>
+                                    <th class="py-2 text-left">Price</th>
+                                    <th class="py-2 text-left"> Pax</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -71,20 +72,38 @@
                                     @php
                                         if ($cartItem->menu_item_id && $cartItem->menuItem) {
                                             $itemName = $cartItem->menuItem->name;
-                                            $itemPrice = $cartItem->menuItem->price ?? 0;
                                             $itemImage = $cartItem->menuItem->image ?? null;
+                                            // For menu items, use the JSON pricing (should be cast as array)
+                                            $pricingTiers = $cartItem->menuItem->pricing;
 
-                                            // For menu items, both display and extended total are the same.
+                                            // Clean up the variant (if any)
+                                            $selectedVariant = isset($cartItem->variant)
+                                                ? trim($cartItem->variant)
+                                                : null;
+
+                                            if (!empty($selectedVariant) && isset($pricingTiers[$selectedVariant])) {
+                                                // Use the price from the selected variant
+                                                $itemPrice = $pricingTiers[$selectedVariant];
+                                            } else {
+                                                // Fallback: determine the price based on quantity if no valid variant is stored
+                                                if ($cartItem->quantity >= 10 && $cartItem->quantity <= 15) {
+                                                    $itemPrice = $pricingTiers['10-15'] ?? 0;
+                                                } elseif ($cartItem->quantity > 15 && isset($pricingTiers['15-20'])) {
+                                                    $itemPrice = $pricingTiers['15-20'];
+                                                } else {
+                                                    // Fallback: use the first available tier
+                                                    $itemPrice = reset($pricingTiers);
+                                                }
+                                            }
                                             $displayPrice = $itemPrice;
                                             $lineTotal = $itemPrice * $cartItem->quantity;
+                                            $minPax = '-'; // Not applicable for menu items
                                         } elseif ($cartItem->package_id && $cartItem->package) {
                                             $itemName = $cartItem->package->name;
-                                            $itemPrice = $cartItem->package->price_per_person ?? 0;
                                             $itemImage = $cartItem->package->image ?? null;
-
-                                            // For packages, display price shows only the price per person.
+                                            $itemPrice = $cartItem->package->price_per_person ?? 0;
                                             $displayPrice = $itemPrice;
-                                            // Extended estimation: price per pax * min pax * quantity.
+                                            // For packages, calculate based on price per person, minimum pax and quantity
                                             $minPax = $cartItem->package->min_pax ?? 1;
                                             $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
                                         } else {
@@ -147,18 +166,31 @@
                                             </div>
                                         </td>
 
-                                        <!-- Price per pax (Base Price) -->
+                                        <!-- Price -->
                                         <td class="py-3">
-                                            ₱{{ number_format($displayPrice, 2) }}
+                                            @if ($cartItem->package_id)
+                                                ₱{{ number_format($displayPrice, 2) }} <small>(per pax)</small>
+                                            @else
+                                                ₱{{ number_format($displayPrice, 2) }}
+                                                {{-- @if(!empty($selectedVariant))
+                                                    <small>({{ $selectedVariant }})</small>
+                                                @endif --}}
+                                            @endif
                                         </td>
-                                        {{-- min pax --}}
+
+                                        <!-- Min pax (Only for packages) -->
                                         <td class="py-3">
-                                            {{ $minPax }}
+                                            @if ($cartItem->menu_item_id)
+                                                {{ !empty($selectedVariant) ? $selectedVariant : 'N/A' }} per pax
+                                            @else
+                                                {{ $minPax }} minimum pax
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+
                     </div>
                 </div>
 
