@@ -1,6 +1,8 @@
 <?php
 
+use App\Mail\TestEmail;
 use App\Models\Package;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MenuController;
@@ -176,3 +178,4 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 });
+

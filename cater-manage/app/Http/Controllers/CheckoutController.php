@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use App\Mail\OrderConfirmationMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\OrderConfirmationEmail;
 
 class CheckoutController extends Controller
 {
@@ -64,7 +68,7 @@ class CheckoutController extends Controller
         $total = $cart->items->sum(function ($item) use ($data) {
             // sa menu items, check if a variant is set and use its price from the JSON pricing.
             if ($item->menu_item_id && $item->menuItem) {
-                $pricingTiers = $item->menuItem->pricing; 
+                $pricingTiers = $item->menuItem->pricing;
                 if (!empty($item->variant) && isset($pricingTiers[$item->variant])) {
                     $price = $pricingTiers[$item->variant];
                 } else {
@@ -127,10 +131,11 @@ class CheckoutController extends Controller
 
         // clear cart items.
         $cart->items()->delete();
+        // Send email notification to the user
+        Mail::to($user->email)->send(new OrderConfirmationMail($order));
 
         // order confirmation page.
         return redirect()->route('order.confirmation', $order->id)
             ->with('success', 'Your order has been placed!');
     }
-
 }
