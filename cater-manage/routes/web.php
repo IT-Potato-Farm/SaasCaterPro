@@ -128,8 +128,14 @@ Route::get('/check-package-name', [PackageController::class, 'checkName'])->name
 
 
 // ORDERS
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+// Route::get('/order/{order}', [OrderController::class, 'show'])->name('order.show');
+Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order.edit');
+Route::get('/order/{order}/edit', [OrderController::class, 'cancel'])->name('order.cancel');
+Route::put('/order/{order}', [OrderController::class, 'update'])->name('order.update');
+Route::get('/order/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
 
-
+// ------------------------------------------------
 
 // cart
 Route::middleware('auth')->group(function () {

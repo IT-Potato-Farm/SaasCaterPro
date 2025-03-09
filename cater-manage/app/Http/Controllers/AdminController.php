@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,4 +35,6 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
+    
+
 }

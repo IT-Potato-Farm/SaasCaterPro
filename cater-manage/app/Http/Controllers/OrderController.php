@@ -11,4 +11,5 @@ class OrderController extends Controller
 {
     return view('order.order_confirmation', compact('order'));
 }
+
 }

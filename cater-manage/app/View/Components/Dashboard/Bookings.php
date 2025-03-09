@@ -3,17 +3,19 @@
 namespace App\View\Components\Dashboard;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\Order;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class Bookings extends Component
 {
     /**
      * Create a new component instance.
      */
+    public $orders;
     public function __construct()
     {
-        //
+        $this->orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**

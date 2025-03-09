@@ -172,8 +172,8 @@
                 </div>
 
                 <div x-show="activeScreen === 'bookings'" x-cloak>
-                    <x-dashboard.calendar />
                     <x-dashboard.bookings />
+                    {{-- <x-dashboard.calendar /> --}}
                 </div>
 
                 <div x-show="activeScreen === 'users'" x-cloak>
