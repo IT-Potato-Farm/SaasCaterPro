@@ -14,7 +14,7 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $loginInfo = $request->validate([
-            'loginemail' => ['required', 'email'], //email format
+            'loginemail' => ['required', 'email'],
             'loginpassword' => ['required', 'string', 'min:8']
         ], [
             'loginemail.required' => 'The email field is required.',
@@ -22,26 +22,39 @@ class UserController extends Controller
             'loginpassword.required' => 'The password field is required.',
             'loginpassword.min' => 'The password must be at least 8 characters.'
         ]);
-        //check nya if yung email nage-exist sa database
+
+        // check if nage-exist email
         $user = User::where('email', $loginInfo['loginemail'])->first();
 
         if (!$user) {
-            // If wla email
             return back()->withErrors([
-                'loginemail' => 'email does not exist',
+                'loginemail' => 'Email does not exist.',
             ])->onlyInput('loginemail');
         }
 
-        if (Auth::attempt(['email' => $loginInfo['loginemail'], 'password' => $loginInfo['loginpassword']])) {
+        //  authenticate the user
+        if (Auth::attempt([
+            'email' => $loginInfo['loginemail'],
+            'password' => $loginInfo['loginpassword']
+        ])) {
             $request->session()->regenerate();
 
-            return redirect('/landing')->with('success', 'Login successful!');
+            $user = Auth::user();
+
+            // if admin punta dashboard
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.admindashboard')->with('success', 'Login successful!');
+            } else {
+                return redirect()->route('landing')->with('success', 'Login successful!');
+            }
         }
-        // pag mali pass 
+
+        // If authentication fails
         return back()->withErrors([
-            'loginpassword' => 'password is incorrect.',
+            'loginpassword' => 'Password is incorrect.',
         ])->onlyInput('loginemail');
     }
+
     public function logout()
     {
         Auth::logout();
@@ -61,13 +74,13 @@ class UserController extends Controller
             }
             $request->merge(['mobile' => $mobile]);
         }
-
+    
         $rules = [
-            'first_name'    => ['required', 'string', 'min:4', 'max:50'],
-            'last_name'    => ['required', 'string', 'min:2', 'max:50'],
-            'email'    => ['required', 'email', Rule::unique('users', 'email')],
-            'mobile'    => ['required', 'regex:/^9\d{9}$/', Rule::unique('users', 'mobile')],
-            'password'    => [
+            'first_name'    => ['required', 'string', 'min:4', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
+            'last_name'     => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
+            'email'         => ['required', 'email', Rule::unique('users', 'email')],
+            'mobile'        => ['required', 'regex:/^9\d{9}$/', Rule::unique('users', 'mobile')],
+            'password'      => [
                 'required',
                 'string',
                 'min:8',
@@ -75,19 +88,21 @@ class UserController extends Controller
                 'regex:/[a-z]/', // at least one lowercase letter
                 'regex:/[A-Z]/', // at least one uppercase letter
                 'regex:/[0-9]/', // at least one number
-                'confirmed'      // password_confirmation
+                'confirmed'      // password_confirmation must match
             ],
-            'password_confirmation'  => ['required'],
-            'terms'                  => ['accepted']
+            'password_confirmation' => ['required'],
+            'terms'         => ['accepted']
         ];
-
+    
         $messages = [
             'first_name.required'            => 'The first name field is required.',
             'first_name.min'                 => 'The first name must be at least 4 characters.',
             'first_name.max'                 => 'The first name may not be greater than 50 characters.',
+            'first_name.regex'               => 'The first name must contain only letters and spaces.',
             'last_name.required'             => 'The last name field is required.',
             'last_name.min'                  => 'The last name must be at least 2 characters.',
             'last_name.max'                  => 'The last name may not be greater than 50 characters.',
+            'last_name.regex'                => 'The last name must start with an uppercase letter and contain only letters and spaces.',
             'email.required'                 => 'The email field is required.',
             'email.email'                    => 'Please enter a valid email address.',
             'email.unique'                   => 'This email is already registered.',
@@ -102,23 +117,22 @@ class UserController extends Controller
             'password_confirmation.required' => 'The confirm password field is required.',
             'terms.accepted'                 => 'You must accept the terms and conditions to proceed.'
         ];
-
-
+    
         $validator = Validator::make($request->all(), $rules, $messages);
-
+    
         $validator->after(function ($validator) use ($request) {
             if ($request->input('password') !== $request->input('password_confirmation')) {
-                //  error sa 2 password fields
-                $validator->errors()->add('password', 'The password  does not match.');
-                $validator->errors()->add('password_confirmation', 'The password  does not match.');
+                //  error sa 2 pw
+                $validator->errors()->add('password', 'The password does not match.');
+                $validator->errors()->add('password_confirmation', 'The password does not match.');
             }
         });
-
+    
         $credentials = $validator->validate();
-
-        $credentials['password'] = bcrypt($credentials['password']); // Hash 
-        $user = User::create($credentials); //create
-
+    
+        $credentials['password'] = bcrypt($credentials['password']); // Hash
+        $user = User::create($credentials); // Create
+    
         session()->flash('success', 'Account created successfully. Please log in.');
         return redirect()->route('login');
     }

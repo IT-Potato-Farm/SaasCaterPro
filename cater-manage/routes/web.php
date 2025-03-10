@@ -23,9 +23,11 @@ use App\Http\Controllers\UserDashboardController;
 Route::get('/', function () {
     return view('homepage');
 });
+
 Route::get('/landing', function () {
     return view('homepage');
 })->name('landing');
+
 Route::get('/all-menus', function () {
     return view('menupage');
 })->name('all-menu');
