@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -44,52 +45,81 @@ class UserController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect("/loginpage");
+        return redirect()->route('landing');
     }
+
+
     public function register(Request $request)
     {
-        $credentials = $request->validate([
-            'first_name' => ['required', 'string', 'min:4', 'max:50'],
-            'last_name'  => ['required', 'string', 'min:2', 'max:50'],
-            'email'     => ['required', 'email', Rule::unique('users', 'email')],
-            'mobile'    => ['required', 'digits_between:10,15', Rule::unique('users', 'mobile')],
-            'password' => [
+        // Remove leading '+63' or '0'
+        if ($request->has('mobile')) {
+            $mobile = $request->input('mobile');
+            if (substr($mobile, 0, 3) === '+63') {
+                $mobile = substr($mobile, 3);
+            } elseif (substr($mobile, 0, 1) === '0') {
+                $mobile = substr($mobile, 1);
+            }
+            $request->merge(['mobile' => $mobile]);
+        }
+
+        $rules = [
+            'first_name'    => ['required', 'string', 'min:4', 'max:50'],
+            'last_name'    => ['required', 'string', 'min:2', 'max:50'],
+            'email'    => ['required', 'email', Rule::unique('users', 'email')],
+            'mobile'    => ['required', 'regex:/^9\d{9}$/', Rule::unique('users', 'mobile')],
+            'password'    => [
                 'required',
                 'string',
                 'min:8',
                 'max:16',
-                'regex:/[a-z]/', // At least one lowercase letter
-                'regex:/[A-Z]/', // At least one uppercase letter
-                'regex:/[0-9]/' // At least one number
+                'regex:/[a-z]/', // at least one lowercase letter
+                'regex:/[A-Z]/', // at least one uppercase letter
+                'regex:/[0-9]/', // at least one number
+                'confirmed'      // password_confirmation
             ],
-            [
-                'first_name.required' => 'The first name field is required.',
-                'first_name.min' => 'The first name must be at least 4 characters.',
-                'first_name.max' => 'The first name may not be greater than 50 characters.',
-                'last_name.required' => 'The last name field is required.',
-                'last_name.min' => 'The last name must be at least 2 characters.',
-                'last_name.max' => 'The last name may not be greater than 50 characters.',
-                'email.required' => 'The email field is required.',
-                'email.email' => 'Please enter a valid email address.',
-                'email.unique' => 'This email is already registered.',
-                'mobile.required' => 'The mobile field is required.',
-                'mobile.digits_between' => 'The mobile number must be between 10 and 15 digits.',
-                'mobile.unique' => 'This mobile number is already registered.',
-                'password.required' => 'The password field is required.',
-                'password.min' => 'The password must be at least 8 characters.',
-                'password.max' => 'The password may not be greater than 16 characters.',
-                'password.regex' => 'The password must contain at least one lowercase letter, one uppercase letter, and one number.'
-            ]
-        ]);
+            'password_confirmation'  => ['required'],
+            'terms'                  => ['accepted']
+        ];
 
-        $credentials['password'] = bcrypt($credentials['password']); //built in rin ng laravel yung bcrypt to hash
-        $user = User::create($credentials); //yung user is built-in ng laravel
+        $messages = [
+            'first_name.required'            => 'The first name field is required.',
+            'first_name.min'                 => 'The first name must be at least 4 characters.',
+            'first_name.max'                 => 'The first name may not be greater than 50 characters.',
+            'last_name.required'             => 'The last name field is required.',
+            'last_name.min'                  => 'The last name must be at least 2 characters.',
+            'last_name.max'                  => 'The last name may not be greater than 50 characters.',
+            'email.required'                 => 'The email field is required.',
+            'email.email'                    => 'Please enter a valid email address.',
+            'email.unique'                   => 'This email is already registered.',
+            'mobile.required'                => 'The mobile field is required.',
+            'mobile.regex'                   => 'The mobile number must be a valid Philippine number starting with 9 and be 10 digits (use +639xxxxxxx or 9XXXXXXXXX).',
+            'mobile.unique'                  => 'This mobile number is already registered.',
+            'password.required'              => 'The password field is required.',
+            'password.min'                   => 'The password must be at least 8 characters.',
+            'password.max'                   => 'The password may not be greater than 16 characters.',
+            'password.regex'                 => 'The password must contain at least one lowercase letter, one uppercase letter, and one number.',
+            'password.confirmed'             => 'The password does not match.',
+            'password_confirmation.required' => 'The confirm password field is required.',
+            'terms.accepted'                 => 'You must accept the terms and conditions to proceed.'
+        ];
 
-        // Auth::login($user); hayaan mo lng to optional lng to para ilogin agad
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        $validator->after(function ($validator) use ($request) {
+            if ($request->input('password') !== $request->input('password_confirmation')) {
+                //  error sa 2 password fields
+                $validator->errors()->add('password', 'The password  does not match.');
+                $validator->errors()->add('password_confirmation', 'The password  does not match.');
+            }
+        });
+
+        $credentials = $validator->validate();
+
+        $credentials['password'] = bcrypt($credentials['password']); // Hash 
+        $user = User::create($credentials); //create
 
         session()->flash('success', 'Account created successfully. Please log in.');
-
-        // return redirect('/login')->with('success', 'Account created successfully');
-        return redirect() ->route('login');
+        return redirect()->route('login');
     }
 }
