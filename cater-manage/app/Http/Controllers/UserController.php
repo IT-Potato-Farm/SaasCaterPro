@@ -76,9 +76,9 @@ class UserController extends Controller
         }
     
         $rules = [
-            'first_name'    => ['required', 'string', 'min:4', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
+            'first_name'    => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
             'last_name'     => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
-            'email'         => ['required', 'email', Rule::unique('users', 'email')],
+            'email'         => ['required', 'email', 'regex:/^.+@.+\.com$/i', Rule::unique('users', 'email')],
             'mobile'        => ['required', 'regex:/^9\d{9}$/', Rule::unique('users', 'mobile')],
             'password'      => [
                 'required',
@@ -96,7 +96,7 @@ class UserController extends Controller
     
         $messages = [
             'first_name.required'            => 'The first name field is required.',
-            'first_name.min'                 => 'The first name must be at least 4 characters.',
+            'first_name.min'                 => 'The first name must be at least 2 characters.',
             'first_name.max'                 => 'The first name may not be greater than 50 characters.',
             'first_name.regex'               => 'The first name must contain only letters and spaces.',
             'last_name.required'             => 'The last name field is required.',
@@ -106,6 +106,7 @@ class UserController extends Controller
             'email.required'                 => 'The email field is required.',
             'email.email'                    => 'Please enter a valid email address.',
             'email.unique'                   => 'This email is already registered.',
+            'email.regex'                    => 'Please enter a valid email address ending in .com (e.g., sample@gmail.com).',
             'mobile.required'                => 'The mobile field is required.',
             'mobile.regex'                   => 'The mobile number must be a valid Philippine number starting with 9 and be 10 digits (use +639xxxxxxx or 9XXXXXXXXX).',
             'mobile.unique'                  => 'This mobile number is already registered.',
