@@ -123,7 +123,7 @@
                             <span x-show="isSidebarOpen">Users</span>
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('landing') }}" :class="bg-gray-700"
                             class="flex items-center p-3 hover:bg-gray-700">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none"
@@ -133,7 +133,7 @@
                             </svg>
                             <span x-show="isSidebarOpen">Home</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </nav>
         </aside>
