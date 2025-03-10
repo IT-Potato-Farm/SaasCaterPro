@@ -2,6 +2,7 @@
 
 use App\Mail\TestEmail;
 use App\Models\Package;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
@@ -24,9 +25,7 @@ Route::get('/', function () {
     return view('homepage');
 });
 
-Route::get('/landing', function () {
-    return view('homepage');
-})->name('landing');
+
 
 Route::get('/all-menus', function () {
     return view('menupage');
@@ -47,7 +46,7 @@ Route::get('/user/dashboard/order/{id}', [UserDashboardController::class, 'show'
 Route::get('/get-package/{id}', function ($id) {
     return response()->json(Package::findOrFail($id));
 });
-Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails']) ->name('displayPackage');
+Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails'])->name('displayPackage');
 Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 
@@ -58,20 +57,41 @@ Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 Route::get('/loginpage', function () {
     return view('loginpage');
-}) ->name('login');
+})->name('login');
 
 Route::get('/register', function () {
     return view('register');
 });
+Route::get('/landing', function () {
+    return view('homepage');
+})->name('landing');
 Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.login');
 Route::post('/register/registeracc', [UserController::class, 'register'])->name('user.register');
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+    // email verification notice
+    Route::get('/email/verify', [UserController::class, 'verifyNotice'])->name('verification.notice');
+
+    // email veirification handler
+    Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
+
+    // resend verification email
+
+    Route::post('/email/verification-notification', [UserController::class, 'verifyHandler'])->middleware(['throttle:6,1'])->name('verification.send');
+});
+
+
+
 // Route::post('/register/registerapi', [UserController::class, 'register']);
 // Route::post('/loginapi', [UserController::class,'login']);
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 
 Route::get('/home', function () {
-    
+
     return view('home');
 });
 
@@ -113,7 +133,7 @@ Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->nam
 
 
 Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
-     ->name('package.details');
+    ->name('package.details');
 
 // package item route
 Route::resource('package_items', PackageItemController::class);
@@ -149,8 +169,6 @@ Route::middleware('auth')->group(function () {
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
     Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
-
-
 });
 
 
@@ -160,7 +178,7 @@ Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 // order
 Route::get('/checkoutpage', function () {
     return view('checkoutpage');
-    });
+});
 
 
 // CHECKOUT ROUTEE
@@ -173,11 +191,10 @@ Route::middleware('auth')->group(function () {
 });
 
 
-    
-// middleware 
+
+// route for authenticated users
 Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
-    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
+    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
 });
-

@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class UserController extends Controller
 {
@@ -74,7 +76,7 @@ class UserController extends Controller
             }
             $request->merge(['mobile' => $mobile]);
         }
-    
+
         $rules = [
             'first_name'    => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
             'last_name'     => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
@@ -93,7 +95,7 @@ class UserController extends Controller
             'password_confirmation' => ['required'],
             'terms'         => ['accepted']
         ];
-    
+
         $messages = [
             'first_name.required'            => 'The first name field is required.',
             'first_name.min'                 => 'The first name must be at least 2 characters.',
@@ -118,9 +120,9 @@ class UserController extends Controller
             'password_confirmation.required' => 'The confirm password field is required.',
             'terms.accepted'                 => 'You must accept the terms and conditions to proceed.'
         ];
-    
+
         $validator = Validator::make($request->all(), $rules, $messages);
-    
+
         $validator->after(function ($validator) use ($request) {
             if ($request->input('password') !== $request->input('password_confirmation')) {
                 //  error sa 2 pw
@@ -128,13 +130,35 @@ class UserController extends Controller
                 $validator->errors()->add('password_confirmation', 'The password does not match.');
             }
         });
-    
+
         $credentials = $validator->validate();
-    
+
         $credentials['password'] = bcrypt($credentials['password']); // Hash
         $user = User::create($credentials); // Create
-    
-        session()->flash('success', 'Account created successfully. Please log in.');
-        return redirect()->route('login');
+        //send verification email
+        event(new Registered($user));
+
+        auth()->guard('web')->login($user);
+
+        // Redirect to the verification notice page
+        return redirect()->route('verification.notice');
+        // session()->flash('success', 'Account created successfully. Please log in.');
+        // return redirect()->route('login');
+    }
+    public function verifyNotice()
+    {
+        return view('auth.verify-email');
+    }
+    public function verifyEmail(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+
+        return redirect()->route('admin.admindashboard');
+    }
+    public function verifyHandler(Request $request)
+    {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('message', 'Verification link sent!');
     }
 }
