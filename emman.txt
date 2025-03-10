@@ -7,5 +7,5 @@ App\Models\User::create([
     'email' => 'jjohnemman@gmail.com',
 'role' => 'admin',
     'mobile' => '09158500364',
-    'password' => bcrypt('Johnemman1'),
+    'password' => bcrypt('Johnemman1')
 ]);
