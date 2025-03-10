@@ -27,6 +27,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'mobile',
         'role'
     ];
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 
     /**
      * The attributes that should be hidden for serialization.

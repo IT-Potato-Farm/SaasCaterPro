@@ -151,13 +151,7 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 Route::get('/check-package-name', [PackageController::class, 'checkName'])->name('package-name-availability');
 
 
-// ORDERS
-Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-// Route::get('/order/{order}', [OrderController::class, 'show'])->name('order.show');
-Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order.edit');
-Route::get('/order/{order}/edit', [OrderController::class, 'cancel'])->name('order.cancel');
-Route::put('/order/{order}', [OrderController::class, 'update'])->name('order.update');
-Route::get('/order/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
+
 
 // ------------------------------------------------
 
@@ -192,9 +186,22 @@ Route::middleware('auth')->group(function () {
 
 
 
-// route for authenticated users
-Route::middleware([AdminMiddleware::class])->group(function () {
+// route for admin
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
+    
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])
+        ->name('order.invoice');
+
+
+     // Invoice - partial  and Payment Management
+     Route::get('/orders/filter', [OrderController::class, 'index'])->name('orders.filter');
+     Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
+     Route::put('/orders/{order}/mark-paid', [OrderController::class, 'markAsPaid'])->name('orders.mark-paid');
+     Route::put('/orders/{order}/mark-unpaid', [OrderController::class, 'markAsUnpaid'])->name('orders.mark-unpaid');
+     Route::put('/orders/{order}/mark-ongoing', [OrderController::class, 'markAsOngoing'])->name('orders.mark-ongoing');
+     Route::put('/orders/{order}/mark-partial', [OrderController::class, 'markAsPartial'])->name('orders.mark-partial');
+     Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
 });

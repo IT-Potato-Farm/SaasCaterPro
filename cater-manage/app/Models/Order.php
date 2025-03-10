@@ -10,18 +10,29 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'total', 'status',
-        'event_type', 'event_date', 'event_address',
-        'total_guests', 'concerns', 'event_start_time', 'event_start_end'
+        'user_id',
+        'total',
+        'status',
+        'event_type',
+        'event_date',
+        'event_address',
+        'total_guests',
+        'concerns',
+        'event_start_time',
+        'event_start_end'
     ];
-    
+
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function getPaidAttribute()
+    {
+        return $this->status === 'paid';
     }
 }

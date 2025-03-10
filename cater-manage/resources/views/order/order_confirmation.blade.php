@@ -89,10 +89,10 @@
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                     Return Home
                 </a>
-                <a href="#"
+                {{-- <a href="#"
                     class="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">
                     Print Receipt
-                </a>
+                </a> --}}
             </div>
             <p class="mt-6 text-gray-600">Need help? <a href="#" class="text-blue-600 hover:underline">Contact
                     us</a></p>

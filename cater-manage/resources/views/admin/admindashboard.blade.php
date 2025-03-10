@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ isSidebarOpen: true, activeScreen: 'dashboard' }">
+<html lang="en" x-data="{ isSidebarOpen: true, activeScreen: '{{ request()->get('activeScreen', 'dashboard') }}' }">
 
 <head>
     <meta charset="UTF-8">
@@ -42,7 +42,40 @@
         }
     </style>
 </head>
+@if(session('success'))
+        <script>
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
 
+    @if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: '{{ session('error') }}',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#fef2f2',  
+            iconColor: '#dc2626',   
+            color: '#7f1d1d',        
+            timerProgressBar: true,
+            showClass: {
+                popup: 'swal2-show animate-slide-in'
+            },
+            hideClass: {
+                popup: 'swal2-hide animate-slide-out'
+            }
+        });
+    </script>
+@endif
 <body class="bg-gray-100" x-data="{ isSidebarOpen: true }">
     <div class="flex h-screen">
         {{-- sidebar --}}
@@ -123,6 +156,17 @@
                             <span x-show="isSidebarOpen">Users</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="#" :class="{ 'bg-gray-700': activeScreen === 'users' }"
+                            class="flex items-center p-3 hover:bg-gray-700" @click.prevent="activeScreen = 'users'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.29.562 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span x-show="isSidebarOpen">Logout</span>
+                        </a>
+                    </li>
                     {{-- <li>
                         <a href="{{ route('landing') }}" :class="bg-gray-700"
                             class="flex items-center p-3 hover:bg-gray-700">
@@ -133,7 +177,7 @@
                             </svg>
                             <span x-show="isSidebarOpen">Home</span>
                         </a>
-                    </li> --}}
+                    </li> --}}  
                 </ul>
             </nav>
         </aside>
