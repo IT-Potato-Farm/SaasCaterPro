@@ -13,7 +13,7 @@ use App\Notifications\OrderConfirmationEmail;
 
 class CheckoutController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
         $user = Auth::user();
         if (!$user) {
@@ -31,12 +31,42 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        $totalPrice = $cart->items->sum(function ($item) {
-            $price = $item->menu_item_id ? $item->menuItem->price : $item->package->price_per_person;
-            return $price * $item->quantity;
+        // fetch total guests 
+        $totalGuests = $request->query('total_guests', 50);
+        //  store in the session to give later in the store() method
+        session(['total_guests' => $totalGuests]);
+
+
+        $totalPrice = $cart->items->sum(function ($item) use ($totalGuests) {
+            //  menu items Variant pricing logic
+            if ($item->menu_item_id && $item->menuItem) {
+                $pricingTiers = $item->menuItem->pricing;
+                $selectedVariant = isset($item->variant) ? trim($item->variant) : null;
+
+                if (!empty($selectedVariant) && isset($pricingTiers[$selectedVariant])) {
+                    $price = $pricingTiers[$selectedVariant];
+                } else {
+                    // ELSE pricing based on quantity tiers (if available)
+                    if ($item->quantity >= 10 && $item->quantity <= 15) {
+                        $price = $pricingTiers['10-15'] ?? 0;
+                    } elseif ($item->quantity > 15 && isset($pricingTiers['15-20'])) {
+                        $price = $pricingTiers['15-20'];
+                    } else {
+                        //first available tier as default
+                        $price = reset($pricingTiers);
+                    }
+                }
+                return $price * $item->quantity;
+            }
+            // sa package items maximum of totalGuests and the packages min pax.
+            if ($item->package_id && $item->package) {
+                $guests = max($totalGuests, $item->package->min_pax);
+                return $item->package->price_per_person * $guests * $item->quantity;
+            }
+            return 0;
         });
 
-        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder'));
+        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests'));
     }
     public function store(Request $request)
     {
@@ -52,6 +82,8 @@ class CheckoutController extends Controller
         $data = $request->validate([
             'event_type'    => 'required|string',
             'event_date'    => 'required|date',
+            'event_start_time' => 'required|date_format:H:i',
+            'event_start_end'  => 'required|date_format:H:i',
             'event_address' => 'required|string',
             'total_guests'  => 'required|integer|min:1',
             'concerns'      => 'nullable|string'
@@ -92,6 +124,8 @@ class CheckoutController extends Controller
             'total'           => $total,
             'event_type'      => $data['event_type'],
             'event_date'      => $data['event_date'],
+            'event_start_time' => $data['event_start_time'],
+            'event_start_end'  => $data['event_start_end'],
             'event_address'   => $data['event_address'],
             'total_guests'    => $data['total_guests'],
             'concerns'        => $data['concerns'] ?? null,

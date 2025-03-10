@@ -1,16 +1,3 @@
-@php
-    // array of packages from the cart with their names and min_pax.
-    $packagesMinPax = [];
-    foreach ($cart->items as $item) {
-        if ($item->package_id && $item->package) {
-            $packagesMinPax[] = [
-                'name' => $item->package->name,
-                'min_pax' => $item->package->min_pax,
-            ];
-        }
-    }
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -78,16 +65,36 @@
                                 <label for="event_type" class="block text-sm font-medium text-gray-700">Event
                                     Type</label>
                                 <input type="text" name="event_type" id="event_type"
-                                    placeholder="Wedding, Birthday, etc."
+                                    placeholder="Wedding, Birthday, Simple celeb, etc."
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     required>
                             </div>
+
                             <!--  Date -->
                             <div class="space-y-2">
                                 <label for="event_date" class="block text-sm font-medium text-gray-700">Event
                                     Date</label>
                                 <input type="date" name="event_date" id="event_date"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                            </div>
+                        </div>
+                        {{-- TIME START AND END --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <!-- Event Start Time -->
+                            <div class="space-y-2">
+                                <label for="event_start_time" class="block text-sm font-medium text-gray-700">Event
+                                    Start Time</label>
+                                <input type="time" name="event_start_time" id="event_start_time"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500"
+                                    required>
+                            </div>
+                            <!-- Event End Time -->
+                            <div class="space-y-2">
+                                <label for="event_start_end" class="block text-sm font-medium text-gray-700">Event End
+                                    Time</label>
+                                <input type="time" name="event_start_end" id="event_start_end"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500"
                                     required>
                             </div>
                         </div>
@@ -101,16 +108,7 @@
                                 required></textarea>
                         </div>
 
-                        <!-- total guest -->
-                        <div class="space-y-2">
-                            <label for="total_guests" class="block text-sm font-medium text-gray-700">Number of
-                                Guests</label>
-                            <input type="number" name="total_guests" id="total_guests" min="1" placeholder="50"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                required>
-                            <!-- minimum pax notification -->
-                            <p id="minPaxNotification" class="text-xs text-blue-600 hidden"></p>
-                        </div>
+
 
                         <!-- concerns and other shits -->
                         <div class="space-y-2">
@@ -119,6 +117,9 @@
                             <textarea name="concerns" id="concerns" rows="3" placeholder="Other requests or concerns"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
+
+                        {{-- naka hide na total guests sana gumana huhu --}}
+                        <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
 
                         <button type="submit" @if (isset($pendingOrder)) disabled @endif
                             class="w-full bg-blue-600 text-white py-3.5 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -129,43 +130,32 @@
             </div>
 
 
+            <div class="lg:w-2/5 xl:w-1/3">
+                <div class="bg-white shadow-md rounded p-4">
+                    <h2 class="text-xl font-bold mb-4">Order Total</h2>
+                    <p class="mb-2">
+                        <span class="font-semibold">Total Guests:</span> {{ $totalGuests }}
+                    </p>
+                    <p class="mb-2">
+                        <span class="font-semibold">Selected Items:</span> {{ $cart->items->count() }}
+                    </p>
+                    <p class="mb-2">
+                        <span class="font-semibold">Total Price:</span> ₱{{ number_format($totalPrice, 2) }}
+                    </p>
+                </div>
+                <!-- Google Map displaying store location -->
+                <div class="bg-white shadow-md rounded p-4 mt-5">
+                    <h2 class="text-xl font-bold mb-4">Store Location</h2>
+                    <div class="w-full h-64">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d296.22852944864854!2d122.08477937836653!3d6.903982223841712!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x325069b1a08a5bf7%3A0x7bc71a2079abe9f6!2sAyer%20Village!5e1!3m2!1sen!2sph!4v1741625083210!5m2!1sen!2sph"
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <script>
-        // Convert  PHP packagesMinPax array to a JavaScript variable.
-        let packagesMinPax = @json($packagesMinPax);
-
-        const totalGuestsInput = document.getElementById('total_guests');
-        const minPaxNotification = document.getElementById('minPaxNotification');
-
-        totalGuestsInput.addEventListener('blur', function() {
-            let guestCount = parseInt(totalGuestsInput.value);
-            let messages = [];
-            packagesMinPax.forEach(pkg => {
-                if (guestCount < pkg.min_pax) {
-                    messages.push(
-                        `For ${pkg.name}, the minimum guest count is ${pkg.min_pax}. Pricing will be based on ${pkg.min_pax} guests.`
-                    );
-                }
-            });
-
-            if (messages.length > 0) {
-                minPaxNotification.innerHTML = messages.join('<br>');
-                minPaxNotification.classList.remove('hidden');
-
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Minimum Guest Requirements',
-                    html: messages.join('<br>'),
-                    timer: 5000,
-                    showConfirmButton: false
-                });
-            } else {
-                minPaxNotification.classList.add('hidden');
-            }
-        });
-    </script>
 </body>
 
 </html>

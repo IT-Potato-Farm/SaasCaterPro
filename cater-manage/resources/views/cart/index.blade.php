@@ -1,3 +1,18 @@
+{{-- CART PAGE --}}
+
+
+@php
+    // array of packages from the cart with their names and min_pax.
+    $packagesMinPax = [];
+    foreach ($cart->items as $item) {
+        if ($item->package_id && $item->package) {
+            $packagesMinPax[] = [
+                'name' => $item->package->name,
+                'min_pax' => $item->package->min_pax,
+            ];
+        }
+    }
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,6 +23,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+
 </head>
 
 <body>
@@ -53,9 +69,10 @@
                         <table class="w-full border-collapse">
                             <thead>
                                 <tr class="border-b">
-                                    <th class="py-2 text-left w-12">
+                                    {{-- checkbox --}}
+                                    {{-- <th class="py-2 text-left w-12">
                                         <input type="checkbox" />
-                                    </th>
+                                    </th> --}}
                                     <th class="py-2 text-left">Product</th>
                                     <th class="py-2 text-left">Name</th>
                                     <th class="py-2 text-center">Quantity</th>
@@ -103,7 +120,7 @@
                                             $itemImage = $cartItem->package->image ?? null;
                                             $itemPrice = $cartItem->package->price_per_person ?? 0;
                                             $displayPrice = $itemPrice;
-                                            // For packages, calculate based on price per person, minimum pax and quantity
+                                            // sa packages calculate based on price per person, minimum pax and quantity
                                             $minPax = $cartItem->package->min_pax ?? 1;
                                             $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
                                         } else {
@@ -119,10 +136,10 @@
 
                                     <tr class="border-b">
                                         <!-- Checkbox -->
-                                        <td class="py-3">
+                                        {{-- <td class="py-3">
                                             <input type="checkbox" name="selected_items[]"
                                                 value="{{ $cartItem->id }}" />
-                                        </td>
+                                        </td> --}}
 
                                         <!-- Product Image -->
                                         <td class="py-3">
@@ -172,7 +189,7 @@
                                                 ₱{{ number_format($displayPrice, 2) }} <small>(per pax)</small>
                                             @else
                                                 ₱{{ number_format($displayPrice, 2) }}
-                                                {{-- @if(!empty($selectedVariant))
+                                                {{-- @if (!empty($selectedVariant))
                                                     <small>({{ $selectedVariant }})</small>
                                                 @endif --}}
                                             @endif
@@ -181,11 +198,12 @@
                                         <!-- Min pax (Only for packages) -->
                                         <td class="py-3">
                                             @if ($cartItem->menu_item_id)
-                                                {{ !empty($selectedVariant) ? $selectedVariant : 'N/A' }} per pax
+                                                {{ !empty($selectedVariant) ? $selectedVariant : 'N/A' }} pax
                                             @else
                                                 {{ $minPax }} minimum pax
                                             @endif
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -198,28 +216,83 @@
                 <div class="md:w-1/4">
                     <div class="bg-white shadow-md rounded p-4">
                         <h2 class="text-xl font-bold mb-4">Order Summary</h2>
-                        <p class="mb-2">
-                            <span class="font-semibold">Selected Items:</span>
-                            <span id="selectedItemsCount">0</span>
-                        </p>
-                        <p class="mb-2">
-                            <span class="font-semibold">Total Price:</span>
-                            ₱{{ number_format($extendedTotal, 2) }}
-                        </p>
-                        <!-- checkout -->
-                        <a href="{{ isset($pendingOrder) ? '#' : route('checkout.show') }}"
-                            title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
-                            class="mt-4 w-full bg-green-600 text-white py-2 rounded transition text-center inline-block 
-                            {{ isset($pendingOrder) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700 hover:cursor-pointer' }}"
-                            @if (isset($pendingOrder)) onclick="return false;" @endif>
-                            Checkout
-                        </a>
+                        <form action="{{ route('checkout.show') }}" method="GET">
+                            <div class="mb-4">
+                                <label for="total_guests" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Total Guests
+                                    <span class="text-xs text-gray-500 block mt-1">
+                                        Including additional guests. Help us prepare the right quantity of food for your
+                                        event.
+                                    </span>
+                                </label>
+                                <input type="number" id="total_guests" name="total_guests" min="1"
+                                    placeholder="50"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500  "
+                                    required>
+
+                                <!-- Minimum pax notification -->
+                                <p id="minPaxNotification" class="text-xs text-blue-600 hidden"></p>
+                                <p id="errorminPaxNotification" class="text-xs text-red-500 hidden">Please fill in the
+                                    total guests field.</p>
+                            </div>
+                            {{-- <p class="mb-2">
+                                <span class="font-semibold">Selected Items:</span>
+                                <span id="selectedItemsCount">0</span>
+                            </p> --}}
+                            <p class="mb-2">
+                                <span class="font-semibold">Total Price:</span>
+                                ₱{{ number_format($extendedTotal, 2) }}
+                            </p>
+                            <!-- Checkout Button -->
+                            <button type="submit"
+                                title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
+                                class="mt-4 w-full bg-green-600 text-white py-2 rounded transition text-center inline-block
+                                       {{ isset($pendingOrder) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700 hover:cursor-pointer' }}"
+                                @if (isset($pendingOrder)) disabled @endif>
+                                Checkout
+                            </button>
+                        </form>
                     </div>
                 </div>
+
             </div>
         @endif
     </div>
+    <script>
+        // Convert PHP packagesMinPax array to a JavaScript variable.
+        let packagesMinPax = @json($packagesMinPax);
+        const totalGuestsInput = document.getElementById('total_guests');
+        const minPaxNotification = document.getElementById('minPaxNotification');
 
+        totalGuestsInput.addEventListener('blur', function() {
+            let guestCount = parseInt(totalGuestsInput.value);
+            let messages = [];
+
+            packagesMinPax.forEach(pkg => {
+                if (guestCount < pkg.min_pax) {
+                    messages.push(
+                        `For ${pkg.name}, the minimum guest count is ${pkg.min_pax}. Pricing will be based on ${pkg.min_pax} guests.`
+                    );
+                }
+            });
+
+            if (messages.length > 0) {
+                minPaxNotification.innerHTML = messages.join('<br>');
+                minPaxNotification.classList.remove('hidden');
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Minimum Guest Requirements',
+                    html: messages.join('<br>'),
+                    timer: 5000,
+                    showConfirmButton: false
+                });
+            } else {
+                minPaxNotification.classList.add('hidden');
+            }
+
+        });
+    </script>
     @if (session('error'))
         <script>
             Swal.fire({
@@ -230,7 +303,7 @@
         </script>
     @endif
 
-    @if (session('success'))
+    {{-- @if (session('success'))
         <script>
             Swal.fire({
                 icon: 'success',
@@ -238,7 +311,7 @@
                 text: "{{ session('success') }}"
             });
         </script>
-    @endif
+    @endif --}}
 </body>
 
 </html>
