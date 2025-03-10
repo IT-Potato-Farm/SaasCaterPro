@@ -12,7 +12,7 @@ class Order extends Model
     protected $fillable = [
         'user_id', 'total', 'status',
         'event_type', 'event_date', 'event_address',
-        'total_guests', 'concerns'
+        'total_guests', 'concerns', 'event_start_time', 'event_start_end'
     ];
     
     public function orderItems()
