@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
@@ -34,8 +35,13 @@ Route::get('/all-menus', function () {
 //     return view('login');
 // });
 
-Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('userdashboard');
-Route::get('/user/dashboard/order/{id}', [UserDashboardController::class, 'show'])->name('order.show');
+
+//  User Dashboard ===================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('userdashboard');
+    Route::get('/user/dashboard/order/{id}', [UserDashboardController::class, 'show'])->name('order.show');
+});
+
 
 
 // Route::get('/userdashboard/order-details', function () {
@@ -62,9 +68,15 @@ Route::get('/loginpage', function () {
 Route::get('/register', function () {
     return view('register');
 });
+
 Route::get('/landing', function () {
     return view('homepage');
 })->name('landing');
+
+
+
+
+
 Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.login');
 Route::post('/register/registeracc', [UserController::class, 'register'])->name('user.register');
 
@@ -103,16 +115,7 @@ Route::get('/home', function () {
 // Route::post('/create-category', [PostCategories::class,'createCategory']);
 
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 
-// add
-Route::post('/categories/store', [CategoryController::class, 'addCategory'])->name('categories.addCategory');
-
-// edit
-Route::put('/categories/{id}/edit', [CategoryController::class, 'editCategory'])->name('categories.edit');
-
-// delete
-Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
 
 
 // MENUU ROUTE
@@ -156,7 +159,7 @@ Route::get('/check-package-name', [PackageController::class, 'checkName'])->name
 // ------------------------------------------------
 
 // cart
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
@@ -191,17 +194,28 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
+
+    // categiry
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    // add
+    Route::post('/categories/store', [CategoryController::class, 'addCategory'])->name('categories.addCategory');
+    Route::put('/categories/{id}/edit', [CategoryController::class, 'editCategory'])->name('categories.edit');
+    Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
+
+    // invoice and filter
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
+    Route::get('/orders/filter', [OrderController::class, 'index'])->name('orders.filter');
+
+    // cancel order
+    Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
     
-    Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])
-        ->name('order.invoice');
 
-
-     // Invoice - partial  and Payment Management
-     Route::get('/orders/filter', [OrderController::class, 'index'])->name('orders.filter');
-     Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
-     Route::put('/orders/{order}/mark-paid', [OrderController::class, 'markAsPaid'])->name('orders.mark-paid');
-     Route::put('/orders/{order}/mark-unpaid', [OrderController::class, 'markAsUnpaid'])->name('orders.mark-unpaid');
-     Route::put('/orders/{order}/mark-ongoing', [OrderController::class, 'markAsOngoing'])->name('orders.mark-ongoing');
-     Route::put('/orders/{order}/mark-partial', [OrderController::class, 'markAsPartial'])->name('orders.mark-partial');
-     Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+    // booking  management
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
+    Route::put('/orders/{order}/mark-paid', [OrderController::class, 'markAsPaid'])->name('orders.mark-paid');
+    Route::put('/orders/{order}/mark-unpaid', [OrderController::class, 'markAsUnpaid'])->name('orders.mark-unpaid');
+    Route::put('/orders/{order}/mark-ongoing', [OrderController::class, 'markAsOngoing'])->name('orders.mark-ongoing');
+    Route::put('/orders/{order}/mark-partial', [OrderController::class, 'markAsPartial'])->name('orders.mark-partial');
+    Route::put('/orders/{order}/mark-completed', [OrderController::class, 'markAsCompleted'])->name('orders.mark-completed');
+    Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
 });

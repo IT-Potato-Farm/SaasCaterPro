@@ -1,5 +1,19 @@
 {{-- CART PAGE --}}
-
+<script src="{{ asset('js/cart.js') }}"></script>
+<script>
+    function debugAddToCart(itemId) {
+    // Check if a variant dropdown exists for the menu item
+    let variantSelect = document.getElementById('variant-' + itemId);
+    let selectedVariant = variantSelect ? variantSelect.value : null;
+    
+    // Debug log to console
+    console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
+    
+    // Call the existing addToCart function
+    // If you need to pass the type, it defaults to 'menu_item'
+    addToCart(itemId, 'menu_item');
+}
+</script>
 
 @php
     // array of packages from the cart with their names and min_pax.
@@ -258,6 +272,77 @@
             </div>
         @endif
     </div>
+
+    {{-- ITEMS HERE --}}
+    {{-- <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-6">Add More Items</h2>
+
+        <!-- Menu Items -->
+        @if ($menuItems->isNotEmpty())
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Menu Items</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @foreach ($menuItems as $menuItem)
+                        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                            @if ($menuItem->image)
+                                <img src="{{ asset('ItemsStored/' . $menuItem->image) }}"
+                                    alt="{{ $menuItem->name }}" class="w-full h-48 object-cover rounded-lg mb-4">
+                            @endif
+                            <h4 class="font-medium text-lg">{{ $menuItem->name }}</h4>
+                            <p class="text-gray-600 text-sm mb-2">{{ $menuItem->description }}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lime-600 font-medium">
+                                    ₱{{ number_format($menuItem->pricing[array_key_first($menuItem->pricing)], 2) }}
+                                </span>
+                                <form action="{{ route('cart.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="menu_item_id" value="{{ $menuItem->id }}">
+                                    <button type="submit"
+                                        class="bg-lime-500 text-white px-4 py-2 rounded-md hover:bg-lime-600 transition">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- Packages -->
+        @if ($packages->isNotEmpty())
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Packages</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @foreach ($packages as $package)
+                        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                            @if ($package->image)
+                                <img src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}"
+                                    class="w-full h-48 object-cover rounded-lg mb-4">
+                            @endif
+                            <h4 class="font-medium text-lg">{{ $package->name }}</h4>
+                            <p class="text-gray-600 text-sm mb-2">{{ $package->description }}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lime-600 font-medium">
+                                    ₱{{ number_format($package->price_per_person, 2) }}/person
+                                </span>
+                                <form action="{{ route('cart.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="package_id" value="{{ $package->id }}">
+                                    <button type="submit"
+                                        class="bg-lime-500 text-white px-4 py-2 rounded-md hover:bg-lime-600 transition">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div> --}}
+
+    <x-allmenu.menusection />
     <script>
         // Convert PHP packagesMinPax array to a JavaScript variable.
         let packagesMinPax = @json($packagesMinPax);

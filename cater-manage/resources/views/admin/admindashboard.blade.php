@@ -10,9 +10,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
+
         @keyframes slide-in {
             from {
                 transform: translateX(100%);
@@ -42,18 +45,18 @@
         }
     </style>
 </head>
-@if(session('success'))
-        <script>
-            Swal.fire({
-                title: 'Success!',
-                text: "{{ session('success') }}",
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    @endif
+@if (session('success'))
+    <script>
+        Swal.fire({
+            title: 'Success!',
+            text: "{{ session('success') }}",
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
 
-    @if (session('error'))
+@if (session('error'))
     <script>
         Swal.fire({
             icon: 'error',
@@ -63,9 +66,9 @@
             position: 'top-end',
             showConfirmButton: false,
             timer: 3000,
-            background: '#fef2f2',  
-            iconColor: '#dc2626',   
-            color: '#7f1d1d',        
+            background: '#fef2f2',
+            iconColor: '#dc2626',
+            color: '#7f1d1d',
             timerProgressBar: true,
             showClass: {
                 popup: 'swal2-show animate-slide-in'
@@ -76,6 +79,7 @@
         });
     </script>
 @endif
+
 <body class="bg-gray-100" x-data="{ isSidebarOpen: true }">
     <div class="flex h-screen">
         {{-- sidebar --}}
@@ -134,7 +138,7 @@
                             <span x-show="isSidebarOpen">Packages</span>
                         </a>
                     </li>
-                    
+
                     <li>
                         <a href="#" :class="{ 'bg-gray-700': activeScreen === 'bookings' }"
                             class="flex items-center p-3 hover:bg-gray-700" @click.prevent="activeScreen = 'bookings'">
@@ -157,15 +161,19 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" :class="{ 'bg-gray-700': activeScreen === 'users' }"
-                            class="flex items-center p-3 hover:bg-gray-700" @click.prevent="activeScreen = 'users'">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none"
+                        <a href="#" :class="{ 'bg-gray-700': activeScreen === 'logout' }"
+                            class="flex items-center p-3 hover:bg-gray-700"
+                            @click.prevent="document.getElementById('logout-form').submit()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.29.562 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 6H3" />
                             </svg>
                             <span x-show="isSidebarOpen">Logout</span>
                         </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                            @csrf
+                        </form>
                     </li>
                     {{-- <li>
                         <a href="{{ route('landing') }}" :class="bg-gray-700"
@@ -177,7 +185,7 @@
                             </svg>
                             <span x-show="isSidebarOpen">Home</span>
                         </a>
-                    </li> --}}  
+                    </li> --}}
                 </ul>
             </nav>
         </aside>
@@ -189,18 +197,18 @@
                 <x-dashboard.header />
                 <!-- conditional -->
                 <div x-show="activeScreen === 'dashboard'" x-cloak>
-                   
+
                     <x-dashboard.first-section />
                 </div>
 
                 <div x-show="activeScreen === 'products'" x-cloak>
                     <div class="mt-5">
-                        
-                        
+
+
                         <x-items.item-button />
 
                     </div>
-                    
+
                     <x-dashboard.products />
                 </div>
 
@@ -208,7 +216,7 @@
                     <x-packages.addbtn />
                     <x-dashboard.packages />
                     <x-packages.add-package-item />
-                    <x-packages.view-items-package  />
+                    <x-packages.view-items-package />
                 </div>
                 <div x-show="activeScreen === 'categories'" x-cloak>
                     <x-category.category-button />
@@ -258,7 +266,7 @@
         </script>
     @endif
 
-    
+
 </body>
 
 </html>

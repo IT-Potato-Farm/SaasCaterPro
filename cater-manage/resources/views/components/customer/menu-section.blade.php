@@ -146,7 +146,7 @@
                 
                 <div class="mt-6 text-center">
                     <button onclick="addToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
-                        Select Package
+                        Add to cart
                     </button>
                 </div>
             </div>`;
@@ -249,7 +249,7 @@
     </div>
 
     <div class="flex justify-center mt-12">
-        <a href="{{ url('/all-menus') }}"
+        <a href="{{route('all-menu')}}"
             class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors duration-300 shadow-lg">
             <span>Explore Full Menu</span>
             <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

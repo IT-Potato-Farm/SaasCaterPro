@@ -13,6 +13,7 @@
 </head>
 
 <body class="bg-gray-50">
+    <x-customer.navbar />
     <div class="flex h-screen">
        
 
