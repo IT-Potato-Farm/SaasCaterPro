@@ -131,6 +131,7 @@ Route::get('/home', function () {
 
 // package route
 Route::post('/package/store', [PackageController::class, 'store'])->name('package.store');
+
 Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
 Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
 
@@ -140,6 +141,7 @@ Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
 
 // package item route
 Route::resource('package_items', PackageItemController::class);
+Route::post('/packageitemoption/store', [PackageItemController::class, 'optionstore'])->name('package_food_item_options.store');
 Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
 
 // menu items
@@ -193,7 +195,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
-    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
+    // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
+    Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');

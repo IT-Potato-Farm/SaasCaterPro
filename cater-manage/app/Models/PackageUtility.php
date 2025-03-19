@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\PackageFoodItemOption;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PackageItem extends Model
+class PackageUtility extends Model
 {
     use HasFactory;
 
@@ -14,13 +13,12 @@ class PackageItem extends Model
         'package_id',
         'name',
         'description',
+        'quantity',
     ];
 
-    public function package(){
-        return $this->belongsTo(Package::class);
-    }
-    public function options()
+    // eacjh util belongs to package.
+    public function package()
     {
-        return $this->hasMany(PackageFoodItemOption::class);
+        return $this->belongsTo(Package::class);
     }
 }

@@ -12,10 +12,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('package_items', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('package_id')->constrained()->onDelete('cascade');
-            $table->foreignId('menu_item_id')->constrained('menu_items')->onDelete('cascade');
-            $table->primary(['package_id', 'menu_item_id']);
+            $table->string('name'); // fill if chicken, beef, etc.
+            $table->text('description')->nullable();
+            // $table->primary(['package_id', 'menu_item_id']);
             $table->timestamps(); 
+        });
+
+        Schema::create('package_food_item_options', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('package_food_item_id')->constrained('package_items')->onDelete('cascade');
+            $table->string('type'); // e.g., "Fried", "Buttered"
+            $table->text('description')->nullable();
+            
+            $table->timestamps();
+        });
+
+        Schema::create('package_utilities', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('package_id')->constrained()->onDelete('cascade');
+            $table->string('name'); // e.g., "Table", "Chair"
+            $table->text('description')->nullable();
+            $table->unsignedInteger('quantity')->default(1);
+            $table->timestamps();
         });
     }
 
@@ -24,6 +44,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('package_utilities');
+        Schema::dropIfExists('package_food_item_options');
         Schema::dropIfExists('package_items');
     }
 };

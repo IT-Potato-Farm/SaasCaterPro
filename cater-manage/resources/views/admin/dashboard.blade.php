@@ -51,8 +51,7 @@
                 <button class="hover:cursor-pointer px-4 bg-red-500 rounded">Logout</button>
             </form>
             <x-category.category-button />
-            <x-menu.menu-button />
-            <x-items.item-button />
+            {{-- <x-items.item-button /> --}}
             <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
             <a href="/landing" class="px-4 py-1 bg-green-300 rounded">main home</a>
 
@@ -61,8 +60,14 @@
             {{-- <x-category-form /> --}}
            
             <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
-            <x-menu.menu-list /> 
-            <x-items.item-list /> 
+
+            <div class="">
+                <h1 class="text-5xl font-bold text-center">Package Items</h1>
+                <x-packages.add-packagebtn/>
+                <x-packages.add-package-item-btn/>
+                <x-packages.add-package-option-btn/>
+                
+            </div>
         @else
             <script>
                 window.location.href = "/";

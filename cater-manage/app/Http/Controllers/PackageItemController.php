@@ -7,6 +7,7 @@ use App\Models\MenuItem;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\PackageFoodItemOption;
 
 class PackageItemController extends Controller
 {
@@ -44,30 +45,92 @@ class PackageItemController extends Controller
     //     return redirect()->route('package_items.index')->with('success', 'Package item added successfully.');
     // }
 
+    // this is the function during the mock defense for package item
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'package_id' => 'required|exists:packages,id',
+    //         'menu_item_ids' => 'required|array',
+    //         'menu_item_ids.*' => 'exists:menu_items,id',
+    //     ]);
+
+    //     foreach ($request->menu_item_ids as $menu_item_id) {
+    //         // Check if the menu item already exists in the package
+    //         $exists = PackageItem::where('package_id', $request->package_id)
+    //             ->where('menu_item_id', $menu_item_id)
+    //             ->exists();
+
+    //         if (!$exists) {
+    //             PackageItem::create([
+    //                 'package_id' => $request->package_id,
+    //                 'menu_item_id' => $menu_item_id,
+    //             ]);
+    //         }
+    //     }
+
+    //     return redirect()->back()->with('success', 'Items added to the package successfully.');
+    // }
     public function store(Request $request)
     {
-        $request->validate([
-            'package_id' => 'required|exists:packages,id',
-            'menu_item_ids' => 'required|array',
-            'menu_item_ids.*' => 'exists:menu_items,id',
-        ]);
+        try {
+            $fields = $request->validate([
+                'package_id'  => 'required|exists:packages,id',
+                'name'        => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ]);
 
-        foreach ($request->menu_item_ids as $menu_item_id) {
-            // Check if the menu item already exists in the package
-            $exists = PackageItem::where('package_id', $request->package_id)
-                ->where('menu_item_id', $menu_item_id)
-                ->exists();
+            // Sanitize text inputs
+            $fields['name'] = strip_tags($fields['name']);
+            $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
 
-            if (!$exists) {
-                PackageItem::create([
-                    'package_id' => $request->package_id,
-                    'menu_item_id' => $menu_item_id,
-                ]);
-            }
+            $packageItem = PackageItem::create($fields);
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Package item added successfully!',
+                'package_item' => $packageItem
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        return redirect()->back()->with('success', 'Items added to the package successfully.');
     }
+    // function para iadd yung pagkain like chicken into types like fried etc
+    
+    public function optionstore(Request $request)
+    {
+        try {
+            // Validate 
+            $fields = $request->validate([
+                'package_food_item_id' => 'required|exists:package_items,id',
+                'type'                 => 'required|string|max:255',
+                'description'          => 'nullable|string',
+            ]);
+
+            
+            $fields['type'] = strip_tags($fields['type']);
+            $fields['description'] = isset($fields['description'])
+                ? strip_tags($fields['description'])
+                : null;
+
+            // food item option record
+            $option = PackageFoodItemOption::create($fields);
+
+            return response()->json([
+                'success'                  => true,
+                'message'                  => 'Food item option added successfully!',
+                'package_food_item_option' => $option,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
 
     /**
