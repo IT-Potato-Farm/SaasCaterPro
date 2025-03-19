@@ -1,4 +1,7 @@
-awdwadawdaw
+insert data manually 
+
+--------------------------------
+php artisan tinker 
 
 shortcut 
 App\Models\User::create([
