@@ -14,6 +14,7 @@ class PackageItem extends Model
         'package_id',
         'name',
         'description',
+        
     ];
 
     public function package(){
@@ -21,6 +22,6 @@ class PackageItem extends Model
     }
     public function options()
     {
-        return $this->hasMany(PackageFoodItemOption::class);
+        return $this->hasMany(PackageFoodItemOption::class, 'package_food_item_id');
     }
 }

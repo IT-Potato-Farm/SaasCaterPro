@@ -20,6 +20,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\PackageUtilityController;
 
 // route navigation each page
 Route::get('/', function () {
@@ -142,6 +143,9 @@ Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
 // package item route
 Route::resource('package_items', PackageItemController::class);
 Route::post('/packageitemoption/store', [PackageItemController::class, 'optionstore'])->name('package_food_item_options.store');
+Route::post('/package-items/check-name', [PackageItemController::class, 'checkName'])->name('package_items.checkName');
+Route::post('/packageutility/store', [PackageUtilityController::class, 'store'])->name('package_utilities.store');
+
 Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
 
 // menu items

@@ -14,6 +14,7 @@ class PackageUtility extends Model
         'name',
         'description',
         'quantity',
+        'image',
     ];
 
     // eacjh util belongs to package.

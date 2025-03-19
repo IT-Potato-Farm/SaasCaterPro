@@ -215,19 +215,3 @@
 <button onclick="addpackage()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a Package here</button>
 
 
-<div>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
-        </tr>
-        @foreach ($packages as $package)
-        <tr>
-            <td>{{ $package->name }}</td>
-            <td>{{ $package->description }}</td>
-            <td>{{ $package->min_pax }}</td>
-        </tr>
-        @endforeach
-    </table>
-</div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Package;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,13 +12,18 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // Ensure user is logged in and is an admin before showing the dashboard
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            return view('admin.dashboard');
+        // user authenticated and admin
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
         }
 
-        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+        
+        $packages = Package::all();
+
+        // Pass the packages to view
+        return view('admin.dashboard', compact('packages'));
     }
+
 
     public function test()
     {
@@ -35,6 +41,4 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
-    
-
 }

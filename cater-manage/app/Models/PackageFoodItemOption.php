@@ -12,6 +12,7 @@ class PackageFoodItemOption extends Model
         'package_food_item_id',
         'type',
         'description',
+        'image',
     ];
 
     public function packageItem()

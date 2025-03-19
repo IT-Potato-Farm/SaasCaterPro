@@ -6,7 +6,6 @@
     }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function addFoodItemOption() {
         Swal.fire({
@@ -18,7 +17,7 @@
                         <label for="foodItemSelect" class="block text-sm font-medium text-gray-700">Select Package Item</label>
                         <select name="package_food_item_id" id="foodItemSelect" required class="w-full border rounded p-2">
                             <option value="">Choose a Package Item</option>
-                            @foreach ($packageItems as $item)
+                            @foreach($packageItems as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -27,7 +26,7 @@
                     
                     <!-- Option Type -->
                     <div>
-                        <label for="optionType" class="block text-sm font-medium text-gray-700">Variant Type</label>
+                        <label for="optionType" class="block text-sm font-medium text-gray-700">Option Type</label>
                         <input type="text" id="optionType" name="type" required class="w-full border rounded p-2">
                         <div id="type-error" class="error-message"></div>
                     </div>
@@ -35,8 +34,16 @@
                     <!-- Description -->
                     <div>
                         <label for="optionDescription" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="optionDescription" name="description" class="w-full border rounded p-2"></textarea>
+                        <textarea id="optionDescription" name="description" class="w-full border rounded p-2" placeholder="(Optional)"></textarea>
                         <div id="description-error" class="error-message"></div>
+                    </div>
+                    
+                    <!-- Image Field with Preview -->
+                    <div>
+                        <label for="optionImage" class="block text-sm font-medium text-gray-700">Upload Image</label>
+                        <input type="file" id="optionImage" name="image" accept="image/*" class="w-full border rounded p-2">
+                        <div id="image-error" class="error-message"></div>
+                        <img id="optionImagePreview" src="#" alt="Image Preview" style="display:none; max-height:300px; margin-top:10px;" class="rounded border border-dashed border-gray-300">
                     </div>
                 </form>
             `,
@@ -45,34 +52,47 @@
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#3b82f6',
             cancelButtonColor: '#ef4444',
-            preConfirm: () => {
-                // Clear previous error messages
+            didOpen: () => {
+                // Set up image preview functionality.
+                const imageInput = document.getElementById('optionImage');
+                const imagePreview = document.getElementById('optionImagePreview');
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        imagePreview.style.display = 'none';
+                    }
+                });
+            },
+            preConfirm: async () => {
+                // Clear previous error messages.
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 const form = document.getElementById('addFoodItemOptionForm');
                 const formData = new FormData(form);
-                // Debugging: log all form data keys and values
-                for (let key of formData.keys()) {
-                    console.log(key, formData.get(key));
-                }
                 let hasErrors = false;
-
-                // Validate Package Item selection
+                
+                // Validate Package Item selection.
                 const foodItemSelect = document.getElementById('foodItemSelect');
                 if (!foodItemSelect.value) {
-                    document.getElementById('package_food_item_id-error').textContent =
-                        'Please select a package item.';
+                    document.getElementById('package_food_item_id-error').textContent = 'Please select a package item.';
                     hasErrors = true;
                 }
-
-                // Validate Option Type
+                
+                // Validate Option Type.
                 const typeInput = document.getElementById('optionType');
                 if (!typeInput.value.trim()) {
                     document.getElementById('type-error').textContent = 'Option type is required.';
                     hasErrors = true;
                 }
-
+                
                 if (hasErrors) return false;
-
+                
                 return fetch("{{ route('package_food_item_options.store') }}", {
                         method: "POST",
                         headers: {
@@ -85,8 +105,7 @@
                             return response.json().then(data => {
                                 if (data.errors) {
                                     Object.entries(data.errors).forEach(([field, messages]) => {
-                                        const errorEl = document.getElementById(
-                                            `${field}-error`);
+                                        const errorEl = document.getElementById(`${field}-error`);
                                         if (errorEl) {
                                             errorEl.textContent = messages[0];
                                         }

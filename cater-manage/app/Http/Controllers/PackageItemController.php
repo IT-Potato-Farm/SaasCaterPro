@@ -75,13 +75,16 @@ class PackageItemController extends Controller
         try {
             $fields = $request->validate([
                 'package_id'  => 'required|exists:packages,id',
-                'name'        => 'required|string|max:255',
+                'name' => 'required|string|unique:package_items,name|max:255',
                 'description' => 'nullable|string',
+
             ]);
 
-            // Sanitize text inputs
+
             $fields['name'] = strip_tags($fields['name']);
             $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
+
+
 
             $packageItem = PackageItem::create($fields);
 
@@ -98,22 +101,34 @@ class PackageItemController extends Controller
         }
     }
     // function para iadd yung pagkain like chicken into types like fried etc
-    
+
     public function optionstore(Request $request)
     {
         try {
             // Validate 
             $fields = $request->validate([
                 'package_food_item_id' => 'required|exists:package_items,id',
-                'type'                 => 'required|string|max:255',
+                'type'                 => 'required|string|unique:package_food_item_options,type|max:255',
                 'description'          => 'nullable|string',
+                'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240' // 10MB
             ]);
 
-            
+
             $fields['type'] = strip_tags($fields['type']);
             $fields['description'] = isset($fields['description'])
                 ? strip_tags($fields['description'])
                 : null;
+            if ($request->hasFile('image')) {
+                $destinationPath = public_path('packageItemOptionPics');
+                if (!is_dir($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move($destinationPath, $imageName);
+                $fields['image'] = $imageName;
+            }
+
 
             // food item option record
             $option = PackageFoodItemOption::create($fields);
@@ -129,6 +144,14 @@ class PackageItemController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function checkName(Request $request)
+    {
+        $exists = PackageItem::where('name', $request->name)
+            ->where('package_id', $request->package_id)
+            ->exists();
+
+        return response()->json(['exists' => $exists]);
     }
 
 
