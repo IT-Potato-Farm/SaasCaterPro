@@ -51,18 +51,65 @@
                 <button class="hover:cursor-pointer px-4 bg-red-500 rounded">Logout</button>
             </form>
             <x-category.category-button />
-            <x-menu.menu-button />
-            <x-items.item-button />
+            {{-- <x-items.item-button /> --}}
             <a href="/" class="px-4 py-1 bg-green-300 rounded">Home</a>
             <a href="/landing" class="px-4 py-1 bg-green-300 rounded">main home</a>
 
 
             {{-- category formm --}}
             {{-- <x-category-form /> --}}
-           
-            <x-category.category-list /> {{--andto rin yung edit category sa popup modal --}}
-            <x-menu.menu-list /> 
-            <x-items.item-list /> 
+
+            <x-category.category-list /> {{-- andto rin yung edit category sa popup modal --}}
+
+            <header class="flex items-center justify-center">
+                <div>
+                    <h1 class="text-5xl font-bold text-center">Package Items</h1>
+                    <x-packages.add-packagebtn />
+                    <x-packages.add-package-item-btn />
+                    <x-packages.add-package-option-btn />
+                    <x-packages.add-package-utility />
+                </div>
+            </header>
+
+            <main class="mt-5 flex items-center justify-center gap-5">
+                @foreach ($packages as $package)
+                    <div class="border p-4 rounded-lg shadow-lg max-w-xs">
+                        <!--  IMG -->
+                        <img src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}"
+                            class="w-full h-48 object-cover rounded-lg mb-3">
+                        <!-- Package Name -->
+                        <h3 class="text-lg font-bold">{{ $package->name }}</h3>
+
+                        <!-- Package Items -->
+                        <ul class="list-disc pl-4">
+                            {{-- FOR INCLUSIONS FOODS --}}
+                            <h4 class="text-md font-semibold mt-3">Included Foods:</h4>
+                            @foreach ($package->packageItems as $item)
+                                <li>
+                                    {{ $item->name }}
+                                    
+                                    {{--choices like sa chicken, may fried ganon --}}
+                                    @if ($item->options->isNotEmpty())
+                                        <ul class="list-circle pl-6 text-sm text-gray-700">
+                                            @foreach ($item->options as $option)
+                                                <li>{{ $option->type }} </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+
+                        <!-- Package Utilities -->
+                        <h4 class="text-md font-semibold mt-3">Utilities Provided:</h4>
+                        <ul class="list-disc pl-4 text-sm text-gray-700">
+                            @foreach ($package->utilities as $utility)
+                                <li>{{ $utility->name }} (Qty: {{ $utility->quantity }})</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
+            </main>
         @else
             <script>
                 window.location.href = "/";

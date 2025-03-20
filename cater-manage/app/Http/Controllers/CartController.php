@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Package;
+use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +22,11 @@ class CartController extends Controller
         // fetch or crreate cart
         $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
         $pendingOrder = Order::where('user_id', Auth::id())->where('status', 'pending')->first();
-        return view('cart.index', compact('cart', 'pendingOrder'));
+
+        // get products to display sda cart index
+        $menuItems = MenuItem::where('status', 'available')->get();
+        $packages = Package::where('status', 'available')->get();
+        return view('cart.index', compact('cart', 'pendingOrder', 'menuItems', 'packages'));
     }
 
     public function add(Request $request)
@@ -53,7 +59,7 @@ class CartController extends Controller
         $errors = [];
         $successMessages = [];
 
-        
+
         if (!empty($validated['package_id'])) {
             // CALCULATE LAHAT NG QUANTITY NG PACKAGE SA CART 
             $totalPackageCount = $cart->items()->whereNotNull('package_id')->sum('quantity');
@@ -61,9 +67,9 @@ class CartController extends Controller
             if ($totalPackageCount >= 2) {
                 $errors[] = 'You can only add up to 2 package sets per event.';
             } else {
-            //  maximum quantity 
+                //  maximum quantity 
                 $available = 2 - $totalPackageCount;
-                
+
                 $quantityToAdd = min($validated['quantity'], $available);
 
                 // CHECK IF MERON NA EXISTING PACKAGE SA CART 
@@ -82,7 +88,7 @@ class CartController extends Controller
             }
         }
 
-        
+
         if (!empty($validated['menu_item_id'])) {
             $menuData = [
                 'menu_item_id' => $validated['menu_item_id'],
@@ -93,9 +99,9 @@ class CartController extends Controller
             }
 
             $existingMenuItem = $cart->items()
-            ->where('menu_item_id', $validated['menu_item_id'])
-            ->where('variant', $validated['variant'] ?? null)
-            ->first();
+                ->where('menu_item_id', $validated['menu_item_id'])
+                ->where('variant', $validated['variant'] ?? null)
+                ->first();
 
             if ($existingMenuItem) {
                 $existingMenuItem->update([

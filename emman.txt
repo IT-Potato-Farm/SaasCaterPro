@@ -1,7 +1,26 @@
-awdwadawdaw
+insert data manually 
+
+--------------------------------
+php artisan tinker 
 
 shortcut 
-App\Models\User::create([
+first eto
+$user = App\Models\User::create([
+    'first_name' => 'John Emman',
+    'last_name' => 'Juaquera',
+    'email' => 'jjohnemman@gmail.com',
+    'role' => 'admin',
+    'mobile' => '09158500364',
+    'password' => bcrypt('Johnemman1'),
+]);
+tapos etoo
+$user->update(['email_verified_at' => now()]);
+
+or 
+----------------------------------------
+use App\Models\User
+
+User::create([
     'first_name' => 'John Emman',
     'last_name' => 'Juaquera',
     'email' => 'jjohnemman@gmail.com',
