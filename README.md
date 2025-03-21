@@ -1,40 +1,15 @@
-# steps needed para malagay sa laptop if galing github yung laravel:
+# TO DO LIST:
 
-**composer install**,
-if permission errors, 
+1. Change the text field for event type into drop-down that only common events are shown and label events that are not common as "others.
 
-composer install --no-scripts
+2. Display the date when the customers paid for the partial payment
 
+3. Hide the cancel button in the order process page if per example the status of the order is already past the "pending"
 
-VENDOR EXIST
-rmdir /s /q vendor
-del composer.lock
-composer install
+4. Label int the order summary, make it subtotal and the proper naming like price per pax to easily identify
 
-composer dump-autoload
+5. Let the user choose the partial payment percentage (Need Client's Preferences)
 
-configure cache 
-php artisan config:clear
-php artisan cache:clear
-php artisan config:cache
+6. Book range date, like the suer can book (2-3 days)
 
-show laravel
-composer show laravel/framework
-if wla yung composer laravel install it using:
-**composer require laravel/framework**
-
-modify this shit sa xampp php ini
-
-**;extension=zip** into **extension=zip**
-
-### error 500 server yan need mo ung env
-## cp .env.example .env
-tapos generate na key
-## php artisan key:generate
-
-
-php artisan config:clear
-php artisan cache:clear
-php artisan route:clear
-php artisan view:clear
-php artisan config:cache
+7. Policy or Rules if the customer damaged an equipment they should pay penalties
