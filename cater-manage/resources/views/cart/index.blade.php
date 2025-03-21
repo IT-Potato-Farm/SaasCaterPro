@@ -2,17 +2,17 @@
 <script src="{{ asset('js/cart.js') }}"></script>
 <script>
     function debugAddToCart(itemId) {
-    // Check if a variant dropdown exists for the menu item
-    let variantSelect = document.getElementById('variant-' + itemId);
-    let selectedVariant = variantSelect ? variantSelect.value : null;
-    
-    // Debug log to console
-    console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
-    
-    // Call the existing addToCart function
-    // If you need to pass the type, it defaults to 'menu_item'
-    addToCart(itemId, 'menu_item');
-}
+        // Check if a variant dropdown exists for the menu item
+        let variantSelect = document.getElementById('variant-' + itemId);
+        let selectedVariant = variantSelect ? variantSelect.value : null;
+
+        // Debug log to console
+        console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
+
+        // Call the existing addToCart function
+        // If you need to pass the type, it defaults to 'menu_item'
+        addToCart(itemId, 'menu_item');
+    }
 </script>
 
 @php
@@ -89,6 +89,7 @@
                                     </th> --}}
                                     <th class="py-2 text-left">Product</th>
                                     <th class="py-2 text-left">Name</th>
+                                    <th class="py-2 text-left">Selected Options</th>
                                     <th class="py-2 text-center">Quantity</th>
                                     <th class="py-2 text-left">Price</th>
                                     <th class="py-2 text-left"> Pax</th>
@@ -137,6 +138,39 @@
                                             // sa packages calculate based on price per person, minimum pax and quantity
                                             $minPax = $cartItem->package->min_pax ?? 1;
                                             $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
+
+                                            $itemNames = [];
+                                            if ($cartItem->package && $cartItem->package->packageItems) {
+                                                foreach ($cartItem->package->packageItems as $packageItem) {
+                                                    $itemNames[$packageItem->id] = $packageItem->name;
+                                                }
+                                            }
+                                            $selectedOptionsString = '';
+                                            // Only process if this cart item is a package and has selected_options.
+                                            if (
+                                                $cartItem->package_id &&
+                                                $cartItem->package &&
+                                                $cartItem->selected_options &&
+                                                is_array($cartItem->selected_options)
+                                            ) {
+                                                //  mapping of package item IDs to their names.
+                                                $itemNames = [];
+                                                if ($cartItem->package->packageItems) {
+                                                    foreach ($cartItem->package->packageItems as $packageItem) {
+                                                        $itemNames[$packageItem->id] = $packageItem->name;
+                                                    }
+                                                }
+                                                // Loop through the selected options for this package.
+                                                foreach ($cartItem->selected_options as $itemId => $optionArray) {
+                                                    if (isset($itemNames[$itemId])) {
+                                                        $types = array_map(function ($option) {
+                                                            return $option['type'] ?? 'Unknown';
+                                                        }, $optionArray);
+                                                        $selectedOptionsString .=
+                                                            "{$itemNames[$itemId]}: " . implode(', ', $types) . '<br>';
+                                                    }
+                                                }
+                                            }
                                         } else {
                                             $itemName = 'Unknown';
                                             $itemPrice = 0;
@@ -170,6 +204,15 @@
                                         <td class="py-3">
                                             {{ $itemName }}
                                         </td>
+
+                                        <!-- Selected Options Column -->
+                                        @if ($cartItem->package_id)
+                                            <td class="py-3">
+                                                {!! $selectedOptionsString ?: 'N/A' !!}
+                                            </td>
+                                        @else
+                                            <td class="py-3"> NOT APPLICABLE</td>
+                                        @endif
 
                                         <!-- Edit Quantity -->
                                         <td class="py-3 text-center align-middle">

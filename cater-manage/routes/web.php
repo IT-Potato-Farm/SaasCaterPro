@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/get-package/{id}', function ($id) {
     return response()->json(Package::findOrFail($id));
 });
-Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails'])->name('displayPackage');
+// Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails'])->name('displayPackage');
 Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 
@@ -180,7 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+// Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
 // order

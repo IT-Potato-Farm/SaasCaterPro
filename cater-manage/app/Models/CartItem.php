@@ -10,12 +10,16 @@ class CartItem extends Model
     use HasFactory;
 
 
-    protected $fillable = ['cart_id', 'menu_item_id', 'package_id', 'quantity', 'variant'];
+    protected $fillable = ['cart_id', 'menu_item_id', 'package_id', 'quantity', 'variant', 'selected_options'];
 
+    protected $casts = [
+        'selected_options' => 'array',
+    ];
     public function cart()
     {
         return $this->belongsTo(Cart::class);
     }
+
 
     public function menuItem()
     {

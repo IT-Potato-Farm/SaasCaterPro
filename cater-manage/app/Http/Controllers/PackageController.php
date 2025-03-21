@@ -98,32 +98,25 @@ class PackageController extends Controller
             'utilities' => $utilities,
         ]);
     }
-    public function showDetails($id)
+    public function showdetails($id)
     {
-        try {
-            $package = Package::with(['packageItems.menuItem.category'])
-                ->findOrFail($id);
+        // If you want to include PackageItem options, eager load the 'options' relationship.
+        $package = Package::with(['packageItems.options', 'utilities'])->find($id);
 
-            // Filter items using collection methods
-            $filterItems = function ($categoryName) use ($package) {
-                return $package->packageItems->filter(function ($item) use ($categoryName) {
-                    return optional($item->menuItem->category)->name === $categoryName;
-                })->values(); // Reset keys for proper JSON array
-            };
-
-            return response()->json([
-                'success' => true,
-                'package' => $package,
-                'foods' => $filterItems('Foods'),
-                'utilities' => $filterItems('Utilities')
-            ]);
-        } catch (\Exception $e) {
-            Log::error("Package details error: " . $e->getMessage());
+        if (!$package) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load package details. Please try again.'
-            ], 500);
+                'message' => 'Package not found. Please try again.'
+            ], 404);
         }
+
+        return response()->json([
+            'success'   => true,
+            'package'   => $package,
+            // Return packageItems as 'foods' to match your frontend.
+            'foods'     => $package->packageItems,
+            'utilities' => $package->utilities,
+        ]);
     }
 
     public function checkName(Request $request)

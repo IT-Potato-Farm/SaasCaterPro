@@ -1,9 +1,56 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    async function addToCart(packageId) {
-        // Retrieve CSRF token from the meta tag
+    async function addSelectedPackageToCart(packageId) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const form = document.getElementById('packageSelectionForm');
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        const groups = {};
+
+        // Group checkboxes by food item id.
+        checkboxes.forEach(checkbox => {
+            const name = checkbox.name; // e.g., "food_item_5[]"
+            const match = name.match(/food_item_(\d+)\[\]/);
+            if (match) {
+                const foodId = match[1];
+                if (!groups[foodId]) {
+                    groups[foodId] = [];
+                }
+                groups[foodId].push(checkbox);
+            }
+        });
+
+        // Validate that each food item group has at least one option checked.
+        for (const foodId in groups) {
+            const groupCheckboxes = groups[foodId];
+            const checked = Array.from(groupCheckboxes).filter(cb => cb.checked);
+            if (checked.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please select at least one option for every food item.'
+                });
+                return; // Stop submission if any food item has no option selected.
+            }
+        }
+
+        // If validation passes, collect selected options with objects.
+        const selectedOptions = {};
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const foodIdMatch = checkbox.name.match(/food_item_(\d+)/);
+                if (foodIdMatch) {
+                    const foodId = foodIdMatch[1];
+                    if (!selectedOptions[foodId]) {
+                        selectedOptions[foodId] = [];
+                    }
+                    selectedOptions[foodId].push({
+                        id: checkbox.value,
+                        type: checkbox.getAttribute('data-type')
+                    });
+                }
+            }
+        });
 
         try {
             const response = await fetch('/cart/add', {
@@ -15,7 +62,8 @@
                 },
                 body: JSON.stringify({
                     package_id: packageId,
-                    quantity: 1 
+                    quantity: 1,
+                    selected_options: selectedOptions // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
                 })
             });
 
@@ -26,7 +74,6 @@
 
             const data = await response.json();
 
-            // notification
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
@@ -47,13 +94,13 @@
             });
         }
     }
-    const packageCache = new Map();
 
+    const packageCache = new Map();
+    // FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
     async function fetchPackageData(packageId) {
         if (packageCache.has(packageId)) {
             return packageCache.get(packageId);
         }
-
         try {
             const response = await fetch(`/package/details/${packageId}`);
             if (!response.ok) {
@@ -61,7 +108,6 @@
                 throw new Error(`Server error: ${errorText.slice(0, 100)}`);
             }
             const data = await response.json();
-
             if (!data.success) throw new Error(data.message);
 
             packageCache.set(packageId, data);
@@ -72,13 +118,53 @@
         }
     }
 
+    // FUNCTION FOR FOOD ITEMS RENDER
+    function renderFoods(foods) {
+        if (!foods || foods.length === 0) {
+            return '<p class="text-gray-500">No food items</p>';
+        }
+        return foods.map(food => {
+            if (food.options && food.options.length > 0) {
+                // Render a checkbox for each available option with a data-type attribute.
+                const optionsHtml = food.options.map(option => `
+                    <label class="inline-flex items-center mr-4">
+                        <input type="checkbox" name="food_item_${food.id}[]" value="${option.id}" data-type="${option.type}" class="form-checkbox">
+                        <span class="ml-2">${option.type}</span>
+                    </label>
+                `).join('');
+                return `
+                    <div class="mb-4">
+                        <div class="font-semibold text-gray-700">${food.name}</div>
+                        <div class="mt-1">${optionsHtml}</div>
+                    </div>
+                `;
+            } else {
+                // If no options, simply show the food name.
+                return `
+                    <div class="mb-4">
+                        <div class="font-semibold text-gray-700">${food.name}</div>
+                    </div>
+                `;
+            }
+        }).join('');
+    }
+
+    // FUNCTION FOR FOOD ITEMS RENDER
+    function renderUtilities(utilities) {
+        if (!utilities || utilities.length === 0) {
+            return '<p class="text-gray-500">No utilities</p>';
+        }
+        return utilities.map(util => `
+            <div class="flex p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                <div class="flex-1">
+                    <h4 class="font-medium text-gray-800 mb-1">${util.name}</h4>
+                    ${util.description ? `<p class="text-sm text-gray-600">${util.description}</p>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
 
     async function openItem(packageId) {
-        // Swal.fire({
-        //     title: 'Loading...',
-        //     allowOutsideClick: false,
-        //     didOpen: () => Swal.showLoading()
-        // });
         try {
             const {
                 package: pkg,
@@ -87,69 +173,54 @@
             } = await fetchPackageData(packageId);
 
             const htmlContent = `
-            <div class="max-h-[80vh] overflow-y-auto">
-                <!-- Header Section -->
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
-                    <p class="text-gray-600 text-sm">${pkg.description}</p>
-                </div>
+                <div class="max-h-[80vh] overflow-y-auto">
+                    <!-- Header Section -->
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
+                        <p class="text-gray-600 text-sm">${pkg.description}</p>
+                    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <!-- Image Section -->
-                    <div class="relative group">
-                        <img src="/packagePics/${pkg.image}" 
-                             alt="${pkg.name}" 
-                             class="w-full h-64 object-cover rounded-xl shadow-lg">
-                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
-                            <div class="text-white flex justify-between items-end">
-                                <div>
-                                    <p class="text-sm">Per pax</p>
-                                    <p class="text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Image Section -->
+                        <div class="relative group">
+                            <img src="/packagePics/${pkg.image}" 
+                                 alt="${pkg.name}" 
+                                 class="w-full h-64 object-cover rounded-xl shadow-lg">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
+                                <div class="text-white flex justify-between items-end">
+                                    <div>
+                                        <p class="text-sm">Per pax</p>
+                                        <p class="text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
+                                    </div>
+                                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Min. ${pkg.min_pax} Pax</span>
                                 </div>
-                                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Min. ${pkg.min_pax} Pax</span>
                             </div>
+                        </div>
+
+                        <!-- Foods Section -->
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            <h3 class="text-lg font-semibold mb-4">Foods</h3>
+                            <form id="packageSelectionForm">
+                                ${renderFoods(foods)}
+                            </form>
                         </div>
                     </div>
 
-                    <!-- Foods Section -->
-                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                        <h3 class="text-lg font-semibold mb-4">Foods</h3>
-                        <div class="space-y-3">
-                            ${foods.length ? foods.map(item => `
-                                <div class="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                                    <svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    <span class="text-gray-700">${item.menu_item.name} - (${item.menu_item.description})</span>
-                                </div>
-                            `).join('') : '<p class="text-gray-500">No food items</p>'}
+                    <!-- Utilities Section -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-semibold mb-4">Utilities</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${renderUtilities(utilities)}
                         </div>
                     </div>
-                </div>
-
-                <!-- Utilities Section -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold mb-4">Utilities</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        ${utilities.length ? utilities.map(item => `
-                            <div class="flex p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
-                                <div class="flex-1">
-                                    <h4 class="font-medium text-gray-800 mb-1">${item.menu_item.name}</h4>
-                                    ${item.menu_item.description ? `
-                                        <p class="text-sm text-gray-600">${item.menu_item.description}</p>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `).join('') : '<p class="text-gray-500">No utilities</p>'}
+                    
+                    <div class="mt-6 text-center">
+                        <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                            Add to cart
+                        </button>
                     </div>
                 </div>
-                
-                <div class="mt-6 text-center">
-                    <button onclick="addToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
-                        Add to cart
-                    </button>
-                </div>
-            </div>`;
+            `;
 
             Swal.fire({
                 html: htmlContent,
@@ -158,20 +229,19 @@
                 showConfirmButton: false,
                 background: '#fff'
             });
-
         } catch (error) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: error.message,
                 confirmButtonText: 'Try Again'
-            }).then((result) => {
+            }).then(result => {
                 if (result.isConfirmed) openItem(packageId);
             });
         }
-
     }
 </script>
+
 
 
 {{-- <section id="menu" class="menu-section py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"> --}}
@@ -249,7 +319,7 @@
     </div>
 
     <div class="flex justify-center mt-12">
-        <a href="{{route('all-menu')}}"
+        <a href="{{ route('all-menu') }}"
             class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors duration-300 shadow-lg">
             <span>Explore Full Menu</span>
             <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
