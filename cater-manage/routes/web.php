@@ -162,7 +162,7 @@ Route::delete('/menuitems/{id}', [MenuItemController::class, 'deleteItem'])->nam
 Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAvailability'])
     ->name('check-name-availability');
 
-Route::get('/check-package-name', [PackageController::class, 'checkName'])->name('package-name-availability');
+// Route::get('/check-package-name', [PackageController::class, 'checkName'])->name('package-name-availability');
 
 
 

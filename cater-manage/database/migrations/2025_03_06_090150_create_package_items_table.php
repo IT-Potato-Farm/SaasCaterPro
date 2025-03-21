@@ -35,7 +35,7 @@ return new class extends Migration
         Schema::create('package_utilities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('package_id')->constrained()->onDelete('cascade');
-            $table->string('name')->unique(); // e.g., "Table", "Chair"
+            $table->string('name'); // e.g., "Table", "Chair"
             $table->text('description')->nullable();
             $table->string('image')->nullable();
             $table->unsignedInteger('quantity')->default(1);

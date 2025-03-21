@@ -6,6 +6,7 @@ use App\Models\Package;
 use App\Models\MenuItem;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Models\PackageFoodItemOption;
 
@@ -33,7 +34,7 @@ class PackageItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    
+
     // public function store(Request $request)
     // {
     //     $request->validate([
@@ -76,16 +77,19 @@ class PackageItemController extends Controller
         try {
             $fields = $request->validate([
                 'package_id'  => 'required|exists:packages,id',
-                'name' => 'required|string|unique:package_items,name|max:255',
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('package_items')->where(function ($query) use ($request) {
+                        return $query->where('package_id', $request->package_id);
+                    })
+                ],
                 'description' => 'nullable|string',
-
             ]);
-
 
             $fields['name'] = strip_tags($fields['name']);
             $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
-
-
 
             $packageItem = PackageItem::create($fields);
 
@@ -109,14 +113,14 @@ class PackageItemController extends Controller
                 'package_item_ids' => 'required|array',
                 'package_item_ids.*' => 'exists:package_items,id',
             ]);
-    
+
             // Get the selected package
             $package = Package::findOrFail($fields['package_id']);
-    
+
             // Assign package_id to selected package items
             PackageItem::whereIn('id', $fields['package_item_ids'])
                 ->update(['package_id' => $package->id]);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Package items added successfully!',
@@ -178,7 +182,6 @@ class PackageItemController extends Controller
         $exists = PackageItem::where('name', $request->name)
             ->where('package_id', $request->package_id)
             ->exists();
-
         return response()->json(['exists' => $exists]);
     }
 
@@ -199,12 +202,12 @@ class PackageItemController extends Controller
 
         return response()->json($existingItems);
     }
-   public function getExistingPackageItems($packageId)
-{
-    $existingItems = PackageItem::where('package_id', $packageId)->pluck('id')->toArray();
+    public function getExistingPackageItems($packageId)
+    {
+        $existingItems = PackageItem::where('package_id', $packageId)->pluck('id')->toArray();
 
-    return response()->json($existingItems);
-}
+        return response()->json($existingItems);
+    }
 
     /**
      * Show the form for editing the specified resource.
