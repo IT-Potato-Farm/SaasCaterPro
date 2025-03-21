@@ -15,7 +15,7 @@
 <body class="bg-gray-100">
     <x-customer.navbar />
     <div class="flex h-screen">
-      
+
         <div class="flex-1 flex flex-col">
             <!-- Header -->
             <header class="bg-white shadow-sm border-b">
@@ -54,16 +54,33 @@
                                     'placed' => [
                                         'title' => 'Order Placed',
                                         'status' => in_array($order->status, [
-                                            'placed', 'pending', 'partial', 'ongoing', 'paid', 'completed', 'cancelled'
+                                            'placed',
+                                            'pending',
+                                            'partial',
+                                            'ongoing',
+                                            'paid',
+                                            'completed',
+                                            'cancelled',
                                         ]),
                                     ],
                                     'pending' => [
                                         'title' => 'Pending',
-                                        'status' => in_array($order->status, ['pending', 'partial', 'ongoing', 'paid', 'completed']),
+                                        'status' => in_array($order->status, [
+                                            'pending',
+                                            'partial',
+                                            'ongoing',
+                                            'paid',
+                                            'completed',
+                                        ]),
                                     ],
                                     'partial' => [
                                         'title' => 'Partial',
-                                        'status' => in_array($order->status, ['partial', 'ongoing', 'paid', 'completed']),
+                                        'status' => in_array($order->status, [
+                                            'partial',
+                                            'ongoing',
+                                            'paid',
+                                            'completed',
+                                        ]),
                                     ],
                                     'ongoing' => [
                                         'title' => 'Ongoing',
@@ -83,32 +100,46 @@
                                     ],
                                 ];
                             @endphp
-                
+
                             @foreach ($steps as $key => $step)
                                 <div class="flex flex-col items-center w-1/7">
                                     <div class="relative mb-2">
                                         <!-- Progress line -->
                                         @if (!$loop->first)
-                                            <div class="absolute h-[2px] w-full -left-1/2 top-1/2 transform -translate-y-1/2">
-                                                <div class="h-full {{ $steps[array_keys($steps)[$loop->index - 1]]['status'] ? 'bg-green-500' : 'bg-gray-200' }}">
+                                            <div
+                                                class="absolute h-[2px] w-full -left-1/2 top-1/2 transform -translate-y-1/2">
+                                                <div
+                                                    class="h-full {{ $steps[array_keys($steps)[$loop->index - 1]]['status'] ? 'bg-green-500' : 'bg-gray-200' }}">
                                                 </div>
                                             </div>
                                         @endif
-                
+
                                         <!-- Step circle -->
-                                        <div class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center 
+                                        <div
+                                            class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center 
                                             {{ $step['status'] ? 'bg-green-500 border-2 border-green-600' : 'bg-white border-2 border-gray-300' }}">
                                             @if ($step['status'])
-                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                                </svg>
+                                                @if ($key === 'cancelled' && $order->status === 'cancelled')
+                                                    <!-- Render X icon for cancelled -->
+                                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                @else
+                                                    <!-- Render checkmark icon -->
+                                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
                                     <div class="text-center">
-                                        <span class="text-sm font-medium {{ $step['status'] ? 'text-gray-900' : 'text-gray-500' }}">
+                                        <span
+                                            class="text-sm font-medium {{ $step['status'] ? 'text-gray-900' : 'text-gray-500' }}">
                                             {{ $step['title'] }}
                                         </span>
                                         @if ($key === 'pending' && $order->status === 'pending')
@@ -121,7 +152,7 @@
                     </div>
                 </div>
 
-                
+
 
                 <!-- Order Details -->
                 <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -191,20 +222,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-center mt-6">
-                    <form action="{{ route('orderUser.cancel', ['order' => $order->id]) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="px-4 py-2 text-white font-semibold rounded-lg 
-                            {{ in_array($order->status, ['partial', 'ongoing', 'paid', 'completed']) ? 'bg-gray-400 cursor-not-allowed pointer-events-none' : 'bg-red-500 hover:bg-red-600' }}"
-                            {{ in_array($order->status, ['partial', 'ongoing', 'paid', 'completed']) ? 'disabled' : '' }}>
-                            Cancel Order
-                        </button>
-                    </form>
-                </div>
+
+                <!--  Show button if order status is wla d2 -->
+                @if (!in_array($order->status, ['partial', 'ongoing', 'paid', 'completed', 'cancelled']))
+                    <div class="flex justify-center mt-6">
+                        <form id="cancelForm" action="{{ route('orderUser.cancel', ['order' => $order->id]) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <button type="button" onclick="confirmCancel()" class="px-4 py-2 text-white font-semibold rounded-lg bg-red-500 hover:bg-red-600">
+                                Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </main>
         </div>
     </div>
+
     <script>
         function confirmCancel() {
             Swal.fire({
@@ -221,7 +255,7 @@
                 }
             });
         }
-        </script>
+    </script>
 </body>
 
 </html>
