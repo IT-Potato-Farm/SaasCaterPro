@@ -66,7 +66,7 @@
     }
 </script>
 <div class="container mx-auto px-4 py-8">
-    <h2 class="text-3xl font-bold text-gray-800 mb-8"> Packages</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center"> Packages</h2>
 
     @if ($packages->isEmpty())
         <div class="text-center py-12 bg-gray-50 rounded-lg">

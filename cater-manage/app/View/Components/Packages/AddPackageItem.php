@@ -15,13 +15,11 @@ class AddPackageItem extends Component
      * Create a new component instance.
      */
      public $packages;
-     public $menu_items;
-     public $existingPackageItems;
+     public $package_items;
     public function __construct()
     {
         $this->packages = Package::all();
-        $this->menu_items = MenuItem::all();
-        $this->existingPackageItems = PackageItem::pluck('menu_item_id')->toArray();
+        $this->package_items = PackageItem::with('options')->get();
     }
 
     /**

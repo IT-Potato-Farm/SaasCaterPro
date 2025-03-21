@@ -7,6 +7,7 @@ use App\Models\PackageItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use App\Models\PackageFoodItemOption;
 
 class PackageController extends Controller
 {
@@ -22,7 +23,7 @@ class PackageController extends Controller
     {
         //
     }
-    
+
     /**
      * Store a newly created resource in storage.
      */
@@ -31,7 +32,7 @@ class PackageController extends Controller
         try {
             $packageitemFields = $request->validate([
                 'category_id' => 'nullable|exists:categories,id',
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|unique:packages,name|max:255',
                 'description' => 'nullable|string',
                 'price_per_person' => 'required|numeric|min:0',
                 'min_pax' => 'required|integer|min:1',
@@ -54,6 +55,13 @@ class PackageController extends Controller
                 // Store only the filename, not the full path
                 $packageitemFields['image'] = $imageName;
             }
+
+            // recommended ni gpt 
+            // if ($request->hasFile('image')) {
+            //     $image = $request->file('image');
+            //     $imagePath = $image->store('packagePics', 'public'); // Stores in storage/app/public/packagePics
+            //     $packageitemFields['image'] = $imagePath; // Save relative path
+            // }
 
             $package = Package::create($packageitemFields);
 
@@ -122,6 +130,17 @@ class PackageController extends Controller
     {
         $name = $request->query('name');
         $exists = Package::where('name', $name)->exists();
+        return response()->json(['available' => !$exists]);
+    }
+    public function checkOptionType(Request $request)
+    {
+        $type = $request->query('type');
+        $packageFoodItemId = $request->query('package_food_item_id');
+
+        $exists = PackageFoodItemOption::where('type', $type)
+            ->where('package_food_item_id', $packageFoodItemId)
+            ->exists();
+
         return response()->json(['available' => !$exists]);
     }
 

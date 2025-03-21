@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('package_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('package_id')->constrained()->onDelete('cascade');
-            $table->string('name')->unique(); // fill if chicken, beef, etc.
+            $table->string('name'); // fill if chicken, beef, etc.
+            
             $table->text('description')->nullable();
             // $table->primary(['package_id', 'menu_item_id']);
             $table->timestamps(); 
+            $table->unique(['package_id', 'name']);
         });
 
         Schema::create('package_food_item_options', function (Blueprint $table) {

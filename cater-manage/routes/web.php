@@ -135,6 +135,10 @@ Route::post('/package/store', [PackageController::class, 'store'])->name('packag
 
 Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
 Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
+// checking ng names if existing etc
+Route::get('/package/check-name', [PackageController::class, 'checkName'])->name('package.checkName');
+Route::get('/check-option-type', [PackageController::class, 'checkOptionType']);
+
 
 
 Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
@@ -147,6 +151,7 @@ Route::post('/package-items/check-name', [PackageItemController::class, 'checkNa
 Route::post('/packageutility/store', [PackageUtilityController::class, 'store'])->name('package_utilities.store');
 
 Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
+Route::get('/get-existing-package-items/{package}', [PackageItemController::class, 'getExistingpackageItems']);
 
 // menu items
 Route::resource('menu-items', MenuItemController::class);

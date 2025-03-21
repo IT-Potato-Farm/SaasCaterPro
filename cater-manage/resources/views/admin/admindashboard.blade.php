@@ -211,13 +211,15 @@
 
                     <x-dashboard.products />
                 </div>
-
+                {{-- PACKAGE SECTION DASHBOARD --}}
                 <div x-show="activeScreen === 'packages'" x-cloak>
                     <x-packages.addbtn />
+                    <x-packages.add-package-item-btn />
                     <x-dashboard.packages />
                     <x-packages.add-package-item />
-                    <x-packages.view-items-package />
+
                 </div>
+
                 <div x-show="activeScreen === 'categories'" x-cloak>
                     <x-category.category-button />
                     <x-dashboard.categories />

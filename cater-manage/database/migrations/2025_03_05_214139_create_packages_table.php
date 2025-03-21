@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete(); 
-            $table->string('name');
+            $table->string('name')->unique();
             $table->text('description')->nullable();
             $table->decimal('price_per_person', 10, 2);
             $table->unsignedInteger('min_pax')->default(1); 

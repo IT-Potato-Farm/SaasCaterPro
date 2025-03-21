@@ -33,6 +33,7 @@ class PackageItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    
     // public function store(Request $request)
     // {
     //     $request->validate([
@@ -92,6 +93,33 @@ class PackageItemController extends Controller
                 'success'      => true,
                 'message'      => 'Package item added successfully!',
                 'package_item' => $packageItem
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function massstore(Request $request)
+    {
+        try {
+            $fields = $request->validate([
+                'package_id'       => 'required|exists:packages,id',
+                'package_item_ids' => 'required|array',
+                'package_item_ids.*' => 'exists:package_items,id',
+            ]);
+    
+            // Get the selected package
+            $package = Package::findOrFail($fields['package_id']);
+    
+            // Assign package_id to selected package items
+            PackageItem::whereIn('id', $fields['package_item_ids'])
+                ->update(['package_id' => $package->id]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Package items added successfully!',
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -171,6 +199,12 @@ class PackageItemController extends Controller
 
         return response()->json($existingItems);
     }
+   public function getExistingPackageItems($packageId)
+{
+    $existingItems = PackageItem::where('package_id', $packageId)->pluck('id')->toArray();
+
+    return response()->json($existingItems);
+}
 
     /**
      * Show the form for editing the specified resource.
