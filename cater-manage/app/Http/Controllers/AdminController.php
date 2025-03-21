@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Package;
 use App\Models\Category;
+use App\Models\PackageItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,11 +18,18 @@ class AdminController extends Controller
             return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
         }
 
-        
+
         $packages = Package::all();
+        $packageItemsGroupedByPackage = PackageItem::all()
+            ->groupBy('package_id')
+            ->map(function ($group) {
+                return $group->map(function ($item) {
+                    return ['id' => $item->id, 'name' => $item->name];
+                });
+            })->toArray();
 
         // Pass the packages to view
-        return view('admin.dashboard', compact('packages'));
+        return view('admin.dashboard', compact('packages', 'packageItemsGroupedByPackage'));
     }
 
 

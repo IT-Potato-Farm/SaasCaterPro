@@ -8,6 +8,10 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let packageItemsMapping = @json($packageItemsGroupedByPackage);
+        console.log(packageItemsMapping); 
+    </script>
     <style>
         @keyframes slide-in {
             from {
@@ -109,7 +113,10 @@
                         </ul>
                     </div>
                 @endforeach
+
+
             </main>
+           
         @else
             <script>
                 window.location.href = "/";

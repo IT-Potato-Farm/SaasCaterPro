@@ -2,10 +2,11 @@
 
 namespace App\View\Components\packages;
 
-use App\Models\PackageItem;
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\Package;
+use App\Models\PackageItem;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class addPackageOptionBtn extends Component
 {
@@ -13,9 +14,13 @@ class addPackageOptionBtn extends Component
      * Create a new component instance.
      */
     public $packageItems;
+    public $packages;
+    
     public function __construct()
     {
         $this->packageItems = PackageItem::all();
+        $this->packages = Package::all();
+        
     }
 
     /**

@@ -202,21 +202,22 @@
                 </div>
 
                 <div x-show="activeScreen === 'products'" x-cloak>
+                    
                     <div class="mt-5">
 
 
                         <x-items.item-button />
 
                     </div>
-
                     <x-dashboard.products />
                 </div>
                 {{-- PACKAGE SECTION DASHBOARD --}}
                 <div x-show="activeScreen === 'packages'" x-cloak>
                     <x-packages.addbtn />
                     <x-packages.add-package-item-btn />
+                    
                     <x-dashboard.packages />
-                    {{-- <x-packages.add-package-item /> --}}
+                    {{-- <x-packages.add-package-item /> --}} 
 
                 </div>
 

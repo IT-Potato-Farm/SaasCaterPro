@@ -25,23 +25,32 @@
     }
 </style>
 
-
 <script>
-    function addFoodItemOption() {
-        let optionTypeExists = false; 
+    let optionTypeExists = false; // global flag for duplicate check
 
+    function addFoodItemOption() {
         Swal.fire({
             title: '<span class="text-2xl font-bold text-gray-800">Add Food Item Option</span>',
             html: `
                 <form id="addFoodItemOptionForm" class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
+                    <!-- Package Dropdown -->
+                    <div>
+                        <label for="packageSelect" class="block text-sm font-medium text-gray-700">Select Package</label>
+                        <select name="package_id" id="packageSelect" required class="w-full border rounded p-2">
+                            <option value="">Choose a Package</option>
+                            @foreach($packages as $package)
+                                <option value="{{ $package->id }}">{{ $package->name }}</option>
+                            @endforeach
+                        </select>
+                        <div id="package_id-error" class="error-message"></div>
+                    </div>
+                    
                     <!-- Package Item Dropdown -->
                     <div>
                         <label for="foodItemSelect" class="block text-sm font-medium text-gray-700">Select Package Item</label>
                         <select name="package_food_item_id" id="foodItemSelect" required class="w-full border rounded p-2">
                             <option value="">Choose a Package Item</option>
-                            @foreach($packageItems as $item)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
-                            @endforeach
+                            <!-- Options will be dynamically populated based on the selected package -->
                         </select>
                         <div id="package_food_item_id-error" class="error-message"></div>
                     </div>
@@ -51,7 +60,6 @@
                         <label for="optionType" class="block text-sm font-medium text-gray-700">Option Type</label>
                         <input type="text" id="optionType" name="type" required class="w-full border rounded p-2">
                         <div id="type-error" class="error-message"></div>
-                        
                         <span id="loadingSpinner" class="loading-spinner" style="display: none;"></span>
                     </div>
                     
@@ -77,36 +85,54 @@
             confirmButtonColor: '#3b82f6',
             cancelButtonColor: '#ef4444',
             didOpen: () => {
-                const typeInput = document.getElementById('optionType');
+                const packageSelect = document.getElementById('packageSelect');
                 const foodItemSelect = document.getElementById('foodItemSelect');
-                const livePreview = document.getElementById('livePreview');
+                
+                // When package is selected, populate package items.
+                packageSelect.addEventListener('change', function() {
+                    const packageId = this.value;
+                    foodItemSelect.innerHTML = '<option value="">Choose a Package Item</option>';
+                    if(packageId && packageItemsMapping[packageId]) {
+                        packageItemsMapping[packageId].forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            foodItemSelect.appendChild(option);
+                        });
+                    }
+                });
+                
+                const typeInput = document.getElementById('optionType');
                 const loadingSpinner = document.getElementById('loadingSpinner');
-
-                // Live Preview
-                // typeInput.addEventListener('input', function() {
-                //     livePreview.textContent = `Live Preview: ${this.value}`;
-                // });
-
-                // Real-time Duplicate Check
                 typeInput.addEventListener('input', async function() {
                     const optionType = this.value.trim();
                     const packageFoodItemId = foodItemSelect.value;
-
                     if (optionType !== "" && packageFoodItemId !== "") {
                         loadingSpinner.style.display = "inline-block";
-
                         let response = await fetch(`/check-option-type?package_food_item_id=${packageFoodItemId}&type=${optionType}`);
                         let data = await response.json();
-
                         if (!data.available) {
                             document.getElementById('type-error').textContent = 'This option type already exists for the selected package item.';
-                            optionTypeExists = true; // Prevent submission
+                            optionTypeExists = true;
                         } else {
                             document.getElementById('type-error').textContent = '';
-                            optionTypeExists = false; // Allow submission
+                            optionTypeExists = false;
                         }
-
                         loadingSpinner.style.display = "none";
+                    }
+                });
+                
+                // Optional: Add image preview handler for optionImage
+                const optionImageInput = document.getElementById('optionImage');
+                optionImageInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('optionImagePreview').src = e.target.result;
+                            document.getElementById('optionImagePreview').style.display = 'block';
+                        }
+                        reader.readAsDataURL(file);
                     }
                 });
             },
@@ -114,59 +140,64 @@
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 let hasErrors = false;
                 
-                // Validate Package Item selection
+                // Validate Package selection.
+                const packageSelect = document.getElementById('packageSelect');
+                if (!packageSelect.value) {
+                    document.getElementById('package_id-error').textContent = 'Please select a package.';
+                    hasErrors = true;
+                }
+                
+                // Validate Package Item selection.
                 const foodItemSelect = document.getElementById('foodItemSelect');
                 if (!foodItemSelect.value) {
                     document.getElementById('package_food_item_id-error').textContent = 'Please select a package item.';
                     hasErrors = true;
                 }
                 
-                // Validate Option Type
+                // Validate Option Type.
                 const typeInput = document.getElementById('optionType');
                 if (!typeInput.value.trim()) {
                     document.getElementById('type-error').textContent = 'Option type is required.';
                     hasErrors = true;
                 }
-
-                // Block submission if the option type already exists
+                
                 if (optionTypeExists) {
                     document.getElementById('type-error').textContent = 'This option type already exists.';
-                    return false; // Stop 
+                    hasErrors = true;
                 }
-
+                
                 if (hasErrors) return false;
-
-                // Proceed with form submission with successs
+                
                 const form = document.getElementById('addFoodItemOptionForm');
                 const formData = new FormData(form);
-
+                
                 return fetch("{{ route('package_food_item_options.store') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                        },
-                        body: formData
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(data => {
-                                if (data.errors) {
-                                    Object.entries(data.errors).forEach(([field, messages]) => {
-                                        const errorEl = document.getElementById(`${field}-error`);
-                                        if (errorEl) {
-                                            errorEl.textContent = messages[0];
-                                        }
-                                    });
-                                }
-                                throw new Error(data.message || 'An error occurred.');
-                            });
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(`Request failed: ${error}`);
-                        return false;
-                    });
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            if (data.errors) {
+                                Object.entries(data.errors).forEach(([field, messages]) => {
+                                    const errorEl = document.getElementById(`${field}-error`);
+                                    if (errorEl) {
+                                        errorEl.textContent = messages[0];
+                                    }
+                                });
+                            }
+                            throw new Error(data.message || 'An error occurred.');
+                        });
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                    return false;
+                });
             }
         }).then((result) => {
             if (result.isConfirmed) {
@@ -180,8 +211,6 @@
         });
     }
 </script>
-
-
 
 <button onclick="addFoodItemOption()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">
     Add a Food Item Option here
