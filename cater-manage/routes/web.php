@@ -23,10 +23,21 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
 
 // route navigation each page
-Route::get('/', function () {
-    return view('homepage');
+
+
+// user route
+
+Route::get('/loginpage', function () {
+    return view('loginpage');
+})->name('login');
+
+Route::get('/register', function () {
+    return view('register');
 });
 
+Route::get('/', function () {
+    return view('homepage');
+})->name('landing');
 
 
 Route::get('/all-menus', function () {
@@ -60,19 +71,7 @@ Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 
 
-// user route
 
-Route::get('/loginpage', function () {
-    return view('loginpage');
-})->name('login');
-
-Route::get('/register', function () {
-    return view('register');
-});
-
-Route::get('/landing', function () {
-    return view('homepage');
-})->name('landing');
 
 
 

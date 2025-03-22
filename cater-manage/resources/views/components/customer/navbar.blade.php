@@ -9,37 +9,39 @@
         $cartCount = Auth::user()->cart->items->sum('quantity');
     }
 @endphp
-<nav class="bg-red-600 border-gray-200 dark:bg-gray-900">
+<nav class="border-gray-200 bg-gray-900">
     <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
         <!-- Left: Logo -->
-        <a href="/landing" class="flex items-center space-x-3">
+        <a href="{{ route('landing') }}" class="flex items-center space-x-3">
             <img src="{{ asset('images/saaslogo.png') }}" class="h-12" alt="Saas Logo" />
-            <span class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white">SaasCaterPro</span>
+            <span class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300">SaasCaterPro</span>
         </a>
 
         <!-- Middle: Navigation Links -->
-        <div class="hidden md:block">
-            <ul class="font-medium flex space-x-8 rtl:space-x-reverse">
-                <li>
-                    <a href="{{ url('/landing') }}"
-                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="scrollToSection('menu')"
-                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                        Menu
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="scrollToSection('aboutus')"
-                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                        About Us
-                    </a>
-                </li>
-            </ul>
-        </div>
+        @if (Route::currentRouteName() == 'landing')
+            <div class="hidden md:block">
+                <ul class="font-medium flex space-x-8 rtl:space-x-reverse">
+                    <li>
+                        <a href="{{ route('landing') }}"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="scrollToSection('menu')"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
+                            Menu
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="scrollToSection('aboutus')"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
+                            About Us
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        @endif
 
         <!-- Right: Cart and Account/Login -->
         <div class="flex items-center space-x-4">
@@ -77,7 +79,7 @@
                             </a>
                         @endif
 
-                        <a href="{{route('userdashboard')}}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                        <a href="{{ route('userdashboard') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                             My Account
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
@@ -170,4 +172,17 @@
             requestAnimationFrame(animate);
         }
     }
+    setInterval(function() {
+        $.ajax({
+            url: "{{ route('cart.index') }}", // Still use your cart index route
+            type: 'GET',
+            success: function(response) {
+                // Instead of parsing the entire HTML, extract the cart count directly
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = response;
+                var cartCount = tempDiv.querySelector('#cart-count').innerText;
+                $('#cart-count').text(cartCount);
+            }
+        });
+    }, 2000);
 </script>
