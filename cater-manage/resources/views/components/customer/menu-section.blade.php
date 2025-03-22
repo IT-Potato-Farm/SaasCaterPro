@@ -248,11 +248,11 @@
 <section id="menu" class="menu-section py-16 ">
 
     <h2
-        class="text-center font-extrabold text-4xl md:text-5xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-12 px-4">
-        MENU
+        class="text-center font-extrabold text-4xl md:text-5xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-12 px-4 py-2 ">
+        Packages
     </h2>
 
-    <div class="container mx-auto px-4 max-w-6xl">
+    <div class="container mx-auto px-4 max-w-6xl ">
         @if ($packages->isNotEmpty())
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
                 @foreach ($packages as $package)

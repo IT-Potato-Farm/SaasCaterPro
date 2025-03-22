@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Cart;
 use App\Mail\TestEmail;
 use App\Models\Package;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
+use App\Models\CartItem;
 
 // route navigation each page
 
@@ -172,6 +174,8 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+   
+
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
@@ -180,7 +184,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 // Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+// CART COUNT LIVE AJAX
+Route::get('/cart/count', function () {
+    $user = Auth::user();
+    return response()->json(['count' => $user->cart ? $user->cart->items->count() : 0]);
+})->name('cart.count');
 
 // order
 Route::get('/checkoutpage', function () {

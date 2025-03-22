@@ -14,7 +14,8 @@
         <!-- Left: Logo -->
         <a href="{{ route('landing') }}" class="flex items-center space-x-3">
             <img src="{{ asset('images/saaslogo.png') }}" class="h-12" alt="Saas Logo" />
-            <span class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300">SaasCaterPro</span>
+            <span
+                class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300">SaasCaterPro</span>
         </a>
 
         <!-- Middle: Navigation Links -->
@@ -172,17 +173,21 @@
             requestAnimationFrame(animate);
         }
     }
-    setInterval(function() {
-        $.ajax({
-            url: "{{ route('cart.index') }}", // Still use your cart index route
-            type: 'GET',
-            success: function(response) {
-                // Instead of parsing the entire HTML, extract the cart count directly
-                var tempDiv = document.createElement('div');
-                tempDiv.innerHTML = response;
-                var cartCount = tempDiv.querySelector('#cart-count').innerText;
-                $('#cart-count').text(cartCount);
-            }
-        });
-    }, 2000);
+    document.addEventListener('DOMContentLoaded', function() {
+        setInterval(function() {
+            $.ajax({
+                url: "{{ route('cart.count') }}",
+                type: 'GET',
+                success: function(response) {
+                    let cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.innerText = response.count;
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error fetching cart count:", xhr.responseText);
+                }
+            });
+        }, 2000);
+    });
 </script>
