@@ -60,15 +60,21 @@
                     <form action="{{ route('checkout.store') }}" method="POST" class="space-y-6">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!--  Type -->
+                            <!-- Event Type -->
                             <div class="space-y-2">
-                                <label for="event_type" class="block text-sm font-medium text-gray-700">Event
-                                    Type</label>
-                                <input type="text" name="event_type" id="event_type"
-                                    placeholder="Wedding, Birthday, Simple celeb, etc."
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required>
+                                <label for="event_type_select" class="block text-sm font-medium text-gray-700">Event Type</label>
+                                <select name="event_type" id="event_type_select" 
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="" disabled selected>Select an event type</option>
+                                    <option value="Wedding">Wedding</option>
+                                    <option value="Birthday">Birthday</option>
+                                    <option value="Anniversary">Anniversary</option>
+                                    <option value="Corporate">Corporate</option>
+                                    <option value="Simple Celebration">Simple Celebration</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
+                            
 
                             <!--  Date -->
                             <div class="space-y-2">
@@ -77,6 +83,14 @@
                                 <input type="date" name="event_date" id="event_date"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     required>
+                            </div>
+
+                            {{-- OTHER EVENT TYPE --}}
+                            <div class="space-y-2" id="custom_event_type_container" style="display: none;">
+                                <label for="custom_event_type" class="block text-sm font-medium text-gray-700">Custom Event Type</label>
+                                <input type="text" name="custom_event_type" id="custom_event_type"
+                                    placeholder="Enter custom event type"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
                         {{-- TIME START AND END --}}
@@ -130,7 +144,7 @@
             </div>
 
 
-            <div class="lg:w-2/5 xl:w-1/3">
+            <aside class="lg:w-2/5 xl:w-1/3">
                 <div class="bg-white shadow-md rounded p-4">
                     <h2 class="text-xl font-bold mb-4">Order Total</h2>
                     <p class="mb-2">
@@ -153,9 +167,25 @@
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
-
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const eventTypeSelect = document.getElementById('event_type_select');
+                const customEventContainer = document.getElementById('custom_event_type_container');
+                
+                eventTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'Other') {
+                        customEventContainer.style.display = 'block';
+                        document.getElementById('custom_event_type').required = true;
+                    } else {
+                        customEventContainer.style.display = 'none';
+                        document.getElementById('custom_event_type').value = '';
+                        document.getElementById('custom_event_type').required = false;
+                    }
+                });
+            });
+        </script>
 </body>
 
 </html>

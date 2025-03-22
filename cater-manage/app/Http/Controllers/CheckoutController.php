@@ -89,6 +89,16 @@ class CheckoutController extends Controller
             'concerns'      => 'nullable|string'
         ]);
 
+        // IF OTHERS UNG EVENT TYPE, MAG BASED SYA DON SA CUSTOM EVENT TYPE
+        if ($data['event_type'] === 'Other') {
+            $customData = $request->validate([
+                'custom_event_type' => 'required|string'
+            ]);
+            $eventType = $customData['custom_event_type'];
+        } else {
+            $eventType = $data['event_type'];
+        }
+
         $user = Auth::user();
         $cart = $user->cart;
 
@@ -122,7 +132,7 @@ class CheckoutController extends Controller
         $order = Order::create([
             'user_id'         => $user->id,
             'total'           => $total,
-            'event_type'      => $data['event_type'],
+            'event_type'      => $eventType,
             'event_date'      => $data['event_date'],
             'event_start_time' => $data['event_start_time'],
             'event_start_end'  => $data['event_start_end'],

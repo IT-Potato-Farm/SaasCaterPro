@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/get-package/{id}', function ($id) {
     return response()->json(Package::findOrFail($id));
 });
-Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails'])->name('displayPackage');
+// Route::get('/package/details/{id}', [PackageController::class, 'showPackageDetails'])->name('displayPackage');
 Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 
@@ -135,6 +135,10 @@ Route::post('/package/store', [PackageController::class, 'store'])->name('packag
 
 Route::put('/packages/edit/{id}', [PackageController::class, 'editPackage'])->name('package.edit');
 Route::delete('/package/{id}', [PackageController::class, 'deletePackage'])->name('package.delete');
+// checking ng names if existing etc
+Route::get('/package/check-name', [PackageController::class, 'checkName'])->name('package.checkName');
+Route::get('/check-option-type', [PackageController::class, 'checkOptionType']);
+
 
 
 Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
@@ -147,6 +151,7 @@ Route::post('/package-items/check-name', [PackageItemController::class, 'checkNa
 Route::post('/packageutility/store', [PackageUtilityController::class, 'store'])->name('package_utilities.store');
 
 Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
+Route::get('/get-existing-package-items/{package}', [PackageItemController::class, 'getExistingpackageItems']);
 
 // menu items
 Route::resource('menu-items', MenuItemController::class);
@@ -157,7 +162,7 @@ Route::delete('/menuitems/{id}', [MenuItemController::class, 'deleteItem'])->nam
 Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAvailability'])
     ->name('check-name-availability');
 
-Route::get('/check-package-name', [PackageController::class, 'checkName'])->name('package-name-availability');
+// Route::get('/check-package-name', [PackageController::class, 'checkName'])->name('package-name-availability');
 
 
 
@@ -175,7 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+// Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
 // order

@@ -7,6 +7,7 @@ use App\Models\PackageItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use App\Models\PackageFoodItemOption;
 
 class PackageController extends Controller
 {
@@ -22,7 +23,7 @@ class PackageController extends Controller
     {
         //
     }
-    
+
     /**
      * Store a newly created resource in storage.
      */
@@ -31,7 +32,7 @@ class PackageController extends Controller
         try {
             $packageitemFields = $request->validate([
                 'category_id' => 'nullable|exists:categories,id',
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|unique:packages,name|max:255',
                 'description' => 'nullable|string',
                 'price_per_person' => 'required|numeric|min:0',
                 'min_pax' => 'required|integer|min:1',
@@ -54,6 +55,13 @@ class PackageController extends Controller
                 // Store only the filename, not the full path
                 $packageitemFields['image'] = $imageName;
             }
+
+            // recommended ni gpt 
+            // if ($request->hasFile('image')) {
+            //     $image = $request->file('image');
+            //     $imagePath = $image->store('packagePics', 'public'); // Stores in storage/app/public/packagePics
+            //     $packageitemFields['image'] = $imagePath; // Save relative path
+            // }
 
             $package = Package::create($packageitemFields);
 
@@ -90,38 +98,42 @@ class PackageController extends Controller
             'utilities' => $utilities,
         ]);
     }
-    public function showDetails($id)
+    public function showdetails($id)
     {
-        try {
-            $package = Package::with(['packageItems.menuItem.category'])
-                ->findOrFail($id);
+        // If you want to include PackageItem options, eager load the 'options' relationship.
+        $package = Package::with(['packageItems.options', 'utilities'])->find($id);
 
-            // Filter items using collection methods
-            $filterItems = function ($categoryName) use ($package) {
-                return $package->packageItems->filter(function ($item) use ($categoryName) {
-                    return optional($item->menuItem->category)->name === $categoryName;
-                })->values(); // Reset keys for proper JSON array
-            };
-
-            return response()->json([
-                'success' => true,
-                'package' => $package,
-                'foods' => $filterItems('Foods'),
-                'utilities' => $filterItems('Utilities')
-            ]);
-        } catch (\Exception $e) {
-            Log::error("Package details error: " . $e->getMessage());
+        if (!$package) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load package details. Please try again.'
-            ], 500);
+                'message' => 'Package not found. Please try again.'
+            ], 404);
         }
+
+        return response()->json([
+            'success'   => true,
+            'package'   => $package,
+            // Return packageItems as 'foods' to match your frontend.
+            'foods'     => $package->packageItems,
+            'utilities' => $package->utilities,
+        ]);
     }
 
     public function checkName(Request $request)
     {
         $name = $request->query('name');
         $exists = Package::where('name', $name)->exists();
+        return response()->json(['available' => !$exists]);
+    }
+    public function checkOptionType(Request $request)
+    {
+        $type = $request->query('type');
+        $packageFoodItemId = $request->query('package_food_item_id');
+
+        $exists = PackageFoodItemOption::where('type', $type)
+            ->where('package_food_item_id', $packageFoodItemId)
+            ->exists();
+
         return response()->json(['available' => !$exists]);
     }
 

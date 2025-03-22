@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('package_id')->nullable()->constrained('packages')->nullOnDelete();
             $table->string('variant')->nullable();
             $table->unsignedInteger('quantity')->default(1);
+            $table->json('selected_options')->nullable();
             $table->timestamps();
         });
     }

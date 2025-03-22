@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -202,22 +202,25 @@
                 </div>
 
                 <div x-show="activeScreen === 'products'" x-cloak>
+                    
                     <div class="mt-5">
 
 
                         <x-items.item-button />
 
                     </div>
-
                     <x-dashboard.products />
                 </div>
-
+                {{-- PACKAGE SECTION DASHBOARD --}}
                 <div x-show="activeScreen === 'packages'" x-cloak>
                     <x-packages.addbtn />
+                    <x-packages.add-package-item-btn />
+                    
                     <x-dashboard.packages />
-                    <x-packages.add-package-item />
-                    <x-packages.view-items-package />
+                    {{-- <x-packages.add-package-item /> --}} 
+
                 </div>
+
                 <div x-show="activeScreen === 'categories'" x-cloak>
                     <x-category.category-button />
                     <x-dashboard.categories />

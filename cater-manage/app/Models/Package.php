@@ -20,7 +20,7 @@ class Package extends Model
     ];
     public function packageItems()
     {
-        return $this->hasMany(PackageItem::class);
+        return $this->hasMany(PackageItem::class, 'package_id');
     }
 
     public function category()

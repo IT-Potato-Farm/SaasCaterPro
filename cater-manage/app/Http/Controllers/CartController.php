@@ -46,7 +46,8 @@ class CartController extends Controller
             'menu_item_id' => 'nullable|exists:menu_items,id',
             'package_id'   => 'nullable|exists:packages,id',
             'quantity'     => 'required|integer|min:1',
-            'variant'      => 'nullable|string'
+            'variant'      => 'nullable|string',
+            'selected_options' => 'nullable|array'
         ]);
 
         if (empty($validated['menu_item_id']) && empty($validated['package_id'])) {
@@ -77,11 +78,16 @@ class CartController extends Controller
                 if ($existingPackageItem) {
                     // UPDATE NG QUANTITY AND GINA MAKE SURE NA HINDI MAG EXCEED SA OVERALL LIMIT NA 2 
                     $newQuantity = min($existingPackageItem->quantity + $quantityToAdd, 2);
-                    $existingPackageItem->update(['quantity' => $newQuantity]);
+                    $existingPackageItem->update([
+                        'quantity' => $newQuantity,
+                        // Update selected options if provided (you may choose to merge or replace).
+                        'selected_options' => $request->input('selected_options')
+                    ]);
                     $successMessages[] = 'Package updated in cart.';
                 } else {
                     // Create a new package cart item with the allowed quantity.
                     $validated['quantity'] = $quantityToAdd;
+                    $validated['selected_options'] = $request->input('selected_options');
                     $cart->items()->create($validated);
                     $successMessages[] = 'Package added to cart.';
                 }

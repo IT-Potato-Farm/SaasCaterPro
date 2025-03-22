@@ -1,5 +1,5 @@
+{{-- ADD PACKAGE BUTTON SA ADMIN DASHBOARD  --}}
 <style>
-    /*  CSS for image preview */
     .image-preview {
         display: none;
         width: 100%;
@@ -33,9 +33,6 @@
                     </div>
 
                     <div class="space-y-4">
-                        
-                        
-
                         <div>
                             <label for="swal-name" class="block text-sm font-medium text-gray-700">Package Name:</label>
                             <input type="text" id="swal-name" name="name" required
@@ -99,20 +96,23 @@
                 });
 
                 // Real-time validations
-                nameInput.addEventListener('blur', () => validateField(nameInput, 'name'));
+                nameInput.addEventListener('blur', validatePackageName);
                 priceInput.addEventListener('input', () => validateField(priceInput, 'price_per_person'));
                 minPaxInput.addEventListener('input', () => validateField(minPaxInput, 'min_pax'));
             },
-            preConfirm: () => {
+            preConfirm: async () => {
+              
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 const formData = new FormData(document.getElementById('addPackageForm'));
                 let hasErrors = false;
 
-                // Validate all fields
-                hasErrors |= validateField(document.getElementById('swal-name'), 'name');
+                // Validate non-name fields
                 hasErrors |= validateField(document.getElementById('swal-price'), 'price_per_person');
                 hasErrors |= validateField(document.getElementById('swal-minimum'), 'min_pax');
                 hasErrors |= validateImage(document.getElementById('swal-image'));
+
+                // Asynchronously validate the package name for uniqueness
+                hasErrors |= await validatePackageName();
 
                 if (hasErrors) return false;
 
@@ -127,6 +127,31 @@
                 .catch(handleError);
             }
         }).then(handleSweetAlertResult);
+    }
+
+    async function validatePackageName() {
+        const nameInput = document.getElementById('swal-name');
+        const errorElement = document.getElementById('name-error');
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            errorElement.textContent = 'Package name is required';
+            return true;
+        }
+        try {
+            const response = await fetch("{{ route('package.checkName') }}?name=" + encodeURIComponent(name));
+            const data = await response.json();
+            if (!data.available) {
+                errorElement.textContent = 'Package name is already taken';
+                return true;
+            } else {
+                errorElement.textContent = '';
+                return false;
+            }
+        } catch (error) {
+            errorElement.textContent = 'Error validating package name';
+            return true;
+        }
     }
 
     function validateField(input, fieldName) {
@@ -167,7 +192,7 @@
             return true;
         }
         
-        if (file.size > 10 * 1024 * 1024) {
+        if (file.size > 10 * 1024 * 1024) { // 10MB
             errorElement.textContent = 'Image size must be less than 10MB';
             return true;
         }
@@ -209,4 +234,4 @@
     }
 </script>
 
-<button onclick="addPackage()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a package here</button>
+<button onclick="addPackage()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a package heree2</button>

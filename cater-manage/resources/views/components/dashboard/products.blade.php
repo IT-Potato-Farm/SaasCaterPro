@@ -70,7 +70,7 @@
 
 <div class="container mx-auto px-4 py-8">
     <header class="mb-8">
-        <h1 class="text-3xl text-center font-bold text-gray-800">Menu Items</h1>
+        <h1 class="text-3xl text-center font-bold text-gray-800">Party Trays</h1>
 
         <p class="text-gray-500 mt-2">Showing {{ $menuItems->count() }} items</p>
     </header>

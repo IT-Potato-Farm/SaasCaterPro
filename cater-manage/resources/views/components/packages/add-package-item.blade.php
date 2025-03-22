@@ -9,7 +9,7 @@
             <label class="block text-sm font-medium text-gray-700">Select Package</label>
             <select name="package_id" id="packageSelect" required class="w-full border rounded p-2">
                 <option value="">Choose a Package</option>
-                @foreach($packages as $package)
+                @foreach ($packages as $package)
                     <option value="{{ $package->id }}">{{ $package->name }}</option>
                 @endforeach
             </select>
@@ -18,10 +18,11 @@
         <!-- Menu Items Multi-Select -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Select Items</label>
-            <select name="menu_item_ids[]" id="menuItemsSelect" multiple required class="w-full border rounded p-2">
-                @foreach($menu_items as $menu_item)
-                    <option value="{{ $menu_item->id }}">
-                        {{ $menu_item->name }} - ({{$menu_item->description}})
+            <select name="package_item_ids[]" id="packageItemsSelect" multiple required class="w-full border rounded p-2">
+                @foreach ($package_items as $package_item)
+                    <option value="{{ $package_item->id }}">
+                        {{ $package_item->name }} -
+                        ({{ $package_item->options->pluck('type')->implode(', ') }})
                     </option>
                 @endforeach
             </select>
@@ -33,21 +34,21 @@
 </div>
 
 <script>
-    document.getElementById('packageSelect').addEventListener('change', function () {
+    document.getElementById('packageSelect').addEventListener('change', function() {
         let packageId = this.value;
-        let menuItemsSelect = document.getElementById('menuItemsSelect');
+        let packageItemsSelect = document.getElementById('packageItemsSelect');
 
         // Clear previous disables
-        Array.from(menuItemsSelect.options).forEach(option => {
+        Array.from(packageItemsSelect.options).forEach(option => {
             option.disabled = false;
             option.textContent = option.textContent.replace(" (Already in this Package)", "");
         });
 
         if (packageId) {
-            fetch(`/get-existing-menu-items/${packageId}`)
+            fetch(`/get-existing-package-items/${packageId}`)
                 .then(response => response.json())
                 .then(existingItems => {
-                    Array.from(menuItemsSelect.options).forEach(option => {
+                    Array.from(packageItemsSelect.options).forEach(option => {
                         if (existingItems.includes(parseInt(option.value))) {
                             option.disabled = true;
                             option.textContent += " (Already in this Package)";
