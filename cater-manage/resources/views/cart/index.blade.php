@@ -289,7 +289,7 @@
                                     required>
 
                                 <!-- Minimum pax notification -->
-                                <p id="minPaxNotification" class="text-xs text-blue-600 hidden"></p>
+                                <p id="minPaxNotification" class="text-xs text-red-600 hidden"></p>
                                 <p id="errorminPaxNotification" class="text-xs text-red-500 hidden">Please fill in the
                                     total guests field.</p>
                             </div>

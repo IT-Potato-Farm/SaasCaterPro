@@ -69,7 +69,8 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-4">Event Details</h2>
                     <div class="space-y-2">
-                        <p class="text-gray-600"><span class="font-medium">Date:</span> {{ $order->event_date }}</p>
+                        <p class="text-gray-600"><span class="font-medium">Date Start:</span> {{ $order->event_date_start }}</p>
+                        <p class="text-gray-600"><span class="font-medium">Date End:</span> {{ $order->event_date_end }}</p>
                         <p class="text-gray-600"><span class="font-medium">Location:</span> {{ $order->event_address }}
                         </p>
                         <p class="text-gray-600"><span class="font-medium">Guests:</span> {{ $order->total_guests }}</p>

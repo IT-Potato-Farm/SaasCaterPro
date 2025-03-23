@@ -17,9 +17,10 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->string('status')->default('pending');
             $table->string('event_type');
-            $table->time('event_start_time');  
+            $table->time('event_start_time');
             $table->time('event_start_end');
-            $table->date('event_date');
+            $table->date('event_date_start');  
+            $table->date('event_date_end');
             $table->text('event_address');
             $table->integer('total_guests');
             $table->text('concerns')->nullable();
