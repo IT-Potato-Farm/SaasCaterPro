@@ -36,4 +36,9 @@ class Order extends Model
     {
         return $this->status === 'paid';
     }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
 }

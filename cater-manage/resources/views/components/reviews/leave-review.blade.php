@@ -1,0 +1,122 @@
+<style>
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+
+<script>
+    function leaveReview() {
+        Swal.fire({
+            title: '<span class="text-2xl font-bold text-gray-800">Leave A Review</span>',
+            html: `
+                <form id="leaveReviewForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
+
+                    <div class="space-y-4">
+                    
+                        <!-- Rating -->
+                        <div>
+                            <label for="swal-rating" class="block text-sm font-medium text-gray-700">Rating:</label>
+                            <select id="swal-rating" name="rating"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Good</option>
+                                <option value="3">3 - Average</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="1">1 - Terrible</option>
+                            </select>
+                            <div id="rating-error" class="error-message"></div>
+                        </div>
+
+                        <!-- Review -->
+                        <div>
+                            <label for="swal-review" class="block text-sm font-medium text-gray-700">Review:</label>
+                            <textarea id="swal-review" name="review"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            <div id="review-error" class="error-message"></div>
+                        </div>
+
+                    </div>
+                </form>`,
+            showCancelButton: true,
+            confirmButtonText: 'Leave Review',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#ef4444',
+            
+            preConfirm: () => {
+                // Clear all previous error messages
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+                
+                const form = document.getElementById('addReviewForm');
+                const formData = new FormData(form);
+                const descriptionInput = document.getElementById('swal-description');
+                
+                let hasErrors = false;
+                
+                if (descriptionInput.value.trim().length > 1000) {
+                    document.getElementById('review-error').textContent = 'Review max words reached. Please leave a short review.';
+                    hasErrors = true;
+                }  
+                
+                if (hasErrors) {
+                    return false;
+                }
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '<span class="text-xl font-bold text-gray-800">Success!</span>',
+                    text: 'Review sent successfully!',
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    location.reload();
+                });
+            }
+        });
+    }
+    
+    function submitForm(formData) {
+
+        return fetch("{{ route('reviews.leaveReview') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Server Error. Please try again later.');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        const errorElement = document.getElementById(`${field}-error`);
+                        if (errorElement) {
+                            errorElement.textContent = data.errors[field][0];
+                        }
+                    });
+                    throw new Error('Error in validating. Please try again.');
+                } else {
+                    throw new Error(data.message || 'Error. Please try again.');
+                }
+            }
+            return data;
+        })
+        .catch(error => {
+            Swal.showValidationMessage(error.message);
+            return false;
+        });
+    }
+</script>
+
+<button onclick="leaveReview()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Leave a Review</button>

@@ -23,6 +23,7 @@ use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
 use App\Models\CartItem;
+use App\Http\Controllers\ReviewController;
 
 // route navigation each page
 
@@ -237,4 +238,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/orders/{order}/mark-partial', [OrderController::class, 'markAsPartial'])->name('orders.mark-partial');
     Route::put('/orders/{order}/mark-completed', [OrderController::class, 'markAsCompleted'])->name('orders.mark-completed');
     Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+});
+
+
+//reviews
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
+    Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
+});
+
+// Public views
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+
+// Admin views
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/reviews', [ReviewController::class, 'adminIndex'])->name('admin.reviews.index');
 });
