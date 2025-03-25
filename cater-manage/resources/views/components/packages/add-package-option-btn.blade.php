@@ -1,28 +1,24 @@
 <style>
-    .error-message {
-        color: #ef4444;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-        font-weight: bold;
-    }
+    
+
     .preview-container {
         margin-top: 5px;
         font-weight: bold;
         color: #3b82f6;
     }
-    .loading-spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(59, 130, 246, 0.3);
-        border-top: 2px solid #3b82f6;
-        border-radius: 50%;
-        animation: spin 0.6s linear infinite;
-        margin-left: 8px;
-    }
+
     @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
+    to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
 </style>
 
 <script>
@@ -38,7 +34,7 @@
                         <label for="packageSelect" class="block text-sm font-medium text-gray-700">Select Package</label>
                         <select name="package_id" id="packageSelect" required class="w-full border rounded p-2">
                             <option value="">Choose a Package</option>
-                            @foreach($packages as $package)
+                            @foreach ($packages as $package)
                                 <option value="{{ $package->id }}">{{ $package->name }}</option>
                             @endforeach
                         </select>
@@ -56,11 +52,13 @@
                     </div>
                     
                     <!-- Option Type with Live Preview & Duplicate Check -->
-                    <div>
+                    <div class="relative">
                         <label for="optionType" class="block text-sm font-medium text-gray-700">Option Type</label>
-                        <input type="text" id="optionType" name="type" required class="w-full border rounded p-2">
-                        <div id="type-error" class="error-message"></div>
-                        <span id="loadingSpinner" class="loading-spinner" style="display: none;"></span>
+                        <div class="relative w-full">
+                            <input type="text" id="optionType" name="type" required class="w-full border rounded p-2 pr-10">
+                            <span id="loadingSpinner" class="loading-spinner hidden absolute right-2 top-1/2 -translate-y-1/2"></span>
+                        </div>
+                        <div id="type-error" class="error-message text-red-500 text-sm mt-1 font-bold"></div>
                     </div>
                     
                     <!-- Description -->
@@ -87,12 +85,12 @@
             didOpen: () => {
                 const packageSelect = document.getElementById('packageSelect');
                 const foodItemSelect = document.getElementById('foodItemSelect');
-                
+
                 // When package is selected, populate package items.
                 packageSelect.addEventListener('change', function() {
                     const packageId = this.value;
                     foodItemSelect.innerHTML = '<option value="">Choose a Package Item</option>';
-                    if(packageId && packageItemsMapping[packageId]) {
+                    if (packageId && packageItemsMapping[packageId]) {
                         packageItemsMapping[packageId].forEach(item => {
                             const option = document.createElement('option');
                             option.value = item.id;
@@ -101,7 +99,7 @@
                         });
                     }
                 });
-                
+
                 const typeInput = document.getElementById('optionType');
                 const loadingSpinner = document.getElementById('loadingSpinner');
                 typeInput.addEventListener('input', async function() {
@@ -109,10 +107,13 @@
                     const packageFoodItemId = foodItemSelect.value;
                     if (optionType !== "" && packageFoodItemId !== "") {
                         loadingSpinner.style.display = "inline-block";
-                        let response = await fetch(`/check-option-type?package_food_item_id=${packageFoodItemId}&type=${optionType}`);
+                        let response = await fetch(
+                            `/check-option-type?package_food_item_id=${packageFoodItemId}&type=${optionType}`
+                            );
                         let data = await response.json();
                         if (!data.available) {
-                            document.getElementById('type-error').textContent = 'This option type already exists for the selected package item.';
+                            document.getElementById('type-error').textContent =
+                                'This option type already exists for the selected package item.';
                             optionTypeExists = true;
                         } else {
                             document.getElementById('type-error').textContent = '';
@@ -121,7 +122,7 @@
                         loadingSpinner.style.display = "none";
                     }
                 });
-                
+
                 // Optional: Add image preview handler for optionImage
                 const optionImageInput = document.getElementById('optionImage');
                 optionImageInput.addEventListener('change', function() {
@@ -130,7 +131,8 @@
                         const reader = new FileReader();
                         reader.onload = function(e) {
                             document.getElementById('optionImagePreview').src = e.target.result;
-                            document.getElementById('optionImagePreview').style.display = 'block';
+                            document.getElementById('optionImagePreview').style.display =
+                                'block';
                         }
                         reader.readAsDataURL(file);
                     }
@@ -139,65 +141,67 @@
             preConfirm: async () => {
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 let hasErrors = false;
-                
+
                 // Validate Package selection.
                 const packageSelect = document.getElementById('packageSelect');
                 if (!packageSelect.value) {
                     document.getElementById('package_id-error').textContent = 'Please select a package.';
                     hasErrors = true;
                 }
-                
+
                 // Validate Package Item selection.
                 const foodItemSelect = document.getElementById('foodItemSelect');
                 if (!foodItemSelect.value) {
-                    document.getElementById('package_food_item_id-error').textContent = 'Please select a package item.';
+                    document.getElementById('package_food_item_id-error').textContent =
+                        'Please select a package item.';
                     hasErrors = true;
                 }
-                
+
                 // Validate Option Type.
                 const typeInput = document.getElementById('optionType');
                 if (!typeInput.value.trim()) {
                     document.getElementById('type-error').textContent = 'Option type is required.';
                     hasErrors = true;
                 }
-                
+
                 if (optionTypeExists) {
                     document.getElementById('type-error').textContent = 'This option type already exists.';
                     hasErrors = true;
                 }
-                
+
                 if (hasErrors) return false;
-                
+
                 const form = document.getElementById('addFoodItemOptionForm');
                 const formData = new FormData(form);
-                
+
                 return fetch("{{ route('package_food_item_options.store') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(data => {
-                            if (data.errors) {
-                                Object.entries(data.errors).forEach(([field, messages]) => {
-                                    const errorEl = document.getElementById(`${field}-error`);
-                                    if (errorEl) {
-                                        errorEl.textContent = messages[0];
-                                    }
-                                });
-                            }
-                            throw new Error(data.message || 'An error occurred.');
-                        });
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(`Request failed: ${error}`);
-                    return false;
-                });
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                if (data.errors) {
+                                    Object.entries(data.errors).forEach(([field, messages]) => {
+                                        const errorEl = document.getElementById(
+                                            `${field}-error`);
+                                        if (errorEl) {
+                                            errorEl.textContent = messages[0];
+                                        }
+                                    });
+                                }
+                                throw new Error(data.message || 'An error occurred.');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error}`);
+                        return false;
+                    });
             }
         }).then((result) => {
             if (result.isConfirmed) {

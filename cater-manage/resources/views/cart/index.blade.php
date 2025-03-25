@@ -35,6 +35,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
 
@@ -75,7 +76,7 @@
                     href="{{ route('all-menu') }}">Browse Menus</a>
             </div>
         @else
-            <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
+            <h1 class="text-3xl font-bold mb-6 text-center">Your Cart</h1>
             <div class="flex flex-col md:flex-row gap-8">
                 <!-- Left Section: Cart Items Table -->
                 <div class="md:w-3/4">
@@ -95,7 +96,7 @@
                                     <th class="py-2 text-left"> Pax</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="cart-items">
                                 @php
                                     $extendedTotal = 0; // Extended estimation for order summary
                                 @endphp
@@ -288,7 +289,7 @@
                                     required>
 
                                 <!-- Minimum pax notification -->
-                                <p id="minPaxNotification" class="text-xs text-blue-600 hidden"></p>
+                                <p id="minPaxNotification" class="text-xs text-red-600 hidden"></p>
                                 <p id="errorminPaxNotification" class="text-xs text-red-500 hidden">Please fill in the
                                     total guests field.</p>
                             </div>
@@ -298,7 +299,7 @@
                             </p> --}}
                             <p class="mb-2">
                                 <span class="font-semibold">Total Price:</span>
-                                ₱{{ number_format($extendedTotal, 2) }}
+                                <span id="order-summary-total"> ₱{{ number_format($extendedTotal, 2) }}</span>
                             </p>
                             <!-- Checkout Button -->
                             <button type="submit"
@@ -384,7 +385,7 @@
             </div>
         @endif
     </div> --}}
-
+    {{-- COMPONENT NG LAHAT NG ITEMS SA BABA NG CART PART --}}
     <x-allmenu.menusection />
     <script>
         // Convert PHP packagesMinPax array to a JavaScript variable.
@@ -420,6 +421,31 @@
             }
 
         });
+
+        function fetchCartUpdates() {
+            $.ajax({
+                url: "{{ route('cart.index') }}",
+                type: "GET",
+                success: function(response) {
+                    // Extract updated cart items and order total from the returned HTML
+                    var updatedCartItems = $(response).find('#cart-items').html();
+                    var updatedTotal = $(response).find('#order-summary-total').html();
+                    // Update the current page only if the new content is found
+                    if (updatedCartItems) {
+                        $('#cart-items').html(updatedCartItems);
+                    }
+                    if (updatedTotal) {
+                        $('#order-summary-total').html(updatedTotal);
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error updating cart:", xhr.responseText);
+                }
+            });
+        }
+
+        // Call the function every 1 seconds (1000 ms)
+        setInterval(fetchCartUpdates, 1000);
     </script>
     @if (session('error'))
         <script>
@@ -431,15 +457,7 @@
         </script>
     @endif
 
-    {{-- @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: "{{ session('success') }}"
-            });
-        </script>
-    @endif --}}
+
 </body>
 
 </html>

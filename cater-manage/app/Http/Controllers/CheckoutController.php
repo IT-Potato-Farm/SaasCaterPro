@@ -81,7 +81,7 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'event_type'    => 'required|string',
-            'event_date'    => 'required|date',
+            'event_date'         => 'required|string',
             'event_start_time' => 'required|date_format:H:i',
             'event_start_end'  => 'required|date_format:H:i',
             'event_address' => 'required|string',
@@ -99,7 +99,16 @@ class CheckoutController extends Controller
             $eventType = $data['event_type'];
         }
 
-        $user = Auth::user();
+        $dateRange = explode(' to ', $data['event_date']);
+        if (count($dateRange) === 2) {
+            $event_date_start = trim($dateRange[0]);
+            $event_date_end   = trim($dateRange[1]);
+        } else {
+            // If single date, assign to both start and end.
+            $event_date_start = trim($data['event_date']);
+            $event_date_end   = trim($data['event_date']);
+        }
+
         $cart = $user->cart;
 
         if (!$cart || $cart->items->isEmpty()) {
@@ -133,7 +142,8 @@ class CheckoutController extends Controller
             'user_id'         => $user->id,
             'total'           => $total,
             'event_type'      => $eventType,
-            'event_date'      => $data['event_date'],
+            'event_date_start' => $event_date_start,
+            'event_date_end'   => $event_date_end,
             'event_start_time' => $data['event_start_time'],
             'event_start_end'  => $data['event_start_end'],
             'event_address'   => $data['event_address'],

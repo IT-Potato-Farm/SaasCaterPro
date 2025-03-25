@@ -7,12 +7,15 @@
     <title>Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 </head>
 
 <body class="bg-gray-50">
     <x-customer.navbar />
 
-    <div class="container mx-auto px-4 py-8 lg:py-12 max-w-7xl">
+    <div class="container mx-auto px-4 py-8  lg:py-12 max-w-7xl">
         <!-- breadcrumbs -->
         <nav class="mb-6" aria-label="Breadcrumb">
             <ol class="flex items-center space-x-2">
@@ -56,92 +59,110 @@
             <!-- booking form  -->
             <div class="lg:w-3/5 xl:w-2/3">
                 <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Event Information</h2>
-                    <form action="{{ route('checkout.store') }}" method="POST" class="space-y-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-8">Event Information</h2>
+                    <form action="{{ route('checkout.store') }}" method="POST" class="space-y-8">
                         @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Event Type -->
-                            <div class="space-y-2">
-                                <label for="event_type_select" class="block text-sm font-medium text-gray-700">Event Type</label>
-                                <select name="event_type" id="event_type_select" 
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                                    <option value="" disabled selected>Select an event type</option>
-                                    <option value="Wedding">Wedding</option>
-                                    <option value="Birthday">Birthday</option>
-                                    <option value="Anniversary">Anniversary</option>
-                                    <option value="Corporate">Corporate</option>
-                                    <option value="Simple Celebration">Simple Celebration</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            
+                        <!-- Event Details Section -->
+                        <div class="space-y-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Event Type -->
+                                <div class="space-y-2">
+                                    <label for="event_type_select"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Event Type
+                                    </label>
+                                    <select name="event_type" id="event_type_select"
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        required>
+                                        <option value="" disabled selected>Select an event type</option>
+                                        <option value="Wedding">Wedding</option>
+                                        <option value="Birthday">Birthday</option>
+                                        <option value="Anniversary">Anniversary</option>
+                                        <option value="Corporate">Corporate</option>
+                                        <option value="Simple Celebration">Simple Celebration</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
 
-                            <!--  Date -->
-                            <div class="space-y-2">
-                                <label for="event_date" class="block text-sm font-medium text-gray-700">Event
-                                    Date</label>
-                                <input type="date" name="event_date" id="event_date"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required>
+                                <!-- Event Date -->
+                                <div class="space-y-2">
+                                    <label for="event_date" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Event Date
+                                    </label>
+                                    <!-- Note: input type changed to text for proper Flatpickr integration -->
+                                    <input type="text" name="event_date" id="event_date"
+                                        placeholder="Select a date or date range"
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        required>
+                                </div>
+
                             </div>
 
-                            {{-- OTHER EVENT TYPE --}}
-                            <div class="space-y-2" id="custom_event_type_container" style="display: none;">
-                                <label for="custom_event_type" class="block text-sm font-medium text-gray-700">Custom Event Type</label>
+                            <!--  OTHER EVENT TYPE  -->
+                            <div class="space-y-2 hidden" id="custom_event_type_container">
+                                <label for="custom_event_type" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Custom Event Type
+                                </label>
                                 <input type="text" name="custom_event_type" id="custom_event_type"
                                     placeholder="Enter custom event type"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
+
+                            <!-- TIME START AND END -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Event Start Time -->
+                                <div class="space-y-2">
+                                    <label for="event_start_time"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Start Time
+                                    </label>
+                                    <input type="time" name="event_start_time" id="event_start_time"
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        required>
+                                </div>
+                                {{-- event end --}}
+                                <div class="space-y-2">
+                                    <label for="event_start_end" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        End Time
+                                    </label>
+                                    <input type="time" name="event_start_end" id="event_start_end"
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        required>
+                                </div>
                             </div>
                         </div>
-                        {{-- TIME START AND END --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                            <!-- Event Start Time -->
+
+                        <!-- Locatio Section -->
+                        <div class="space-y-8">
                             <div class="space-y-2">
-                                <label for="event_start_time" class="block text-sm font-medium text-gray-700">Event
-                                    Start Time</label>
-                                <input type="time" name="event_start_time" id="event_start_time"
-                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500"
-                                    required>
+                                <label for="event_address" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Event Address
+                                </label>
+                                <textarea name="event_address" id="event_address" rows="3" placeholder="Enter full event address"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    required></textarea>
                             </div>
-                            <!-- Event End Time -->
+                            <!-- concerns and other shits -->
                             <div class="space-y-2">
-                                <label for="event_start_end" class="block text-sm font-medium text-gray-700">Event End
-                                    Time</label>
-                                <input type="time" name="event_start_end" id="event_start_end"
-                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500"
-                                    required>
+                                <label for="concerns" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Special Requests
+                                </label>
+                                <textarea name="concerns" id="concerns" rows="3" placeholder="Any special requirements or notes"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"></textarea>
                             </div>
                         </div>
-
-                        <!-- address -->
-                        <div class="space-y-2">
-                            <label for="event_address" class="block text-sm font-medium text-gray-700">Event
-                                Address</label>
-                            <textarea name="event_address" id="event_address" rows="3" placeholder="Enter the event location"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                required></textarea>
-                        </div>
-
-
-
-                        <!-- concerns and other shits -->
-                        <div class="space-y-2">
-                            <label for="concerns" class="block text-sm font-medium text-gray-700">Special
-                                Requests</label>
-                            <textarea name="concerns" id="concerns" rows="3" placeholder="Other requests or concerns"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        </div>
-
                         {{-- naka hide na total guests sana gumana huhu --}}
                         <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
 
                         <button type="submit" @if (isset($pendingOrder)) disabled @endif
-                            class="w-full bg-blue-600 text-white py-3.5 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
                             Confirm & Place Order
                         </button>
                     </form>
                 </div>
             </div>
+
+
 
 
             <aside class="lg:w-2/5 xl:w-1/3">
@@ -170,10 +191,15 @@
             </aside>
         </div>
         <script>
+            flatpickr("#event_date", {
+                mode: "range", // Allow selecting a range of dates
+                dateFormat: "Y-m-d", // Format the date as YYYY-MM-DD
+                minDate: "today" // Only allow today and future dates
+            });
             document.addEventListener('DOMContentLoaded', function() {
                 const eventTypeSelect = document.getElementById('event_type_select');
                 const customEventContainer = document.getElementById('custom_event_type_container');
-                
+
                 eventTypeSelect.addEventListener('change', function() {
                     if (this.value === 'Other') {
                         customEventContainer.style.display = 'block';
