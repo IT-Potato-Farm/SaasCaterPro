@@ -10,6 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Heroicons -->
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pap0+X+J6XlKqmvdZJzH8g4OoJ1+xM2JpUpbO8hzF2Pz2BXl+AGoD54YkS++1MJaa4xSLSFI0pY2vLxA0f5s0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body class="bg-gray-100">
@@ -167,11 +171,31 @@
                                     <th class="px-6 py-4 text-left">Type</th>
                                     <th class="px-6 py-4 text-center">Quantity</th>
                                     <th class="px-6 py-4 text-left">Variant</th>
-                                    <th class="px-6 py-4 text-right">Price</th>
+                                    {{-- <th class="px-6 py-4 text-right">Price</th> --}}
+                                    <th class="px-6 py-4 text-right">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
                                 @foreach ($order->orderItems as $item)
+                                    @php
+                                        if ($item->item_type === 'package') {
+                                            $guestCount = is_numeric($item->variant) ? (int) $item->variant : 1;
+                                            $subtotal = $item->price * $guestCount * $item->quantity;
+
+                                            //  "₱270 x 100 guests x 1 package(s)"
+                                            $priceBreakdown =
+                                                '₱' .
+                                                number_format($item->price, 2) .
+                                                ' x ' .
+                                                $guestCount .
+                                                ' guests' .
+                                                ($item->quantity > 1 ? ' x ' . $item->quantity . ' package(s)' : '');
+                                        } else {
+                                            $subtotal = $item->price * $item->quantity;
+                                            $priceBreakdown =
+                                                '₱' . number_format($item->price, 2) . ' x ' . $item->quantity;
+                                        }
+                                    @endphp
                                     <tr>
                                         <td class="px-6 py-4 font-medium text-gray-900">
                                             @if ($item->item_type === 'menu_item')
@@ -209,7 +233,18 @@
                                                 -
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 text-right">₱{{ number_format($item->price, 2) }}</td>
+                                        {{-- <td class="px-6 py-4 text-right">₱{{ number_format($item->price, 2) }}</td> --}}
+                                        <td class="px-6 py-4 text-right align-top">
+                                            <span class="block font-semibold text-gray-900">
+                                                ₱{{ number_format($subtotal, 2) }}
+                                            </span>
+                                            {{-- Small note showing the breakdown --}}
+                                            <small class="text-xs text-gray-500">
+                                                {{ $priceBreakdown }}
+                                            </small>
+                                        </td>
+
+
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -226,10 +261,12 @@
                 <!--  Show button if order status is wla d2 -->
                 @if (!in_array($order->status, ['partial', 'ongoing', 'paid', 'completed', 'cancelled']))
                     <div class="flex justify-center mt-6">
-                        <form id="cancelForm" action="{{ route('orderUser.cancel', ['order' => $order->id]) }}" method="POST">
+                        <form id="cancelForm" action="{{ route('orderUser.cancel', ['order' => $order->id]) }}"
+                            method="POST">
                             @csrf
                             @method('PUT')
-                            <button type="button" onclick="confirmCancel()" class="px-4 py-2 text-white font-semibold rounded-lg bg-red-500 hover:bg-red-600">
+                            <button type="button" onclick="confirmCancel()"
+                                class="px-4 py-2 text-white font-semibold rounded-lg bg-red-500 hover:bg-red-600">
                                 Cancel Order
                             </button>
                         </form>

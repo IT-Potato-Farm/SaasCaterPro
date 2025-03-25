@@ -345,6 +345,149 @@
             @endif
         </div>
     @endif
+
+    {{-- CALENDAR EVENTS --}}
+    @php
+    $calendarEvents = $orders->map(function ($order) {
+        $status = strtolower($order->status);
+        // Set default color to blue
+        $color = '#3b82f6';
+        if ($status === 'pending') {
+            $color = '#FBBF24'; // Amber
+        } elseif ($status === 'partially paid') {
+            $color = '#F59E0B'; // Orange
+        } elseif ($status === 'ongoing') {
+            $color = '#60A5FA'; // Light blue
+        } elseif ($status === 'paid') {
+            $color = '#10B981'; // Green
+        } elseif ($status === 'completed') {
+            $color = '#34D399'; // Light green
+        } elseif ($status === 'cancelled') {
+            $color = '#EF4444'; // Red
+        }
+        return [
+            'title'           => $order->event_type, // e.g., "Birthday"
+            'start'           => $order->event_date_start, // Format: YYYY-MM-DD
+            // End date is exclusive in FullCalendar.
+            'end'   => \Carbon\Carbon::parse($order->event_date_end)->addDay()->toDateString(),
+            'start_time'      => $order->event_start_time, // e.g., "00:24:00"
+            'end_time'        => $order->event_start_end,   // e.g., "15:24:00"
+            'status'          => $order->status,
+            'backgroundColor' => $color,
+            'borderColor'     => $color,
+        ];
+    })->toArray();
+@endphp
+
+{{-- CALENDAR BOOKINGS --}}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center font-serif">Event Calendar</h1>
+        
+        <!-- Calendar Container -->
+        <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
+            <div id="calendar" class="p-4 md:p-6 min-h-[680px]"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+    //  function to convert "HH:mm:ss" into a 12-hour format with AM/PM.
+    function formatTime(timeString) {
+        if (!timeString) return '';
+        const [hours, minutes, seconds] = timeString.split(':');
+        const date = new Date();
+        date.setHours(hours);
+        date.setMinutes(minutes);
+        date.setSeconds(seconds);
+        return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var events = @json($calendarEvents);
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
+            },
+            views: {
+                listMonth: { buttonText: 'List View' }
+            },
+            contentHeight: 'auto',
+            events: events,
+            eventClassNames: 'hover:shadow-md transition-shadow',
+            dayHeaderClassNames: 'text-gray-700 font-semibold',
+            // AM/PM format.
+            eventContent: function(arg) {
+                var title = arg.event.title;
+                var startTime = formatTime(arg.event.extendedProps.start_time);
+                var endTime = formatTime(arg.event.extendedProps.end_time);
+                return {
+                    html: `<div class="px-2 py-1 text-sm font-medium">
+                        ${title}<br>
+                        <span class="text-xs text-white">${startTime} - ${endTime}</span>
+                    </div>`
+                };
+            },
+            eventTimeFormat: {
+                hour: 'numeric',
+                minute: '2-digit',
+                meridiem: 'short'
+            },
+            buttonText: {
+                today: 'Today'
+            },
+            dayMaxEventRows: 3,
+            fixedWeekCount: false,
+            initialDate: new Date(),
+            themeSystem: 'bootstrap5',
+            windowResize: function(view) {
+                if (window.innerWidth < 768) {
+                    calendar.changeView('dayGridMonth');
+                }
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+
+<style>
+    .fc-toolbar-title {
+        @apply text-xl font-bold text-gray-800 font-serif;
+    }
+    
+    .fc-button-primary {
+        @apply bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm font-medium rounded-lg transition-colors;
+    }
+    
+    .fc-button-active {
+        @apply bg-blue-100 text-blue-600 border-blue-200;
+    }
+    
+    .fc-daygrid-day-number {
+        @apply text-gray-600 font-medium;
+    }
+    
+    .fc-daygrid-day {
+        @apply hover:bg-gray-50 transition-colors;
+    }
+    
+    .fc-event {
+        @apply rounded-lg border-none shadow-sm;
+    }
+    
+    .fc-today {
+        @apply bg-blue-50;
+    }
+</style>
+
+
 </div>
 
 
@@ -358,14 +501,12 @@
         const rows = document.querySelectorAll('#ordersTable tbody tr');
 
         rows.forEach(function(row) {
-            // Read the data attributes
             const rowStatus = row.dataset.status;
             const rowDate = row.dataset.date;
 
 
             let showRow = true;
 
-            // Filter by status 
             if (statusFilter && rowStatus !== statusFilter) {
                 showRow = false;
             }
