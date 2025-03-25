@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\Cart;
+use App\Models\Order;
 use App\Mail\TestEmail;
 use App\Models\Package;
+use App\Models\CartItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +24,6 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
-use App\Models\CartItem;
 
 // route navigation each page
 
@@ -110,7 +111,19 @@ Route::get('/home', function () {
 });
 
 
+// DATE ROUTE FUNCTION API FOR GETTING THE DATEEEESSSS
+Route::get('/get-booked-dates', function () {
+    $bookedDates = Order::whereNotIn('status', ['cancelled'])
+        ->get()
+        ->map(function ($order) {
+            return [
+                'start' => $order->event_date_start,
+                'end' => $order->event_date_end,
+            ];
+        });
 
+    return response()->json($bookedDates);
+});
 
 
 //CATEGORY ROUTES

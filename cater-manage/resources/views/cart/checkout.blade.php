@@ -191,25 +191,30 @@
             </aside>
         </div>
         <script>
-            flatpickr("#event_date", {
-                mode: "range", // Allow selecting a range of dates
-                dateFormat: "Y-m-d", // Format the date as YYYY-MM-DD
-                minDate: "today" // Only allow today and future dates
-            });
-            document.addEventListener('DOMContentLoaded', function() {
-                const eventTypeSelect = document.getElementById('event_type_select');
-                const customEventContainer = document.getElementById('custom_event_type_container');
-
-                eventTypeSelect.addEventListener('change', function() {
-                    if (this.value === 'Other') {
-                        customEventContainer.style.display = 'block';
-                        document.getElementById('custom_event_type').required = true;
-                    } else {
-                        customEventContainer.style.display = 'none';
-                        document.getElementById('custom_event_type').value = '';
-                        document.getElementById('custom_event_type').required = false;
-                    }
-                });
+            document.addEventListener('DOMContentLoaded', function () {
+                fetch('/get-booked-dates')
+                    .then(response => response.json())
+                    .then(data => {
+                        let disabledDates = [];
+                        
+                        data.forEach(range => {
+                            let start = new Date(range.start);
+                            let end = new Date(range.end);
+        
+                            while (start <= end) {
+                                disabledDates.push(start.toISOString().split('T')[0]); // Format: YYYY-MM-DD
+                                start.setDate(start.getDate() + 1);
+                            }
+                        });
+        
+                        flatpickr("#event_date", {
+                            mode: "range",
+                            dateFormat: "Y-m-d",
+                            minDate: "today",
+                            disable: disabledDates
+                        });
+                    })
+                    .catch(error => console.error('Error fetching booked dates:', error));
             });
         </script>
 </body>
