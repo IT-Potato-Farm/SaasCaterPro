@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Review;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -43,19 +44,32 @@ class ReviewController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Ensure valid image
             ]);
 
-            // Handle Image Upload
-            $imagePath = null;
+            // Validate the incoming request (including the image)
+            $request->validate([
+                'rating' => 'required|integer|min:1|max:5',
+                'review' => 'required|string|max:500',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',  // Validate image
+            ]);
+
+            // Check if there is an image in the request
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('reviews', 'public');
+                // Get the file from the request
+                $image = $request->file('image');
+
+                // Create a unique name for the image
+                $imageName = time() . '-' . $image->getClientOriginalName();
+
+                // Move the image to the 'public/reviews' directory
+                $image->move(public_path('reviews'), $imageName);
             }
 
             // Create the review
             Review::create([
                 'user_id' => Auth::id(),
-                'order_id' => $order->id,
+                'order_id' => $request->order_id,  // Assuming you're getting order_id from the request
                 'rating' => $request->rating,
                 'review' => $request->review,
-                'image' => $imagePath,
+                'image' => isset($imageName) ? $imageName : null,  // Store image name if available
             ]);
 
             return response()->json([

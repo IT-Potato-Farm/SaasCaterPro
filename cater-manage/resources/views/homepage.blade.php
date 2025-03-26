@@ -18,7 +18,7 @@
     {{-- <x-menu-modal /> --}}
     <x-customer.sweet-alert-menu />
     <x-customer.why-choose-us />
-    <x-customer.ratingsection/>
+    <x-customer.ratingsection :reviews="$reviews"/>
     <x-customer.about-us/>
     <x-customer.footer/>
 </body>

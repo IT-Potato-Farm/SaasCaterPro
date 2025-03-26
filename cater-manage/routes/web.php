@@ -24,6 +24,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
 use App\Models\CartItem;
 use App\Http\Controllers\ReviewController;
+use App\Models\Review;
 
 // route navigation each page
 
@@ -38,9 +39,18 @@ Route::get('/register', function () {
     return view('register');
 });
 
+
+// ginawa ko comment dahil may reviews na -M
+// Route::get('/', function () {
+//     return view('homepage');
+// })->name('landing');
+
+//ito yun bago -M
 Route::get('/', function () {
-    return view('homepage');
-})->name('landing');
+    $reviews = Review::with('user')->latest()->get();
+    return view('homepage', compact('reviews'));
+})->name('landing');;
+
 
 
 Route::get('/all-menus', function () {
@@ -250,8 +260,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
 });
 
-// Public views
-Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
 
 // Admin views
 Route::middleware(['auth', 'admin'])->group(function () {
