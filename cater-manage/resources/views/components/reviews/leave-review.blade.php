@@ -46,10 +46,9 @@
             cancelButtonColor: '#ef4444',
             
             preConfirm: () => {
-                // Clear all previous error messages
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 
-                const form = document.getElementById('addReviewForm');
+                const form = document.getElementById('leaveReviewForm');
                 const formData = new FormData(form);
                 const descriptionInput = document.getElementById('swal-description');
                 
