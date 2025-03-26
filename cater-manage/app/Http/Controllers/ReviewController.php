@@ -11,36 +11,64 @@ class ReviewController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'order_id' => 'required|exists:orders,id',
-            'rating' => 'required|integer|min:1|max:5',
-            'review' => 'required|string|max:500',
-        ]);
+        try {
+            // Retrieve the order first
+            $order = Order::where('id', $request->order_id)
+                    ->where('user_id', Auth::id())
+                    ->where('status', 'completed')
+                    ->first();
 
-        // Check if the order belongs to the user and is completed
-        $order = Order::where('id', $request->order_id)
-                      ->where('user_id', Auth::id())
-                      ->where('status', 'completed')
-                      ->first();
+            ///   dd($order);
 
-        if (!$order) {
-            return back()->with('error', 'You can only review completed orders.');
+            // Check if the order exists and belongs to the user
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can only review completed orders.',
+                ], 403);
+            }
+
+            // Check if the order already has a review
+            if ($order->review) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already reviewed this order.',
+                ], 400);
+            }
+
+            // Validate request inputs
+            $request->validate([
+                'rating' => 'required|integer|min:1|max:5',
+                'review' => 'required|string|max:500',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Ensure valid image
+            ]);
+
+            // Handle Image Upload
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('reviews', 'public');
+            }
+
+            // Create the review
+            Review::create([
+                'user_id' => Auth::id(),
+                'order_id' => $order->id,
+                'rating' => $request->rating,
+                'review' => $request->review,
+                'image' => $imagePath,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Review submitted successfully!',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        // Check if review already exists
-        if ($order->review) {
-            return back()->with('error', 'You have already reviewed this order.');
-        }
-
-        // Create review
-        Review::create([
-            'user_id' => Auth::id(),
-            'order_id' => $request->order_id,
-            'rating' => $request->rating,
-            'review' => $request->review,
-        ]);
-
-        return back()->with('success', 'Review submitted successfully!');
     }
 
     public function edit($id)
@@ -51,7 +79,7 @@ class ReviewController extends Controller
 
     public function update(Request $request, Review $review)
     {
-        if ($review->user_id !== Auth::id()) {
+        if ($review->user_id != Auth::id()) {
             return back()->with('error', 'Unauthorized action.');
         }
 
@@ -70,7 +98,7 @@ class ReviewController extends Controller
 
     public function destroy(Review $review)
     {
-        if ($review->user_id !== Auth::id()) {
+        if ($review->user_id != Auth::id()) {
             return back()->with('error', 'Unauthorized action.');
         }
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('rating')->checkBetween(1, 5);
             $table->text('review');
             $table->timestamps();
+            $table->string('image')->nullable();
         });
     }
 

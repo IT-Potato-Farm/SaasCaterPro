@@ -12,6 +12,42 @@
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
 </head>
 
+
+@if (session('success'))
+    <script>
+        Swal.fire({
+            title: 'Success!',
+            text: "{{ session('success') }}",
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
+
+@if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: '{{ session('error') }}',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#fef2f2',
+            iconColor: '#dc2626',
+            color: '#7f1d1d',
+            timerProgressBar: true,
+            showClass: {
+                popup: 'swal2-show animate-slide-in'
+            },
+            hideClass: {
+                popup: 'swal2-hide animate-slide-out'
+            }
+        });
+    </script>
+@endif
+
 <body class="bg-gray-50">
     <x-customer.navbar />
     <div class="flex h-screen">
@@ -97,7 +133,7 @@
                                                     @if($order->review)
                                                         <a href="#">Show Review</a>
                                                     @else
-                                                        <x-reviews.leave-review />
+                                                        <x-reviews.leave-review :order="$order" />
                                                     @endif
                                             @else
                                                     <h4>Not yet Applicable</h4>
@@ -141,6 +177,32 @@
             </main>
         </div>
     </div>
+
+
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#f0fdfa',
+                iconColor: '#06b6d4',
+                color: '#164e63',
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'swal2-show animate-slide-in'
+                },
+                hideClass: {
+                    popup: 'swal2-hide animate-slide-out'
+                }
+            });
+        </script>
+    @endif
+
 </body>
 
 </html>
