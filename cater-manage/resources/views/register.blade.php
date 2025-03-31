@@ -122,18 +122,7 @@
                     @enderror
                 </div>
 
-                <!--terms and cond -->
-                <div class="field-container flex items-center">
-                    <input id="terms" type="checkbox" name="terms"
-                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded @error('terms') border-red-500 @enderror">
-                    <label for="terms" class="ml-2 text-sm text-gray-600">
-                        I accept the
-                        <a href="#" class="text-blue-600 hover:underline">Terms and Conditions</a>
-                    </label>
-                    @error('terms')
-                        <p class="error-msg text-red-600 text-xs">{{ $message }}</p>
-                    @enderror
-                </div>
+                
             </div>
 
             <button type="submit" id="submit-button"

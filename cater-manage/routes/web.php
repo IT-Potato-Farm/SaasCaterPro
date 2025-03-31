@@ -31,9 +31,7 @@ use App\Http\Controllers\PackageUtilityController;
 
 // user route
 
-Route::get('/loginpage', function () {
-    return view('loginpage');
-})->name('login');
+Route::get('/loginpage', [UserController::class, 'gologin'])->name('login');
 
 Route::get('/register', function () {
     return view('register');

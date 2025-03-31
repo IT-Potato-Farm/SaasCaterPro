@@ -12,6 +12,15 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class UserController extends Controller
 {
+    public function gologin()
+    {
+        if (Auth::check()) {
+            return redirect()->route('landing'); 
+        }
+    
+        // If not logged in
+        return redirect()->route('login'); 
+    }
 
     public function login(Request $request)
     {
