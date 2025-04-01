@@ -45,8 +45,8 @@
     <x-customer.navbar />
     <div class="container mx-auto py-8 px-4">
         @if (isset($pendingOrder))
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                role="alert">
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                
                 <div class="flex items-center">
                     <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor" viewBox="0 0 20 20">

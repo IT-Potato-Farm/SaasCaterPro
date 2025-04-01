@@ -4,9 +4,16 @@
 @php
     $cartCount = 0;
     // check if the user is logged in and has a cart
-    if (Auth::check() && Auth::user()->cart) {
-        // Sum up all item quantities
-        $cartCount = Auth::user()->cart->items->sum('quantity');
+    if (Auth::check()) {
+        // If logged in and the user has a cart
+        if (Auth::user()->cart) {
+            // Sum up all item quantities in the cart for logged-in user
+            $cartCount = Auth::user()->cart->items->sum('quantity');
+        }
+    } else {
+        // If not logged in, check the session for the cart
+        $cart = session()->get('cart', ['items' => []]); // Retrieve cart from session (default to empty)
+        $cartCount = collect($cart['items'])->sum('quantity'); // Sum up item quantities in session cart
     }
 @endphp
 <nav class="border-gray-200 bg-gray-900">
@@ -49,6 +56,20 @@
             <a href="{{ route('cart.index') }}"
                 class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
                 <span>Cart</span>
+                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                    fill="currentColor">
+                    <path
+                        d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
+                </svg>
+                <span id="cart-count"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {{ $cartCount }}
+                </span>
+            </a>
+            {{-- CART DUPLI --}}
+            <a href="{{ route('cart.index2') }}"
+                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                <span>Cart2</span>
                 <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
                     fill="currentColor">
                     <path

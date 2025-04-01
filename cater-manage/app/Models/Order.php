@@ -22,6 +22,10 @@ class Order extends Model
         'event_start_time',
         'event_start_end'
     ];
+    public function scopePendingForUser($query, $userId) {
+        return $query->where('user_id', $userId)
+                    ->where('status', 'pending');
+    }
 
     public function orderItems()
     {

@@ -99,13 +99,11 @@
                             </div>
 
                             <!--  OTHER EVENT TYPE  -->
-                            <div class="space-y-2 hidden" id="custom_event_type_container">
-                                <label for="custom_event_type" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Custom Event Type
-                                </label>
+                            <div class="space-y-2" id="custom_event_type_container" style="display: none;">
+                                <label for="custom_event_type" class="block text-sm font-medium text-gray-700">Custom Event Type</label>
                                 <input type="text" name="custom_event_type" id="custom_event_type"
                                     placeholder="Enter custom event type"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
 
                             <!-- TIME START AND END -->
@@ -191,6 +189,23 @@
             </aside>
         </div>
         <script>
+            // OTHER EVENT FIELD MAGSHOW UP 
+            document.addEventListener('DOMContentLoaded', function() {
+                const eventTypeSelect = document.getElementById('event_type_select');
+                const customEventContainer = document.getElementById('custom_event_type_container');
+                
+                eventTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'Other') {
+                        customEventContainer.style.display = 'block';
+                        document.getElementById('custom_event_type').required = true;
+                    } else {
+                        customEventContainer.style.display = 'none';
+                        document.getElementById('custom_event_type').value = '';
+                        document.getElementById('custom_event_type').required = false;
+                    }
+                });
+            });
+            
             document.addEventListener('DOMContentLoaded', function () {
                 fetch('/get-booked-dates')
                     .then(response => response.json())

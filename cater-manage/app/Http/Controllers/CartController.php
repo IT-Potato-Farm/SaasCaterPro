@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Package;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -17,31 +18,73 @@ class CartController extends Controller
     public function index()
     {
         $user = Auth::user();
-
-
-        // fetch or crreate cart
-        $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
-        $pendingOrder = Order::where('user_id', Auth::id())->where('status', 'pending')->first();
-
-        // get products to display sda cart index
+        if (!$user) {
+            $cart = session()->get('cart', ['items' => []]); // Guest cart (session)
+            $cartItems = collect($cart['items']); // Convert to collection for easier handling
+        } else {
+            // Fetch or create cart for logged-in users
+            $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+            $cartItems = $cart->items; // Retrieve cart items from DB
+        }
+    
+        // Fetch pending order only if user is logged in
+        $pendingOrder = $user ? Order::where('user_id', $user->id)->where('status', 'pending')->first() : null;
+    
+        // Get available menu items and packages
         $menuItems = MenuItem::where('status', 'available')->get();
         $packages = Package::where('status', 'available')->get();
-        return view('cart.index', compact('cart', 'pendingOrder', 'menuItems', 'packages'));
+    
+        return view('cart.index', compact('cart', 'cartItems', 'pendingOrder', 'menuItems', 'packages'));
+        // return view('cart.sanagumana', compact('cart', 'cartItems', 'pendingOrder', 'menuItems', 'packages'));
+    }
+    public function index2()
+    {
+        $user = Auth::user();
+        $isGuest = !$user;
+        
+        // Initialize variables
+        $cartItems = collect([]);
+        $pendingOrder = null;
+        
+        try {
+            if ($isGuest) {
+                // cart for guests
+                $cartData = session()->get('cart', ['items' => []]);
+                $cartItems = collect($cartData['items']);
+                $cart = $cartData; 
+            } else {
+                // cart for logged-in users
+                $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+                $cartItems = $cart->items ?: collect([]);
+                
+                //  pending order for logged-in users
+                //REFACTOR $pendingOrder = Order::where('user_id', $user->id)
+                //      ->where('status', 'pending')
+                //      ->first();
+                $pendingOrder = Order::pendingForUser($user->id)->first();
+            }
+            
+            // available menu items and packages
+            $menuItems = MenuItem::available()->get();
+            $packages = Package::available()->get();
+            
+            return view('cart.sanagumana', compact(
+                'cart', 
+                'cartItems', 
+                'pendingOrder', 
+                'menuItems', 
+                'packages', 
+                'isGuest'
+            ));
+        } catch (\Exception $e) {
+            // Log the error and return with a flash message
+            Log::error('Cart loading error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to load your cart. Please try again.');
+        }
     }
 
     public function add(Request $request)
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'You need to log in first.'], 401);
-            }
-            return redirect()->route('login')->with('error', 'You need to log in first.');
-        }
-
-        $cart = $user->cart ?? Cart::create(['user_id' => $user->id]);
-
         $validated = $request->validate([
             'menu_item_id' => 'nullable|exists:menu_items,id',
             'package_id'   => 'nullable|exists:packages,id',
@@ -51,90 +94,112 @@ class CartController extends Controller
         ]);
 
         if (empty($validated['menu_item_id']) && empty($validated['package_id'])) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Please select an item or package.'], 422);
-            }
-            return redirect()->back()->with('error', 'Please select an item or package.');
+            return $this->jsonOrRedirect($request, 'Please select an item or package.', 422);
         }
 
-        $errors = [];
-        $successMessages = [];
+        $user = Auth::user();
+        $cart = $user ? $this->getUserCart($user) : $this->getGuestCart();
+        $cartItems = $this->getCartItems($cart);
 
+        $messages = [];
 
         if (!empty($validated['package_id'])) {
-            // CALCULATE LAHAT NG QUANTITY NG PACKAGE SA CART 
-            $totalPackageCount = $cart->items()->whereNotNull('package_id')->sum('quantity');
+            $messages = array_merge($messages, $this->addPackageToCart($cart, $cartItems, $validated));
+        }
 
-            if ($totalPackageCount >= 2) {
-                $errors[] = 'You can only add up to 2 package sets per event.';
-            } else {
-                //  maximum quantity 
-                $available = 2 - $totalPackageCount;
+        if (!empty($validated['menu_item_id'])) {
+            $messages = array_merge($messages, $this->addMenuItemToCart($cart, $cartItems, $validated));
+        }
 
-                $quantityToAdd = min($validated['quantity'], $available);
+        if (!empty($messages['errors'])) {
+            return $this->jsonOrRedirect($request, implode(' ', $messages['errors']), 422);
+        }
 
-                // CHECK IF MERON NA EXISTING PACKAGE SA CART 
-                $existingPackageItem = $cart->items()->where('package_id', $validated['package_id'])->first();
+        return $this->jsonOrRedirect($request, implode(' ', $messages['success']), 200);
+    }
+    private function getCartItems($cart)
+    {
+        return is_object($cart) ? $cart->items() : collect($cart['items']);
+    }
+
+    private function getUserCart($user)
+    {
+        return $user->cart ?: Cart::create(['user_id' => $user->id]);
+    }
+
+    private function getGuestCart()
+    {
+        $cart = session()->get('cart', ['items' => []]);
+        session()->put('cart', $cart);
+        return $cart;
+    }
+
+    private function addPackageToCart($cart, $cartItems, $validated)
+    {
+        $messages = ['success' => [], 'errors' => []];
+        $totalPackageCount = $cartItems->whereNotNull('package_id')->sum('quantity');
+
+        if ($totalPackageCount >= 2) {
+            $messages['errors'][] = 'You can only add up to 2 package sets per event.';
+        } else {
+            $available = 2 - $totalPackageCount;
+            $quantityToAdd = min($validated['quantity'], $available);
+
+            if (isset($cart->user_id)) {
+                $existingPackageItem = $cartItems->where('package_id', $validated['package_id'])->first();
                 if ($existingPackageItem) {
-                    // UPDATE NG QUANTITY AND GINA MAKE SURE NA HINDI MAG EXCEED SA OVERALL LIMIT NA 2 
-                    $newQuantity = min($existingPackageItem->quantity + $quantityToAdd, 2);
-                    $existingPackageItem->update([
-                        'quantity' => $newQuantity,
-                        // Update selected options if provided (you may choose to merge or replace).
-                        'selected_options' => $request->input('selected_options')
-                    ]);
-                    $successMessages[] = 'Package updated in cart.';
+                    $existingPackageItem->update(['quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2)]);
+                    $messages['success'][] = 'Package updated in cart.';
                 } else {
-                    // Create a new package cart item with the allowed quantity.
-                    $validated['quantity'] = $quantityToAdd;
-                    $validated['selected_options'] = $request->input('selected_options');
-                    $cart->items()->create($validated);
-                    $successMessages[] = 'Package added to cart.';
+                    $cart->items()->create(array_merge($validated, ['quantity' => $quantityToAdd]));
+                    $messages['success'][] = 'Package added to cart.';
                 }
+            } else {
+                $cart['items'][] = array_merge($validated, ['quantity' => $quantityToAdd]);
+                session()->put('cart', $cart);
+                $messages['success'][] = 'Package added to cart (guest mode).';
             }
         }
 
+        return $messages;
+    }
 
-        if (!empty($validated['menu_item_id'])) {
-            $menuData = [
-                'menu_item_id' => $validated['menu_item_id'],
-                'quantity'     => $validated['quantity']
-            ];
-            if (!empty($validated['variant'])) {
-                $menuData['variant'] = $validated['variant'];
-            }
+    private function addMenuItemToCart($cart, $cartItems, $validated)
+    {
+        $messages = ['success' => [], 'errors' => []];
 
-            $existingMenuItem = $cart->items()
+        if (isset($cart->user_id)) {
+            $existingMenuItem = $cartItems
                 ->where('menu_item_id', $validated['menu_item_id'])
                 ->where('variant', $validated['variant'] ?? null)
                 ->first();
 
             if ($existingMenuItem) {
-                $existingMenuItem->update([
-                    'quantity' => $existingMenuItem->quantity + $validated['quantity']
-                ]);
-                $successMessages[] = 'Menu item updated in cart.';
+                $existingMenuItem->update(['quantity' => $existingMenuItem->quantity + $validated['quantity']]);
+                $messages['success'][] = 'Menu item updated in cart.';
             } else {
-                $cart->items()->create($menuData);
-                $successMessages[] = 'Menu item added to cart.';
+                $cart->items()->create($validated);
+                $messages['success'][] = 'Menu item added to cart.';
             }
+        } else {
+            $cart['items'][] = $validated;
+            session()->put('cart', $cart);
+            $messages['success'][] = 'Menu item added to cart (guest mode).';
         }
 
-        if (!empty($errors)) {
-            $errorMessage = implode(' ', $errors);
-            if ($request->expectsJson()) {
-                return response()->json(['message' => $errorMessage], 422);
-            }
-            return redirect()->back()->with('error', $errorMessage);
-        }
-
-        $message = implode(' ', $successMessages);
-        if ($request->expectsJson()) {
-            return response()->json(['message' => $message], 200);
-        }
-        return redirect()->route('cart.index')->with('success', $message);
+        return $messages;
     }
 
+    /**
+     * Handle JSON or Redirect Response
+     */
+    private function jsonOrRedirect($request, $message, $status)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status);
+        }
+        return redirect()->route('cart.index')->with($status === 200 ? 'success' : 'error', $message);
+    }
 
     /**
      * Show the form for creating a new resource.

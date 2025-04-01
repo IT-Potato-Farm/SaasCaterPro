@@ -182,23 +182,33 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 
 // ------------------------------------------------
 
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
+Route::get('/cartdup', [CartController::class, 'index'])->name('cart.sanagumana');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // cart
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
    
 
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
-    Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
-    Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
+    
 });
-
+Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
+Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
 
 // Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // CART COUNT LIVE AJAX
 Route::get('/cart/count', function () {
     $user = Auth::user();
+    
+    // For guests, use the session to get cart items
+    if (!$user) {
+        $cart = session()->get('cart', ['items' => []]);
+        return response()->json(['count' => count($cart['items'])]);
+    }
+
+    // For authenticated users, use the database to get cart items
     return response()->json(['count' => $user->cart ? $user->cart->items->count() : 0]);
 })->name('cart.count');
 
@@ -209,8 +219,8 @@ Route::get('/checkoutpage', function () {
 
 
 // CHECKOUT ROUTEE
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::middleware('auth')->group(function () {
-    Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
     // After order creation, a confirmation page.
