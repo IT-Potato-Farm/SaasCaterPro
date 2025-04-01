@@ -54,7 +54,7 @@
         <!-- Right: Cart and Account/Login -->
         <div class="flex items-center space-x-4">
             <a href="{{ route('cart.index') }}"
-                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                class="relative hidden md:flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5 ">
                 <span>Cart</span>
                 <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
                     fill="currentColor">
@@ -68,7 +68,7 @@
             </a>
             {{-- CART DUPLI --}}
             <a href="{{ route('cart.index2') }}"
-                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                class="relative hidden md:flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
                 <span>Cart2</span>
                 <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
                     fill="currentColor">
@@ -114,7 +114,7 @@
                 </div>
             @else
                 <a href="{{ route('login') }}"
-                    class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                    class="hidden md:flex text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
                     Login
                 </a>
             @endauth
@@ -155,6 +155,32 @@
                     About Us
                 </a>
             </li>
+            <li>
+                <a href="{{ route('cart.index') }}"
+                    class="relative flex text-white  py-2 px-3 ">
+                    <span>Cart</span>
+                    
+                    <span id="cart-count"
+                        class="absolute top-1 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1.5 rounded-full">
+                        {{ $cartCount }}
+                    </span>
+                </a>
+            </li>
+            <li>
+                 {{-- CART DUPLI --}}
+                <a href="{{ route('cart.index2') }}"
+                    class="relative flex text-white  py-2 px-3 ">
+                    <span>Cart2</span>
+                    
+                    <span id="cart-count"
+                        class="absolute top-1 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1.5 rounded-full">
+                        {{ $cartCount }}
+                    </span>
+                </a>
+            
+
+            </li>
+            
         </ul>
     </div>
 </nav>
