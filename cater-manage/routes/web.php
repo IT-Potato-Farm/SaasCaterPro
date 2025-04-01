@@ -259,6 +259,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/orders/{order}/mark-partial', [OrderController::class, 'markAsPartial'])->name('orders.mark-partial');
     Route::put('/orders/{order}/mark-completed', [OrderController::class, 'markAsCompleted'])->name('orders.mark-completed');
     Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+
+    // PENALTY
+    Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
 });
 
 Route::middleware(['auth'])->group(function () {

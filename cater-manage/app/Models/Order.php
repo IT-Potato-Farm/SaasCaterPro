@@ -12,6 +12,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'total',
+        'penalty_fee',
         'status',
         'event_type',
         'event_date_start',

@@ -1,6 +1,6 @@
 <div class="container mx-auto px-4 py-8">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">All Bookings</h1>
+    <div class="flex border flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0 ">All Bookings</h1>
         <div class="flex space-x-3">
             <!-- Refresh -->
             <a href="#"@click.prevent="window.location.href = '{{ route('admin.admindashboard') }}?activeScreen=bookings'"
@@ -168,6 +168,12 @@
                                             Deposit: ₱{{ number_format($order->deposit_amount, 2) }}
                                         </div>
                                     @endif
+
+                                    @if ($order->penalty_fee > 0)
+                                        <div class="text-xs text-red-500">
+                                            Penalty: +₱{{ number_format($order->penalty_fee, 2) }}
+                                        </div>
+                                    @endif
                                 </td>
 
                                 <!-- Status -->
@@ -320,7 +326,57 @@
                                                 </button>
                                             </form>
                                         @endif
-                                    </div>
+                                        {{-- PENALTY BTN --}}
+                                        <button type="button" onclick="openPenaltyModal({{ $order->id }})"
+                                            class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                            title="Add Penalty">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </button>
+    
+                                        <!-- Penalty Modal-->
+                                        <div id="penaltyModal-{{ $order->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex justify-center items-center">
+                                            <div class="bg-white p-8 rounded-xl shadow-2xl w-96 border border-gray-100">
+                                                <h2 class="text-xl font-bold text-gray-900 mb-6">Add Penalty</h2>
+                                                <form action="{{ route('orders.add-penalty', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    <div class="space-y-6">
+                                                        <div>
+                                                            <label class="block text-base font-medium text-gray-700 mb-2">
+                                                                Penalty Amount (₱)
+                                                            </label>
+                                                            <input 
+                                                                type="number" 
+                                                                name="penalty_fee" 
+                                                                step="0.01"
+                                                                min="0"
+                                                                placeholder="Enter amount..."
+                                                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-500  transition-colors duration-200"
+                                                                required>
+                                                        </div>
+                                                        
+                                                        <div class="flex justify-end gap-3 mt-8">
+                                                            <button 
+                                                                type="button"
+                                                                onclick="closePenaltyModal({{ $order->id }})"
+                                                                class="px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                                                                Cancel
+                                                            </button>
+                                                            <button 
+                                                                type="submit"
+                                                                class="px-4 py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium shadow-sm hover:shadow-red-200 transition-all duration-200">
+                                                                Add Penalty
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    {{-- end div of actions --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -348,144 +404,160 @@
 
     {{-- CALENDAR EVENTS --}}
     @php
-    $calendarEvents = $orders->map(function ($order) {
-        $status = strtolower($order->status);
-        // Set default color to blue
-        $color = '#3b82f6';
-        if ($status === 'pending') {
-            $color = '#FBBF24'; // Amber
-        } elseif ($status === 'partially paid') {
-            $color = '#F59E0B'; // Orange
-        } elseif ($status === 'ongoing') {
-            $color = '#60A5FA'; // Light blue
-        } elseif ($status === 'paid') {
-            $color = '#10B981'; // Green
-        } elseif ($status === 'completed') {
-            $color = '#34D399'; // Light green
-        } elseif ($status === 'cancelled') {
-            $color = '#EF4444'; // Red
-        }
-        return [
-            'title'           => $order->event_type, // e.g., "Birthday"
-            'start'           => $order->event_date_start, // Format: YYYY-MM-DD
-            // End date is exclusive in FullCalendar.
-            'end'   => \Carbon\Carbon::parse($order->event_date_end)->addDay()->toDateString(),
-            'start_time'      => $order->event_start_time, // e.g., "00:24:00"
-            'end_time'        => $order->event_start_end,   // e.g., "15:24:00"
-            'status'          => $order->status,
-            'backgroundColor' => $color,
-            'borderColor'     => $color,
-        ];
-    })->toArray();
-@endphp
+        $calendarEvents = $orders
+            ->map(function ($order) {
+                $status = strtolower($order->status);
+                // Set default color to blue
+                $color = '#3b82f6';
+                if ($status === 'pending') {
+                    $color = '#FBBF24'; // Amber
+                } elseif ($status === 'partially paid') {
+                    $color = '#F59E0B'; // Orange
+                } elseif ($status === 'ongoing') {
+                    $color = '#60A5FA'; // Light blue
+                } elseif ($status === 'paid') {
+                    $color = '#10B981'; // Green
+                } elseif ($status === 'completed') {
+                    $color = '#34D399'; // Light green
+                } elseif ($status === 'cancelled') {
+                    $color = '#EF4444'; // Red
+                }
+                return [
+                    'title' => $order->event_type, // e.g., "Birthday"
+                    'start' => $order->event_date_start, // Format: YYYY-MM-DD
+                    // End date is exclusive in FullCalendar.
+                    'end' => \Carbon\Carbon::parse($order->event_date_end)->addDay()->toDateString(),
+                    'start_time' => $order->event_start_time, // e.g., "00:24:00"
+                    'end_time' => $order->event_start_end, // e.g., "15:24:00"
+                    'status' => $order->status,
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
+                ];
+            })
+            ->toArray();
+    @endphp
 
-{{-- CALENDAR BOOKINGS --}}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center font-serif">Event Calendar</h1>
-        
-        <!-- Calendar Container -->
-        <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
-            <div id="calendar" class="p-4 md:p-6 min-h-[680px]"></div>
+    {{-- CALENDAR BOOKINGS --}}
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center font-serif">Event Calendar</h1>
+
+            <!-- Calendar Container -->
+            <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
+                <div id="calendar" class="p-4 md:p-6 min-h-[680px]"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-<script>
-    //  function to convert "HH:mm:ss" into a 12-hour format with AM/PM.
-    function formatTime(timeString) {
-        if (!timeString) return '';
-        const [hours, minutes, seconds] = timeString.split(':');
-        const date = new Date();
-        date.setHours(hours);
-        date.setMinutes(minutes);
-        date.setSeconds(seconds);
-        return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
-    }
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        // penalty modal
+        function openPenaltyModal(orderId) {
+            document.getElementById(`penaltyModal-${orderId}`).classList.remove('hidden');
+        }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var events = @json($calendarEvents);
+        function closePenaltyModal(orderId) {
+            document.getElementById(`penaltyModal-${orderId}`).classList.add('hidden');
+        }
+        //  function to convert "HH:mm:ss" into a 12-hour format with AM/PM.
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            const [hours, minutes, seconds] = timeString.split(':');
+            const date = new Date();
+            date.setHours(hours);
+            date.setMinutes(minutes);
+            date.setSeconds(seconds);
+            return date.toLocaleTimeString([], {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
-            },
-            views: {
-                listMonth: { buttonText: 'List View' }
-            },
-            contentHeight: 'auto',
-            events: events,
-            eventClassNames: 'hover:shadow-md transition-shadow',
-            dayHeaderClassNames: 'text-gray-700 font-semibold',
-            // AM/PM format.
-            eventContent: function(arg) {
-                var title = arg.event.title;
-                var startTime = formatTime(arg.event.extendedProps.start_time);
-                var endTime = formatTime(arg.event.extendedProps.end_time);
-                return {
-                    html: `<div class="px-2 py-1 text-sm font-medium">
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var events = @json($calendarEvents);
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
+                },
+                views: {
+                    listMonth: {
+                        buttonText: 'List View'
+                    }
+                },
+                contentHeight: 'auto',
+                events: events,
+                eventClassNames: 'hover:shadow-md transition-shadow',
+                dayHeaderClassNames: 'text-gray-700 font-semibold',
+                // AM/PM format.
+                eventContent: function(arg) {
+                    var title = arg.event.title;
+                    var startTime = formatTime(arg.event.extendedProps.start_time);
+                    var endTime = formatTime(arg.event.extendedProps.end_time);
+                    return {
+                        html: `<div class="px-2 py-1 text-sm font-medium">
                         ${title}<br>
                         <span class="text-xs text-white">${startTime} - ${endTime}</span>
                     </div>`
-                };
-            },
-            eventTimeFormat: {
-                hour: 'numeric',
-                minute: '2-digit',
-                meridiem: 'short'
-            },
-            buttonText: {
-                today: 'Today'
-            },
-            dayMaxEventRows: 3,
-            fixedWeekCount: false,
-            initialDate: new Date(),
-            themeSystem: 'bootstrap5',
-            windowResize: function(view) {
-                if (window.innerWidth < 768) {
-                    calendar.changeView('dayGridMonth');
+                    };
+                },
+                eventTimeFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                buttonText: {
+                    today: 'Today'
+                },
+                dayMaxEventRows: 3,
+                fixedWeekCount: false,
+                initialDate: new Date(),
+                themeSystem: 'bootstrap5',
+                windowResize: function(view) {
+                    if (window.innerWidth < 768) {
+                        calendar.changeView('dayGridMonth');
+                    }
                 }
-            }
+            });
+
+            calendar.render();
         });
+    </script>
 
-        calendar.render();
-    });
-</script>
+    <style>
+        .fc-toolbar-title {
+            @apply text-xl font-bold text-gray-800 font-serif;
+        }
 
-<style>
-    .fc-toolbar-title {
-        @apply text-xl font-bold text-gray-800 font-serif;
-    }
-    
-    .fc-button-primary {
-        @apply bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm font-medium rounded-lg transition-colors;
-    }
-    
-    .fc-button-active {
-        @apply bg-blue-100 text-blue-600 border-blue-200;
-    }
-    
-    .fc-daygrid-day-number {
-        @apply text-gray-600 font-medium;
-    }
-    
-    .fc-daygrid-day {
-        @apply hover:bg-gray-50 transition-colors;
-    }
-    
-    .fc-event {
-        @apply rounded-lg border-none shadow-sm;
-    }
-    
-    .fc-today {
-        @apply bg-blue-50;
-    }
-</style>
+        .fc-button-primary {
+            @apply bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm font-medium rounded-lg transition-colors;
+        }
+
+        .fc-button-active {
+            @apply bg-blue-100 text-blue-600 border-blue-200;
+        }
+
+        .fc-daygrid-day-number {
+            @apply text-gray-600 font-medium;
+        }
+
+        .fc-daygrid-day {
+            @apply hover:bg-gray-50 transition-colors;
+        }
+
+        .fc-event {
+            @apply rounded-lg border-none shadow-sm;
+        }
+
+        .fc-today {
+            @apply bg-blue-50;
+        }
+    </style>
 
 
 </div>
