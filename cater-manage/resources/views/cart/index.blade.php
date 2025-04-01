@@ -231,6 +231,7 @@
                                                     <button type="submit" name="action" value="increment"
                                                         class="px-2 border border-gray-300 rounded-r">+</button>
                                                 </form>
+                                                
                                                 <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
                                                     method="POST">
                                                     @csrf

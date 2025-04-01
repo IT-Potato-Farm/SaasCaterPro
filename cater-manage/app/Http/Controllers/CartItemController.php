@@ -83,7 +83,6 @@ class CartItemController extends Controller
                     $cartItem['quantity'] -= 1;
                 } else {
                     unset($cart['items'][$foundKey]); // Remove if quantity reaches 0
-
                 }
             } elseif ($action === 'increment') {
                 if (isset($cartItem['package_id'])) {

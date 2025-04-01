@@ -173,18 +173,20 @@
 
                                         // If no options exist, show 'N/A'
                                         $selectedOptionsString = $selectedOptionsString ?: 'N/A';
-
+                                        $itemImage = null;
                                         // Fetch name and price based on type (menu item or package)
                                         if ($menu_item_id) {
                                             $menuItem = $menuItems->firstWhere('id', $menu_item_id);
                                             $itemName = $menuItem ? $menuItem->name : 'Unknown Menu Item';
                                             $itemPrice = $menuItem ? $menuItem->price : 0;
+                                            $itemImage = $menuItem ? $menuItem->image : null;
                                             $displayPrice = $itemPrice;
                                             $minPax = 'N/A';
                                         } elseif ($package_id) {
                                             $package = $packages->firstWhere('id', $package_id);
                                             $itemName = $package ? $package->name : 'Unknown Package';
                                             $itemPrice = $package ? $package->price_per_person : 0;
+                                            $itemImage = $package ? $package->image : null;
                                             $displayPrice = $itemPrice;
                                             $minPax = $package ? $package->min_pax : 'N/A';
                                         } else {
@@ -196,27 +198,45 @@
 
                                         $lineTotal = $itemPrice * $quantity;
                                         $extendedTotal += $lineTotal;
+                                        if (is_array($cartItem)) {
+                                            $cartItemId =
+                                                $cartItem['menu_item_id'] ?? ($cartItem['package_id'] ?? null);
+                                        } else {
+                                            $cartItemId = $cartItem->menu_item_id ?? ($cartItem->package_id ?? null);
+                                        }
                                     @endphp
 
                                     <tr class="border-b">
                                         <td class="py-3">
-                                            <img src="https://via.placeholder.com/64" alt="{{ $itemName }}"
-                                                class="w-16 h-16 object-cover rounded">
+                                            @if ($menu_item_id && $itemImage)
+                                                <img src="{{ asset('ItemsStored/' . $itemImage) }}"
+                                                    alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
+                                            @elseif ($package_id && $itemImage)
+                                                <img src="{{ asset('packagePics/' . $itemImage) }}"
+                                                    alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
+                                            @else
+                                                <img src="https://via.placeholder.com/64" alt="No Image"
+                                                    class="w-16 h-16 object-cover rounded" />
+                                            @endif
                                         </td>
+
                                         <td class="py-3">{{ $itemName }}</td>
                                         <td class="py-3">{!! $selectedOptionsString !!}</td>
                                         <td class="py-3 text-center align-middle">
                                             <div class="flex flex-col items-center space-y-2">
-                                                @php
-                                                    $cartItemId =
-                                                        $cartItem['menu_item_id'] ?? ($cartItem['package_id'] ?? null);
-                                                @endphp
-                                                <form action="{{ route('cart.item.update', ['id' => $cartItem['menu_item_id'] ?? $cartItem['package_id']]) }}" method="POST">
+
+                                                <form action="{{ route('cart.item.update', ['id' => $cartItemId]) }}"
+                                                    method="POST" class="flex items-center">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit" name="action" value="decrement" class="px-2 border border-gray-300 rounded-l">-</button>
-                                                    <input type="text" name="quantity" value="{{ $cartItem['quantity'] ?? $cartItem->quantity }}" class="w-12 text-center border-t border-b border-gray-300" readonly />
-                                                    <button type="submit" name="action" value="increment" class="px-2 border border-gray-300 rounded-r">+</button>
+                                                    <button type="submit" name="action" value="decrement"
+                                                        class="px-2 border border-gray-300 rounded-l">-</button>
+                                                    <input type="text" name="quantity"
+                                                        value="{{ is_array($cartItem) ? $cartItem['quantity'] : $cartItem->quantity }}"
+                                                        class="w-12 text-center border-t border-b border-gray-300"
+                                                        readonly />
+                                                    <button type="submit" name="action" value="increment"
+                                                        class="px-2 border border-gray-300 rounded-r">+</button>
                                                 </form>
 
                                                 <form action="{{ route('cart.item.destroy', $cartItemId) }}"
@@ -237,6 +257,7 @@
                         </table>
                     </div>
                 </div>
+
                 <!-- Order Summary Section -->
                 <aside class="md:w-1/4">
                     <div class="bg-white shadow-md rounded-lg p-6">
@@ -268,7 +289,7 @@
                 url: "{{ route('cart.index2') }}",
                 type: "GET",
                 cache: false, // Prevent caching
-               
+
                 success: function(response) {
                     console.log("Cart updated:", response);
                     var updatedCartItems = $(response).find('#cart-items').html();
