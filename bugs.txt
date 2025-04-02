@@ -2,12 +2,13 @@ FUCKING BUGS
 
 1.  CART UPDATE BEHAVIOR UPDATE WHEN ON GUEST MODE ISN'T BEHAVING CORRECTLY
 
-
+-----------------------------------------------------------
 
 TODOS
 
-Display the date when the customers paid for the partial payment(DONE - Change the text field for event type into drop-down that only common events are shown and DONE - label events that are not common as "others.
-
+Display the date when the customers paid for the partial payment
+DONE - Change the text field for event type into drop-down that only common events are shown  
+DONE - label events that are not common as "others.
 
 DONE - Hide the cancel button in the order process page if per example the status of the order is already past the "pending"
 
