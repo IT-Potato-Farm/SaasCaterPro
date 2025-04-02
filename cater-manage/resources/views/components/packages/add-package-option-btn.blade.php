@@ -22,6 +22,7 @@
 </style>
 
 <script>
+    
     let optionTypeExists = false; // global flag for duplicate check
 
     function addFoodItemOption() {

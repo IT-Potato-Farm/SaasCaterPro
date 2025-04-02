@@ -375,8 +375,8 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div> 
-                                    {{-- end div of actions --}}
+                                    </div> {{-- end div of actions --}}
+                                    
                                 </td>
                             </tr>
                         @endforeach
