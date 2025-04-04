@@ -28,3 +28,12 @@ User::create([
     'mobile' => '09158500364',
     'password' => bcrypt('Johnemman1')
 ]);
+
+FIND SPECIFIC USER ID
+$user = \App\Models\User::find(1);
+$user->update(['email_verified_at' => now()]);
+
+SET ADMIN 
+$user = \App\Models\User::find(1);
+$user->role = 'admin';  
+$user->save();

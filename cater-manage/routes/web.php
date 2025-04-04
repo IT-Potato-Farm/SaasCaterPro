@@ -232,7 +232,13 @@ Route::middleware('auth')->group(function () {
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/finaldashboard', [AdminController::class, 'test'])->name('admin.finaldashboard');
+    // ROUTE IN ADMIN DASHBOARDS
+    Route::get('/admin/finaldashboard', [AdminController::class, 'goDashboard'])->name('admin.finaldashboard');
+    Route::get('/admin/finaldashboard/category', [AdminController::class, 'goCategoryDashboard'])->name('admin.categorydashboard');
+    Route::get('/admin/finaldashboard/products', [AdminController::class, 'goProductsDashboard'])->name('admin.products');
+    Route::get('/admin/finaldashboard/packages', [AdminController::class, 'goPackageDashboard'])->name('admin.packages');
+    Route::get('/admin/finaldashboard/bookings', [AdminController::class, 'goBookingsDashboard'])->name('admin.bookings');
+    Route::get('/admin/finaldashboard/users', [AdminController::class, 'goUserDashboard'])->name('admin.allusers');
     // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 

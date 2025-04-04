@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN DASHBOARD</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <title>Bookings Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
 
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+</head>
 <body>
     <div class="flex h-screen">
 
@@ -20,14 +21,11 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <x-dashboard.header />
-                <x-dashboard.first-section />
+                
+                <x-dashboard.bookings />
             </main>
         </div>
 
     </div>
-
-
-
 </body>
-
 </html>
