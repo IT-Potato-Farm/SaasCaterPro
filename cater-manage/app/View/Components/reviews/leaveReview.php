@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components\reviews;
+namespace App\View\Components\Reviews;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class leaveReview extends Component
+class LeaveReview extends Component
 {
     /**
      * Create a new component instance.
