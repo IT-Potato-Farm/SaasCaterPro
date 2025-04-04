@@ -31,6 +31,21 @@ class OrderController extends Controller
 
         return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings']);
     }
+
+    // penalty function
+    public function addPenalty(Request $request, Order $order)
+    {
+        $request->validate([
+            'penalty_fee' => 'required|numeric|min:0',
+        ]);
+
+        // Store penalty separately & update total
+        $order->penalty_fee += $request->penalty_fee;  // Store penalty separately
+        $order->total += $request->penalty_fee; // Update total amount
+        $order->save();
+
+        return redirect()->back()->with('success', 'Penalty added successfully!');
+    }
     public function cancel(Order $order)
     {
         if (in_array($order->status, ['partial', 'ongoing', 'paid', 'completed'])) {

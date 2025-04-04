@@ -22,6 +22,10 @@ class Package extends Model
     {
         return $this->hasMany(PackageItem::class, 'package_id');
     }
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
 
     public function category()
     {

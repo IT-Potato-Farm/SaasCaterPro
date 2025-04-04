@@ -10,7 +10,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        let packageItemsMapping = @json($packageItemsGroupedByPackage);
+        console.log(packageItemsMapping); 
+    </script>
     <style>
         [x-cloak] {
             display: none !important;
@@ -213,9 +218,11 @@
                 </div>
                 {{-- PACKAGE SECTION DASHBOARD --}}
                 <div x-show="activeScreen === 'packages'" x-cloak>
+                   
                     <x-packages.addbtn />
                     <x-packages.add-package-item-btn />
-                    
+                    <x-packages.add-package-option-btn />
+                    <x-packages.add-package-utility />
                     <x-dashboard.packages />
                     {{-- <x-packages.add-package-item /> --}} 
 

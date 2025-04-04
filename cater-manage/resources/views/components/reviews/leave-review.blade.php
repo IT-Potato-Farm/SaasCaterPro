@@ -130,4 +130,3 @@
     class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">
     Leave a Review
 </button>
-

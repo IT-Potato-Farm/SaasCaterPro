@@ -3,17 +3,19 @@
 namespace App\View\Components\Customer;
 
 use Closure;
-use Illuminate\Contracts\View\View;
+use App\Models\Review;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class Ratingsection extends Component
 {
     /**
      * Create a new component instance.
      */
-    public function __construct()
+    public $reviews;
+    public function __construct($reviews = null)
     {
-        //
+        $this->reviews = $reviews ?? Review::with('user')->latest()->get();
     }
 
     /**
@@ -21,6 +23,6 @@ class Ratingsection extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.customer.ratingsection');
+        return view('components.customer.ratingsection', ['reviews' => $this->reviews]);
     }
 }

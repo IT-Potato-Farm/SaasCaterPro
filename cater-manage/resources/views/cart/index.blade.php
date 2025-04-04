@@ -45,8 +45,8 @@
     <x-customer.navbar />
     <div class="container mx-auto py-8 px-4">
         @if (isset($pendingOrder))
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                role="alert">
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                
                 <div class="flex items-center">
                     <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor" viewBox="0 0 20 20">
@@ -231,6 +231,7 @@
                                                     <button type="submit" name="action" value="increment"
                                                         class="px-2 border border-gray-300 rounded-r">+</button>
                                                 </form>
+                                                
                                                 <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
                                                     method="POST">
                                                     @csrf
@@ -271,9 +272,9 @@
                 </div>
 
                 <!-- Order Summary -->
-                <div class="md:w-1/4">
-                    <div class="bg-white shadow-md rounded p-4">
-                        <h2 class="text-xl font-bold mb-4">Order Summary</h2>
+                <aside class="md:w-1/4">
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <h2 class="text-xl font-bold mb-4 text-gray-800">Order Summary</h2>
                         <form action="{{ route('checkout.show') }}" method="GET">
                             <div class="mb-4">
                                 <label for="total_guests" class="block text-sm font-medium text-gray-700 mb-1">
@@ -285,109 +286,95 @@
                                 </label>
                                 <input type="number" id="total_guests" name="total_guests" min="1"
                                     placeholder="50"
-                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500  "
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-lime-500 focus:border-lime-500"
                                     required>
 
-                                <!-- Minimum pax notification -->
                                 <p id="minPaxNotification" class="text-xs text-red-600 hidden"></p>
                                 <p id="errorminPaxNotification" class="text-xs text-red-500 hidden">Please fill in the
                                     total guests field.</p>
                             </div>
-                            {{-- <p class="mb-2">
-                                <span class="font-semibold">Selected Items:</span>
-                                <span id="selectedItemsCount">0</span>
-                            </p> --}}
-                            <p class="mb-2">
-                                <span class="font-semibold">Total Price:</span>
-                                <span id="order-summary-total"> ₱{{ number_format($extendedTotal, 2) }}</span>
-                            </p>
-                            <!-- Checkout Button -->
-                            <button type="submit"
+
+                            <div class="mb-4 p-4 bg-gray-50 border-l-4 border-yellow-400 rounded">
+                                <div class="flex items-start">
+                                    <svg class="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-800">Important Rules & Penalties
+                                        </h3>
+                                        <ul class="mt-1 text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                            <li>You are responsible for any damages to rented equipment</li>
+                                            <li>Additional charges apply for replacements or repairs</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="agreeRules"
+                                        class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="agreeRules" class="ml-2 block text-sm text-gray-700">
+                                        I acknowledge and agree to the terms above
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-medium text-gray-700">Total Price:</span>
+                                    <span id="order-summary-total"
+                                        class="font-bold text-gray-900">₱{{ number_format($extendedTotal, 2) }}</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="checkoutButton"
                                 title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
-                                class="mt-4 w-full bg-green-600 text-white py-2 rounded transition text-center inline-block
-                                       {{ isset($pendingOrder) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700 hover:cursor-pointer' }}"
+                                class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2.5 px-4 rounded-md shadow-sm transition-colors duration-200 font-medium text-center inline-flex items-center justify-center
+                                {{ isset($pendingOrder) ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md' }}"
                                 @if (isset($pendingOrder)) disabled @endif>
-                                Checkout
+                                <svg class="w-5 h-5 mr-2 -ml-1" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Proceed to Checkout
                             </button>
                         </form>
                     </div>
-                </div>
+                </aside>
 
             </div>
         @endif
     </div>
 
-    {{-- ITEMS HERE --}}
-    {{-- <div class="mt-12">
-        <h2 class="text-2xl font-bold mb-6">Add More Items</h2>
 
-        <!-- Menu Items -->
-        @if ($menuItems->isNotEmpty())
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">Menu Items</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    @foreach ($menuItems as $menuItem)
-                        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
-                            @if ($menuItem->image)
-                                <img src="{{ asset('ItemsStored/' . $menuItem->image) }}"
-                                    alt="{{ $menuItem->name }}" class="w-full h-48 object-cover rounded-lg mb-4">
-                            @endif
-                            <h4 class="font-medium text-lg">{{ $menuItem->name }}</h4>
-                            <p class="text-gray-600 text-sm mb-2">{{ $menuItem->description }}</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-lime-600 font-medium">
-                                    ₱{{ number_format($menuItem->pricing[array_key_first($menuItem->pricing)], 2) }}
-                                </span>
-                                <form action="{{ route('cart.add') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="menu_item_id" value="{{ $menuItem->id }}">
-                                    <button type="submit"
-                                        class="bg-lime-500 text-white px-4 py-2 rounded-md hover:bg-lime-600 transition">
-                                        Add to Cart
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-
-        <!-- Packages -->
-        @if ($packages->isNotEmpty())
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">Packages</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    @foreach ($packages as $package)
-                        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
-                            @if ($package->image)
-                                <img src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}"
-                                    class="w-full h-48 object-cover rounded-lg mb-4">
-                            @endif
-                            <h4 class="font-medium text-lg">{{ $package->name }}</h4>
-                            <p class="text-gray-600 text-sm mb-2">{{ $package->description }}</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-lime-600 font-medium">
-                                    ₱{{ number_format($package->price_per_person, 2) }}/person
-                                </span>
-                                <form action="{{ route('cart.add') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="package_id" value="{{ $package->id }}">
-                                    <button type="submit"
-                                        class="bg-lime-500 text-white px-4 py-2 rounded-md hover:bg-lime-600 transition">
-                                        Add to Cart
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-    </div> --}}
     {{-- COMPONENT NG LAHAT NG ITEMS SA BABA NG CART PART --}}
     <x-allmenu.menusection />
     <script>
+        // checkbox in order summary rules
+        document.addEventListener('DOMContentLoaded', function() {
+            const agreeCheckbox = document.getElementById('agreeRules');
+            const checkoutButton = document.getElementById('checkoutButton');
+
+            // button is disabled on load
+            checkoutButton.disabled = true;
+            checkoutButton.classList.add("opacity-50", "cursor-not-allowed");
+
+            agreeCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    checkoutButton.disabled = false;
+                    checkoutButton.classList.remove("opacity-50", "cursor-not-allowed");
+                } else {
+                    checkoutButton.disabled = true;
+                    checkoutButton.classList.add("opacity-50", "cursor-not-allowed");
+                }
+            });
+        });
         // Convert PHP packagesMinPax array to a JavaScript variable.
         let packagesMinPax = @json($packagesMinPax);
         const totalGuestsInput = document.getElementById('total_guests');

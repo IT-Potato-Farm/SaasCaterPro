@@ -1,0 +1,22 @@
+FUCKING BUGS
+1.  CART UPDATE BEHAVIOR UPDATE (GUEST MODE) - CART IS PERFECTLY UPDATING WHEN USER IS LOGGED IN BUT IN GUEST MODE, IT ONLY UPDATES THE VERY FIRST ITEM NOT THE SELECTED ITEM
+
+TO DO LIST:
+DONE - Change the text field for event type into drop-down that only common events are shown and DONE - label events that are not common as "others.
+
+Display the date when the customers paid for the partial payment
+
+DONE - Hide the cancel button in the order process page if per example the status of the order is already past the "pending"
+
+DONE - Label int the order summary, make it subtotal and the proper naming like price per pax to easily identify
+
+VOID-Let the user choose the partial payment percentage (50% lang talaga)
+
+DONE - Book range date, like the suer can book (2-3 days)
+
+DONE - Policy or Rules if the customer damaged an equipment they should pay penalties
+
+BREAKDOWN OF PRICES IN ORDERTOTAL CHECKPAGE PARA ALAM NG CUSTOMER ANO BINABAYARAN NYA GANUN
+ORDER CONFIRMATION BREAKDOWN CUSTOMER SIDE
+REPORTS
+CMS FOR HOMEPAGE LANDINGG

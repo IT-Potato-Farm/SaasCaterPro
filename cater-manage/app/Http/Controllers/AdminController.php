@@ -43,10 +43,17 @@ class AdminController extends Controller
     }
     public function dashboard()
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            return view('admin.admindashboard');
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
         }
-
-        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+        $packages = Package::all();
+        $packageItemsGroupedByPackage = PackageItem::all()
+        ->groupBy('package_id')
+        ->map(function ($group) {
+            return $group->map(function ($item) {
+                return ['id' => $item->id, 'name' => $item->name];
+            });
+        })->toArray();
+        return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
     }
 }

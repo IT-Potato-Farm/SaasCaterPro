@@ -73,17 +73,15 @@
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-50">
-                                    
-                                        <tr class="text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                                            <th class="px-6 py-4">Order ID</th>
-                                            <th class="px-6 py-4">Date</th>
-                                            <th class="px-6 py-4 text-center">Payment</th>
-                                            <th class="px-6 py-4 text-center">Delivery Time</th>
-                                            <th class="px-6 py-4 text-center">Status</th>
-                                            <th class="px-6 py-4 text-center">Review</th>
-                                            <th class="px-6 py-4 text-right">Total</th>
-                                        </tr>
-                                    
+                                    <tr class="text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                        <th class="px-6 py-4">Order ID</th>
+                                        <th class="px-6 py-4">Date</th>
+                                        <th class="px-6 py-4 text-center">Payment</th>
+                                        <th class="px-6 py-4 text-center">Delivery Time</th>
+                                        <th class="px-6 py-4 text-center">Status</th>
+                                        <th class="px-6 py-4 text-center">Review</th>
+                                        <th class="px-6 py-4 text-right">Total</th>
+                                    </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     @forelse($orders as $order)
@@ -129,17 +127,18 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                            @if($order->status == 'completed')  
-                                                    @if($order->review)
-                                                        <a href="#">Show Review</a>
-                                                    @else
-                                                        <x-reviews.leave-review :order="$order" />
-                                                    @endif
-                                            @else
-                                                    <h4>Not yet Applicable</h4>
-                                             @endif
-                                            </td>
-                                           <td class="px-6 py-4 text-right font-medium">
+                                                @if($order->status == 'completed')  
+                                                        @if($order->review)
+                                                            <a href="#">Show Review</a>
+                                                        @else
+                                                            <x-reviews.leave-review :order="$order" />
+                                                        @endif
+                                                @else
+                                                        <h4>Not yet Applicable</h4>
+                                                 @endif
+                                                </td>
+                                                
+                                            <td class="px-6 py-4 text-right font-medium">
                                                 ₱{{ number_format($order->total, 2) }}
                                             </td>
                                         </tr>

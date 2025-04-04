@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\Cart;
+use App\Models\Order;
 use App\Mail\TestEmail;
 use App\Models\Package;
+use App\Models\CartItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +16,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
@@ -22,18 +25,13 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
-use App\Models\CartItem;
-use App\Http\Controllers\ReviewController;
-use App\Models\Review;
 
 // route navigation each page
 
 
 // user route
 
-Route::get('/loginpage', function () {
-    return view('loginpage');
-})->name('login');
+Route::get('/loginpage', [UserController::class, 'gologin'])->name('login');
 
 Route::get('/register', function () {
     return view('register');
@@ -121,7 +119,19 @@ Route::get('/home', function () {
 });
 
 
+// DATE ROUTE FUNCTION API FOR GETTING THE DATEEEESSSS   partial, ongoing, paid, completed statuses are blocked.
+Route::get('/get-booked-dates', function () {
+    $bookedDates = Order::whereNotIn('status', ['cancelled'])
+        ->get()
+        ->map(function ($order) {
+            return [
+                'start' => $order->event_date_start,
+                'end' => $order->event_date_end,
+            ];
+        });
 
+    return response()->json($bookedDates);
+});
 
 
 //CATEGORY ROUTES
@@ -181,23 +191,33 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 
 // ------------------------------------------------
 
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
+Route::get('/cartdup', [CartController::class, 'index'])->name('cart.sanagumana');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // cart
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
    
 
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
-    Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
-    Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
+    
 });
-
+Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
+Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
 
 // Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // CART COUNT LIVE AJAX
 Route::get('/cart/count', function () {
     $user = Auth::user();
+    
+    // For guests, use the session to get cart items
+    if (!$user) {
+        $cart = session()->get('cart', ['items' => []]);
+        return response()->json(['count' => count($cart['items'])]);
+    }
+
+    // For authenticated users, use the database to get cart items
     return response()->json(['count' => $user->cart ? $user->cart->items->count() : 0]);
 })->name('cart.count');
 
@@ -208,8 +228,8 @@ Route::get('/checkoutpage', function () {
 
 
 // CHECKOUT ROUTEE
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::middleware('auth')->group(function () {
-    Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
     // After order creation, a confirmation page.
@@ -248,10 +268,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/orders/{order}/mark-partial', [OrderController::class, 'markAsPartial'])->name('orders.mark-partial');
     Route::put('/orders/{order}/mark-completed', [OrderController::class, 'markAsCompleted'])->name('orders.mark-completed');
     Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+
+    // PENALTY
+    Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
 });
-
-
-//reviews
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
@@ -260,8 +280,3 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
 });
 
-
-// Admin views
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/reviews', [ReviewController::class, 'adminIndex'])->name('admin.reviews.index');
-});

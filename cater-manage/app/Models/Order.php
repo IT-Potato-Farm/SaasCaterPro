@@ -12,6 +12,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'total',
+        'penalty_fee',
         'status',
         'event_type',
         'event_date_start',
@@ -22,10 +23,18 @@ class Order extends Model
         'event_start_time',
         'event_start_end'
     ];
+    public function scopePendingForUser($query, $userId) {
+        return $query->where('user_id', $userId)
+                    ->where('status', 'pending');
+    }
 
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+    public function review()
+    {
+        return $this->hasOne(Review::class);
     }
 
     public function user()

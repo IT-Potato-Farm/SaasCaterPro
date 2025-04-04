@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Cart;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Mail\OrderConfirmationMail;
@@ -16,16 +17,29 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         $user = Auth::user();
+
+        // Step 1: pagde nakalogin, store guest cart sa session then redirect to login
         if (!$user) {
+            // Store guest cart in session 
+            if (session()->has('cart') && count(session()->get('cart')['items']) > 0) {
+                // Pass the cart to the session for merging after login
+                session()->put('guest_cart', session()->get('cart'));
+            }
+
             return redirect()->route('login')->with('error', 'You need to log in first.');
         }
 
-        // de maka order ung user if may pending order na sya
+        // Step 2: Merge guest cart if exists, then clear it
+        if (session()->has('guest_cart')) {
+            $this->mergeGuestCart($user, session()->get('guest_cart'));
+            session()->forget('guest_cart');
+        }
+        // step3 de maka order ung user if may pending order na sya
         $pendingOrder = Order::where('user_id', $user->id)
             ->where('status', 'pending')
             ->first();
 
-
+        // Step 4: Fetch the user's cart
         $cart = $user->cart;
         if (!$cart || $cart->items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
@@ -66,8 +80,49 @@ class CheckoutController extends Controller
             return 0;
         });
 
+
         return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests'));
     }
+    public function mergeGuestCart($user, $guestCart)
+    {
+        foreach ($guestCart['items'] as $guestItem) {
+            $existingItem = $user->cart->items()
+                ->where(function ($query) use ($guestItem) {
+                    if (!empty($guestItem['menu_item_id'])) {
+                        $query->where('menu_item_id', $guestItem['menu_item_id']);
+                    }
+                    if (!empty($guestItem['package_id'])) {
+                        $query->orWhere('package_id', $guestItem['package_id']);
+                    }
+                })
+                ->first();
+
+            if ($existingItem) {
+                $existingItem->quantity += $guestItem['quantity'];
+
+                // Check if 'selected_options' exists in the guest cart item, then merge
+                if (isset($guestItem['selected_options'])) {
+                    // Merge the selected_options array from the guest item with the existing cart item
+                    $existingItem->selected_options = array_merge($existingItem->selected_options, $guestItem['selected_options']);
+                }
+                if (!empty($guestItem['variant']) && $guestItem['variant'] !== $existingItem->variant) {
+                    $existingItem->variant = $guestItem['variant']; // update the variant
+
+                }
+                $existingItem->save();
+            } else {
+                $user->cart->items()->create([
+                    'menu_item_id' => $guestItem['menu_item_id'] ?? null,
+                    'package_id' => $guestItem['package_id'] ?? null,
+                    'quantity' => $guestItem['quantity'],
+                    'price' => $guestItem['price'] ?? 0,
+                    'variant' => $guestItem['variant'] ?? null,
+                    'selected_options' => $guestItem['selected_options'] ?? [],
+                ]);
+            }
+        }
+    }
+
     public function store(Request $request)
     {
         $user = Auth::user();

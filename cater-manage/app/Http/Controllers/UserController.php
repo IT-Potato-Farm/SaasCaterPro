@@ -2,16 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class UserController extends Controller
 {
+
+    public function gologin()
+    {
+        if (Auth::check()) {
+            return redirect()->route('landing');
+        }
+
+        // If not logged in
+        return view('loginpage');
+    }
 
     public function login(Request $request)
     {
@@ -43,6 +55,22 @@ class UserController extends Controller
 
             $user = Auth::user();
 
+            if (session()->has('guest_cart')) {
+                // Instantiate CheckoutController
+                $checkoutController = new CheckoutController();
+
+                // Call mergeGuestCart method
+                $checkoutController->mergeGuestCart($user, session()->get('guest_cart'));
+                Log::info('Merging guest cart and clearing session.');
+                // Clear guest cart from session
+                session()->forget('guest_cart');
+                session()->save();
+                if (!session()->has('guest_cart')) {
+                    Log::info('Guest cart session is cleared successfully!');
+                } else {
+                    Log::warning('Failed to clear guest cart session.');
+                }
+            }
             // if admin punta dashboard
             if ($user->role === 'admin') {
                 return redirect()->route('admin.admindashboard')->with('success', 'Login successful!');
@@ -51,7 +79,7 @@ class UserController extends Controller
             }
         }
 
-        // If authentication fails
+        
         return back()->withErrors([
             'loginpassword' => 'Password is incorrect.',
         ])->onlyInput('loginemail');
@@ -59,6 +87,7 @@ class UserController extends Controller
 
     public function logout()
     {
+        session()->flush();
         Auth::logout();
         return redirect()->route('landing');
     }

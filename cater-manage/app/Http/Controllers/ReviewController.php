@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Review;
 use App\Models\Order;
+use App\Models\Review;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
@@ -53,14 +54,20 @@ class ReviewController extends Controller
 
             // Check if there is an image in the request
             if ($request->hasFile('image')) {
+                // Ensure the 'public/reviews' directory exists
+                $reviewsPath = public_path('reviews');
+                if (!File::exists($reviewsPath)) {
+                    File::makeDirectory($reviewsPath, 0755, true, true);
+                }
+            
                 // Get the file from the request
                 $image = $request->file('image');
-
+            
                 // Create a unique name for the image
                 $imageName = time() . '-' . $image->getClientOriginalName();
-
+            
                 // Move the image to the 'public/reviews' directory
-                $image->move(public_path('reviews'), $imageName);
+                $image->move($reviewsPath, $imageName);
             }
 
             // Create the review

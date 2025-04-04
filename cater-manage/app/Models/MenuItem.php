@@ -20,9 +20,13 @@ class MenuItem extends Model
     protected $casts = [
         'pricing' => 'array', //  converts JSON to an array
     ];
-   
-    public function category(){
-        return $this->belongsTo(Category::class);
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

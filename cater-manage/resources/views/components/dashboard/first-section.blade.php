@@ -5,7 +5,7 @@
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Completed Orders</p>
-                <p class="text-3xl font-bold text-gray-800">10</p>
+                <p class="text-3xl font-bold text-gray-800">{{ $completedOrdersCount }}</p>
             </div>
 
             <div
@@ -18,14 +18,14 @@
                 class="bg-white p-6 rounded-lg border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Pending Orders</p>
                 <div class="flex items-baseline gap-2">
-                    <p class="text-3xl font-bold text-gray-800">3</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ $pendingOrdersCount }}</p>
                 </div>
             </div>
 
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-purple-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Total Users</p>
-                <p class="text-3xl font-bold text-gray-800">{{$totalUsers}}</p>
+                <p class="text-3xl font-bold text-gray-800">{{ $totalUsers }}</p>
             </div>
         </div>
 
@@ -148,7 +148,7 @@
             datasets: [{
                     label: 'This Year',
                     data: [6500, 5900, 8000, 8100, 5600, 5500, 4000, 6300, 7200, 7800, 8200, 9000],
-                    borderColor: '#3B82F6', 
+                    borderColor: '#3B82F6',
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
@@ -161,7 +161,7 @@
                 {
                     label: 'Last Year',
                     data: [5200, 6100, 7500, 7200, 4800, 6200, 5800, 6500, 6800, 7000, 7500, 8000],
-                    borderColor: '#E5E7EB', 
+                    borderColor: '#E5E7EB',
                     borderWidth: 2,
                     tension: 0.4,
                     borderDash: [5, 5],
@@ -176,13 +176,13 @@
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: '#F3F4F6' 
+                        color: '#F3F4F6'
                     },
                     ticks: {
                         callback: function(value) {
                             return '$' + value;
                         },
-                        color: '#6B7280' 
+                        color: '#6B7280'
                     }
                 },
                 x: {
@@ -190,7 +190,7 @@
                         display: false
                     },
                     ticks: {
-                        color: '#6B7280' 
+                        color: '#6B7280'
                     }
                 }
             },
@@ -199,10 +199,10 @@
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: '#1F2937', 
-                    titleColor: '#F9FAFB', 
+                    backgroundColor: '#1F2937',
+                    titleColor: '#F9FAFB',
                     bodyColor: '#F9FAFB',
-                    borderColor: '#374151', 
+                    borderColor: '#374151',
                     borderWidth: 1,
                     padding: 12,
                     usePointStyle: true,
