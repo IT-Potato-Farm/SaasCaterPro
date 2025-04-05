@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Mail\InvoiceMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -152,4 +153,9 @@ class OrderController extends Controller
         return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
             ->with('success', 'Order marked as completed.');
     }
+
+
+
+
+
 }

@@ -129,14 +129,17 @@
                                             <td class="px-6 py-4 text-center">
                                                 @if($order->status == 'completed')  
                                                         @if($order->review)
-                                                            <a href="#">Show Review</a>
+                                                            <a href="{{ route('showReview', ['id' => $order->id]) }}" 
+                                                            class="bg-blue-500 text-white px-4 py-2 rounded inline-block">
+                                                            Show Review
+                                                            </a>
                                                         @else
                                                             <x-reviews.leave-review :order="$order" />
                                                         @endif
                                                 @else
                                                         <h4>Not yet Applicable</h4>
                                                  @endif
-                                                </td>
+                                            </td>
                                                 
                                             <td class="px-6 py-4 text-right font-medium">
                                                 ₱{{ number_format($order->total, 2) }}
@@ -178,6 +181,8 @@
     </div>
 
 
+
+
     @if (session('success'))
         <script>
             Swal.fire({
@@ -201,6 +206,17 @@
             });
         </script>
     @endif
+
+    {{-- @if (session('success'))
+    <script>
+        Swal.fire({
+            title: 'Success!',
+            text: "{{ session('success') }}",
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+    @endif --}}
 
 </body>
 

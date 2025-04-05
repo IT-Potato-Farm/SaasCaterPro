@@ -274,10 +274,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
-    Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
-    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
-    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
+
+// Reviews route
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');    
+    Route::get('/user/dashboard/order/{id}/review', [UserDashboardController::class, 'showReview'])->name('showReview');
+    Route::get('/user/dashboard/order/{order}/review/edit', [UserDashboardController::class, 'editReview'])->name('editReview');
+    Route::put('/user/dashboard/order/{order}/review', [UserDashboardController::class, 'updateReview'])->name('updateReview');
+    Route::delete('/user/dashboard/order/{order}/review/{review}', [ReviewController::class, 'deleteReview'])->name('deleteReview');
 });
 
