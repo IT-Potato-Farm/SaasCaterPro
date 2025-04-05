@@ -10,18 +10,13 @@ class PackageItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'package_id',
-        'name',
-        'description',
-        
-    ];
+    protected $fillable = ['package_id', 'item_id'];
 
     public function package(){
         return $this->belongsTo(Package::class);
     }
     public function options()
     {
-        return $this->hasMany(PackageFoodItemOption::class, 'package_food_item_id');
+        return $this->hasMany(PackageItemOption::class, 'package_food_item_id');
     }
 }

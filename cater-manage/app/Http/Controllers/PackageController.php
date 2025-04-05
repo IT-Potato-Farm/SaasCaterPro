@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Package;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
+use App\Models\PackageItemOption;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
-use App\Models\PackageFoodItemOption;
+use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
@@ -37,31 +38,19 @@ class PackageController extends Controller
                 'price_per_person' => 'required|numeric|min:0',
                 'min_pax' => 'required|integer|min:1',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-                'status' => 'required|in:available,not available',
+                'status' => 'required|in:available,unavailable',
             ]);
 
             $packageitemFields['name'] = strip_tags($packageitemFields['name']);
             $packageitemFields['description'] = strip_tags($packageitemFields['description']);
 
-            $imageFolder = public_path('packagePics');
-            if (!is_dir(public_path('packagePics'))) {
-                mkdir(public_path('packagePics'), 0777, true);
-            }
-
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->move($imageFolder, $imageName);
-                // Store only the filename, not the full path
-                $packageitemFields['image'] = $imageName;
+                // Call the helper function to handle image upload
+                $packageitemFields['image'] = $this->handleImageUpload($image);
             }
 
-            // recommended ni gpt 
-            // if ($request->hasFile('image')) {
-            //     $image = $request->file('image');
-            //     $imagePath = $image->store('packagePics', 'public'); // Stores in storage/app/public/packagePics
-            //     $packageitemFields['image'] = $imagePath; // Save relative path
-            // }
+
 
             $package = Package::create($packageitemFields);
 
@@ -77,6 +66,13 @@ class PackageController extends Controller
             ], 500);
         }
     }
+
+    protected function handleImageUpload($image)
+    {
+        
+        return $image->store('packagepics', 'public');
+    }
+
     public function showPackageDetails($id)
     {
         // Load the package along with package items, each item's menu item, and the menu item's category.
@@ -130,7 +126,7 @@ class PackageController extends Controller
         $type = $request->query('type');
         $packageFoodItemId = $request->query('package_food_item_id');
 
-        $exists = PackageFoodItemOption::where('type', $type)
+        $exists = PackageItemOption::where('type', $type)
             ->where('package_food_item_id', $packageFoodItemId)
             ->exists();
 
@@ -157,14 +153,30 @@ class PackageController extends Controller
                 'description'       => 'nullable|string',
                 'price_per_person'  => 'required|numeric|min:0',
                 'min_pax'           => 'required|integer|min:1',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+                'status' => 'required|in:available,unavailable',
             ]);
 
             $data['name'] = strip_tags($data['name']);
             $data['description'] = isset($data['description']) ? strip_tags($data['description']) : null;
             $package = Package::findOrFail($id);
 
+            if ($request->hasFile('image')) {
+                if ($package->image) {
+                    Storage::disk('public')->delete($package->image);
+                }
+    
+                // Store the new image 
+                $image = $request->file('image');
+                $data['image'] = $this->handleImageUpload($image);
+            } else {
+                unset($data['image']);
+            }
+
             $package->update($data);
+
             return redirect()->back()->with('success', 'Package updated successfully!');
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -187,9 +199,11 @@ class PackageController extends Controller
     public function deletePackage($id)
     {
         $package = Package::findOrFail($id);
-        if ($package->image && File::exists(public_path('packagePics/' . $package->image))) {
-            File::delete(public_path('packagePics/' . $package->image));
+
+        if ($package->image) {
+            Storage::disk('public')->delete($package->image);
         }
+
         $package->delete();
         return redirect()->back()->with('success', 'Package deleted successfully!');
     }

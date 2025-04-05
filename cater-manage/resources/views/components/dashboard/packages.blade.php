@@ -1,69 +1,93 @@
 <script>
-    function openEditPackage(id, name, description, price_per_person, min_pax) {
-        let editUrl = "{{ url('/packages/edit') }}/" + id;
+    function openEditPackage(id, name, description, price_per_person, min_pax, image, status) {
+    let editUrl = "{{ url('/packages/edit') }}/" + id;
 
-        Swal.fire({
-            title: `<div class="flex items-center gap-2">
-                        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                        </svg>
-                        <span class="text-cyan-600 font-semibold text-xl">Edit Package</span>
-                    </div>`,
-            html: `
-                <form id="editForm-${id}" action="${editUrl}" method="POST" class="text-left">
-                    @csrf
-                    @method('PUT')
-                    <!-- Package Name -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Package Name</label>
-                        <input type="text" name="name" value="${name}" 
-                               class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
-                               required>
-                    </div>
+    Swal.fire({
+        title: `<div class="flex items-center gap-2">
+                    <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    <span class="text-cyan-600 font-semibold text-xl">Edit Package</span>
+                </div>`,
+        html: `
+            <form id="editForm-${id}" action="${editUrl}" method="POST" class="text-left" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <!-- Package Name -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Package Name</label>
+                    <input type="text" name="name" value="${name}" 
+                        class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                        required>
+                </div>
 
-                    <!-- Description -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
-                        <textarea name="description" 
-                                  class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
-                                  required>${description}</textarea>
-                    </div>
+                <!-- Description -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
+                    <textarea name="description" 
+                        class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
+                        required>${description}</textarea>
+                </div>
 
-                    <!-- Price per Person -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Price per Person</label>
-                        <input type="number" step="0.01" name="price_per_person" value="${price_per_person}" 
-                               class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
-                               required min="0.01">
-                    </div>
+                <!-- Price per Person -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Price per Person</label>
+                    <input type="number" step="0.01" name="price_per_person" value="${price_per_person}" 
+                        class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                        required min="0.01">
+                </div>
 
-                    <!-- Minimum Pax -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Minimum Pax</label>
-                        <input type="number" step="1" name="min_pax" value="${min_pax}" 
-                               class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
-                               required min="1">
+                <!-- Minimum Pax -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Minimum Pax</label>
+                    <input type="number" step="1" name="min_pax" value="${min_pax}" 
+                        class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                        required min="1">
+                </div>
+
+                <!-- Current Image Display -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Current Image</label>
+                    <div class="w-32 h-32 mb-3">
+                        <img src="${image}" alt="${name}" class="w-full h-full object-cover rounded-lg">
                     </div>
-                   
-                </form>
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'Save Changes',
-            cancelButtonText: 'Cancel',
-            focusConfirm: false,
-            customClass: {
-                popup: 'rounded-xl shadow-2xl',
-                confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
-                cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
-            },
-            preConfirm: () => {
-                const form = document.getElementById(`editForm-${id}`);
-                if (form.reportValidity()) {
-                    form.submit();
-                }
+                </div>
+
+                <!-- New Image Upload -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Upload New Image (Optional)</label>
+                    <input type="file" name="image" accept="image/*" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
+                </div>
+
+                <!-- Status -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Status</label>
+                    <select name="status" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
+                        <option value="available" ${status === 'available' ? 'selected' : ''}>available</option>
+                        <option value="unavailable" ${status === 'unavailable' ? 'selected' : ''}>unavailable</option>
+                    </select>
+                </div>
+               
+            </form>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Save Changes',
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        customClass: {
+            popup: 'rounded-xl shadow-2xl',
+            confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
+            cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
+        },
+        preConfirm: () => {
+            const form = document.getElementById(`editForm-${id}`);
+            if (form.reportValidity()) {
+                form.submit();
             }
-        });
-    }
+        }
+    });
+}
+
 </script>
 <div class="container mx-auto px-4 py-8">
     <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center"> Packages</h2>
@@ -80,7 +104,7 @@
                     <!-- img-->
                     <div class="h-48 bg-gray-100 relative">
                         @if ($package->image)
-                            <img src="{{ asset('packagePics/' . $package->image) }}" alt="{{ $package->name }}"
+                            <img src="{{ asset('storage/' . $package->image) }}" alt="{{ $package->name }}"
                                 class="w-full h-full object-fill ">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-400">
@@ -90,7 +114,6 @@
                                 </svg>
                             </div>
                         @endif
-
                     </div>
 
                     <!-- package Details -->
@@ -126,7 +149,9 @@
                             {{ json_encode($package->name) }}, 
                             {{ json_encode($package->description) }},
                             {{ json_encode($package->price_per_person) }},
-                            {{ json_encode($package->min_pax) }}
+                            {{ json_encode($package->min_pax) }},
+                            '{{ asset('storage/' . $package->image) }}',
+                            '{{ $package->status }}'
                             )"
                                 class="flex-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition-colors">
                                 <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor"

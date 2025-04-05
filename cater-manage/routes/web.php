@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PostCategories;
 use App\Http\Controllers\UserController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
+use App\Http\Controllers\ItemOptionController;
 use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
@@ -188,11 +190,11 @@ Route::get('/cartdup', [CartController::class, 'index'])->name('cart.sanagumana'
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // cart
 Route::middleware(['auth', 'verified'])->group(function () {
-   
+
 
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
-    
+
 });
 Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
 Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
@@ -201,7 +203,7 @@ Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('
 // CART COUNT LIVE AJAX
 Route::get('/cart/count', function () {
     $user = Auth::user();
-    
+
     // For guests, use the session to get cart items
     if (!$user) {
         $cart = session()->get('cart', ['items' => []]);
@@ -242,6 +244,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 
+
+    // ITEM STORE
+    Route::resource('items', ItemController::class);
+    Route::post('/items/check-name', [ItemController::class, 'checkName'])->name('items.checkName');
+    Route::put('/items/{id}/edit', [ItemController::class, 'update'])->name('item.edit');
+    Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('item.delete');
+    // ITEM OPTIONS
+    Route::post('/items-option/store', [ItemOptionController::class, 'store'])->name('itemOptions.store');
+    Route::put('/item-options/{id}', [ItemOptionController::class, 'update'])->name('itemOption.edit');
+    Route::delete('/item-options/{id}', [ItemOptionController::class, 'destroy'])->name('itemOption.delete');
+    Route::post('/item-options/check-type', [ItemOptionController::class, 'checkType'])->name('itemOptions.checkType');
+
+    // LINK OPTION TO ITEMS
+    Route::post('/items/link-options', [ItemOptionController::class, 'linkItemOptionToItem'])->name('items.linkItemOption');
+    Route::get('/item-options/{itemId}', [ItemOptionController::class, 'getItemOptions'])->name('item-options.fetch');
+    // GET EXISTING ITEM OPTION TO ITEM
+    Route::get('/items/{itemId}/existing-options', [ItemOptionController::class, 'getExistingItemOptionsForItem'])->name('items.getExistingOptions');
+
+
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     // add
@@ -255,7 +276,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // cancel order
     Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
-    
+
 
     // booking  management
     Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
@@ -276,4 +297,3 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
 });
-

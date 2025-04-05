@@ -8,7 +8,7 @@ use App\Models\PackageItem;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use App\Models\PackageFoodItemOption;
+use App\Models\PackageItemOption;
 
 class PackageItemController extends Controller
 {
@@ -163,7 +163,7 @@ class PackageItemController extends Controller
 
 
             // food item option record
-            $option = PackageFoodItemOption::create($fields);
+            $option = PackageItemOption::create($fields);
 
             return response()->json([
                 'success'                  => true,

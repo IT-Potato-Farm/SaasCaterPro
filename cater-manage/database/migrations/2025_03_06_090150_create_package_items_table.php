@@ -11,26 +11,49 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('package_items', function (Blueprint $table) {
+        // ETO NA UNG ITEMS 
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('package_id')->constrained()->onDelete('cascade');
-            $table->string('name'); // fill if chicken, beef, etc.
-            
+            $table->string('name')->unique(); // e.g., Chicken, Beef
             $table->text('description')->nullable();
-            // $table->primary(['package_id', 'menu_item_id']);
-            $table->timestamps(); 
-            $table->unique(['package_id', 'name']);
+            $table->timestamps();
         });
-
-        Schema::create('package_food_item_options', function (Blueprint $table) {
+        Schema::create('item_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('package_food_item_id')->constrained('package_items')->onDelete('cascade');
+            $table->foreignId('item_id')->nullable()->constrained('items')->onDelete('cascade');
             $table->string('type'); // e.g., "Fried", "Buttered"
             $table->string('image')->nullable();
             $table->text('description')->nullable();
-            
             $table->timestamps();
         });
+
+        // pivot linking sa item option into items
+        Schema::create('item_item_option', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
+            $table->foreignId('item_option_id')->constrained('item_options')->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['item_id', 'item_option_id']);
+        });
+
+        //pivot linking ng items sa package
+        Schema::create('package_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('package_id')->constrained('packages')->onDelete('cascade');
+            $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['package_id', 'item_id']);
+        });
+
+        Schema::create('package_item_options', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('package_item_id')->constrained('package_items')->onDelete('cascade');
+            $table->foreignId('item_option_id')->constrained('item_options')->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['package_item_id', 'item_option_id']);
+        });
+
+
 
         Schema::create('package_utilities', function (Blueprint $table) {
             $table->id();
@@ -49,7 +72,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('package_utilities');
-        Schema::dropIfExists('package_food_item_options');
+        Schema::dropIfExists('package_item_options');
         Schema::dropIfExists('package_items');
+        Schema::dropIfExists('item_options');
+        Schema::dropIfExists('items');
     }
 };

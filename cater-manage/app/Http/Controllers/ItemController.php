@@ -1,0 +1,159 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Item;
+use App\Models\ItemOption;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
+class ItemController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        try {
+            $items = Item::all();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Items retrieved successfully!',
+                'items'   => $items
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+    public function checkName(Request $request)
+    {
+        $exists = Item::where('name', $request->name)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        try {
+            //validation
+            $fields = $request->validate([
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('items')->where(function ($query) use ($request) {
+                        return $query->where('name', $request->name);
+                    })
+                ],
+                'description' => 'nullable|string',
+            ]);
+
+            //sanitize
+            $fields['name'] = strip_tags($fields['name']);
+            $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
+
+            $item = Item::create($fields);
+            return response()->json([
+                'success' => true,
+                'message' => 'Item created successfully!',
+                'item'    => $item
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        try {
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ]);
+
+            //  prevent XSS
+            $data['name'] = strip_tags($data['name']);
+            $data['description'] = isset($data['description']) ? strip_tags($data['description']) : null;
+
+            $item = Item::findOrFail($id);
+
+            $item->update($data);
+
+            return redirect()->back()->with('success', 'Item updated successfully!');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // LINK FRIED TO CHICKEN ETC
+    public function linkItemOptionToItem(Request $request, $itemId)
+    {
+        $item = Item::findOrFail($itemId);
+
+        // Get the selected item options from the request
+        $itemOptionIds = $request->input('item_options');
+
+        // Link the selected item options to the item
+        foreach ($itemOptionIds as $itemOptionId) {
+            $itemOption = ItemOption::findOrFail($itemOptionId);
+            $itemOption->item()->associate($item);
+            $itemOption->save();
+        }
+        return redirect()->back()->with('success', 'Item options linked successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        try {
+            $item = Item::findOrFail($id);
+            $item->delete();
+
+            return redirect()->back()->with('success', 'Package deleted successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to delete item: ' . $e->getMessage());
+        }
+    }
+}
