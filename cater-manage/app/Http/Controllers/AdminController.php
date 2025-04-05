@@ -60,8 +60,16 @@ class AdminController extends Controller
     public function goPackageDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            return view('admin.packagesdashboard');
+            $packageItemsGroupedByPackage = PackageItem::all()
+            ->groupBy('package_id')
+            ->map(function ($group) {
+                return $group->map(function ($item) {
+                    return ['id' => $item->id, 'name' => $item->name];
+                });
+            })->toArray();
+            return view('admin.packagesdashboard', compact( 'packageItemsGroupedByPackage'));
         }
+
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }

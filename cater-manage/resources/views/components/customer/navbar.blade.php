@@ -95,7 +95,7 @@
                     <!-- dropdown -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow z-50">
                         @if (Auth::check() && Auth::user()->role === 'admin')
-                            <a href="{{ route('admin.admindashboard') }}"
+                            <a href="{{ route('admin.finaldashboard') }}"
                                 class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                 Dashboard
                             </a>

@@ -73,7 +73,7 @@ class UserController extends Controller
             }
             // if admin punta dashboard
             if ($user->role === 'admin') {
-                return redirect()->route('admin.admindashboard')->with('success', 'Login successful!');
+                return redirect()->route('admin.finaldashboard')->with('success', 'Login successful!');
             } else {
                 return redirect()->route('landing')->with('success', 'Login successful!');
             }
