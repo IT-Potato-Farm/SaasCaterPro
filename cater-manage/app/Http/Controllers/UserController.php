@@ -109,7 +109,7 @@ class UserController extends Controller
         $rules = [
             'first_name'    => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
             'last_name'     => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
-            'email'         => ['required', 'email', 'regex:/^.+@.+\.com$/i', Rule::unique('users', 'email')],
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
             'mobile'        => ['required', 'regex:/^9\d{9}$/', Rule::unique('users', 'mobile')],
             'password'      => [
                 'required',
@@ -122,7 +122,7 @@ class UserController extends Controller
                 'confirmed'      // password_confirmation must match
             ],
             'password_confirmation' => ['required'],
-            'terms'         => ['accepted']
+            // 'terms'         => ['accepted']
         ];
 
         $messages = [
@@ -137,7 +137,7 @@ class UserController extends Controller
             'email.required'                 => 'The email field is required.',
             'email.email'                    => 'Please enter a valid email address.',
             'email.unique'                   => 'This email is already registered.',
-            'email.regex'                    => 'Please enter a valid email address ending in .com (e.g., sample@gmail.com).',
+            'email.regex'                    => 'Please enter a valid email address with a standard domain (e.g., .com, .net, .org).',
             'mobile.required'                => 'The mobile field is required.',
             'mobile.regex'                   => 'The mobile number must be a valid Philippine number starting with 9 and be 10 digits (use +639xxxxxxx or 9XXXXXXXXX).',
             'mobile.unique'                  => 'This mobile number is already registered.',
@@ -146,8 +146,8 @@ class UserController extends Controller
             'password.max'                   => 'The password may not be greater than 16 characters.',
             'password.regex'                 => 'The password must contain at least one lowercase letter, one uppercase letter, and one number.',
             'password.confirmed'             => 'The password does not match.',
-            'password_confirmation.required' => 'The confirm password field is required.',
-            'terms.accepted'                 => 'You must accept the terms and conditions to proceed.'
+            'password_confirmation.required' => 'The confirm password field is required.'
+            // 'terms.accepted'                 => 'You must accept the terms and conditions to proceed.'
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);

@@ -33,7 +33,7 @@ class AdminController extends Controller
     }
 
 
-    public function test()
+    public function goDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
             return view('admin.finaldashboard');
@@ -41,6 +41,47 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
+    public function goCategoryDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.categoriesdashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function goProductsDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.productsdashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function goPackageDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.packagesdashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function goBookingsDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.bookingsdashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function goUserDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('admin.allusersdashboard');
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+
     public function dashboard()
     {
         if (!Auth::check() || Auth::user()->role !== 'admin') {
