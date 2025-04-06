@@ -89,15 +89,15 @@
                         <ul class="list-disc pl-4">
                             {{-- FOR INCLUSIONS FOODS --}}
                             <h4 class="text-md font-semibold mt-3">Included Foods:</h4>
-                            @foreach ($package->packageItems as $item)
+                            @foreach ($package->packageItems as $packageItem)
                                 <li>
-                                    {{ $item->name }}
+                                    {{ $packageItem->item->name }}
                                     
-                                    {{--choices like sa chicken, may fried ganon --}}
-                                    @if ($item->options->isNotEmpty())
+                                    {{-- Choices like sa chicken, may fried ganon --}}
+                                    @if ($packageItem->options->isNotEmpty())
                                         <ul class="list-circle pl-6 text-sm text-gray-700">
-                                            @foreach ($item->options as $option)
-                                                <li>{{ $option->type }} </li>
+                                            @foreach ($packageItem->options as $option)
+                                                <li>{{ $option->itemOption->type }} </li>
                                             @endforeach
                                         </ul>
                                     @endif

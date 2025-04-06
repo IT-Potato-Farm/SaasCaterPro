@@ -90,10 +90,13 @@ class AdminController extends Controller
             'options' => $options
         ]);
     }
+    
+    
+
     public function goUtilityDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            $utilities =PackageUtility::all();
+            $utilities = PackageUtility::all();
             $packages = Package::all();
             return view('admin.utilitydashboard', compact('utilities', 'packages'));
         }

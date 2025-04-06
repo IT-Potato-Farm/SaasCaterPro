@@ -175,6 +175,15 @@
                                     Delete
                                 </button>
                             </form>
+
+                            {{-- view more  --}}
+                            <a href="{{ route('package.show', $package->id) }}" 
+                                class="flex-1 px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 15l-4 4m0 0l-4-4m4 4V3" />
+                                </svg>
+                                View More
+                            </a>
                         </div>
                     </div>
                 </div>

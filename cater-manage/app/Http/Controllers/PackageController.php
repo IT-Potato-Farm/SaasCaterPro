@@ -71,66 +71,66 @@ class PackageController extends Controller
 
     // link items to package
     public function linkItemToPackage($packageId, $itemId, array $itemOptionIds = [])
-{
-    try {
-        // Log 
-        Log::debug('Linking Item to Package:', [
-            'package_id' => $packageId,
-            'item_id' => $itemId,
-            'item_option_ids' => $itemOptionIds
-        ]);
+    {
+        try {
+            // Log 
+            Log::debug('Linking Item to Package:', [
+                'package_id' => $packageId,
+                'item_id' => $itemId,
+                'item_option_ids' => $itemOptionIds
+            ]);
 
-        //  (link the item to the package)
-        $packageItem = PackageItem::create([
-            'package_id' => $packageId,
-            'item_id' => $itemId
-        ]);
+            //  (link the item to the package)
+            $packageItem = PackageItem::create([
+                'package_id' => $packageId,
+                'item_id' => $itemId
+            ]);
 
-        Log::debug('PackageItem Created:', ['package_item_id' => $packageItem->id]);
+            Log::debug('PackageItem Created:', ['package_item_id' => $packageItem->id]);
 
-        $linkedOptions = [];
-        $item = Item::findOrFail($itemId);
-        // Then, for each option ID, create a package_item_options record
-        foreach ($itemOptionIds as $optionId) {
-            // Verify that this option belongs to the item
-            $option = ItemOption::findOrFail($optionId);
+            $linkedOptions = [];
+            $item = Item::findOrFail($itemId);
+            // Then, for each option ID, create a package_item_options record
+            foreach ($itemOptionIds as $optionId) {
+                // Verify that this option belongs to the item
+                $option = ItemOption::findOrFail($optionId);
 
-            Log::debug('Checking Option:', ['option' => $option]);
+                Log::debug('Checking Option:', ['option' => $option]);
 
-            //  option belongs to this item
-            if ($item->itemOptions->contains('id', $optionId)) {
-                // Create the package_item_options record
-                Log::debug('Creating PackageItemOption:', [
-                    'package_item_id' => $packageItem->id,
-                    'item_option_id' => $optionId
-                ]);
-                PackageItemOption::create([
-                    'package_item_id' => $packageItem->id,
-                    'item_option_id' => $optionId
-                ]);
+                //  option belongs to this item
+                if ($item->itemOptions->contains('id', $optionId)) {
+                    // Create the package_item_options record
+                    Log::debug('Creating PackageItemOption:', [
+                        'package_item_id' => $packageItem->id,
+                        'item_option_id' => $optionId
+                    ]);
+                    PackageItemOption::create([
+                        'package_item_id' => $packageItem->id,
+                        'item_option_id' => $optionId
+                    ]);
 
-                $linkedOptions[] = $option->type;
-            } else {
-                Log::warning('Option does not belong to item', [
-                    'option_id' => $optionId,
-                    'item_id' => $itemId
-                ]);
+                    $linkedOptions[] = $option->type;
+                } else {
+                    Log::warning('Option does not belong to item', [
+                        'option_id' => $optionId,
+                        'item_id' => $itemId
+                    ]);
+                }
             }
+
+            Log::debug('Linked Options:', ['linked_options' => $linkedOptions]);
+
+            return redirect()->back()->with('success', 'Item options linked successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error linking item to package: ' . $e->getMessage(), [
+                'exception' => $e->getTraceAsString()
+            ]);
+            return [
+                'success' => false,
+                'message' => 'Failed to link item: ' . $e->getMessage()
+            ];
         }
-
-        Log::debug('Linked Options:', ['linked_options' => $linkedOptions]);
-
-        return redirect()->back()->with('success', 'Item options linked successfully!');
-    } catch (\Exception $e) {
-        Log::error('Error linking item to package: ' . $e->getMessage(), [
-            'exception' => $e->getTraceAsString()
-        ]);
-        return [
-            'success' => false,
-            'message' => 'Failed to link item: ' . $e->getMessage()
-        ];
     }
-}
     public function addItemToPackage(Request $request)
     {
         $validated = $request->validate([
@@ -155,6 +155,7 @@ class PackageController extends Controller
 
         return basename($image->store('packagepics', 'public'));
     }
+    
 
     public function showPackageDetails($id)
     {
@@ -219,9 +220,48 @@ class PackageController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function showItemsOnPackage($id)
     {
-        //
+        $package = Package::with([
+            'packageItems.item',
+            'packageItems.options.itemOption',
+            'utilities'
+        ])->findOrFail($id);
+
+        return view('packages.show', compact('package'));
+    }
+
+    public function removeItemFromPackage(Request $request, $packageId)
+    {
+        $request->validate([
+        'items_to_remove' => 'array|nullable',
+        'options' => 'array|nullable',
+    ]);
+
+    
+    $package = Package::findOrFail($packageId);
+
+    if ($request->has('items_to_remove')) {
+        
+        foreach ($request->input('items_to_remove') as $packageItemId) {
+            
+            $packageItem = $package->packageItems()->findOrFail($packageItemId);
+            $packageItem->delete();
+        }
+    }
+
+    
+    if ($request->has('options')) {
+        
+        foreach ($request->input('options') as $optionId) {
+           
+            $packageItemOption = PackageItemOption::findOrFail($optionId);
+            $packageItemOption->delete();
+        }
+    }
+
+    
+    return redirect()->route('package.show', $packageId)->with('success', 'Items and/or options removed successfully.');
     }
 
     /**

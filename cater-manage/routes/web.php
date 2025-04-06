@@ -271,16 +271,23 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/item-options/{itemId}', [ItemOptionController::class, 'getItemOptions'])->name('item-options.fetch');
     // GET EXISTING ITEM OPTION TO ITEM
     Route::get('/items/{itemId}/existing-options', [ItemOptionController::class, 'getExistingItemOptionsForItem'])->name('items.getExistingOptions');
+    Route::get('/admin/package/{packageId}/assigned-options', [AdminController::class, 'getAssignedOptions']);
 
 
     // LINK ITEMS TO PACKAGE ROUTE
     Route::post('/packages/{packageId}/link-items', [PackageController::class, 'linkItemsToPackage'])->name('packages.linkItemsToPackage');
     Route::post('/link-item-to-package', [PackageController::class, 'addItemToPackage'])->name('admin.addItemToPackage');
+    // DELETE ITEMS  FROM PACKAGE
+    Route::delete('packages/{id}/remove-items', [PackageController::class, 'removeItemFromPackage'])->name('admin.removeItemFromPackage');
+    Route::get('packages/{id}', [PackageController::class, 'showItemsOnPackage'])->name('package.show');
 
 
     // Route to fetch item options via AJAX
     Route::get('/items/{item}/available-options', [AdminController::class, 'getItemOptions'])->name('admin.getItemOptions');
-
+    // GET PACKAGE OPTIONS BASED ON PACKAGE
+    Route::get('/admin/package-item-options/{packageId}/{itemId}', [AdminController::class, 'packageItemOptions']);
+    
+    
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     // add

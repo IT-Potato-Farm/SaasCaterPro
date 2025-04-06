@@ -15,11 +15,12 @@ class linkItemPackage extends Component
      */
     public $packages;
     public $items;
+    
     public function __construct()
     {
         $this->packages = Package::all();
         $this->items = Item::all();
-
+        
     }
 
     /**
