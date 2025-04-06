@@ -20,14 +20,13 @@ return new class extends Migration
         });
         Schema::create('item_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('item_id')->nullable()->constrained('items')->onDelete('cascade');
             $table->string('type'); // e.g., "Fried", "Buttered"
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });
 
-        // pivot linking sa item option into items
+        // pivot linking sa item option into items fried belongs to chicken etc
         Schema::create('item_item_option', function (Blueprint $table) {
             $table->id();
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
@@ -45,6 +44,7 @@ return new class extends Migration
             $table->unique(['package_id', 'item_id']);
         });
 
+        // pivot table for linking specific option ex. sa package 1, ung chicken is Fried lng offered 
         Schema::create('package_item_options', function (Blueprint $table) {
             $table->id();
             $table->foreignId('package_item_id')->constrained('package_items')->onDelete('cascade');
@@ -74,6 +74,7 @@ return new class extends Migration
         Schema::dropIfExists('package_utilities');
         Schema::dropIfExists('package_item_options');
         Schema::dropIfExists('package_items');
+        Schema::dropIfExists('item_item_option');
         Schema::dropIfExists('item_options');
         Schema::dropIfExists('items');
     }

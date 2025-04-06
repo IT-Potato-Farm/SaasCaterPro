@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use App\Models\Package;
+use App\Models\ItemOption;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
 use App\Models\PackageItemOption;
@@ -67,9 +69,90 @@ class PackageController extends Controller
         }
     }
 
+    // link items to package
+    public function linkItemToPackage($packageId, $itemId, array $itemOptionIds = [])
+{
+    try {
+        // Log 
+        Log::debug('Linking Item to Package:', [
+            'package_id' => $packageId,
+            'item_id' => $itemId,
+            'item_option_ids' => $itemOptionIds
+        ]);
+
+        //  (link the item to the package)
+        $packageItem = PackageItem::create([
+            'package_id' => $packageId,
+            'item_id' => $itemId
+        ]);
+
+        Log::debug('PackageItem Created:', ['package_item_id' => $packageItem->id]);
+
+        $linkedOptions = [];
+        $item = Item::findOrFail($itemId);
+        // Then, for each option ID, create a package_item_options record
+        foreach ($itemOptionIds as $optionId) {
+            // Verify that this option belongs to the item
+            $option = ItemOption::findOrFail($optionId);
+
+            Log::debug('Checking Option:', ['option' => $option]);
+
+            //  option belongs to this item
+            if ($item->itemOptions->contains('id', $optionId)) {
+                // Create the package_item_options record
+                Log::debug('Creating PackageItemOption:', [
+                    'package_item_id' => $packageItem->id,
+                    'item_option_id' => $optionId
+                ]);
+                PackageItemOption::create([
+                    'package_item_id' => $packageItem->id,
+                    'item_option_id' => $optionId
+                ]);
+
+                $linkedOptions[] = $option->type;
+            } else {
+                Log::warning('Option does not belong to item', [
+                    'option_id' => $optionId,
+                    'item_id' => $itemId
+                ]);
+            }
+        }
+
+        Log::debug('Linked Options:', ['linked_options' => $linkedOptions]);
+
+        return redirect()->back()->with('success', 'Item options linked successfully!');
+    } catch (\Exception $e) {
+        Log::error('Error linking item to package: ' . $e->getMessage(), [
+            'exception' => $e->getTraceAsString()
+        ]);
+        return [
+            'success' => false,
+            'message' => 'Failed to link item: ' . $e->getMessage()
+        ];
+    }
+}
+    public function addItemToPackage(Request $request)
+    {
+        $validated = $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'item_id' => 'required|exists:items,id',
+            'item_option_ids' => 'array',
+            'item_option_ids.*' => 'exists:item_options,id'
+        ]);
+        Log::debug('Validated Request Data:', $validated);
+
+        $result = $this->linkItemToPackage(
+            $validated['package_id'],
+            $validated['item_id'],
+            $validated['item_option_ids'] ?? []
+        );
+
+        return redirect()->back();
+    }
+
     protected function handleImageUpload($image)
     {
-        
+
         return $image->store('packagepics', 'public');
     }
 
@@ -165,7 +248,7 @@ class PackageController extends Controller
                 if ($package->image) {
                     Storage::disk('public')->delete($package->image);
                 }
-    
+
                 // Store the new image 
                 $image = $request->file('image');
                 $data['image'] = $this->handleImageUpload($image);
@@ -176,7 +259,6 @@ class PackageController extends Controller
             $package->update($data);
 
             return redirect()->back()->with('success', 'Package updated successfully!');
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

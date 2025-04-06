@@ -15,6 +15,10 @@ class PackageItem extends Model
     public function package(){
         return $this->belongsTo(Package::class);
     }
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
     public function options()
     {
         return $this->hasMany(PackageItemOption::class, 'package_food_item_id');

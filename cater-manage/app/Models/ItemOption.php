@@ -10,9 +10,9 @@ class ItemOption extends Model
     /** @use HasFactory<\Database\Factories\ItemOptionFactory> */
     use HasFactory;
 
-    protected $fillable = ['item_id', 'type', 'image', 'description'];
+    protected $fillable = [ 'type', 'image', 'description'];
 
-    
+    // pivot into item_item_option
     public function items()
     {
         return $this->belongsToMany(Item::class, 'item_item_option',  'item_option_id', 'item_id');

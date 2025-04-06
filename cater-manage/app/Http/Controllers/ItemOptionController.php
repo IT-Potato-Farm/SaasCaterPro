@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Package;
 use App\Models\ItemOption;
+use App\Models\PackageItem;
 use Illuminate\Http\Request;
+use App\Models\PackageItemOption;
 use Illuminate\Support\Facades\Storage;
 
 class ItemOptionController extends Controller
@@ -29,6 +32,10 @@ class ItemOptionController extends Controller
             'item_option' => $itemOption
         ]);
     }
+
+    // LINK ITEMS SA PACKAGE
+
+    
 
 
     public function update(Request $request, $itemOptionId)
@@ -83,6 +90,7 @@ class ItemOptionController extends Controller
     }
     public function linkItemOptionToItem(Request $request)
     {
+        
         // Validate input
         $request->validate([
             'item_id' => 'required|exists:items,id',
@@ -92,10 +100,23 @@ class ItemOptionController extends Controller
 
         $item = Item::find($request->item_id);
 
-        // Attach the item options to the item using the pivot table
+        // Attach using the pivot table
         $item->itemOptions()->attach($request->item_option_ids);
 
         return redirect()->back()->with('success', 'Item options linked successfully!');
+    }
+    // REMOVE ITEM OPTION SA ITEM
+    public function unlinkItemOptionFromItem(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required|exists:items,id',
+            'item_option_id' => 'required|exists:item_options,id',
+        ]);
+
+        $item = Item::findOrFail($request->item_id);
+        $item->itemOptions()->detach($request->item_option_id);
+
+        return redirect()->back()->with('success', 'Item option removed successfully!');
     }
 
     public function getItemOptions($itemId)
@@ -106,10 +127,13 @@ class ItemOptionController extends Controller
             'options' => $itemOptions
         ]);
     }
+
     public function getExistingItemOptionsForItem($itemId)
     {
         $existingOptions = Item::find($itemId)->itemOptions()->pluck('item_options.id')->toArray();
 
         return response()->json($existingOptions);
     }
+
+    
 }

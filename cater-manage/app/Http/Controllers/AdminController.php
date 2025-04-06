@@ -63,20 +63,35 @@ class AdminController extends Controller
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
             $packageItemsGroupedByPackage = PackageItem::all()
-            ->groupBy('package_id')
-            ->map(function ($group) {
-                return $group->map(function ($item) {
-                    return ['id' => $item->id, 'name' => $item->name];
-                });
-            })->toArray();
+                ->groupBy('package_id')
+                ->map(function ($group) {
+                    return $group->map(function ($item) {
+                        return ['id' => $item->id, 'name' => $item->name];
+                    });
+                })->toArray();
 
-            $items= Item::all();
+            $items = Item::all();
             $itemOptions = ItemOption::all();
-            return view('admin.packagesdashboard', compact( 'packageItemsGroupedByPackage', 'items', 'itemOptions'));
+            $packages = Package::all();
+
+            return view('admin.packagesdashboard', compact('packageItemsGroupedByPackage', 'items', 'itemOptions', 'packages'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
+    public function getItemOptions($itemId)
+    {
+        $item = Item::findOrFail($itemId);
+        $options = $item->itemOptions; // Fetch the related item options for the item
+
+        return response()->json([
+            'success' => true,
+            'options' => $options
+        ]);
+    }
+
+
+
     public function goBookingsDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
@@ -101,12 +116,12 @@ class AdminController extends Controller
         }
         $packages = Package::all();
         $packageItemsGroupedByPackage = PackageItem::all()
-        ->groupBy('package_id')
-        ->map(function ($group) {
-            return $group->map(function ($item) {
-                return ['id' => $item->id, 'name' => $item->name];
-            });
-        })->toArray();
+            ->groupBy('package_id')
+            ->map(function ($group) {
+                return $group->map(function ($item) {
+                    return ['id' => $item->id, 'name' => $item->name];
+                });
+            })->toArray();
         return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
     }
 }

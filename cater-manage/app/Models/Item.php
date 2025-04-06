@@ -16,6 +16,10 @@ class Item extends Model
         return $this->belongsToMany(ItemOption::class, 'item_item_option', 'item_id', 'item_option_id');
     }
 
+    public function packages()
+    {
+        return $this->belongsToMany(Package::class, 'package_items', 'item_id', 'package_id');
+    }
     public function packageItems()
     {
         return $this->hasMany(PackageItem::class);

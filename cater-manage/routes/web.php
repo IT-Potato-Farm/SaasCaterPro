@@ -239,6 +239,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/finaldashboard/category', [AdminController::class, 'goCategoryDashboard'])->name('admin.categorydashboard');
     Route::get('/admin/finaldashboard/products', [AdminController::class, 'goProductsDashboard'])->name('admin.products');
     Route::get('/admin/finaldashboard/packages', [AdminController::class, 'goPackageDashboard'])->name('admin.packages');
+    
     Route::get('/admin/finaldashboard/bookings', [AdminController::class, 'goBookingsDashboard'])->name('admin.bookings');
     Route::get('/admin/finaldashboard/users', [AdminController::class, 'goUserDashboard'])->name('admin.allusers');
     // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
@@ -258,11 +259,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // LINK OPTION TO ITEMS
     Route::post('/items/link-options', [ItemOptionController::class, 'linkItemOptionToItem'])->name('items.linkItemOption');
+    Route::post('/items/unlink-item-option', [ItemOptionController::class, 'unlinkItemOptionFromItem'])->name('items.unlinkItemOption');
+
     Route::get('/item-options/{itemId}', [ItemOptionController::class, 'getItemOptions'])->name('item-options.fetch');
     // GET EXISTING ITEM OPTION TO ITEM
     Route::get('/items/{itemId}/existing-options', [ItemOptionController::class, 'getExistingItemOptionsForItem'])->name('items.getExistingOptions');
 
 
+    // LINK ITEMS TO PACKAGE ROUTE
+    Route::post('/packages/{packageId}/link-items', [PackageController::class, 'linkItemsToPackage'])->name('packages.linkItemsToPackage');
+    Route::post('/link-item-to-package', [PackageController::class, 'addItemToPackage'])->name('admin.addItemToPackage');
+
+
+// Route to fetch item options via AJAX
+    Route::get('/items/{item}/available-options', [AdminController::class, 'getItemOptions'])->name('admin.getItemOptions');
+    
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     // add
