@@ -57,7 +57,7 @@ return new class extends Migration
 
         Schema::create('package_utilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('package_id')->constrained()->onDelete('cascade');
+            $table->foreignId('package_id')->constrained('packages')->onDelete('cascade');
             $table->string('name'); // e.g., "Table", "Chair"
             $table->text('description')->nullable();
             $table->string('image')->nullable();

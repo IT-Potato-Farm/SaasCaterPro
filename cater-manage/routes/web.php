@@ -163,7 +163,7 @@ Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
 Route::resource('package_items', PackageItemController::class);
 Route::post('/packageitemoption/store', [PackageItemController::class, 'optionstore'])->name('package_food_item_options.store');
 Route::post('/package-items/check-name', [PackageItemController::class, 'checkName'])->name('package_items.checkName');
-Route::post('/packageutility/store', [PackageUtilityController::class, 'store'])->name('package_utilities.store');
+
 
 Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
 Route::get('/get-existing-package-items/{package}', [PackageItemController::class, 'getExistingpackageItems']);
@@ -239,7 +239,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/finaldashboard/category', [AdminController::class, 'goCategoryDashboard'])->name('admin.categorydashboard');
     Route::get('/admin/finaldashboard/products', [AdminController::class, 'goProductsDashboard'])->name('admin.products');
     Route::get('/admin/finaldashboard/packages', [AdminController::class, 'goPackageDashboard'])->name('admin.packages');
-    
+
+    // PACKAGE UTILITIES
+    Route::get('/admin/finaldashboard/utilities', [AdminController::class, 'goUtilityDashboard'])->name('admin.utilities');
+    Route::post('/packageutility/store', [PackageUtilityController::class, 'store'])->name('package_utilities.store');
+    Route::put('/packageutility/update/{id}', [PackageUtilityController::class, 'update'])->name('package_utilities.update');
+    Route::delete('/packageutility/delete/{id}', [PackageUtilityController::class, 'destroy'])->name('package_utilities.destroy');
+
+
     Route::get('/admin/finaldashboard/bookings', [AdminController::class, 'goBookingsDashboard'])->name('admin.bookings');
     Route::get('/admin/finaldashboard/users', [AdminController::class, 'goUserDashboard'])->name('admin.allusers');
     // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
@@ -271,9 +278,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/link-item-to-package', [PackageController::class, 'addItemToPackage'])->name('admin.addItemToPackage');
 
 
-// Route to fetch item options via AJAX
+    // Route to fetch item options via AJAX
     Route::get('/items/{item}/available-options', [AdminController::class, 'getItemOptions'])->name('admin.getItemOptions');
-    
+
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     // add

@@ -8,6 +8,7 @@ use App\Models\Package;
 use App\Models\Category;
 use App\Models\ItemOption;
 use App\Models\PackageItem;
+use App\Models\PackageUtility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -88,6 +89,16 @@ class AdminController extends Controller
             'success' => true,
             'options' => $options
         ]);
+    }
+    public function goUtilityDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $utilities =PackageUtility::all();
+            $packages = Package::all();
+            return view('admin.utilitydashboard', compact('utilities', 'packages'));
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
 
 

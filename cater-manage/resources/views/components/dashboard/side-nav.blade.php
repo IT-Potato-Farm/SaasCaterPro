@@ -53,6 +53,16 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.utilities') }}"
+                    class="flex items-center p-3 hover:bg-gray-700 rounded-md {{ Request::routeIs('admin.utilities') ? 'bg-gray-900' : '' }}">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="menu-text">Utilities</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{route('admin.bookings')}}"
                     class="flex items-center p-3 hover:bg-gray-700 rounded-md {{ Request::routeIs('admin.bookings') ? 'bg-gray-900' : '' }}">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

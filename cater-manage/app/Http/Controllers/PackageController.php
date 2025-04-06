@@ -153,7 +153,7 @@ class PackageController extends Controller
     protected function handleImageUpload($image)
     {
 
-        return $image->store('packagepics', 'public');
+        return basename($image->store('packagepics', 'public'));
     }
 
     public function showPackageDetails($id)
@@ -246,7 +246,7 @@ class PackageController extends Controller
 
             if ($request->hasFile('image')) {
                 if ($package->image) {
-                    Storage::disk('public')->delete($package->image);
+                    Storage::disk('public')->delete('packagepics/' . $package->image);
                 }
 
                 // Store the new image 
@@ -283,7 +283,7 @@ class PackageController extends Controller
         $package = Package::findOrFail($id);
 
         if ($package->image) {
-            Storage::disk('public')->delete($package->image);
+            Storage::disk('public')->delete('packagepics/' . $package->image);
         }
 
         $package->delete();

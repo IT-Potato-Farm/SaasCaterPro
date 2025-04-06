@@ -104,7 +104,7 @@
                     <!-- img-->
                     <div class="h-48 bg-gray-100 relative">
                         @if ($package->image)
-                            <img src="{{ asset('storage/' . $package->image) }}" alt="{{ $package->name }}"
+                            <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
                                 class="w-full h-full object-fill ">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-400">
