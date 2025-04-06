@@ -101,17 +101,30 @@
         if (packageCache.has(packageId)) {
             return packageCache.get(packageId);
         }
+
         try {
             const response = await fetch(`/package/details/${packageId}`);
+
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Server error: ${errorText.slice(0, 100)}`);
             }
+
             const data = await response.json();
+
             if (!data.success) throw new Error(data.message);
 
-            packageCache.set(packageId, data);
-            return data;
+            // Return only relevant data for the frontend
+            const packageData = {
+                package: data.package,
+                foods: data.foods,
+                utilities: data.utilities
+            };
+
+            // Cache the data
+            packageCache.set(packageId, packageData);
+
+            return packageData;
         } catch (error) {
             console.error('Fetch error:', error);
             throw error;
@@ -120,35 +133,36 @@
 
     // FUNCTION FOR FOOD ITEMS RENDER
     function renderFoods(foods) {
+        console.log('Rendering foods:', foods); 
+
         if (!foods || foods.length === 0) {
-            return '<p class="text-gray-500">No food items</p>';
+            return '<p class="text-gray-500">No food items available.</p>';
         }
-        return foods.map(food => {
-            if (food.options && food.options.length > 0) {
-                // Render a checkbox for each available option with a data-type attribute.
-                const optionsHtml = food.options.map(option => `
-                    <label class="inline-flex items-center mr-4">
-                        <input type="checkbox" name="food_item_${food.id}[]" value="${option.id}" data-type="${option.type}" class="form-checkbox">
-                        <span class="ml-2">${option.type}</span>
-                    </label>
-                `).join('');
-                return `
-                    <div class="mb-4">
-                        <div class="font-semibold text-gray-700">${food.name}</div>
-                        <div class="mt-1">${optionsHtml}</div>
-                    </div>
-                `;
-            } else {
-                // If no options, simply show the food name.
-                return `
-                    <div class="mb-4">
-                        <div class="font-semibold text-gray-700">${food.name}</div>
-                    </div>
-                `;
-            }
+
+        return foods.map(packageItem => {
+            const item = packageItem.item; 
+            const optionsHtml = (packageItem.options || []).map(option => `
+            <label class="inline-flex items-center space-x-2 mb-2 mr-4">
+                <input 
+                    type="checkbox" 
+                    name="food_item_${item.id}[]" 
+                    value="${option.id}" 
+                    data-type="${option.type}" 
+                    class="form-checkbox text-blue-600">
+                <span>${option.type}</span>
+            </label>
+        `).join('');
+
+            return `
+            <div class="mb-6">
+                <div class="font-semibold text-gray-700 mb-2">${item.name}</div>
+                <div class="flex flex-wrap">
+                    ${optionsHtml}
+                </div>
+            </div>
+        `;
         }).join('');
     }
-
     // FUNCTION FOR FOOD ITEMS RENDER
     function renderUtilities(utilities) {
         if (!utilities || utilities.length === 0) {
@@ -171,6 +185,8 @@
                 foods,
                 utilities
             } = await fetchPackageData(packageId);
+            console.log('Package:', pkg);
+            console.log('Foods:', foods);
 
             const htmlContent = `
                 <div class="max-h-[80vh] overflow-y-auto">
@@ -259,7 +275,7 @@
                     <div
                         class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:-translate-y-2 transition-transform">
                         <div class="relative h-56">
-                            <img src="{{ asset('storage/' . $package->image) }}" alt="{{ $package->name }}"
+                            <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
                                 class="w-full h-full object-fill transition-transform duration-300 group-hover:scale-105" />
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
                                 <h3 class="text-2xl font-bold text-white">{{ $package->name }}</h3>

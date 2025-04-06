@@ -17,15 +17,8 @@ class PackageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() {}
+    
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -155,7 +148,7 @@ class PackageController extends Controller
 
         return basename($image->store('packagepics', 'public'));
     }
-    
+
 
     public function showPackageDetails($id)
     {
@@ -180,8 +173,8 @@ class PackageController extends Controller
     }
     public function showdetails($id)
     {
-        // If you want to include PackageItem options, eager load the 'options' relationship.
-        $package = Package::with(['packageItems.options', 'utilities'])->find($id);
+        
+        $package = Package::with(['packageItems.options.itemOption', 'utilities'])->find($id);
 
         if (!$package) {
             return response()->json([
@@ -189,12 +182,19 @@ class PackageController extends Controller
                 'message' => 'Package not found. Please try again.'
             ], 404);
         }
+        Log::info('Package Data SHOWDETAILS FUNC:', $package->toArray());
 
         return response()->json([
             'success'   => true,
             'package'   => $package,
-            // Return packageItems as 'foods' to match your frontend.
-            'foods'     => $package->packageItems,
+            'foods'     => $package->packageItems->map(function($packageItem) {
+                return [
+                    'item' => $packageItem->item,
+                    'options' => $packageItem->options->map(function($option) {
+                        return $option->itemOption;  // Returning itemOption details for frontend
+                    })
+                ];
+            }),
             'utilities' => $package->utilities,
         ]);
     }
@@ -234,34 +234,34 @@ class PackageController extends Controller
     public function removeItemFromPackage(Request $request, $packageId)
     {
         $request->validate([
-        'items_to_remove' => 'array|nullable',
-        'options' => 'array|nullable',
-    ]);
+            'items_to_remove' => 'array|nullable',
+            'options' => 'array|nullable',
+        ]);
 
-    
-    $package = Package::findOrFail($packageId);
 
-    if ($request->has('items_to_remove')) {
-        
-        foreach ($request->input('items_to_remove') as $packageItemId) {
-            
-            $packageItem = $package->packageItems()->findOrFail($packageItemId);
-            $packageItem->delete();
+        $package = Package::findOrFail($packageId);
+
+        if ($request->has('items_to_remove')) {
+
+            foreach ($request->input('items_to_remove') as $packageItemId) {
+
+                $packageItem = $package->packageItems()->findOrFail($packageItemId);
+                $packageItem->delete();
+            }
         }
-    }
 
-    
-    if ($request->has('options')) {
-        
-        foreach ($request->input('options') as $optionId) {
-           
-            $packageItemOption = PackageItemOption::findOrFail($optionId);
-            $packageItemOption->delete();
+
+        if ($request->has('options')) {
+
+            foreach ($request->input('options') as $optionId) {
+
+                $packageItemOption = PackageItemOption::findOrFail($optionId);
+                $packageItemOption->delete();
+            }
         }
-    }
 
-    
-    return redirect()->route('package.show', $packageId)->with('success', 'Items and/or options removed successfully.');
+
+        return redirect()->route('package.show', $packageId)->with('success', 'Items and/or options removed successfully.');
     }
 
     /**

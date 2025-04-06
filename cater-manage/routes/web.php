@@ -31,7 +31,7 @@ use App\Http\Controllers\PackageUtilityController;
 // route navigation each page
 
 
-// user route
+
 
 Route::get('/loginpage', [UserController::class, 'gologin'])->name('login');
 
