@@ -78,12 +78,21 @@
                             <p class="text-lg italic mb-4">{{ $order->review->review }}</p>
 
                             <div class="mt-6 flex justify-end">
+
+                                @php
+                                    $timeLimit = now()->subMinutes(15);
+                                    $canEdit = $review->created_at > $timeLimit;
+                                @endphp
                                
-                                <button class="bg-yellow-500 text-white px-4 py-2 rounded" 
-                                        onclick="window.location.href='{{ route('editReview', $order->id) }}'">
-                                    Edit Review
-                                </button>
-                                 
+                                @if ($canEdit)
+                                    <button class="bg-yellow-500 text-white px-4 py-2 rounded" 
+                                            onclick="window.location.href='{{ route('editReview', $order->id) }}'">
+                                        Edit Review
+                                    </button>
+                                @else
+                                    <button class="px-4 py-2 bg-gray-300 text-gray-600 rounded cursor-not-allowed" disabled> Edit time expired </button>
+                                @endif
+
                                 <button 
                                     class="bg-red-500 text-white px-4 py-2 rounded" 
                                     onclick="confirmDelete('{{ route('deleteReview', ['order' => $order->id, 'review' => $order->review->id]) }}')"

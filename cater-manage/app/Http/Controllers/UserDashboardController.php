@@ -39,12 +39,13 @@ class UserDashboardController extends Controller
     public function showReview($id)
     {
         $order = Order::findOrFail($id);
+        $review = $order->review;
 
         if ($order->user_id != Auth::id()) {
             return redirect()->route('home')->with('error', 'Unauthorized access.');
         }
         
-        return view('order-review', compact('order'));
+        return view('order-review', compact('order', 'review'));
     }
 
     public function editReview(Order $order)

@@ -285,8 +285,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');    
     Route::get('/user/dashboard/order/{id}/review', [UserDashboardController::class, 'showReview'])->name('showReview');
-    Route::get('/user/dashboard/order/{order}/review/edit', [UserDashboardController::class, 'editReview'])->name('editReview');
-    Route::put('/user/dashboard/order/{order}/review', [UserDashboardController::class, 'updateReview'])->name('updateReview');
     Route::delete('/user/dashboard/order/{order}/review/{review}', [ReviewController::class, 'deleteReview'])->name('deleteReview');
 });
 
+Route::middleware(['auth', 'check.review.edit.time'])->group(function () {
+    Route::get('/user/dashboard/order/{order}/review/edit', [UserDashboardController::class, 'editReview'])->name('editReview');
+    Route::put('/user/dashboard/order/{order}/review', [UserDashboardController::class, 'updateReview'])->name('updateReview');  
+});
