@@ -52,7 +52,7 @@ class CheckoutController extends Controller
 
 
         $totalPrice = $cart->items->sum(function ($item) use ($totalGuests) {
-            //  menu items Variant pricing logic
+            //  party trays items Variant pricing logic
             if ($item->menu_item_id && $item->menuItem) {
                 $pricingTiers = $item->menuItem->pricing;
                 $selectedVariant = isset($item->variant) ? trim($item->variant) : null;

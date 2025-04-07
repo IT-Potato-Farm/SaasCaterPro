@@ -45,8 +45,8 @@
     <x-customer.navbar />
     <div class="container mx-auto py-8 px-4">
         @if (isset($pendingOrder))
-        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
-                
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+
                 <div class="flex items-center">
                     <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor" viewBox="0 0 20 20">
@@ -140,35 +140,28 @@
                                             $minPax = $cartItem->package->min_pax ?? 1;
                                             $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
 
+                                            // PACKAGE NAME
                                             $itemNames = [];
                                             if ($cartItem->package && $cartItem->package->packageItems) {
                                                 foreach ($cartItem->package->packageItems as $packageItem) {
-                                                    $itemNames[$packageItem->id] = $packageItem->name;
+                                                    $itemNames[$packageItem->item->id] =
+                                                        $packageItem->item->name ?? 'Unnamed Item';
                                                 }
                                             }
+                                            // SELECTED OPTION
                                             $selectedOptionsString = '';
-                                            // Only process if this cart item is a package and has selected_options.
-                                            if (
-                                                $cartItem->package_id &&
-                                                $cartItem->package &&
-                                                $cartItem->selected_options &&
-                                                is_array($cartItem->selected_options)
-                                            ) {
-                                                //  mapping of package item IDs to their names.
-                                                $itemNames = [];
-                                                if ($cartItem->package->packageItems) {
-                                                    foreach ($cartItem->package->packageItems as $packageItem) {
-                                                        $itemNames[$packageItem->id] = $packageItem->name;
-                                                    }
-                                                }
-                                                // Loop through the selected options for this package.
+                                            
+                                            if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
                                                 foreach ($cartItem->selected_options as $itemId => $optionArray) {
                                                     if (isset($itemNames[$itemId])) {
                                                         $types = array_map(function ($option) {
                                                             return $option['type'] ?? 'Unknown';
                                                         }, $optionArray);
+
                                                         $selectedOptionsString .=
                                                             "{$itemNames[$itemId]}: " . implode(', ', $types) . '<br>';
+                                                    } else {
+                                                        $selectedOptionsString .= "No match for item ID: {$itemId}<br>";
                                                     }
                                                 }
                                             }
@@ -209,6 +202,7 @@
                                         <!-- Selected Options Column -->
                                         @if ($cartItem->package_id)
                                             <td class="py-3">
+
                                                 {!! $selectedOptionsString ?: 'N/A' !!}
                                             </td>
                                         @else
@@ -231,7 +225,7 @@
                                                     <button type="submit" name="action" value="increment"
                                                         class="px-2 border border-gray-300 rounded-r">+</button>
                                                 </form>
-                                                
+
                                                 <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
                                                     method="POST">
                                                     @csrf
