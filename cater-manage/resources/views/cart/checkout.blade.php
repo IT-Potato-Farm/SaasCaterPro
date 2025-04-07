@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -64,7 +65,7 @@
                         @csrf
                         <!-- Event Details Section -->
                         <div class="space-y-8">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1  gap-6">
                                 <!-- Event Type -->
                                 <div class="space-y-2">
                                     <label for="event_type_select"
@@ -84,23 +85,13 @@
                                     </select>
                                 </div>
 
-                                <!-- Event Date -->
-                                <div class="space-y-2">
-                                    <label for="event_date" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Event Date
-                                    </label>
-                                    <!-- Note: input type changed to text for proper Flatpickr integration -->
-                                    <input type="text" name="event_date" id="event_date"
-                                        placeholder="Select a date or date range"
-                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                        required>
-                                </div>
 
                             </div>
 
                             <!--  OTHER EVENT TYPE  -->
                             <div class="space-y-2" id="custom_event_type_container" style="display: none;">
-                                <label for="custom_event_type" class="block text-sm font-medium text-gray-700">Custom Event Type</label>
+                                <label for="custom_event_type" class="block text-sm font-medium text-gray-700">Custom
+                                    Event Type</label>
                                 <input type="text" name="custom_event_type" id="custom_event_type"
                                     placeholder="Enter custom event type"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -151,6 +142,7 @@
                         </div>
                         {{-- naka hide na total guests sana gumana huhu --}}
                         <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
+                        <input type="hidden" name="event_date" value="{{ $eventDate }}">
 
                         <button type="submit" @if (isset($pendingOrder)) disabled @endif
                             class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
@@ -158,24 +150,177 @@
                         </button>
                     </form>
                 </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    @if (strpos($eventDate, 'to') !== false)
+                        <!-- If eventDate is a range -->
+                        <?php
+                            // Split the range into two dates
+                            list($startDate, $endDate) = explode(' to ', $eventDate);
+                            $startDateFormatted = \Carbon\Carbon::parse($startDate)->format('l, F j, Y');
+                            $endDateFormatted = \Carbon\Carbon::parse($endDate)->format('l, F j, Y');
+                        ?>
+                        <p class="font-semibold text-lg">
+                            Reminder: You've booked the date from
+                            <strong>{{ $startDateFormatted }} to {{ $endDateFormatted }}</strong>.
+                        </p>
+                    @else
+                        <!-- If eventDate is a single date -->
+                        <p class="font-semibold text-lg">
+                            Reminder: You've booked an event for
+                            <strong>{{ \Carbon\Carbon::parse($eventDate)->format('l, F j, Y') }}</strong>.
+                        </p>
+                    @endif
+                    <div class="text-center">
+                        <p class="text-sm">We’re excited to help you prepare for this special day!</p>
+                    </div>
+                </div>
             </div>
 
 
+            {{-- RIGHT SIDE --}}
+            <aside class="lg:w-2/5 xl:w-1/3 space-y-5">
+                
+                <!-- Scrollable Cart Summary -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800">Order Summary</h2>
+                    </div>
 
+                    <div class="max-h-96 overflow-y-auto p-5">
+                        @if ($cart->items->count() > 0)
+                            <ul class="space-y-6">
+                                @foreach ($cart->items as $cartItem)
+                                    @php
+                                        $isPackage = $cartItem->package ? true : false;
+                                        $itemName = $cartItem->menu_item_id
+                                            ? $cartItem->menuItem->name
+                                            : ($cartItem->package
+                                                ? $cartItem->package->name
+                                                : 'Unknown');
+                                        $itemPrice = $cartItem->menu_item_id
+                                            ? $cartItem->menuItem->price
+                                            : ($cartItem->package
+                                                ? $cartItem->package->price_per_person
+                                                : 0);
+                                        $computedPrice = $isPackage ? $itemPrice * $totalGuests : $itemPrice;
 
-            <aside class="lg:w-2/5 xl:w-1/3">
-                <div class="bg-white shadow-md rounded p-4">
-                    <h2 class="text-xl font-bold mb-4">Order Total</h2>
-                    <p class="mb-2">
-                        <span class="font-semibold">Total Guests:</span> {{ $totalGuests }}
-                    </p>
-                    <p class="mb-2">
-                        <span class="font-semibold">Selected Items:</span> {{ $cart->items->count() }}
-                    </p>
-                    <p class="mb-2">
-                        <span class="font-semibold">Total Price:</span> ₱{{ number_format($totalPrice, 2) }}
-                    </p>
+                                        // For package items
+                                        if ($isPackage && $cartItem->package->packageItems) {
+                                            $itemNames = [];
+                                            foreach ($cartItem->package->packageItems as $packageItem) {
+                                                $itemNames[$packageItem->item->id] =
+                                                    $packageItem->item->name ?? 'Unnamed Item';
+                                            }
+                                        }
+                                    @endphp
+
+                                    <li class="pb-6 border-b border-gray-100 last:border-0 last:pb-0">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <h3 class="font-semibold text-gray-800">
+                                                    {{ $itemName }}
+                                                    @if ($isPackage)
+                                                        <span class="text-sm font-normal text-gray-500 block mt-1">
+                                                            ₱{{ number_format($itemPrice, 2) }} × {{ $totalGuests }}
+                                                            guests
+                                                        </span>
+                                                    @endif
+                                                </h3>
+
+                                                <!-- Selected Options -->
+                                                @if ($cartItem->selected_options && is_array($cartItem->selected_options))
+                                                    <div class="mt-3 space-y-2">
+                                                        @foreach ($cartItem->selected_options as $itemId => $optionArray)
+                                                            @php
+                                                                $optionItemName = $itemNames[$itemId] ?? 'Option';
+                                                                $types = array_map(
+                                                                    fn($opt) => $opt['type'] ?? 'Unknown',
+                                                                    $optionArray,
+                                                                );
+                                                            @endphp
+
+                                                            <div class="flex">
+                                                                <span class="text-gray-400 mr-2">•</span>
+                                                                <div>
+                                                                    <span
+                                                                        class="text-sm font-medium text-gray-600">{{ $optionItemName }}:</span>
+                                                                    <span
+                                                                        class="text-sm text-gray-500 ml-1">{{ implode(', ', $types) }}</span>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                                <!-- Utilities -->
+                                                @if ($isPackage && $cartItem->package->utilities->count() > 0)
+                                                    <div class="mt-3">
+                                                        <p
+                                                            class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
+                                                            Includes:</p>
+                                                        <ul class="space-y-1">
+                                                            @foreach ($cartItem->package->utilities as $utility)
+                                                                <li class="text-sm text-gray-600 flex items-center">
+                                                                    <svg class="w-3 h-3 text-gray-400 mr-2"
+                                                                        fill="none" stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M5 13l4 4L19 7"></path>
+                                                                    </svg>
+                                                                    {{ $utility->quantity }}x {{ $utility->name }}
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <span
+                                                class="font-medium text-gray-900 ml-4 whitespace-nowrap">₱{{ number_format($computedPrice, 2) }}</span>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <div class="text-center py-8">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
+                                </svg>
+                                <p class="mt-2 text-gray-500">Your cart is empty</p>
+                            </div>
+                        @endif
+                    </div>
+                    <!-- Order Totals Card -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Order Total</h2>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal ({{ $cart->items->count() }} items)</span>
+                                <span class="font-medium">₱{{ number_format($totalPrice, 2) }}</span>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Guests</span>
+                                <span class="font-medium">{{ $totalGuests }}</span>
+                            </div>
+
+                            <div class="border-t border-gray-200 my-3"></div>
+
+                            <div class="flex justify-between text-lg font-bold text-gray-900">
+                                <span>Total</span>
+                                <span>₱{{ number_format($totalPrice, 2) }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+
+
+
                 <!-- Google Map displaying store location -->
                 <div class="bg-white shadow-md rounded p-4 mt-5">
                     <h2 class="text-xl font-bold mb-4">Store Location</h2>
@@ -187,13 +332,25 @@
                     </div>
                 </div>
             </aside>
+
         </div>
+
+
         <script>
+           
+            document.addEventListener('DOMContentLoaded', function() {
+                const totalGuests = document.querySelector('input[name="total_guests"]')?.value;
+                const eventDate = document.querySelector('input[name="event_date"]')?.value;
+
+                console.log('Total Guests:', totalGuests);
+                console.log('Event Date:', eventDate);
+            });
+
             // OTHER EVENT FIELD MAGSHOW UP 
             document.addEventListener('DOMContentLoaded', function() {
                 const eventTypeSelect = document.getElementById('event_type_select');
                 const customEventContainer = document.getElementById('custom_event_type_container');
-                
+
                 eventTypeSelect.addEventListener('change', function() {
                     if (this.value === 'Other') {
                         customEventContainer.style.display = 'block';
@@ -204,32 +361,6 @@
                         document.getElementById('custom_event_type').required = false;
                     }
                 });
-            });
-            
-            document.addEventListener('DOMContentLoaded', function () {
-                fetch('/get-booked-dates')
-                    .then(response => response.json())
-                    .then(data => {
-                        let disabledDates = [];
-                        
-                        data.forEach(range => {
-                            let start = new Date(range.start);
-                            let end = new Date(range.end);
-        
-                            while (start <= end) {
-                                disabledDates.push(start.toISOString().split('T')[0]); // Format: YYYY-MM-DD
-                                start.setDate(start.getDate() + 1);
-                            }
-                        });
-        
-                        flatpickr("#event_date", {
-                            mode: "range",
-                            dateFormat: "Y-m-d",
-                            minDate: "today",
-                            disable: disabledDates
-                        });
-                    })
-                    .catch(error => console.error('Error fetching booked dates:', error));
             });
         </script>
 </body>

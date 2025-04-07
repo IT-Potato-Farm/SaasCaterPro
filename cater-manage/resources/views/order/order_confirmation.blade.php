@@ -39,8 +39,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Booking Confirmed!</h1>
-            <p class="text-gray-600">Thank you for your purchase, {{ $order->user->name }}!</p>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Order Placed!</h1>
+            <p class="text-gray-600">Thank you for your order, {{ $order->user->first_name }}! We are currently processing your request and will send you a confirmation email soon.</p>
             <p class="text-gray-600">A confirmation email has been sent to {{ $order->user->email }}</p>
         </div>
 

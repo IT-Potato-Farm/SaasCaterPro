@@ -8,8 +8,9 @@ use App\Models\Package;
 use App\Models\Category;
 use App\Models\ItemOption;
 use App\Models\PackageItem;
-use App\Models\PackageUtility;
 use Illuminate\Http\Request;
+use App\Models\PackageUtility;
+use App\Models\PackageItemOption;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
@@ -80,14 +81,34 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
-    public function getItemOptions($itemId)
+    public function getItemOptions($itemId, Request $request)
     {
-        $item = Item::findOrFail($itemId);
-        $options = $item->itemOptions; // Fetch the related item options for the item
-
+        $item = Item::with('itemOptions')->findOrFail($itemId);
+        $packageId = $request->query('package_id');
+    
+        $linkedOptionIds = [];
+    
+        if ($packageId) {
+            $packageItem = PackageItem::where('package_id', $packageId)
+                ->where('item_id', $itemId)
+                ->first();
+    
+            if ($packageItem) {
+                $linkedOptionIds = PackageItemOption::where('package_item_id', $packageItem->id)
+                    ->pluck('item_option_id')
+                    ->toArray();
+            }
+        }
+    
         return response()->json([
             'success' => true,
-            'options' => $options
+            'options' => $item->itemOptions->map(function ($option) use ($linkedOptionIds) {
+                return [
+                    'id' => $option->id,
+                    'type' => $option->type,
+                    'already_linked' => in_array($option->id, $linkedOptionIds),
+                ];
+            })
         ]);
     }
     

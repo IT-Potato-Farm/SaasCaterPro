@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Booking Confirmation - Order #{{ $order->id }}</title>
+    <title>Order Confirmation - Order #{{ $order->id }}</title>
 </head>
 <body style="background-color: #f3f4f6; margin: 0; padding: 20px 0;">
     <!-- Container -->
@@ -11,7 +11,7 @@
         <div style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 24px; border-radius: 8px 8px 0 0;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; margin: 0;">Booking Confirmation</h1>
+                    <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; margin: 0;">Order Received!</h1>
                     <p style="color: #e0e7ff; font-size: 14px; margin-top: 8px;">#{{ $order->id }}</p>
                 </div>
                 <div style="width: 48px; height: 48px; background-color: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -25,11 +25,11 @@
         <!-- Content -->
         <div style="padding: 24px;">
             <p style="color: #374151; margin-bottom: 16px;">Hi {{ $order->user->name ?? 'Customer' }},</p>
-            <p style="color: #4b5563; line-height: 1.5;">Thank you for your booking! We've received your order and it's now being processed.</p>
+            <p style="color: #4b5563; line-height: 1.5;">Thank you for your order! We've received your request, and it's now being processed.</p>
 
             <!-- Details Card -->
             <div style="background-color: #f8fafc; border-radius: 8px; padding: 16px; margin: 24px 0;">
-                <h3 style="color: #1e293b; font-size: 18px; font-weight: bold; margin-bottom: 16px;">Booking Summary</h3>
+                <h3 style="color: #1e293b; font-size: 18px; font-weight: bold; margin-bottom: 16px;">Order Summary</h3>
                 <table style="width: 100%;">
                     <tr>
                         <td style="color: #64748b; padding: 8px 0; width: 40%;">Order ID</td>

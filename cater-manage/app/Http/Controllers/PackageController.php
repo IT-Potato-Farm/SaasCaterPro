@@ -66,43 +66,43 @@ class PackageController extends Controller
     public function linkItemToPackage($packageId, $itemId, array $itemOptionIds = [])
     {
         try {
-            // Log 
             Log::debug('Linking Item to Package:', [
                 'package_id' => $packageId,
                 'item_id' => $itemId,
                 'item_option_ids' => $itemOptionIds
             ]);
-
-            //  (link the item to the package)
-            $packageItem = PackageItem::create([
+    
+            // Get or create the PackageItem (respecting unique constraint)
+            $packageItem = PackageItem::firstOrCreate([
                 'package_id' => $packageId,
                 'item_id' => $itemId
             ]);
-
-            Log::debug('PackageItem Created:', ['package_item_id' => $packageItem->id]);
-
+    
+            Log::debug('PackageItem Used:', ['package_item_id' => $packageItem->id]);
+    
             $linkedOptions = [];
-            $item = Item::findOrFail($itemId);
-            // Then, for each option ID, create a package_item_options record
+            $item = Item::with('itemOptions')->findOrFail($itemId);
+    
             foreach ($itemOptionIds as $optionId) {
-                // Verify that this option belongs to the item
                 $option = ItemOption::findOrFail($optionId);
-
-                Log::debug('Checking Option:', ['option' => $option]);
-
-                //  option belongs to this item
+    
+                // Make sure this option belongs to the item
                 if ($item->itemOptions->contains('id', $optionId)) {
-                    // Create the package_item_options record
-                    Log::debug('Creating PackageItemOption:', [
-                        'package_item_id' => $packageItem->id,
-                        'item_option_id' => $optionId
-                    ]);
-                    PackageItemOption::create([
-                        'package_item_id' => $packageItem->id,
-                        'item_option_id' => $optionId
-                    ]);
-
-                    $linkedOptions[] = $option->type;
+                    // Avoid duplicate option link
+                    $alreadyLinked = PackageItemOption::where('package_item_id', $packageItem->id)
+                        ->where('item_option_id', $optionId)
+                        ->exists();
+    
+                    if (!$alreadyLinked) {
+                        PackageItemOption::create([
+                            'package_item_id' => $packageItem->id,
+                            'item_option_id' => $optionId
+                        ]);
+    
+                        $linkedOptions[] = $option->type;
+                    } else {
+                        Log::info('Option already linked, skipping:', ['option_id' => $optionId]);
+                    }
                 } else {
                     Log::warning('Option does not belong to item', [
                         'option_id' => $optionId,
@@ -110,18 +110,15 @@ class PackageController extends Controller
                     ]);
                 }
             }
-
+    
             Log::debug('Linked Options:', ['linked_options' => $linkedOptions]);
-
+    
             return redirect()->back()->with('success', 'Item options linked successfully!');
         } catch (\Exception $e) {
             Log::error('Error linking item to package: ' . $e->getMessage(), [
                 'exception' => $e->getTraceAsString()
             ]);
-            return [
-                'success' => false,
-                'message' => 'Failed to link item: ' . $e->getMessage()
-            ];
+            return redirect()->back()->with('error', 'Failed to link item: ' . $e->getMessage());
         }
     }
     public function addItemToPackage(Request $request)

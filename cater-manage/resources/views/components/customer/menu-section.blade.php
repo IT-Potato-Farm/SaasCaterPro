@@ -215,7 +215,7 @@
 
                         <!-- Foods Section -->
                         <div class="bg-gray-50 p-2 rounded-xl border border-gray-200">
-                            <h3 class="text-lg font-semibold mb-4">Foods</h3>
+                            <h3 class="text-lg font-semibold mb-4">Included Foods</h3>
                             <form id="packageSelectionForm">
                                 ${renderFoods(foods)}
                             </form>

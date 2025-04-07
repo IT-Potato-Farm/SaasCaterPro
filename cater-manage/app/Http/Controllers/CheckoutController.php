@@ -49,7 +49,9 @@ class CheckoutController extends Controller
         $totalGuests = $request->query('total_guests', 50);
         //  store in the session to give later in the store() method
         session(['total_guests' => $totalGuests]);
-
+        // EVENT DATE
+        $eventDate = $request->query('event_date');
+        session(['event_date' => $eventDate]);
 
         $totalPrice = $cart->items->sum(function ($item) use ($totalGuests) {
             //  party trays items Variant pricing logic
@@ -81,7 +83,7 @@ class CheckoutController extends Controller
         });
 
 
-        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests'));
+        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests', 'eventDate'));
     }
     public function mergeGuestCart($user, $guestCart)
     {
