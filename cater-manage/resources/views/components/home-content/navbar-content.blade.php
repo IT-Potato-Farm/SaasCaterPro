@@ -1,0 +1,220 @@
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<script src="{{ asset('js/cart.js') }}"></script>
+@php
+    $cartCount = 0;
+    if (Auth::check()) {
+        if (Auth::user()->cart) {
+            $cartCount = Auth::user()->cart->items->sum('quantity');
+        }
+    } else {
+        $cart = session()->get('cart', ['items' => []]); 
+        $cartCount = collect($cart['items'])->sum('quantity'); 
+    }
+@endphp
+
+<nav class="border-gray-200" style="background-color: {{ $bac }};">
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+        
+        <a href="{{ route('home-content') }}" class="flex items-center space-x-3">
+            <img src="{{ asset('images/' . $logo) }}" class="h-12" alt="Saas Logo" />
+            <span
+                class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300">{{ $title }}</span>
+        </a>
+
+        @if (Route::currentRouteName() == 'home-content')
+            <div class="hidden md:block">
+                <ul class="font-medium flex space-x-8 rtl:space-x-reverse">
+                    <li>
+                        <a href="{{ route('landing') }}"
+                            class="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0"
+                            style="color: {{ $tec }};">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="scrollToSection('menu')"
+                            class="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0"
+                            style="color: {{ $tec }};">
+                            Menu
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="scrollToSection('aboutus')"
+                            class="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0"
+                            style="color: {{ $tec }};">
+                            About Us
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        @endif
+
+        <div class="flex items-center space-x-4">
+            <a href="{{ route('cart.index') }}"
+                class="relative flex items-center space-x-2 font-medium rounded-lg text-sm px-4 py-2.5"
+                style="color: {{ $buttonTextColor1 }}; background-color: {{ $buttonColor1 }};">
+                <span>Cart</span>
+                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                    fill="currentColor">
+                    <path
+                        d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
+                </svg>
+                <span id="cart-count"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {{ $cartCount }}
+                </span>
+            </a>
+            {{-- <a href="{{ route('cart.index2') }}"
+                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                <span>Cart2</span>
+                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                    fill="currentColor">
+                    <path
+                        d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
+                </svg>
+                <span id="cart-count"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {{ $cartCount }}
+                </span>
+            </a> --}}
+
+            @auth
+                <div class="relative">
+                    <button onclick="toggleDropdown()"
+                        class="flex items-center space-x-2 font-medium rounded-lg text-sm px-4 py-2.5"
+                        style="color: {{ $buttonTextColor2 }}; background-color: {{ $buttonColor2 }};">
+                        <span>Hello, {{ auth()->user()->first_name }}</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 rounded shadow z-50">
+                        @if (Auth::check() && Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.admindashboard') }}"
+                                class="block px-4 py-2 hover:bg-gray-200"
+                                style="color: {{ $buttonTextColor2 }}; background-color: {{ $buttonColor2 }};">
+                                Dashboard
+                            </a>
+                        @endif
+
+                        @if (Auth::check() && Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.home-panel.index') }}"
+                                class="block px-4 py-2 hover:bg-white-200"
+                                style="color: {{ $buttonTextColor2 }}; background-color: {{ $buttonColor2 }};">
+                                Home Panel
+                            </a>
+                        @endif
+
+                        <a href="{{ route('userdashboard') }}" class="block px-4 py-2 hover:bg-gray-200"
+                        style="color: {{ $buttonTextColor2 }}; background-color: {{ $buttonColor2 }};">
+                            My Account
+                        </a>
+
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                            style="color: {{ $buttonTextColor2 }}; background-color: {{ $buttonColor2 }};">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <a href="{{ route('login') }}"
+                    class="font-medium rounded-lg text-sm px-5 py-2.5"
+                    style="color: {{ $buttonTextColor2 }}; background-color: {{ $buttonColor2 }};">
+                    Login
+                </a>
+            @endauth
+        </div>
+
+        
+        <button data-collapse-toggle="mobile-menu" type="button"
+            class="md:hidden inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M1 1h15M1 7h15M1 13h15" />
+            </svg>
+        </button>
+    </div>
+
+        <div class="hidden w-full md:hidden" id="mobile-menu">
+            <ul
+                class="font-medium flex flex-col p-4 border border-green-100 rounded-lg bg-red-600 dark:bg-gray-800 dark:border-gray-700">
+                <li>
+                    <a href="{{ route('landing') }}"
+                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="scrollToSection('menu')"
+                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
+                        Menu
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="scrollToSection('aboutus')"
+                        class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
+                        About Us
+                    </a>
+                </li>
+            </ul>
+        </div>
+</nav>
+
+<script>
+    function toggleDropdown() {
+        document.getElementById('accountDropdown').classList.toggle('hidden');
+    }
+    function scrollToSection(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            const targetPos = element.getBoundingClientRect().top + window.scrollY;
+            const startPos = window.scrollY;
+            const distance = targetPos - startPos;
+            const duration = 600;
+            let startTime = null;
+
+            function easeInOutQuad(t) {
+                return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+            }
+
+            function animate(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                const easing = easeInOutQuad(progress);
+                window.scrollTo(0, startPos + distance * easing);
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        setInterval(function() {
+            $.ajax({
+                url: "{{ route('cart.count') }}",
+                type: 'GET',
+                success: function(response) {
+                    let cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.innerText = response.count;
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error fetching cart count:", xhr.responseText);
+                }
+            });
+        }, 2000);
+    });
+</script>

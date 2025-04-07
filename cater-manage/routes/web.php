@@ -26,6 +26,9 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PackageItemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PackageUtilityController;
+use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\AdminHomePanelController;
+
 
 // route navigation each page
 
@@ -44,13 +47,30 @@ Route::get('/register', function () {
 //     return view('homepage');
 // })->name('landing');
 
-//ito yun bago -M
 Route::get('/', function () {
     $reviews = Review::with('user')->latest()->get();
     return view('homepage', compact('reviews'));
-})->name('landing');;
+})->name('landing');
+
+// para sa cms -M
+Route::get('/homecontent', [HomePageController::class, 'showHomePage'])->name('home-content');
+
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/home-panel', [AdminHomePanelController::class, 'index'])->name('home-panel.index');
+    Route::put('/home-panel/{section}', [AdminHomePanelController::class, 'update'])->name('home-panel.update');
+});
 
 
+
+
+
+
+
+
+
+
+
+// end cms -M
 
 Route::get('/all-menus', function () {
     return view('menupage');
