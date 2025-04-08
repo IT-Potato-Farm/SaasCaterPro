@@ -5,20 +5,32 @@ namespace App\View\Components\HomeContent;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use App\Models\Package;
 
 class MenuSectionContent extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
-    {
-        //
+    public $packages;
+
+    public string $title;
+    public string $textcolor;
+    public string $buttonColor;
+    public string $buttonTextColor;
+
+    public function __construct(
+        string $title = '',
+        string $textcolor = '',
+        string $buttonColor = '',
+        string $buttonTextColor = ''
+
+    ) {
+        $this->packages =Package::all();
+
+        $this->title = $title;
+        $this->textcolor = $textcolor;
+        $this->buttonColor = $buttonColor;
+        $this->buttonTextColor = $buttonTextColor;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.home-content.menu-section-content');

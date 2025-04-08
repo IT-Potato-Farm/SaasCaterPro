@@ -8,17 +8,26 @@ use Illuminate\View\Component;
 
 class WhyChooseUsContent extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public string $title;
+    public string $heading;
+    public string $description;
+    public string $textcolor;
+
+    public function __construct(
+        string $title = '',
+        string $heading = '',
+        string $description = '',
+        string $textcolor = ''
+    )
     {
-        //
+        // dd($title, $heading, $description, $textcolor);
+       $this->title = $title;
+       $this->heading = $heading;
+       $this->description = $description;
+       $this->textcolor = $textcolor;
+
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.home-content.why-choose-us-content');

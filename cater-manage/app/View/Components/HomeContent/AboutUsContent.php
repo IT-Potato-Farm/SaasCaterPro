@@ -8,17 +8,21 @@ use Illuminate\View\Component;
 
 class AboutUsContent extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public string $title;
+    public string $description;
+    public string $textcolor;
+
+    public function __construct(
+        string $title = '',
+        string $description = '',
+        string $textcolor = ''
+    )
     {
-        //
+        $this->title = $title;
+        $this->description = $description;
+        $this->textcolor = $textcolor;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.home-content.about-us-content');

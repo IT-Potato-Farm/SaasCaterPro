@@ -2,7 +2,7 @@
 
 @section('content')
 
-    {{-- {{ dd($navbar)}} --}}
+    {{-- {{dd($wcu)}} --}}
 
     <x-home-content.navbar-content     
     :title="$navbar->title"
@@ -15,40 +15,44 @@
     :buttonTextColor2="$navbar->button_text_2_color"  
     />
    
-    {{-- <x-home-content.hero-content
+    <x-home-content.hero-content
         :title="$hero->title"
-        :subtitle="$hero->heading"
+        :heading="$hero->heading"
         :description="$hero->description"
-        :backgroundImage="$hero->image"
+        :tecc="$hero->text_color"
+        :bacimg="$hero->image"
     />
 
     <x-home-content.menu-section-content
         :title="$menu->title"
-        :buttonText1="$menu->button_text_1"
-        :buttonColor1="$menu->button_color_1"
+        :textcolor="$menu->text_color"
+        :buttonColor="$menu->button_color_1"
+        :buttonTextColor="$menu->button_text_1_color"
+
     />
 
     <x-home-content.why-choose-us-content
-        :title="$whyChooseUs->title"
-        :heading="$whyChooseUs->heading"
-        :description="$whyChooseUs->description"
-        :text_color="$whyChooseUs->text_color"
+        :title="$wcu->title"
+        :heading="$wcu->heading"
+        :description="$wcu->description"
+        :textcolor="$wcu->text_color"
     />
 
     <x-home-content.rating-section-content
-        :image="$rating->image"
+        :star="$rating->image"
     />
 
     <x-home-content.about-us-content
-        :title="$aboutUs->title" 
-        :description="$aboutUs->description"
-        :text_color="$aboutUs->text_color"
+        :title="$au->title" 
+        :description="$au->description"
+        :textcolor="$au->text_color"
     />
 
     <x-home-content.footer-content
-        :logo="$footer->logo"     
+        :logo="$footer->image"     
         :title="$footer->title"  
-        :text_color="$footer->text_color"
-    /> --}}
+        :bacc="$footer->background_color"
+        :teccc="$footer->text_color"
+    />
 
 @endsection

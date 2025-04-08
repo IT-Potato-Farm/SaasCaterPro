@@ -8,17 +8,24 @@ use Illuminate\View\Component;
 
 class FooterContent extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
-    {
-        //
+    public string $logo;
+    public string $title;
+    public string $bacc;
+    public string $teccc;
+
+    public function __construct(
+        string $logo = '',
+        string $title = '',
+        string $bacc = '',
+        string $teccc = ''
+    ) {
+        $this->logo = $logo;
+        $this->title = $title;
+        $this->bacc = $bacc;
+        $this->teccc = $teccc;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
+    
     public function render(): View|Closure|string
     {
         return view('components.home-content.footer-content');

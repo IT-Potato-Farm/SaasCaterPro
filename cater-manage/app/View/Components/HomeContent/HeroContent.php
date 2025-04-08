@@ -8,17 +8,28 @@ use Illuminate\View\Component;
 
 class HeroContent extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
-    {
-        //
+    public string $title;
+    public string $heading;
+    public string $description;
+    public string $tecc;
+    public string $bacimg;
+
+    public function __construct(
+        string $title = '',
+        string $heading = '',
+        string $description = '',
+        string $tecc = '',
+        string $bacimg = ''
+    ) {
+        // dd ($title, $heading, $description, $tecc, $bacimg);
+        $this->title = $title;
+        $this->heading = $heading;
+        $this->description = $description;
+        $this->tecc = $tecc;
+        $this->bacimg = $bacimg;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
+    
     public function render(): View|Closure|string
     {
         return view('components.home-content.hero-content');
