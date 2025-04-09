@@ -55,9 +55,10 @@ Route::get('/', function () {
 // para sa cms -M
 Route::get('/homecontent', [HomePageController::class, 'showHomePage'])->name('home-content');
 
-Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth',])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/home-panel', [AdminHomePanelController::class, 'index'])->name('home-panel.index');
-    Route::put('/home-panel/{section}', [AdminHomePanelController::class, 'update'])->name('home-panel.update');
+    Route::get('home-panel/{id}/edit', [AdminHomePanelController::class, 'edit'])->name('home-panel.edit');
+    Route::put('home-panel/{id}', [AdminHomePanelController::class, 'update'])->name('home-panel.update');
 });
 
 
