@@ -1,14 +1,14 @@
 <script>
-    function openEditModalItem(id, name, description, pricing10_15, pricing15_20, categoryId) {
+    function openEditModalItem(id, name, description, image, pricing10_15, pricing15_20, categoryId) {
         console.log("Editing item:", id);
         let editUrl = "{{ url('/menuitems/') }}/" + id + "/edit";
         Swal.fire({
-            title: `<div class="flex items-center gap-2">
+            title: `<div class="flex items-center ">
                         
-                        <span class="text-cyan-600 font-semibold text-xl">Edit Party Tray</span>
+                        <span class="text-cyan-600 font-semibold ">Edit Party Tray</span>
                     </div>`,
             html: `
-                <form id="editItemForm-${id}" action="${editUrl}" method="POST" class="text-left">
+                <form id="editItemForm-${id}" action="${editUrl}" method="POST" class="text-left" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="mb-5">
@@ -47,6 +47,19 @@
                             @endforeach
                         </select>
                     </div>
+
+                    
+
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Current Image</label>
+                        <div class=" w-full rounded-lg  overflow-hidden mb-3">
+                            ${image ? `<img src="/storage/party_traypics/${image}" alt="Party tray" class=" h-32 object-cover" id="image-preview-${id}">` : `<p>No image available</p>`}
+                        </div>
+                        <input type="file" name="image" accept="image/*" onchange="previewImage(event, ${id})" 
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-200">
+                    </div>
+                </div>
+
                 </form>`,
             showCancelButton: true,
             confirmButtonText: 'Save Changes',
@@ -66,22 +79,35 @@
             }
         });
     }
+
     function confirmDelete(button) {
-            Swal.fire({
-                title: 'Are you sure you want to delete this party tray?',
-                text: "This action cannot be undone.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    button.closest('form').submit();
-                }
-            });
+        Swal.fire({
+            title: 'Are you sure you want to delete this party tray?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
+            }
+        });
+    }
+
+    function previewImage(event, id) {
+        const file = event.target.files[0];
+        const preview = document.getElementById(`image-preview-${id}`);
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
         }
+    }
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -102,7 +128,8 @@
                     <!-- img -->
                     <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-t-lg">
                         @if ($menuItem->image)
-                            <img src="{{ asset('storage/party_traypics/' . $menuItem->image) }}" alt="{{ $menuItem->name }}"
+                            <img src="{{ asset('storage/party_traypics/' . $menuItem->image) }}"
+                                alt="{{ $menuItem->name }}"
                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy">
                         @else
@@ -132,10 +159,12 @@
                         {{-- pricing --}}
                         <div class="mb-4">
                             <p class="text-gray-700 text-sm">
-                                <strong>Price for 10-15 pax is:</strong> ₱{{ number_format($menuItem->pricing['10-15'] ?? 0, 2) }}
+                                <strong>Price for 10-15 pax is:</strong>
+                                ₱{{ number_format($menuItem->pricing['10-15'] ?? 0, 2) }}
                             </p>
                             <p class="text-gray-700 text-sm">
-                                <strong>Price for 15-20 pax is:</strong> ₱{{ number_format($menuItem->pricing['15-20'] ?? 0, 2) }}
+                                <strong>Price for 15-20 pax is:</strong>
+                                ₱{{ number_format($menuItem->pricing['15-20'] ?? 0, 2) }}
                             </p>
                         </div>
 
@@ -154,9 +183,10 @@
                                 {{ $menuItem->id }}, 
                                 {{ json_encode($menuItem->name) }}, 
                                 {{ json_encode($menuItem->description) }},
+                                {{ json_encode($menuItem->image) }},
                                 {{ json_encode($menuItem->pricing['10-15'] ?? 0) }},
                                 {{ json_encode($menuItem->pricing['15-20'] ?? 0) }},
-                                {{ $menuItem->category_id }}  
+                                {{ $menuItem->category_id }} 
                                 )"
                                 class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +205,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
-                                    Delete 
+                                    Delete
                                 </button>
                             </form>
                         </div>

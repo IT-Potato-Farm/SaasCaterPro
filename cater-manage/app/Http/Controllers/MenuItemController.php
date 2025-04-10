@@ -94,11 +94,18 @@ class MenuItemController extends Controller
             'category_id' => 'required|exists:categories,id',
             'pricing.10-15'     => 'required|numeric|min:1',
             'pricing.15-20'     => 'required|numeric|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         $itemFields['name'] = strip_tags($itemFields['name']);
         $itemFields['description'] = strip_tags($itemFields['description']);
 
         $item = MenuItem::findOrFail($id);
+
+        if ($request->hasFile('image')) {
+            
+            Storage::disk('public')->delete('party_traypics/' . $item->image);
+            $itemFields['image'] = $this->handleImageUpload($request->file('image'));
+        }
         $item->update($itemFields);
         return redirect()->back()->with('success', 'Item updated successfully!');
     }

@@ -16,7 +16,7 @@
             let editUrl = "{{ url('/packageutility/update') }}/" + id;
 
             // Dynamically populate the dropdown with available packages
-            let packages = @json($packages); // Use the packages from your backend
+            let packages = @json($packages); 
             let packageOptions = packages.map(pkg => {
                 return `<option value="${pkg.id}" ${pkg.id === packageId ? 'selected' : ''}>${pkg.name}</option>`;
             }).join('');

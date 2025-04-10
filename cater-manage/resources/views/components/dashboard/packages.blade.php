@@ -150,7 +150,7 @@
                             {{ json_encode($package->description) }},
                             {{ json_encode($package->price_per_person) }},
                             {{ json_encode($package->min_pax) }},
-                            '{{ asset('storage/' . $package->image) }}',
+                            '{{ asset('storage/packagepics/' . $package->image) }}',
                             '{{ $package->status }}'
                             )"
                                 class="flex-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition-colors">
