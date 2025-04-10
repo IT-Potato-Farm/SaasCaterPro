@@ -18,6 +18,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
@@ -228,8 +229,8 @@ Route::middleware('auth')->group(function () {
     // After order creation, a confirmation page.
     Route::get('/order/confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
 });
-
-
+// SEARCH
+Route::get('/search', [SearchController::class, 'search'])->name('search');
 
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -247,8 +248,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/packageutility/delete/{id}', [PackageUtilityController::class, 'destroy'])->name('package_utilities.destroy');
 
 
+    Route::get('/admin/finaldashboard/reports', [AdminController::class, 'goReportsDashboard'])->name('admin.reports');
     Route::get('/admin/finaldashboard/bookings', [AdminController::class, 'goBookingsDashboard'])->name('admin.bookings');
     Route::get('/admin/finaldashboard/users', [AdminController::class, 'goUserDashboard'])->name('admin.allusers');
+    Route::get('/admin/finaldashboard/reports/customer', [AdminController::class, 'goCustomerReport'])->name('admin.reports.customer');
     // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 

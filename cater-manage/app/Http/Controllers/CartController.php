@@ -26,14 +26,17 @@ class CartController extends Controller
             $cart = Cart::firstOrCreate(['user_id' => $user->id]);
             $cartItems = $cart->items; // Retrieve cart items from DB
         }
-    
+
         // Fetch pending order only if user is logged in
-        $pendingOrder = $user ? Order::where('user_id', $user->id)->where('status', 'pending')->first() : null;
-    
+        $activeStatuses = ['pending', 'partial', 'ongoing', 'paid'];
+        $pendingOrder = $user ? Order::where('user_id', $user->id)
+            ->whereIn('status', $activeStatuses)
+            ->first() : null;
+
         // Get available menu items and packages
         $menuItems = MenuItem::where('status', 'available')->get();
         $packages = Package::where('status', 'available')->get();
-    
+
         return view('cart.index', compact('cart', 'cartItems', 'pendingOrder', 'menuItems', 'packages'));
         // return view('cart.sanagumana', compact('cart', 'cartItems', 'pendingOrder', 'menuItems', 'packages'));
     }
@@ -41,39 +44,39 @@ class CartController extends Controller
     {
         $user = Auth::user();
         $isGuest = !$user;
-        
+
         // Initialize variables
         $cartItems = collect([]);
         $pendingOrder = null;
-        
+
         try {
             if ($isGuest) {
                 // cart for guests
                 $cartData = session()->get('cart', ['items' => []]);
                 $cartItems = collect($cartData['items']);
-                $cart = $cartData; 
+                $cart = $cartData;
             } else {
                 // cart for logged-in users
                 $cart = Cart::firstOrCreate(['user_id' => $user->id]);
                 $cartItems = $cart->items ?: collect([]);
-                
+
                 //  pending order for logged-in users
                 //REFACTOR $pendingOrder = Order::where('user_id', $user->id)
                 //      ->where('status', 'pending')
                 //      ->first();
                 $pendingOrder = Order::pendingForUser($user->id)->first();
             }
-            
+
             // available menu items and packages
             $menuItems = MenuItem::available()->get();
             $packages = Package::available()->get();
-            
+
             return view('cart.sanagumana', compact(
-                'cart', 
-                'cartItems', 
-                'pendingOrder', 
-                'menuItems', 
-                'packages', 
+                'cart',
+                'cartItems',
+                'pendingOrder',
+                'menuItems',
+                'packages',
                 'isGuest'
             ));
         } catch (\Exception $e) {

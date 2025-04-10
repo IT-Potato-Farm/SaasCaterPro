@@ -26,7 +26,7 @@
         </a>
 
         <!-- Middle: Navigation Links -->
-        @if (Route::currentRouteName() == 'landing')
+        {{-- @if (Route::currentRouteName() == 'landing')
             <div class="hidden md:block">
                 <ul class="font-medium flex space-x-8 rtl:space-x-reverse">
                     <li>
@@ -49,7 +49,39 @@
                     </li>
                 </ul>
             </div>
-        @endif
+        @endif --}}
+
+        {{-- SEARCH --}}
+        <div class="hidden md:block relative">
+            <form action="{{ route('search') }}" method="GET" class="flex items-center">
+                <input type="text" name="query" placeholder="Search for meals or packages..."
+                    class="py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 w-56"
+                    value="{{ request('query') }}">
+                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <!-- SEARCH FOR MOOBILE -->
+        <div class="md:hidden mt-3 px-2">
+            <form action="{{ route('search') }}" method="GET" class="flex items-center">
+                <input type="text" name="query" placeholder="Search for meals or packages..."
+                    class="py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 w-full"
+                    value="{{ request('query') }}">
+                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
+        </div>
 
         <!-- Right: Cart and Account/Login -->
         <div class="flex items-center space-x-4">
@@ -66,8 +98,9 @@
                     {{ $cartCount }}
                 </span>
             </a>
+
             {{-- CART DUPLI --}}
-            <a href="{{ route('cart.index2') }}"
+            {{-- <a href="{{ route('cart.index2') }}"
                 class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
                 <span>Cart2</span>
                 <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
@@ -79,7 +112,7 @@
                     class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                     {{ $cartCount }}
                 </span>
-            </a>
+            </a> --}}
 
             @auth
                 <div class="relative">
@@ -92,6 +125,7 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
+
                     <!-- dropdown -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow z-50">
                         @if (Auth::check() && Auth::user()->role === 'admin')

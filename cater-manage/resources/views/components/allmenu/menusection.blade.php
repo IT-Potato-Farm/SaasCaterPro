@@ -72,7 +72,7 @@
                         <!-- Menu Item Image -->
                         <div class="h-48 overflow-hidden rounded-t-lg">
                             <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                src="{{ asset('ItemsStored/' . $item->image) }}" alt="{{ $item->name }}"
+                                src="{{ asset('storage/party_traypics/' . $item->image) }}" alt="{{ $item->name }}"
                                 loading="lazy">
                         </div>
 

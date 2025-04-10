@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MenuItemController extends Controller
 {
@@ -40,17 +41,8 @@ class MenuItemController extends Controller
             $menuitemFields['name'] = strip_tags($menuitemFields['name']);
             $menuitemFields['description'] = strip_tags($menuitemFields['description']);
 
-            $imageFolder = public_path('ItemsStored');
-            if (!is_dir(public_path('ItemsStored'))) {
-                mkdir(public_path('ItemsStored'), 0777, true);
-            }
-
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->move($imageFolder, $imageName);
-                // store onlyfilename not the full path
-                $menuitemFields['image'] = $imageName;
+                $menuitemFields['image'] = $this->handleImageUpload($request->file('image'));
             }
 
             $menu = MenuItem::create($menuitemFields);
@@ -66,6 +58,11 @@ class MenuItemController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    protected function handleImageUpload($image)
+    {
+
+        return basename($image->store('party_traypics', 'public'));
     }
     public function checkNameAvailability(Request $request)
     {
@@ -120,10 +117,12 @@ class MenuItemController extends Controller
     public function deleteItem($id)
     {
         $menuItem = MenuItem::findOrFail($id);
-        if ($menuItem->image && File::exists(public_path('ItemsStored/' . $menuItem->image))) {
-            File::delete(public_path('ItemsStored/' . $menuItem->image));
+        if ($menuItem->image) {
+            Storage::disk('public')->delete($menuItem->image);
         }
+
         $menuItem->delete();
-        return redirect()->back()->with('success', 'Menu Item deleted successfully!');
+        
+        return redirect()->back()->with('success', 'Party tray deleted successfully!');
     }
 }

@@ -63,7 +63,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{route('admin.bookings')}}"
+                <a href="{{ route('admin.bookings') }}"
                     class="flex items-center p-3 hover:bg-gray-700 rounded-md {{ Request::routeIs('admin.bookings') ? 'bg-gray-900' : '' }}">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -72,9 +72,45 @@
                     <span class="menu-text">Bookings</span>
                 </a>
             </li>
+            <li class="reports-menu">
+                <a href="#" 
+                   class="flex items-center p-3 hover:bg-gray-700 rounded-md {{ Request::routeIs('admin.reports*') ? 'bg-gray-900' : '' }}"
+                   onclick="toggleSubmenu(event)">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2h2M9 14h6M9 18h6M9 10h6" />
+                    </svg>
+                    <span class="menu-text">Reports</span>
+                    <svg class="w-4 h-4 ml-auto transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </a>
+                
+                <!-- Submenu for Reports with classes for initial hidden state -->
+                <ul class="sub-menu pl-4 space-y-2 transition-all duration-300 ease-in-out max-h-0 overflow-hidden">
+                    <li>
+                        <a href="{{ route('admin.reports', ['type' => 'bookings']) }}" class="block p-3 pl-10 hover:bg-gray-600 rounded-md {{ Request::input('type') == 'bookings' ? 'bg-gray-700' : '' }}">
+                            Bookings Report
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.reports.customer', ['type' => 'customers']) }}" class="block p-3 pl-10 hover:bg-gray-600 rounded-md {{ Request::input('type') == 'customers' ? 'bg-gray-700' : '' }}">
+                            Customer Report
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.reports', ['type' => 'penalties']) }}" class="block p-3 pl-10 hover:bg-gray-600 rounded-md {{ Request::input('type') == 'penalties' ? 'bg-gray-700' : '' }}">
+                            Penalties Report
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            
+
             <li>
-                <a href="{{route('admin.allusers')}}"
-                    class="flex items-center p-3 hover:bg-gray-700 rounded-md {{ Request::routeIs('admin.users') ? 'bg-gray-900' : '' }}">
+                <a href="{{ route('admin.allusers') }}"
+                    class="flex items-center p-3 hover:bg-gray-700 rounded-md {{ Request::routeIs('admin.allusers') ? 'bg-gray-900' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -103,6 +139,41 @@
 
 {{-- JS FUNCTION FOR COLLAPSING SIDENAV --}}
 <script>
+    // REPORTS DROPDOWN EXTENDING
+    function toggleSubmenu(event) {
+    event.preventDefault();
+    const parentLi = event.currentTarget.parentElement;
+    const submenu = parentLi.querySelector('.sub-menu');
+    const arrow = event.currentTarget.querySelector('svg:last-child');
+    
+    if (submenu.classList.contains('max-h-0')) {
+        // Show submenu
+        submenu.classList.remove('max-h-0');
+        submenu.classList.add('max-h-48'); // Adjust this value based on your submenu size
+        arrow.classList.add('rotate-180');
+    } else {
+        // Hide submenu
+        submenu.classList.remove('max-h-48');
+        submenu.classList.add('max-h-0');
+        arrow.classList.remove('rotate-180');
+    }
+}
+
+// Check if this menu should be expanded based on current route
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/admin/reports')) {
+        const reportsMenu = document.querySelector('.reports-menu');
+        const submenu = reportsMenu.querySelector('.sub-menu');
+        const arrow = reportsMenu.querySelector('a svg:last-child');
+        
+        submenu.classList.remove('max-h-0');
+        submenu.classList.add('max-h-48');
+        arrow.classList.add('rotate-180');
+    }
+});
+
+    // sidebarr
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.getElementById('sidebar');
         const toggleButton = document.getElementById('toggle-sidebar');

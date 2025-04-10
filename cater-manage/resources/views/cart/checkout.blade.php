@@ -81,7 +81,7 @@
                                         <option value="Anniversary">Anniversary</option>
                                         <option value="Corporate">Corporate</option>
                                         <option value="Simple Celebration">Simple Celebration</option>
-                                        <option value="Other">Other</option>
+                                        <option value="Other">Others: (Specify)</option>
                                     </select>
                                 </div>
 

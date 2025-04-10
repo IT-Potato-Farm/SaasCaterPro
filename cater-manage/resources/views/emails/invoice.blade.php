@@ -70,7 +70,6 @@
     <div class="email-container">
         <!-- Header -->
         <div class="header">
-            <h1>Your Invoice</h1>
         </div>
 
         <!-- Content -->

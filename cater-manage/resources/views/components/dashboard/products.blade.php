@@ -5,7 +5,7 @@
         Swal.fire({
             title: `<div class="flex items-center gap-2">
                         
-                        <span class="text-cyan-600 font-semibold text-xl">Edit Item</span>
+                        <span class="text-cyan-600 font-semibold text-xl">Edit Party Tray</span>
                     </div>`,
             html: `
                 <form id="editItemForm-${id}" action="${editUrl}" method="POST" class="text-left">
@@ -66,6 +66,22 @@
             }
         });
     }
+    function confirmDelete(button) {
+            Swal.fire({
+                title: 'Are you sure you want to delete this party tray?',
+                text: "This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            });
+        }
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -86,7 +102,7 @@
                     <!-- img -->
                     <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-t-lg">
                         @if ($menuItem->image)
-                            <img src="{{ asset('ItemsStored/' . $menuItem->image) }}" alt="{{ $menuItem->name }}"
+                            <img src="{{ asset('storage/party_traypics/' . $menuItem->image) }}" alt="{{ $menuItem->name }}"
                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy">
                         @else
@@ -159,7 +175,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
-                                    Delete
+                                    Delete 
                                 </button>
                             </form>
                         </div>

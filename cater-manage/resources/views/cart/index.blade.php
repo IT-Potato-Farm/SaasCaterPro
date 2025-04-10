@@ -184,11 +184,11 @@
                                             <input type="checkbox" name="selected_items[]"
                                                 value="{{ $cartItem->id }}" />
                                         </td> --}}
-
+                                        
                                         <!-- Product Image -->
                                         <td class="py-3">
                                             @if ($itemImage)
-                                                <img src="{{ asset(isset($cartItem->menu_item_id) ? 'ItemsStored/' . $itemImage : 'packagePics/' . $itemImage) }}"
+                                                <img src="{{ asset(isset($cartItem->menu_item_id) ? 'storage/party_traypics/' . $itemImage : 'storage/packagePics/' . $itemImage) }}"
                                                     alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
                                             @else
                                                 <img src="https://via.placeholder.com/64" alt="No Image"
@@ -268,6 +268,7 @@
                     </div>
                 </div>
 
+                @if (!isset($pendingOrder))
                 <!-- Order Summary -->
                 <aside class="md:w-1/4">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -357,6 +358,14 @@
                         </form>
                     </div>
                 </aside>
+                @else
+                <aside class="md:w-1/4">
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h2 class="text-lg font-semibold mb-2">Notice</h2>
+                        <p>You already have a pending order. Please complete or cancel it before making a new booking.</p>
+                    </div>
+                </aside>
+                @endif
 
             </div>
         @endif
