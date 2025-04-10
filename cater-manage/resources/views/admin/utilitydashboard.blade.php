@@ -101,7 +101,6 @@
                     // Clear any existing hidden inputs related to package_ids
                     form.querySelectorAll('input[name="package_ids[]"]').forEach(input => input.remove());
 
-                    // Add hidden input fields for checked packages
                     checkedPackageIds.forEach(pkgId => {
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
@@ -110,11 +109,10 @@
                         form.appendChild(hiddenInput);
                     });
 
-                    // Also add hidden inputs for unchecked packages (those removed)
                     uncheckedPackageIds.forEach(pkgId => {
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'removed_package_ids[]'; // You can change the name if needed
+                        hiddenInput.name = 'removed_package_ids[]'; 
                         hiddenInput.value = pkgId;
                         form.appendChild(hiddenInput);
                     });

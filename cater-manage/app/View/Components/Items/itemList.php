@@ -15,7 +15,7 @@ class itemList extends Component
     public $items;
     public function __construct()
     {
-        $this->items = Item::all();
+        $this->items = Item::with('itemOptions')->get();
     }
 
     /**

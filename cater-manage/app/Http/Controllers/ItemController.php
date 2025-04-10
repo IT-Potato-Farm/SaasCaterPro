@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\ItemOption;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
@@ -103,10 +104,14 @@ class ItemController extends Controller
     public function update(Request $request, string $id)
     {
         try {
+            Log::info("Updating item with ID: $id");
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
+                'selected_options' => 'nullable|array',
+                'selected_options.*' => 'exists:item_options,id',
             ]);
+            Log::info("Validated data: ", $data);
 
             //  prevent XSS
             $data['name'] = strip_tags($data['name']);
@@ -115,9 +120,19 @@ class ItemController extends Controller
             $item = Item::findOrFail($id);
 
             $item->update($data);
-
-            return redirect()->back()->with('success', 'Item updated successfully!');
+            
+            if ($request->has('selected_options') && is_array($request->selected_options)) {
+                // Clear previous options in the pivot table and insert the selected ones
+                $item->itemOptions()->sync($request->input('selected_options'));
+            } else {
+                $item->itemOptions()->detach();
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Item updated successfully!',
+            ], 200);
         } catch (\Exception $e) {
+            Log::error("Error updating item: " . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
