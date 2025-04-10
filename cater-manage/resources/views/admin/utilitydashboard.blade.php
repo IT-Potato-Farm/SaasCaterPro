@@ -8,17 +8,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        
 
-        function openEditModalItem(id, name, description, quantity, image, packageId) {
+    <script>
+        function openEditModalItem(id, name, description, quantity, image, selectedPackageIds) {
             console.log("Editing utility:", id);
-            let editUrl = "{{ url('/packageutility/update') }}/" + id;
+            console.log("Package ID passed to modal:", selectedPackageIds);
+
+            let editUrl = "{{ route('utilities.update', ':id') }}".replace(':id', id);
+            console.log(editUrl);
 
             // Dynamically populate the dropdown with available packages
-            let packages = @json($packages); 
-            let packageOptions = packages.map(pkg => {
-                return `<option value="${pkg.id}" ${pkg.id === packageId ? 'selected' : ''}>${pkg.name}</option>`;
+            let packages = @json($packages);
+            let packageCheckboxes = packages.map(pkg => {
+                let checked = selectedPackageIds.includes(pkg.id) ? 'checked' : '';
+                return `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="package_ids[]" value="${pkg.id}" id="package_${pkg.id}" ${checked}>
+                            <label class="form-check-label" for="package_${pkg.id}">
+                                ${pkg.name}
+                            </label>
+                        </div>
+                    `;
             }).join('');
 
             Swal.fire({
@@ -52,18 +62,15 @@
                     required>
             </div>
             <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-600 mb-2">Package</label>
-                <select name="package_id" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none" required>
-                    <option value="">Select Package</option>
-                    ${packageOptions}
-                </select>
+                <label class="block text-sm font-medium text-gray-600 mb-2">Link to Package</label>
+                ${packageCheckboxes}
             </div>
             <div class="mb-5">
                 <label class="block text-sm font-medium text-gray-600 mb-2">Image</label>
                 <input type="file" name="image" 
                     class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
                 <div class="mt-2">
-                    ${image ? `<img src="{{ asset('storage/packageUtilities/${image}') }}" alt="Utility Image" class="w-32 h-32 object-cover">` : `<p>No image available</p>`}
+                    ${image ? `<img src="{{ asset('storage/Utilities/${image}') }}" alt="Utility Image" class="w-32 h-32 object-cover">` : `<p>No image available</p>`}
                 </div>
             </div>
         </form>`,
@@ -78,7 +85,40 @@
                     input: 'focus:ring-2 focus:ring-cyan-200 focus:border-cyan-500'
                 },
                 preConfirm: () => {
+
                     const form = document.getElementById(`editUtilityForm-${id}`);
+                    const checkedPackageIds = packages.filter(pkg => form.querySelector(`#package_${pkg.id}`)
+                            .checked)
+                        .map(pkg => pkg.id);
+
+                    // Find all unchecked checkboxes and collect their package IDs
+                    const uncheckedPackageIds = packages.filter(pkg => !form.querySelector(`#package_${pkg.id}`)
+                            .checked)
+                        .map(pkg => pkg.id);
+
+                    console.log("Selected Package IDs:", packages.filter(pkg => form.querySelector(
+                        `#package_${pkg.id}`).checked).map(pkg => pkg.id));
+                    // Clear any existing hidden inputs related to package_ids
+                    form.querySelectorAll('input[name="package_ids[]"]').forEach(input => input.remove());
+
+                    // Add hidden input fields for checked packages
+                    checkedPackageIds.forEach(pkgId => {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'package_ids[]';
+                        hiddenInput.value = pkgId;
+                        form.appendChild(hiddenInput);
+                    });
+
+                    // Also add hidden inputs for unchecked packages (those removed)
+                    uncheckedPackageIds.forEach(pkgId => {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'removed_package_ids[]'; // You can change the name if needed
+                        hiddenInput.value = pkgId;
+                        form.appendChild(hiddenInput);
+                    });
+                    
                     if (form.reportValidity()) {
                         form.submit();
                     }
@@ -107,15 +147,15 @@
 
 <body>
     @if (session('success'))
-    <script>
-        Swal.fire({
-            title: 'Success!',
-            text: "{{ session('success') }}",
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    </script>
-@endif
+        <script>
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
     <div class="flex h-screen">
 
         {{-- SIDENAV --}}
@@ -142,6 +182,10 @@
                 @else
                     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         @foreach ($utilities as $utility)
+                            @php
+                                // Get the first package associated with the utility
+                                $selectedPackageIds = $utility->packages->pluck('id')->toArray();
+                            @endphp
                             <div
                                 class="relative group bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                 <div class="flex justify-between items-start mb-4">
@@ -162,7 +206,7 @@
 
                                 <div class="mt-4 aspect-video overflow-hidden rounded-lg border border-gray-200">
                                     @if ($utility->image)
-                                        <img src="{{ asset('storage/packageUtilities/' . $utility->image) }}"
+                                        <img src="{{ asset('storage/Utilities/' . $utility->image) }}"
                                             alt="{{ $utility->name }}" class="w-full h-full object-cover">
                                     @else
                                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -184,7 +228,7 @@
                                             {{ json_encode($utility->description) }},
                                             {{ json_encode($utility->quantity) }},
                                             {{ json_encode($utility->image) }},
-                                             {{ json_encode($utility->package_id) }}
+                                            {{ json_encode($selectedPackageIds) }} 
 
                                             )"
                                         class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">
@@ -196,8 +240,8 @@
                                     </button>
 
                                     <!-- Delete Icon -->
-                                    <form action="{{ route('package_utilities.destroy', $utility->id) }}"
-                                        method="POST" class="flex-1">
+                                    <form action="{{ route('utilities.destroy', $utility->id) }}" method="POST"
+                                        class="flex-1">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" onclick="confirmDeleteUtility(this)"

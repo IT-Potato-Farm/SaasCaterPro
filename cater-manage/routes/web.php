@@ -20,6 +20,7 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
@@ -245,8 +246,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/finaldashboard/utilities', [AdminController::class, 'goUtilityDashboard'])->name('admin.utilities');
     Route::post('/packageutility/store', [PackageUtilityController::class, 'store'])->name('package_utilities.store');
     Route::put('/packageutility/update/{id}', [PackageUtilityController::class, 'update'])->name('package_utilities.update');
-    Route::delete('/packageutility/delete/{id}', [PackageUtilityController::class, 'destroy'])->name('package_utilities.destroy');
+    // Route::delete('/packageutility/delete/{id}', [PackageUtilityController::class, 'destroy'])->name('package_utilities.destroy');
 
+    // UTILITY ADD
+    Route::resource('utilities', UtilityController::class);
 
     Route::get('/admin/finaldashboard/reports', [AdminController::class, 'goReportsDashboard'])->name('admin.reports');
     Route::get('/admin/finaldashboard/bookings', [AdminController::class, 'goBookingsDashboard'])->name('admin.bookings');
@@ -280,6 +283,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // LINK ITEMS TO PACKAGE ROUTE
     Route::post('/packages/{packageId}/link-items', [PackageController::class, 'linkItemsToPackage'])->name('packages.linkItemsToPackage');
     Route::post('/link-item-to-package', [PackageController::class, 'addItemToPackage'])->name('admin.addItemToPackage');
+    // LINK UTILS TO PACKAGE
+    Route::post('/link-util-to-package', [PackageController::class, 'addUtilToPackage'])->name('admin.addUtilToPackage');
+    Route::get('/get-utilities-for-package', [PackageController::class, 'getUtilitiesForPackage'])->name('getUtilitiesForPackage');
+
     // DELETE ITEMS  FROM PACKAGE
     Route::delete('packages/{id}/remove-items', [PackageController::class, 'removeItemFromPackage'])->name('admin.removeItemFromPackage');
     Route::get('packages/{id}', [PackageController::class, 'showItemsOnPackage'])->name('package.show');

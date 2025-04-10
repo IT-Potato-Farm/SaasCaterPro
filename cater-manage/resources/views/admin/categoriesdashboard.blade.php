@@ -9,6 +9,39 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#fef2f2',
+                iconColor: '#dc2626',
+                color: '#7f1d1d',
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'swal2-show animate-slide-in'
+                },
+                hideClass: {
+                    popup: 'swal2-hide animate-slide-out'
+                }
+            });
+        </script>
+    @endif
     <div class="flex h-screen">
 
         {{-- SIDENAV --}}
@@ -20,6 +53,8 @@
                 <x-dashboard.header />
                 <x-category.category-button />
                 <x-dashboard.categories />
+
+                <x-packages.link-util-package />
             </main>
         </div>
 

@@ -224,7 +224,7 @@
                     <x-packages.add-package-option-btn />
                     <x-packages.add-package-utility />
                     <x-dashboard.packages />
-                    {{-- <x-packages.add-package-item /> --}} 
+                    {{-- <x-packages.add-package-item />  --}}
 
                 </div>
 

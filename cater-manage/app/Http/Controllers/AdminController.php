@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Utility;
 use Carbon\Carbon;
 use App\Models\Item;
 use App\Models\User;
@@ -119,9 +120,10 @@ class AdminController extends Controller
     public function goUtilityDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            $utilities = PackageUtility::all();
+            $utilities = Utility::with('packages')->get();
+            $package_utilities = PackageUtility::all();
             $packages = Package::all();
-            return view('admin.utilitydashboard', compact('utilities', 'packages'));
+            return view('admin.utilitydashboard', compact('utilities', 'package_utilities', 'packages'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');

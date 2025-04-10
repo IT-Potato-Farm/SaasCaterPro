@@ -13,17 +13,7 @@
             title: '<span class="text-2xl font-bold text-gray-800">Add Package Utility</span>',
             html: `
                 <form id="addPackageUtilityForm" class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
-                    <!-- Package Dropdown -->
-                    <div>
-                        <label for="utilityPackageSelect" class="block text-sm font-medium text-gray-700">Select Package</label>
-                        <select name="package_id" id="utilityPackageSelect" required class="w-full border rounded p-2">
-                            <option value="">Choose a Package</option>
-                            @foreach ($packages as $package)
-                                <option value="{{ $package->id }}">{{ $package->name }}</option>
-                            @endforeach
-                        </select>
-                        <div id="package_id-error" class="error-message"></div>
-                    </div>
+                    
                     
                     <!-- Utility Name -->
                     <div>
@@ -85,12 +75,7 @@
                 const formData = new FormData(form);
                 let hasErrors = false;
 
-                // Validate package selection.
-                const packageSelect = document.getElementById('utilityPackageSelect');
-                if (!packageSelect.value) {
-                    document.getElementById('package_id-error').textContent = 'Please select a package.';
-                    hasErrors = true;
-                }
+               
 
                 // Validate utility name.
                 const nameInput = document.getElementById('utilityName');
@@ -108,7 +93,7 @@
 
                 if (hasErrors) return false;
 
-                return fetch("{{ route('package_utilities.store') }}", {
+                return fetch("{{ route('utilities.store') }}", {
                         method: "POST",
                         headers: {
                             "X-CSRF-TOKEN": "{{ csrf_token() }}"

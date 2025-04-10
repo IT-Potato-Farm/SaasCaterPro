@@ -9,17 +9,17 @@ class PackageUtility extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'package_id',
-        'name',
-        'description',
-        'quantity',
-        'image',
-    ];
+    protected $table = 'package_utilities';
+
+    protected $fillable = ['package_id', 'utility_id'];
 
     // eacjh util belongs to package.
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+    public function utility()
+    {
+        return $this->belongsTo(Utility::class);
     }
 }

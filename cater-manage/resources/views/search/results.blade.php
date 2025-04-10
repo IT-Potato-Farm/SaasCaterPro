@@ -124,7 +124,7 @@
                     <div class="bg-white p-4 shadow rounded">
                         <img src="{{ asset('storage/party_traypics/' . $item->image) }}" alt="{{ $item->name }}"
                             class="w-full h-56 object-cover  object-center rounded mb-2">
-                                
+
                         <h4 class="font-bold">{{ $item->name }}</h4>
                         <p>{{ $item->description }}</p>
                         <p class="text-sm text-gray-500">₱{{ number_format($item->price, 2) }}</p>
@@ -132,7 +132,7 @@
                 @endforeach
             </div>
         @endif
-
+            {{-- FOR PACKAGE SEARCHED --}}
         @if ($packages->isNotEmpty())
             <h3 class="text-lg font-semibold mt-6">Packages</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
@@ -150,7 +150,50 @@
                             }
                         }
                     @endphp
+                    <div
+                        class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:-translate-y-2 transition-transform">
+                        <div class="relative h-56">
+                            <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
+                                class="w-full h-full object-fill transition-transform duration-300 group-hover:scale-105" />
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
+                                <h3 class="text-2xl font-bold text-white">{{ $package->name }}</h3>
+                            </div>
+                        </div>
 
+                        <div class="p-6 flex flex-col h-full">
+                            <div class="flex-grow">
+                                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                                    {{ $package->description }}
+                                </p>
+
+                                <div class="space-y-3 mb-6">
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Price per
+                                            Pax</span>
+                                        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                            ₱{{ number_format($package->price_per_person, 2) }}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Minimum
+                                            Pax</span>
+                                        <span class="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                            {{ $package->min_pax }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="openItem({{ $package->id }})"
+                                    class="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02]">
+                                    Show More Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- DISPLAY NA AGAD INFO NG PACKAGE  --}}
                     <div class="bg-white p-4 shadow rounded">
                         <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
                             class="w-full h-40 object-cover rounded mb-2">

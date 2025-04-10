@@ -33,6 +33,6 @@ class Package extends Model
     }
     public function utilities()
     {
-        return $this->hasMany(PackageUtility::class);
+        return $this->belongsToMany(Utility::class, 'package_utilities')->withTimestamps();
     }
 }

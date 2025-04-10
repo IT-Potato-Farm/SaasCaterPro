@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Item;
 use App\Models\Package;
+use App\Models\Utility;
 use App\Models\ItemOption;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
+use App\Models\PackageUtility;
 use App\Models\PackageItemOption;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
@@ -17,7 +20,7 @@ class PackageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    
+
 
 
     /**
@@ -71,34 +74,34 @@ class PackageController extends Controller
                 'item_id' => $itemId,
                 'item_option_ids' => $itemOptionIds
             ]);
-    
+
             // Get or create the PackageItem (respecting unique constraint)
             $packageItem = PackageItem::firstOrCreate([
                 'package_id' => $packageId,
                 'item_id' => $itemId
             ]);
-    
+
             Log::debug('PackageItem Used:', ['package_item_id' => $packageItem->id]);
-    
+
             $linkedOptions = [];
             $item = Item::with('itemOptions')->findOrFail($itemId);
-    
+
             foreach ($itemOptionIds as $optionId) {
                 $option = ItemOption::findOrFail($optionId);
-    
+
                 // Make sure this option belongs to the item
                 if ($item->itemOptions->contains('id', $optionId)) {
                     // Avoid duplicate option link
                     $alreadyLinked = PackageItemOption::where('package_item_id', $packageItem->id)
                         ->where('item_option_id', $optionId)
                         ->exists();
-    
+
                     if (!$alreadyLinked) {
                         PackageItemOption::create([
                             'package_item_id' => $packageItem->id,
                             'item_option_id' => $optionId
                         ]);
-    
+
                         $linkedOptions[] = $option->type;
                     } else {
                         Log::info('Option already linked, skipping:', ['option_id' => $optionId]);
@@ -110,17 +113,18 @@ class PackageController extends Controller
                     ]);
                 }
             }
-    
+
             Log::debug('Linked Options:', ['linked_options' => $linkedOptions]);
-    
+
             return redirect()->back()->with('success', 'Item options linked successfully!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error linking item to package: ' . $e->getMessage(), [
                 'exception' => $e->getTraceAsString()
             ]);
             return redirect()->back()->with('error', 'Failed to link item: ' . $e->getMessage());
         }
     }
+
     public function addItemToPackage(Request $request)
     {
         $validated = $request->validate([
@@ -138,6 +142,41 @@ class PackageController extends Controller
         );
 
         return redirect()->back();
+    }
+    public function addUtilToPackage(Request $request)
+    {
+        try {
+            // Validate the incoming data
+            $request->validate([
+                'package_id' => 'required|exists:packages,id', // Ensure package exists
+                'utility_ids' => 'required|array', // Ensure utility_ids is an array
+                'utility_ids.*' => 'exists:utilities,id' // Validate each utility ID exists
+            ]);
+
+            $package = Package::findOrFail($request->package_id);
+
+            // Loop through selected utility IDs and link them to the package
+            foreach ($request->utility_ids as $utilityId) {
+                // Check if the utility is already linked to the package
+                $existingUtility = PackageUtility::where('package_id', $package->id)
+                    ->where('utility_id', $utilityId)
+                    ->first();
+
+                // If not already linked, create a new association
+                if (!$existingUtility) {
+                    PackageUtility::create([
+                        'package_id' => $package->id,
+                        'utility_id' => $utilityId,
+                    ]);
+                }
+            }
+            return redirect()->back()->with('success', 'Utilities linked to the package successfully.');
+        } catch (Exception $e) {
+            Log::error("Error linking utilities to package: " . $e->getMessage());
+
+            // Return error response
+            return redirect()->back()->with('error', 'An error occurred while linking utilities to the package. Please try again.');
+        }
     }
 
     protected function handleImageUpload($image)
@@ -170,7 +209,7 @@ class PackageController extends Controller
     }
     public function showdetails($id)
     {
-        
+
         $package = Package::with(['packageItems.options.itemOption', 'utilities'])->find($id);
 
         if (!$package) {
@@ -184,10 +223,10 @@ class PackageController extends Controller
         return response()->json([
             'success'   => true,
             'package'   => $package,
-            'foods'     => $package->packageItems->map(function($packageItem) {
+            'foods'     => $package->packageItems->map(function ($packageItem) {
                 return [
                     'item' => $packageItem->item,
-                    'options' => $packageItem->options->map(function($option) {
+                    'options' => $packageItem->options->map(function ($option) {
                         return $option->itemOption;  // Returning itemOption details for frontend
                     })
                 ];
@@ -246,8 +285,6 @@ class PackageController extends Controller
                 $packageItem->delete();
             }
         }
-
-
         if ($request->has('options')) {
 
             foreach ($request->input('options') as $optionId) {
@@ -256,10 +293,28 @@ class PackageController extends Controller
                 $packageItemOption->delete();
             }
         }
-
-
         return redirect()->route('package.show', $packageId)->with('success', 'Items and/or options removed successfully.');
     }
+    // KUNIN NYA MGA NKA LINK NA UTILS AS PACKAGE
+    public function getUtilitiesForPackage(Request $request)
+{
+    $packageId = $request->input('package_id');
+
+    $package = Package::findOrFail($packageId);
+
+    $utilities = Utility::all();
+
+    // utils associated sa package
+    $linkedUtilities = $package->utilities->pluck('id')->toArray();
+
+    
+    return response()->json([
+        'utilities' => $utilities,
+        'linked_utilities' => $linkedUtilities,
+    ]);
+}
+
+
 
     /**
      * Show the form for editing the specified resource.
