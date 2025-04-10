@@ -48,9 +48,9 @@
                                 required>${description}</textarea>
                     </div>
                     <!-- ulam items fried, buttered, etc -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">lINK Item Options</label>
-                        <div class="space-y-2">
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Dagdag ng type of ulam</label>
+                        <div class="space-y-1">
                             ${optionsHtml}
                         </div>
                     </div>
@@ -172,6 +172,7 @@
                                 </svg>
                                 Edit
                             </button>
+
                             <form action="{{ route('item.delete', $item->id) }}" method="POST" class="delete-form">
                                 @csrf
                                 @method('DELETE')
