@@ -27,7 +27,9 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\ItemOptionController;
 use App\Http\Controllers\PackageItemController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PackageUtilityController;
 
 // route navigation each page
@@ -80,7 +82,10 @@ Route::get('/packages/{id}', [PackageController::class, 'PackageDetails']);
 
 
 
-
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.login');
