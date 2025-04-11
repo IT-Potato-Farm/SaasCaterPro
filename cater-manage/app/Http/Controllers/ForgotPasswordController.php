@@ -23,7 +23,10 @@ class ForgotPasswordController extends Controller
 
     public function sendResetLinkEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email|exists:users,email']);
+        $request->validate(
+            ['email' => 'required|email|exists:users,email'],
+            ['email.exists' => 'This email is not registered']
+        );
 
         // prevent more than 3 password reset attempts per minute
         $limiter = app(RateLimiter::class);
@@ -48,7 +51,7 @@ class ForgotPasswordController extends Controller
             return back()->with('success', 'A password reset link has already been sent to your email address.');
         }
 
-        
+
         // Delete any existing tokens
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
