@@ -72,7 +72,7 @@
                     @error('loginpassword')
                         <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                     @enderror
-                    <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Forgot
+                    <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Forgot
                         password?</a>
                 </div>
 
