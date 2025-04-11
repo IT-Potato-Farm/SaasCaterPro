@@ -21,7 +21,7 @@
         <!-- Left: Logo -->
         <a href="{{ route('landing') }}" class="flex items-center mx-2">
             <img src="{{ asset('images/saaslogo.png') }}" class="hidden sm:flex h-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 xl:h-16 xl:w-16 2xl:h-20 2xl:w-20" alt="Saas Logo" />
-            <span class="hidden sm:flex text-sm sm:text-base md:base lg:text-lg xl:text-xl 2xl:text-2xl sm:font-semibold whitespace-nowrap text-white hover:bg-gray-100">SaasCaterPro</span>
+            <span class="hidden sm:flex text-sm sm:text-base md:base lg:text-lg xl:text-xl 2xl:text-2xl sm:font-semibold whitespace-nowrap text-white hover:bg-gray-100">Hehe</span>
         </a>
 
         <!-- Middle: Navigation Links -->
