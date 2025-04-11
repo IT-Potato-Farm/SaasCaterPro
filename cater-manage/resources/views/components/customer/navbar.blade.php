@@ -17,11 +17,11 @@
     }
 @endphp
 <nav class="border-gray-200 bg-gray-900">
-    <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4 lg:px-8">
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto py-4 sm:px-8">
         <!-- Left: Logo -->
         <a href="{{ route('landing') }}" class="flex items-center mx-2">
-            <img src="{{ asset('images/saaslogo.png') }}" class="h-12 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 xl:h-16 xl:w-16 2xl:h-20 2xl:w-20" alt="Saas Logo" />
-            <span class="text-sm sm:text-base md:base lg:text-lg xl:text-xl 2xl:text-2xl font-semibold whitespace-nowrap text-white hover:bg-gray-100">SaasCaterPro</span>
+            <img src="{{ asset('images/saaslogo.png') }}" class="hidden sm:flex h-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 xl:h-16 xl:w-16 2xl:h-20 2xl:w-20" alt="Saas Logo" />
+            <span class="hidden sm:flex text-sm sm:text-base md:base lg:text-lg xl:text-xl 2xl:text-2xl sm:font-semibold whitespace-nowrap text-white hover:bg-gray-100">SaasCaterPro</span>
         </a>
 
         <!-- Middle: Navigation Links -->
@@ -67,13 +67,13 @@
         </div> --}}
 
         <!-- SEARCH FOR MOOBILE -->
-        <div>
+        <div class="pl-10 sm:pl-0">
             <form action="{{ route('search') }}" method="GET" class="flex items-center">
                 <input type="text" name="query" placeholder="Search for meals or packages..."
-                    class="p-0 w-full py-1 px-2 lg:py-3 lg:px-6  md:w-72 lg:w-96 rounded-l-lg text-sm focus:outline-none  focus:ring-amber-300 "
+                    class="w-48 md:w-64 lg:w-80 xl:w-96 py-1.5 px-2 lg:py-3 lg:px-6 rounded-l-lg text-sm focus:outline-none focus:ring-amber-300"
                     
                     value="{{ request('query') }}">
-                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg py-1 px-2 lg:py-3 lg:px-6">
+                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg py-1.5 px-2 lg:py-3 lg:px-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -86,7 +86,7 @@
         <!-- Right: Cart and Account/Login -->
         <div class="flex items-center space-x-4">
             <a href="{{ route('cart.index') }}"
-                class="relative hidden md:flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5 ">
+                class="relative hidden md:flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm md:px-2 md:py-1.5 lg:px-4 lg:py-2.5 ">
                 <span>Cart</span>
                 <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
                     fill="currentColor">
@@ -148,7 +148,7 @@
                 </div>
             @else
                 <a href="{{ route('login') }}"
-                    class="hidden md:flex text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                    class="hidden md:flex text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm md:px-2.5 md:py-1.5 lg:px-4 lg:py-2.5">
                     Login
                 </a>
             @endauth
