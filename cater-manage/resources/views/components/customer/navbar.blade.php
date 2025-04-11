@@ -17,12 +17,11 @@
     }
 @endphp
 <nav class="border-gray-200 bg-gray-900">
-    <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4 lg:px-8">
         <!-- Left: Logo -->
-        <a href="{{ route('landing') }}" class="flex items-center space-x-3">
-            <img src="{{ asset('images/saaslogo.png') }}" class="h-12" alt="Saas Logo" />
-            <span
-                class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300">SaasCaterPro</span>
+        <a href="{{ route('landing') }}" class="flex items-center mx-2">
+            <img src="{{ asset('images/saaslogo.png') }}" class="h-12 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 xl:h-16 xl:w-16 2xl:h-20 2xl:w-20" alt="Saas Logo" />
+            <span class="text-sm sm:text-base md:base lg:text-lg xl:text-xl 2xl:text-2xl font-semibold whitespace-nowrap text-white hover:bg-gray-100">SaasCaterPro</span>
         </a>
 
         <!-- Middle: Navigation Links -->
@@ -52,10 +51,10 @@
         @endif --}}
 
         {{-- SEARCH --}}
-        <div class="hidden md:block relative">
+        {{-- <div class="hidden md:block relative ">
             <form action="{{ route('search') }}" method="GET" class="flex items-center">
                 <input type="text" name="query" placeholder="Search for meals or packages..."
-                    class="py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 w-56"
+                    class="p-0 lg:py-2 lg:px-3 rounded-l-lg text-sm focus:outline-none  focus:ring-amber-300 w-96"
                     value="{{ request('query') }}">
                 <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
@@ -65,15 +64,16 @@
                     </svg>
                 </button>
             </form>
-        </div>
+        </div> --}}
 
         <!-- SEARCH FOR MOOBILE -->
-        <div class="md:hidden mt-3 px-2">
+        <div>
             <form action="{{ route('search') }}" method="GET" class="flex items-center">
                 <input type="text" name="query" placeholder="Search for meals or packages..."
-                    class="py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 w-full"
+                    class="p-0 w-full py-1 px-2 lg:py-3 lg:px-6  md:w-72 lg:w-96 rounded-l-lg text-sm focus:outline-none  focus:ring-amber-300 "
+                    
                     value="{{ request('query') }}">
-                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
+                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg py-1 px-2 lg:py-3 lg:px-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -86,7 +86,7 @@
         <!-- Right: Cart and Account/Login -->
         <div class="flex items-center space-x-4">
             <a href="{{ route('cart.index') }}"
-                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                class="relative hidden md:flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5 ">
                 <span>Cart</span>
                 <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
                     fill="currentColor">
@@ -148,7 +148,7 @@
                 </div>
             @else
                 <a href="{{ route('login') }}"
-                    class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                    class="hidden md:flex text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
                     Login
                 </a>
             @endauth
@@ -173,20 +173,37 @@
             class="font-medium flex flex-col p-4 border border-green-100 rounded-lg bg-red-600 dark:bg-gray-800 dark:border-gray-700">
             <li>
                 <a href="{{ route('landing') }}"
-                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
+                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black ">
                     Home
                 </a>
             </li>
             <li>
                 <a href="#" onclick="scrollToSection('menu')"
-                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
+                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black ">
                     Menu
                 </a>
             </li>
             <li>
                 <a href="#" onclick="scrollToSection('aboutus')"
-                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
+                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black ">
                     About Us
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('cart.index') }}"
+                    class="relative block text-white  py-2 px-3 ">
+                    <span>Cart</span>
+                    
+                    <span id="cart-count"
+                        class="absolute top-1 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1.5 rounded-full ">
+                        {{ $cartCount }}
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('login') }}"
+                    class="block  text-white  py-2 px-3 ">
+                    Login
                 </a>
             </li>
         </ul>
