@@ -34,7 +34,16 @@ use App\Http\Controllers\PackageUtilityController;
 
 // route navigation each page
 
-
+// DEBUG EMAIL
+Route::get('/debug-order-email/{orderId}', function ($orderId) {
+    $order = Order::find($orderId);  // Replace with the actual method to retrieve the order.
+    
+    if ($order) {
+        return view('emails.order_confirmation', compact('order'));  // Adjust view path accordingly
+    } else {
+        return "Order not found!";
+    }
+});
 
 
 Route::get('/loginpage', [UserController::class, 'gologin'])->name('login');

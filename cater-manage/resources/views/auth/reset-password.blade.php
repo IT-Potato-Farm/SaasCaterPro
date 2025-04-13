@@ -25,7 +25,7 @@
                     {{ session('error') }}
                 </div>
             @endif
-            
+
             <form action="{{ route('password.update') }}" class="space-y-6" method="post" novalidate>
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
@@ -63,9 +63,9 @@
                             required>
                         <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                             onclick="togglePassword('password', 'eyeIconOpenPassword', 'eyeIconClosePassword')">
-                            <svg id="eyeIconOpenPassword" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg id="eyeIconOpenPassword" xmlns="http://www.w3.org/2000/svg"
+                                class="w-6 h-6 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
                             </svg>
@@ -86,16 +86,18 @@
 
                 <!-- confirm password -->
                 <div class="field-container">
-                    <label for="password-confirm" class="block text-gray-700 font-semibold mb-1">Confirm Password</label>
+                    <label for="password-confirm" class="block text-gray-700 font-semibold mb-1">Confirm
+                        Password</label>
                     <div class="relative">
-                        <input type="password" name="password_confirmation" id="password-confirm" placeholder="Confirm Password"
+                        <input type="password" name="password_confirmation" id="password-confirm"
+                            placeholder="Confirm Password"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
                             required>
                         <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                             onclick="togglePassword('password-confirm', 'eyeIconOpenConfirm', 'eyeIconCloseConfirm')">
-                            <svg id="eyeIconOpenConfirm" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg id="eyeIconOpenConfirm" xmlns="http://www.w3.org/2000/svg"
+                                class="w-6 h-6 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
                             </svg>
@@ -142,38 +144,41 @@
         document.addEventListener('DOMContentLoaded', function() {
             const passwordField = document.getElementById('password');
             const strengthIndicator = document.getElementById('password-strength');
-            
+
             if (passwordField && strengthIndicator) {
                 passwordField.addEventListener('input', function() {
                     const password = passwordField.value;
                     let strength = 0;
                     let feedback = '';
-                    
+
                     // Check length
                     if (password.length >= 8) strength += 1;
-                    
+
                     // Check for mixed case
                     if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
-                    
+
                     // Check for numbers
                     if (password.match(/\d/)) strength += 1;
-                    
+
                     // Check for special characters
                     if (password.match(/[^a-zA-Z\d]/)) strength += 1;
-                    
+
                     // Display feedback
                     if (password.length === 0) {
                         strengthIndicator.innerHTML = '';
                     } else if (strength < 2) {
-                        strengthIndicator.innerHTML = '<div class="h-2 w-full bg-red-500 rounded"></div><p class="text-red-600 text-xs mt-1">Weak password</p>';
+                        strengthIndicator.innerHTML =
+                            '<div class="h-2 w-full bg-red-500 rounded"></div><p class="text-red-600 text-xs mt-1">Weak password</p>';
                     } else if (strength < 4) {
-                        strengthIndicator.innerHTML = '<div class="h-2 w-full bg-yellow-500 rounded"></div><p class="text-yellow-600 text-xs mt-1">Medium strength password</p>';
+                        strengthIndicator.innerHTML =
+                            '<div class="h-2 w-full bg-yellow-500 rounded"></div><p class="text-yellow-600 text-xs mt-1">Medium strength password</p>';
                     } else {
-                        strengthIndicator.innerHTML = '<div class="h-2 w-full bg-green-500 rounded"></div><p class="text-green-600 text-xs mt-1">Strong password</p>';
+                        strengthIndicator.innerHTML =
+                            '<div class="h-2 w-full bg-green-500 rounded"></div><p class="text-green-600 text-xs mt-1">Strong password</p>';
                     }
                 });
             }
-            
+
             // live remove error messages on input
             const inputs = document.querySelectorAll('input');
             inputs.forEach(function(input) {
@@ -188,16 +193,32 @@
                     }
                 });
             });
-            
+
             const form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    const password = document.getElementById('password').value;
-                    const confirmPassword = document.getElementById('password-confirm').value;
-                    
-                    if (password !== confirmPassword) {
+                    const password = document.getElementById('password');
+                    const confirmPassword = document.getElementById('password-confirm');
+                    const container = confirmPassword.closest('.field-container');
+
+                    // Remove previous error if exists
+                    const existingError = container.querySelector('.text-red-600');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+
+                    if (password.value !== confirmPassword.value) {
                         e.preventDefault();
-                        alert('Passwords do not match. Please try again.');
+
+                        // add error style
+                        confirmPassword.classList.add('border-red-500');
+
+                        // create and append error message like Laravel
+                        const errorMessage = document.createElement('p');
+                        errorMessage.classList.add('text-red-600', 'text-xs', 'mt-1');
+                        errorMessage.textContent = 'Passwords do not match.';
+
+                        container.appendChild(errorMessage);
                     }
                 });
             }

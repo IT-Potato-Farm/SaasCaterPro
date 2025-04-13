@@ -211,6 +211,7 @@ class CheckoutController extends Controller
 
         //  OrderItem records based sa cart items.
         foreach ($cart->items as $cartItem) {
+            $includedUtilities = [];
             if ($cartItem->menu_item_id && $cartItem->menuItem) {
                 $pricingTiers = $cartItem->menuItem->pricing;
                 if (!empty($cartItem->variant) && isset($pricingTiers[$cartItem->variant])) {
@@ -226,6 +227,9 @@ class CheckoutController extends Controller
                 $itemType = 'package';
                 $refId = $cartItem->package_id;
                 $variantValue = (string) max($data['total_guests'], $cartItem->package->min_pax);
+
+                $includedUtilities = $cartItem->package->utilities->pluck('name')->toArray();
+                
             } else {
                 continue;
             }
@@ -237,6 +241,8 @@ class CheckoutController extends Controller
                 'quantity'          => $cartItem->quantity,
                 'price'             => $price,
                 'variant'           => $variantValue,
+                'selected_options' => $cartItem->selected_options,
+                'included_utilities' => $includedUtilities,
             ]);
         }
 

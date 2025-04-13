@@ -93,7 +93,8 @@ class CartController extends Controller
             'package_id'   => 'nullable|exists:packages,id',
             'quantity'     => 'required|integer|min:1',
             'variant'      => 'nullable|string',
-            'selected_options' => 'nullable|array'
+            'selected_options' => 'nullable|array',
+            'included_utilities' =>'nullable|array',
         ]);
 
         if (empty($validated['menu_item_id']) && empty($validated['package_id'])) {
@@ -120,6 +121,7 @@ class CartController extends Controller
 
         return $this->jsonOrRedirect($request, implode(' ', $messages['success']), 200);
     }
+
     private function getCartItems($cart)
     {
         return is_object($cart) ? $cart->items() : collect($cart['items']);
@@ -148,13 +150,30 @@ class CartController extends Controller
             $available = 2 - $totalPackageCount;
             $quantityToAdd = min($validated['quantity'], $available);
 
+            $package = Package::findOrFail($validated['package_id']);
+
+            // Get the utilities associated with this package
+            $utilities = $package->utilities->map(function ($utility) {
+                return [
+                    'name' => $utility->name,
+                    'description' => $utility->description,
+                    'image' => $utility->image,
+                    'quantity' => $utility->quantity,  // Include quantity if needed
+                ];
+            })->toArray();
+
             if (isset($cart->user_id)) {
                 $existingPackageItem = $cartItems->where('package_id', $validated['package_id'])->first();
                 if ($existingPackageItem) {
-                    $existingPackageItem->update(['quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2)]);
+                    $existingPackageItem->update(['quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2),
+                    'selected_utilities' => $utilities, 
+                ]);
                     $messages['success'][] = 'Package updated in cart.';
+
                 } else {
-                    $cart->items()->create(array_merge($validated, ['quantity' => $quantityToAdd]));
+                    $cart->items()->create(array_merge($validated, ['quantity' => $quantityToAdd,
+                    'selected_utilities' => $utilities,
+                ]));
                     $messages['success'][] = 'Package added to cart.';
                 }
             } else {

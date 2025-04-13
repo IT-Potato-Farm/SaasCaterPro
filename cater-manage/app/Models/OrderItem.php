@@ -10,7 +10,11 @@ class OrderItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 'item_reference_id', 'item_type', 'quantity', 'price', 'variant'
+        'order_id', 'item_reference_id', 'item_type', 'quantity', 'price', 'variant', 'selected_options', 'included_utilities'
+    ];
+    protected $casts = [
+        'selected_options' => 'array',
+        'included_utilities' => 'array',
     ];
     public function itemable()
     {
