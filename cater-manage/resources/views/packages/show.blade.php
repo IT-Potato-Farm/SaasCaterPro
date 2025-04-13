@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Remove item from package</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
 </head>
 <body>
+    <x-customer.navbar />
     <div class="container max-w-3xl mx-auto py-8 px-4">
         <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ $package->name }}</h1>
-        <p class="text-gray-600 text-lg mb-8">{{ $package->description }}</p>
+        <p class="text-gray-600 text-lg mb-8">{{ $package->description ?? 'No description provided' }}</p>
     
         <h3 class="text-xl font-semibold text-gray-800 mb-6">Items in this Package</h3>
         
@@ -26,7 +27,10 @@
                     <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                         <div class="mb-4">
                             <h4 class="text-lg font-medium text-gray-900">{{ $packageItem->item->name }}</h4>
-                            <p class="text-gray-600 text-sm mt-1">{{ $packageItem->item->description }}</p>
+                            <p class="text-gray-600 text-sm mt-1">
+                                {{ $packageItem->item->description ?? 'No description available' }}
+                            </p>
+                            
                         </div>
     
                         <div class="mt-4">
@@ -42,7 +46,7 @@
                                         >
                                         <div>
                                             <span class="text-sm font-medium text-gray-700">{{ $packageItemOption->itemOption->type }}</span>
-                                            <p class="text-xs text-gray-500 mt-1">{{ $packageItemOption->itemOption->description }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $packageItemOption->itemOption->description ?? 'No description provided' }}</p>
                                         </div>
                                     </li>
                                 @endforeach
@@ -61,7 +65,7 @@
                                 for="remove_item_{{ $packageItem->id }}" 
                                 class="text-sm font-medium text-red-600 hover:text-red-700 cursor-pointer"
                             >
-                                Remove the Items from Package
+                                Remove ulam sa Package
                             </label>
                         </div>
                     </div>

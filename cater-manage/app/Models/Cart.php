@@ -14,10 +14,18 @@ class Cart extends Model
     // sa isang cart maraming items
     public function items()
     {
-         return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+    // HELPER METHOD PARA KUNIN AGAD I
+    public function hasPackageItem()
+    {
+        return $this->orderItems->contains(function ($cartItem) {
+            return $cartItem->itemable instanceof \App\Models\Package;
+        });
     }
 }

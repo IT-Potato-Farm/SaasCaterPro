@@ -45,10 +45,23 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
+
+        // FUNCTION TO FETCH TOTAL GUEST PAG MAY PACKAGE ITEM SA CART
+        $hasPackage = $cart->items->contains(function ($item) {
+            return $item->package_id && $item->package;
+        });
+        $totalGuests = null;
+        if ($hasPackage) {
+            $totalGuests = $request->query('total_guests', 50);
+            session(['total_guests' => $totalGuests]);
+        }
+
         // fetch total guests 
-        $totalGuests = $request->query('total_guests', 50);
-        //  store in the session to give later in the store() method
-        session(['total_guests' => $totalGuests]);
+        // $totalGuests = $request->query('total_guests', 50);
+        // //  store in the session to give later in the store() method
+        // session(['total_guests' => $totalGuests]);
+
+
         // EVENT DATE
         $eventDate = $request->query('event_date');
         session(['event_date' => $eventDate]);
@@ -131,6 +144,11 @@ class CheckoutController extends Controller
         $pendingOrder = Order::where('user_id', $user->id)
             ->where('status', 'pending')
             ->first();
+
+        $cart = $user->cart;
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        }
         if ($pendingOrder) {
             // de maka order ulit if may pending
             return redirect()->back()->with('error', 'You already have a pending order. Please review or complete that order before placing a new one.');
@@ -142,9 +160,25 @@ class CheckoutController extends Controller
             'event_start_time' => 'required|date_format:H:i',
             'event_start_end'  => 'required|date_format:H:i',
             'event_address' => 'required|string',
-            'total_guests'  => 'required|integer|min:1',
+            // 'total_guests'  => 'required|integer|min:1',
             'concerns'      => 'nullable|string'
         ]);
+
+        // Step 2: Check if the cart contains a package
+        $hasPackage = $cart->items->contains(function ($item) {
+            return $item->package_id !== null;
+        });
+
+        // Step 3: If a package exists, require total_guests
+        if ($hasPackage) {
+            $guestData = $request->validate([
+                'total_guests' => 'required|integer|min:1'
+            ]);
+            $data['total_guests'] = $guestData['total_guests'];
+        } else {
+            // Default to 0 if not provided (or set as nullable in your DB)
+            $data['total_guests'] = 0;
+        }
 
         // IF OTHERS UNG EVENT TYPE, MAG BASED SYA DON SA CUSTOM EVENT TYPE
         if ($data['event_type'] === 'Other') {
@@ -166,11 +200,7 @@ class CheckoutController extends Controller
             $event_date_end   = trim($data['event_date']);
         }
 
-        $cart = $user->cart;
-
-        if (!$cart || $cart->items->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
-        }
+        
 
         // final order total.
         $total = $cart->items->sum(function ($item) use ($data) {
@@ -229,7 +259,6 @@ class CheckoutController extends Controller
                 $variantValue = (string) max($data['total_guests'], $cartItem->package->min_pax);
 
                 $includedUtilities = $cartItem->package->utilities->pluck('name')->toArray();
-                
             } else {
                 continue;
             }

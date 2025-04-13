@@ -10,18 +10,14 @@
     <!-- Container -->
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden;">
         <!-- Header -->
-        <div style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 24px; border-radius: 8px 8px 0 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; margin: 0;">Order Received!</h1>
-                    <p style="color: #e0e7ff; font-size: 14px; margin-top: 8px;">#{{ $order->id }}</p>
-                </div>
-                <div style="width: 48px; height: 48px; background-color: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    <svg style="width: 24px; height: 24px; color: #ffffff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
+        <div style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 28px 24px; text-align: center;">
+            <div style="display: inline-block; background-color: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+                <svg style="width: 28px; height: 28px; color: #ffffff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
             </div>
+            <h1 style="color: #ffffff; font-size: 26px; font-weight: 700; margin: 0 0 4px;">Order Confirmed!</h1>
+            <p style="color: #e0e7ff; font-size: 16px; margin: 0;">#{{ $order->id }}</p>
         </div>
 
         <!-- Content -->
@@ -37,15 +33,46 @@
                         @php
                             $isPackage = $cartItem->itemable instanceof \App\Models\Package;
                             $itemName = $cartItem->itemable->name ?? 'Unknown';
-                            $itemPrice = $isPackage
-                                ? $cartItem->itemable->price_per_person ?? 0
-                                : $cartItem->itemable->price ?? 0;
+
+                            if ($isPackage) {
+                                $itemPrice = $cartItem->itemable->price_per_person ?? 0;
+                            } else {
+                                $variant = $cartItem->variant ?? null;
+                                $itemPrice =
+                                    $variant && method_exists($cartItem->itemable, 'getPriceForVariant')
+                                        ? $cartItem->itemable->getPriceForVariant($variant)
+                                        : 0;
+                            }
+
                             $computedPrice = $isPackage ? $itemPrice * ($order->total_guests ?? 1) : $itemPrice;
                         @endphp
 
                         <tr style="vertical-align: top;">
-                            <td style="color: #1e293b; padding: 16px 0; width: 60%; font-weight: 500; border-bottom: 1px solid #f1f5f9; font-size: 16px;">{{ $itemName }}</td>
-                            <td style="color: #1e293b; padding: 16px 0; text-align: right; font-weight: 500; border-bottom: 1px solid #f1f5f9; font-size: 16px;">
+                            <td style="color: #1e293b; padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+                                <div style="display: flex; gap: 16px;">
+                                    @if ($isPackage && !empty($cartItem->itemable->image))
+                                        <img src="{{ asset('storage/packagePics/' . $cartItem->itemable->image) }}"
+                                            alt="{{ $itemName }}"
+                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    @elseif (!$isPackage && !empty($cartItem->itemable->image))
+                                        <img src="{{ asset('storage/party_traypics/' . $cartItem->itemable->image) }}"
+                                            alt="{{ $itemName }}"
+                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    @endif
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">{{ $itemName }}</div>
+                                        @if (!$isPackage)
+                                            <div style="font-size: 14px; color: #64748b; margin-bottom: 4px;">
+                                                {{ $cartItem->itemable->description ?? 'No description available.' }}
+                                            </div>
+                                            <div style="font-size: 14px; color: #64748b;">
+                                                {{ $cartItem->variant ?? 'N/A' }} PAX
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: #1e293b; padding: 16px 0; text-align: right; font-weight: 600; border-bottom: 1px solid #f1f5f9; font-size: 16px; vertical-align: middle;">
                                 ₱{{ number_format($computedPrice, 2) }}
                             </td>
                         </tr>
@@ -57,8 +84,9 @@
                                         <ul style="margin: 0; padding-left: 0; list-style: none;">
                                             @foreach ($cartItem->itemable->packageItems as $packageItem)
                                                 <li style="margin-bottom: 20px;">
-                                                    <div style="font-weight: 500; margin-bottom: 12px; color: #1e293b;">{{ $packageItem->item->name ?? 'Unnamed Item' }}</div>
-                                                    
+                                                    <div style="font-weight: 500; margin-bottom: 12px; color: #1e293b;">
+                                                        {{ $packageItem->item->name ?? 'Unnamed Item' }}</div>
+
                                                     {{-- Show Selected Options for this Item --}}
                                                     @if (!empty($cartItem->selected_options) && is_array($cartItem->selected_options))
                                                         @php
@@ -70,14 +98,14 @@
                                                         @endphp
 
                                                         @if (!empty($optionsForItem))
-                                                            <div style="margin-left: 8px;">
+                                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
                                                                 @foreach ($optionsForItem as $option)
                                                                     @php
                                                                         $optionModel = \App\Models\ItemOption::find(
                                                                             $option['id'],
                                                                         );
                                                                     @endphp
-                                                                    <div style="display: flex; align-items: center; margin-bottom: 12px; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                                                    <div style="display: flex; align-items: center; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                                                                         @if ($optionModel && $optionModel->image)
                                                                             <img src="{{ asset('storage/' . $optionModel->image) }}"
                                                                                 alt="{{ $optionModel->type }}"
@@ -95,7 +123,8 @@
                                                                                 </svg>
                                                                             </div>
                                                                         @endif
-                                                                        <div style="font-weight: 500; color: #1e293b; font-size: 15px;">{{ $option['type'] ?? 'Unknown' }}</div>
+                                                                        <div style="font-weight: 500; color: #1e293b; font-size: 15px;">
+                                                                            {{ $option['type'] ?? 'Unknown' }}</div>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
@@ -140,7 +169,6 @@
                             {{ \Carbon\Carbon::parse($order->event_date)->format('F d, Y') }}
                         </td>
                     </tr>
-                    
                     <tr>
                         <td style="color: #64748b; padding: 10px 0; font-size: 15px;">Total Amount</td>
                         <td style="color: #2563eb; font-weight: 600; padding: 10px 0; text-align: right; font-size: 15px;">
@@ -153,7 +181,7 @@
             <!-- Button -->
             <div style="text-align: center; margin: 32px 0 24px;">
                 <a href="{{ url(route('order.show', $order->id)) }}" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);">
-                    View Order Details
+                    View  Order Status
                 </a>
             </div>
 

@@ -20,6 +20,10 @@ class MenuItem extends Model
     protected $casts = [
         'pricing' => 'array', //  converts JSON to an array
     ];
+    public function getPriceForVariant($variant)
+    {
+        return $this->pricing[$variant] ?? 0;
+    }
     public function scopeAvailable($query)
     {
         return $query->where('status', 'available');

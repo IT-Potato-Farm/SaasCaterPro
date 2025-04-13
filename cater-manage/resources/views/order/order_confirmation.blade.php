@@ -29,7 +29,7 @@
             </button>
         </div>
     @endif
-    
+
 
     <div class="container mx-auto px-4 py-8 lg:py-12 max-w-4xl">
         <!-- Confirmation Header -->
@@ -40,7 +40,8 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Order Placed!</h1>
-            <p class="text-gray-600">Thank you for your order, {{ $order->user->first_name }}! We are currently processing your request and will send you a confirmation email soon.</p>
+            <p class="text-gray-600">Thank you for your order, {{ $order->user->first_name }}! We are currently
+                processing your request and will send you a confirmation email soon.</p>
             <p class="text-gray-600">A confirmation email has been sent to {{ $order->user->email }}</p>
         </div>
 
@@ -69,11 +70,16 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-4">Event Details</h2>
                     <div class="space-y-2">
-                        <p class="text-gray-600"><span class="font-medium">Date Start:</span> {{ $order->event_date_start }}</p>
-                        <p class="text-gray-600"><span class="font-medium">Date End:</span> {{ $order->event_date_end }}</p>
+                        <p class="text-gray-600"><span class="font-medium">Date Start:</span>
+                            {{ $order->event_date_start }}</p>
+                        <p class="text-gray-600"><span class="font-medium">Date End:</span> {{ $order->event_date_end }}
+                        </p>
                         <p class="text-gray-600"><span class="font-medium">Location:</span> {{ $order->event_address }}
                         </p>
-                        <p class="text-gray-600"><span class="font-medium">Guests:</span> {{ $order->total_guests }}</p>
+                        @if ($order->total_guests > 0)
+                            <p class="text-gray-600"><span class="font-medium">Guests:</span> {{ $order->total_guests }}
+                            </p>
+                        @endif
                         <p class="text-gray-600"><span class="font-medium">Type:</span> {{ $order->event_type }}</p>
                     </div>
                 </div>

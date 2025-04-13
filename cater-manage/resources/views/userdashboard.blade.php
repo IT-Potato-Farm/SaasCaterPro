@@ -41,7 +41,7 @@
                                         <th class="px-6 py-4">Order ID</th>
                                         <th class="px-6 py-4">Date</th>
                                         <th class="px-6 py-4 text-center">Payment</th>
-                                        <th class="px-6 py-4 text-center">Delivery Time</th>
+                                        {{-- <th class="px-6 py-4 text-center">Delivery Time</th> --}}
                                         <th class="px-6 py-4 text-center">Status</th>
                                         <th class="px-6 py-4 text-center">Review</th>
                                         <th class="px-6 py-4 text-right">Total</th>
@@ -74,9 +74,9 @@
                                                     </div>
                                                 @endif
                                             </td>
-                                            <td class="px-6 py-4 text-sm text-center">
+                                            {{-- <td class="px-6 py-4 text-sm text-center">
                                                 {{ $order->delivery_time ? \Carbon\Carbon::parse($order->delivery_time)->format('h:i A') : '--' }}
-                                            </td>
+                                            </td> --}}
                                             <td class="px-6 py-4 text-center">
                                                 @php
                                                     $statusStyles = [

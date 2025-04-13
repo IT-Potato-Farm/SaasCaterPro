@@ -154,10 +154,10 @@
                     @if (strpos($eventDate, 'to') !== false)
                         <!-- If eventDate is a range -->
                         <?php
-                            // Split the range into two dates
-                            list($startDate, $endDate) = explode(' to ', $eventDate);
-                            $startDateFormatted = \Carbon\Carbon::parse($startDate)->format('l, F j, Y');
-                            $endDateFormatted = \Carbon\Carbon::parse($endDate)->format('l, F j, Y');
+                        // Split the range into two dates
+                        [$startDate, $endDate] = explode(' to ', $eventDate);
+                        $startDateFormatted = \Carbon\Carbon::parse($startDate)->format('l, F j, Y');
+                        $endDateFormatted = \Carbon\Carbon::parse($endDate)->format('l, F j, Y');
                         ?>
                         <p class="font-semibold text-lg">
                             Reminder: You've booked the date from
@@ -179,7 +179,7 @@
 
             {{-- RIGHT SIDE --}}
             <aside class="lg:w-2/5 xl:w-1/3 space-y-5">
-                
+
                 <!-- Scrollable Cart Summary -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="p-5 border-b border-gray-100">
@@ -192,16 +192,19 @@
                                 @foreach ($cart->items as $cartItem)
                                     @php
                                         $isPackage = $cartItem->package ? true : false;
+
                                         $itemName = $cartItem->menu_item_id
                                             ? $cartItem->menuItem->name
                                             : ($cartItem->package
                                                 ? $cartItem->package->name
                                                 : 'Unknown');
+
                                         $itemPrice = $cartItem->menu_item_id
-                                            ? $cartItem->menuItem->price
+                                            ? $cartItem->menuItem->getPriceForVariant($cartItem->variant)
                                             : ($cartItem->package
                                                 ? $cartItem->package->price_per_person
                                                 : 0);
+
                                         $computedPrice = $isPackage ? $itemPrice * $totalGuests : $itemPrice;
 
                                         // For package items
@@ -223,6 +226,11 @@
                                                         <span class="text-sm font-normal text-gray-500 block mt-1">
                                                             ₱{{ number_format($itemPrice, 2) }} × {{ $totalGuests }}
                                                             guests
+                                                        </span>
+                                                    @else
+                                                        <span class="text-sm font-normal text-gray-500 block mt-1">
+                                                            {{ $cartItem->menuItem->description ?? 'No description available.' }}<br>
+                                                            {{ $cartItem->variant }}pax
                                                         </span>
                                                     @endif
                                                 </h3>
@@ -303,10 +311,10 @@
                                 <span class="font-medium">₱{{ number_format($totalPrice, 2) }}</span>
                             </div>
 
-                            <div class="flex justify-between">
+                            {{-- <div class="flex justify-between">
                                 <span class="text-gray-600">Guests</span>
                                 <span class="font-medium">{{ $totalGuests }}</span>
-                            </div>
+                            </div> --}}
 
                             <div class="border-t border-gray-200 my-3"></div>
 
@@ -337,7 +345,6 @@
 
 
         <script>
-           
             document.addEventListener('DOMContentLoaded', function() {
                 const totalGuests = document.querySelector('input[name="total_guests"]')?.value;
                 const eventDate = document.querySelector('input[name="event_date"]')?.value;
