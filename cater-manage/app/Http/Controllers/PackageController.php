@@ -351,7 +351,7 @@ class PackageController extends Controller
             $package->update($data);
 
             return redirect()->back()->with('success', 'Package updated successfully!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

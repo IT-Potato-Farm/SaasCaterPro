@@ -13,13 +13,106 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        async function addSelectedPackageToCart(packageId, event) {
-            event.preventDefault();
+        window.openItem= async function (packageId) {
+            console.log('Opening package with ID:', packageId);
+            try {
+                const {
+                    package: pkg,
+                    foods,
+                    utilities
+                } = await fetchPackageData(packageId);
+                console.log('Package:', pkg);
+                console.log('Foods:', foods);
+                console.log('utils:', utilities);
+    
+                const htmlContent = `
+                    <div class="max-h-[80vh] overflow-y-auto">
+                        <!-- Header Section -->
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
+                            <p class="text-gray-600 text-sm">${pkg.description}</p>
+                        </div>
+    
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- Image Section -->
+                            <div class="relative group">
+                                <img src="/packagePics/${pkg.image}" 
+                                     alt="${pkg.name}" 
+                                     class="w-full h-64 object-cover rounded-xl shadow-lg">
+                                <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
+                                    <div class="text-white flex justify-between items-end">
+                                        <div>
+                                            <p class="text-sm">Per pax</p>
+                                            <p class="text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
+                                        </div>
+                                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Min. ${pkg.min_pax} Pax</span>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Foods Section -->
+                            <div class="bg-gray-50 p-2 rounded-xl border border-gray-200">
+                                <h3 class="text-lg font-semibold mb-4">Included Foods</h3>
+                                <form id="packageSelectionForm">
+                                    ${renderFoods(foods)}
+                                </form>
+                            </div>
+                        </div>
+    
+                        <!-- Utilities Section -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-semibold mb-4">Utilities</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${renderUtilities(utilities)}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                Add to cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+    
+                Swal.fire({
+                    html: htmlContent,
+                    width: 800,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    background: '#fff'
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                    confirmButtonText: 'Try Again'
+                }).then(result => {
+                    if (result.isConfirmed) openItem(packageId);
+                });
+            }
+        }
+    
+        window.addSelectedPackageToCart= async function (packageId) {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const form = document.getElementById('packageSelectionForm');
+
+            const swalContent = document.querySelector('.swal2-html-container');
+            if (!swalContent) {
+                console.error('Could not find SweetAlert content');
+                return;
+            }
+            const form = swalContent.querySelector('#packageSelectionForm');
+            if (!form) {
+                console.error('Could not find package selection form');
+                return;
+            }
+
+            // const form = document.getElementById('packageSelectionForm');
+
             const checkboxes = form.querySelectorAll('input[type="checkbox"]');
             const groups = {};
-
+    
             // Group checkboxes by food item id.
             checkboxes.forEach(checkbox => {
                 const name = checkbox.name; // e.g., "food_item_5[]"
@@ -32,7 +125,7 @@
                     groups[foodId].push(checkbox);
                 }
             });
-
+    
             // Validate that each food item group has at least one option checked.
             for (const foodId in groups) {
                 const groupCheckboxes = groups[foodId];
@@ -46,8 +139,8 @@
                     return; // Stop submission if any food item has no option selected.
                 }
             }
-
-            // If validation passes, collect selected options with a simpler structure (array of IDs).
+    
+            // If validation passes, collect selected options with objects.
             const selectedOptions = {};
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
@@ -57,13 +150,16 @@
                         if (!selectedOptions[foodId]) {
                             selectedOptions[foodId] = [];
                         }
-                        // Just push the checkbox value (option ID).
-                        selectedOptions[foodId].push(checkbox.value);
+                        selectedOptions[foodId].push({
+                            id: checkbox.value,
+                            type: checkbox.getAttribute('data-type')
+                        });
                     }
                 }
             });
-
+            console.log('Selected options before submission:', selectedOptions);
             try {
+                const data = await fetchPackageData(packageId); 
                 const response = await fetch('/cart/add', {
                     method: 'POST',
                     headers: {
@@ -74,17 +170,18 @@
                     body: JSON.stringify({
                         package_id: packageId,
                         quantity: 1,
-                        selected_options: selectedOptions // e.g., { "5": [ "1", "3" ] }
+                        selected_options: selectedOptions, // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
+                        included_utilities: data.utilities
                     })
                 });
-
+    
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Something went wrong.');
                 }
-
-                const data = await response.json();
-
+    
+                const responseData = await response.json();
+    
                 Swal.fire({
                     position: 'top-end',
                     icon: 'success',
@@ -105,6 +202,93 @@
                 });
             }
         }
+    
+        const packageCache = new Map();
+        
+        // FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
+        async function fetchPackageData(packageId) {
+            if (packageCache.has(packageId)) {
+                return packageCache.get(packageId);
+            }
+    
+            try {
+                const response = await fetch(`/package/details/${packageId}`);
+    
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${errorText.slice(0, 100)}`);
+                }
+    
+                const data = await response.json();
+    
+                if (!data.success) throw new Error(data.message);
+    
+                // Return only relevant data for the frontend
+                const packageData = {
+                    package: data.package,
+                    foods: data.foods,
+                    utilities: data.utilities
+                };
+    
+                // Cache the data
+                packageCache.set(packageId, packageData);
+    
+                return packageData;
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                throw error;
+            }
+        }
+    
+        // FUNCTION FOR FOOD ITEMS RENDER
+        function renderFoods(foods) {
+            console.log('Rendering foods:', foods); 
+    
+            if (!foods || foods.length === 0) {
+                return '<p class="text-gray-500">No food items available.</p>';
+            }
+    
+            return foods.map(packageItem => {
+                const item = packageItem.item; 
+                const optionsHtml = (packageItem.options || []).map(option => `
+                <label class="inline-flex items-center space-x-2 mb-2 mr-4">
+                    <input 
+                        type="checkbox" 
+                        name="food_item_${item.id}[]" 
+                        value="${option.id}" 
+                        data-type="${option.type}" 
+                        class="form-checkbox text-blue-600">
+                    <span>${option.type}</span>
+                </label>
+            `).join('');
+    
+                return `
+                <div class="mb-6">
+                    <div class="font-semibold text-gray-700 mb-2">${item.name}</div>
+                    <div class="flex flex-wrap">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+        // FUNCTION FOR FOOD ITEMS RENDER
+        function renderUtilities(utilities) {
+            if (!utilities || utilities.length === 0) {
+                return '<p class="text-gray-500">No utilities</p>';
+            }
+            return utilities.map(util => `
+                <div class="flex p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-800 mb-1">${util.name}</h4>
+                        ${util.description ? `<p class="text-sm text-gray-600">${util.description}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+    
+        
     </script>
 </head>
 
@@ -121,18 +305,53 @@
             <h3 class="text-lg font-semibold mt-4">Menu Items</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
                 @foreach ($menuItems as $item)
-                    <div class="bg-white p-4 shadow rounded">
-                        <img src="{{ asset('storage/party_traypics/' . $item->image) }}" alt="{{ $item->name }}"
-                            class="w-full h-56 object-cover  object-center rounded mb-2">
+                    <div class="menu-item bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 flex flex-col h-full hover:shadow-xl transition-shadow duration-300"
+                        data-category="{{ $item->category_id }}">
 
-                        <h4 class="font-bold">{{ $item->name }}</h4>
-                        <p>{{ $item->description }}</p>
-                        <p class="text-sm text-gray-500">₱{{ number_format($item->price, 2) }}</p>
+                        <!-- Menu Item Image -->
+                        <div class="h-48 overflow-hidden rounded-t-lg">
+                            <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                src="{{ asset('storage/party_traypics/' . $item->image) }}" alt="{{ $item->name }}"
+                                loading="lazy">
+                        </div>
+
+                        <!-- Menu Item Details -->
+                        <div class="p-4 flex-grow">
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">{{ $item->name }}
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-3">
+                                {{ $item->description }}</p>
+                            @php
+                                $pricingTiers = $item->pricing; // assuming pricing is cast to array in the MenuItem model
+                            @endphp
+                            @if (is_array($pricingTiers) && count($pricingTiers) > 1)
+                                <div class="mb-3">
+                                    <label for="variant-{{ $item->id }}"
+                                        class="block text-sm font-medium text-gray-200">Select Pax Range:</label>
+                                    <select name="variant" id="variant-{{ $item->id }}"
+                                        class="mt-1 block w-full p-2 border border-gray-300 rounded">
+                                        @foreach ($pricingTiers as $variant => $price)
+                                            <option value="{{ $variant }}">{{ $variant }}
+                                                (₱{{ number_format($price, 2) }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Add to Cart for Menu Items -->
+                        <div class="p-4 pt-0 mt-auto">
+                            <button type="button" onclick="addToCart({{ $item->id }})"
+                                class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 @endforeach
             </div>
         @endif
-            {{-- FOR PACKAGE SEARCHED --}}
+
+        {{-- FOR PACKAGE SEARCHED --}}
         @if ($packages->isNotEmpty())
             <h3 class="text-lg font-semibold mt-6">Packages</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
@@ -193,6 +412,8 @@
                         </div>
                     </div>
 
+
+                    {{-- ----------------------- --}}
                     {{-- DISPLAY NA AGAD INFO NG PACKAGE  --}}
                     <div class="bg-white p-4 shadow rounded">
                         <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"

@@ -152,7 +152,7 @@
                                             }
                                             // SELECTED OPTION
                                             $selectedOptionsString = '';
-                                            
+
                                             if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
                                                 foreach ($cartItem->selected_options as $itemId => $optionArray) {
                                                     if (isset($itemNames[$itemId])) {
@@ -184,7 +184,7 @@
                                             <input type="checkbox" name="selected_items[]"
                                                 value="{{ $cartItem->id }}" />
                                         </td> --}}
-                                        
+
                                         <!-- Product Image -->
                                         <td class="py-3">
                                             @if ($itemImage)
@@ -199,7 +199,7 @@
                                         <!-- Item Name -->
                                         <td class="py-3">
                                             {{ $itemName }}
-                                            
+
                                         </td>
 
                                         <!-- Selected Options Column -->
@@ -269,102 +269,124 @@
                 </div>
 
                 @if (!isset($pendingOrder))
-                <!-- Order Summary -->
-                <aside class="md:w-1/4">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="p-6 border-b border-gray-100">
-                            <h2 class="text-xl font-bold text-gray-800">Ready to Checkout?</h2>
-                        </div>
-                        
-                        <form action="{{ route('checkout.show') }}" method="GET" class="p-6">
-                            <!-- total guest -->
-                            <div class="mb-6">
-                                <!-- Event Date -->
-                                <div class="space-y-2">
-                                    <label for="event_date" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        See the available dates here
-                                    </label>
-                                    <!-- Note: input type changed to text for proper Flatpickr integration -->
-                                    <input type="text" name="event_date" id="event_date"
-                                        placeholder="Select a date or date range"
-                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                        required>
+                    <!-- Order Summary -->
+                    <aside class="md:w-1/4">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="p-6 border-b border-gray-100">
+                                <h2 class="text-xl font-bold text-gray-800">Ready to Checkout?</h2>
+                            </div>
+
+                            <form action="{{ route('checkout.show') }}" method="GET" class="p-6">
+                                <!-- total guest -->
+                                <div class="mb-6">
+                                    <!-- Event Date -->
+                                    <div class="space-y-2">
+                                        <label for="event_date" class="block text-sm font-semibold text-gray-700 mb-2">
+                                            See the available dates here
+                                        </label>
+                                        <!-- Note: input type changed to text for proper Flatpickr integration -->
+                                        <input type="text" name="event_date" id="event_date"
+                                            placeholder="Select a date or date range"
+                                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                            required>
+                                    </div>
+                                    
+                                    {{-- IF PACKAGE UNG ITEM SAKA LNG TO MAGS-SHOW UP --}}
+                                    @if ($cartItems->contains(function ($cartItem) {
+                                        return !is_null($cartItem->package_id); // Check if the package_id is not null
+                                    }))
+                                        <label for="total_guests" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Total Guests
+                                            <span class="text-xs font-normal text-gray-500 block mt-1">
+                                                Including additional guests. Help us prepare the right quantity of food
+                                                for your event.
+                                            </span>
+                                        </label>
+                                        <input type="number" id="total_guests" name="total_guests" min="1"
+                                            placeholder="50"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-all duration-150"
+                                            required>
+                
+                                        <p id="minPaxNotification" class="mt-1 text-xs text-red-600 hidden"></p>
+                                        <p id="errorminPaxNotification" class="mt-1 text-xs text-red-500 hidden">
+                                            Please fill in the total guests field.
+                                        </p>
+                                    @endif
                                 </div>
 
-                                <label for="total_guests" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Total Guests
-                                    <span class="text-xs font-normal text-gray-500 block mt-1">
-                                        Including additional guests. Help us prepare the right quantity of food for your event.
-                                    </span>
-                                </label>
-                                <input type="number" id="total_guests" name="total_guests" min="1" placeholder="50"
-                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-all duration-150"
-                                    required>
-                                <p id="minPaxNotification" class="mt-1 text-xs text-red-600 hidden"></p>
-                                <p id="errorminPaxNotification" class="mt-1 text-xs text-red-500 hidden">Please fill in the total guests field.</p>
-                            </div>
-                
-                            <!-- rules -->
-                            <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
-                                <div class="flex">
-                                    <svg class="h-5 w-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                                    </svg>
-                                    <div>
-                                        <h3 class="text-sm font-semibold text-gray-800 mb-1">Important Rules & Penalties</h3>
-                                        <ul class="text-xs text-gray-600 space-y-1">
-                                            <li class="flex items-start">
-                                                <span class="inline-block mr-1.5">•</span>
-                                                You are responsible for any damages to rented equipment
-                                            </li>
-                                            <li class="flex items-start">
-                                                <span class="inline-block mr-1.5">•</span>
-                                                Additional charges apply for replacements or repairs
-                                            </li>
-                                        </ul>
+                                <!-- rules -->
+                                <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                                    <div class="flex">
+                                        <svg class="h-5 w-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <div>
+                                            <h3 class="text-sm font-semibold text-gray-800 mb-1">Important Rules &
+                                                Penalties</h3>
+                                            <ul class="text-xs text-gray-600 space-y-1">
+                                                <li class="flex items-start">
+                                                    <span class="inline-block mr-1.5">•</span>
+                                                    You are responsible for any damages to rented equipment
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <span class="inline-block mr-1.5">•</span>
+                                                    Additional charges apply for replacements or repairs
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                
-                            <!-- agreement chckbxc-->
-                            <div class="mb-6">
-                                <div class="flex items-start">
-                                    <input type="checkbox" id="agreeRules" class="mt-0.5 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
-                                    <label for="agreeRules" class="ml-2 block text-sm text-gray-700">
-                                        I acknowledge and agree to the terms above
-                                    </label>
+
+                                <!-- agreement chckbxc-->
+                                <div class="mb-6">
+                                    <div class="flex items-start">
+                                        <input type="checkbox" id="agreeRules"
+                                            class="mt-0.5 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="agreeRules" class="ml-2 block text-sm text-gray-700">
+                                            I acknowledge and agree to the terms above
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                
-                            <!-- Total Price -->
-                            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-700">Total Price:</span>
-                                    <span id="order-summary-total" class="font-bold text-gray-900 text-lg">₱{{ number_format($extendedTotal, 2) }}</span>
+
+                                <!-- Total Price -->
+                                <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-medium text-gray-700">Total Price:</span>
+                                        <span id="order-summary-total"
+                                            class="font-bold text-gray-900 text-lg">₱{{ number_format($extendedTotal, 2) }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                
-                            <!-- Checkout Button -->
-                            <button type="submit" id="checkoutButton"
-                                title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium inline-flex items-center justify-center transition-all duration-200
+
+                                <!-- Checkout Button -->
+                                <button type="submit" id="checkoutButton"
+                                    title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium inline-flex items-center justify-center transition-all duration-200
                                 {{ isset($pendingOrder) ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-md focus:ring-2 focus:ring-green-500 focus:ring-offset-2' }}"
-                                @if (isset($pendingOrder)) disabled @endif>
-                                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
-                                </svg>
-                                Proceed to Checkout
-                            </button>
-                        </form>
-                    </div>
-                </aside>
+                                    @if (isset($pendingOrder)) disabled @endif>
+                                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    Proceed to Checkout
+                                </button>
+                            </form>
+                        </div>
+                    </aside>
                 @else
-                <aside class="md:w-1/4">
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-xl shadow-sm border border-gray-200">
-                        <h2 class="text-lg font-semibold mb-2">Notice</h2>
-                        <p>You already have a pending order. Please complete or cancel it before making a new booking.</p>
-                    </div>
-                </aside>
+                    <aside class="md:w-1/4">
+                        <div
+                            class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h2 class="text-lg font-semibold mb-2">Notice</h2>
+                            <p>You already have a pending order. Please complete or cancel it before making a new
+                                booking.</p>
+                        </div>
+                    </aside>
                 @endif
 
             </div>
@@ -377,30 +399,30 @@
     <script>
         // JS SCRIPT DATE EVENT PICKER
         document.addEventListener('DOMContentLoaded', function() {
-                fetch('/get-booked-dates')
-                    .then(response => response.json())
-                    .then(data => {
-                        let disabledDates = [];
+            fetch('/get-booked-dates')
+                .then(response => response.json())
+                .then(data => {
+                    let disabledDates = [];
 
-                        data.forEach(range => {
-                            let start = new Date(range.start);
-                            let end = new Date(range.end);
+                    data.forEach(range => {
+                        let start = new Date(range.start);
+                        let end = new Date(range.end);
 
-                            while (start <= end) {
-                                disabledDates.push(start.toISOString().split('T')[0]); // Format: YYYY-MM-DD
-                                start.setDate(start.getDate() + 1);
-                            }
-                        });
+                        while (start <= end) {
+                            disabledDates.push(start.toISOString().split('T')[0]); // Format: YYYY-MM-DD
+                            start.setDate(start.getDate() + 1);
+                        }
+                    });
 
-                        flatpickr("#event_date", {
-                            mode: "range",
-                            dateFormat: "Y-m-d",
-                            minDate: "today",
-                            disable: disabledDates
-                        });
-                    })
-                    .catch(error => console.error('Error fetching booked dates:', error));
-            });
+                    flatpickr("#event_date", {
+                        mode: "range",
+                        dateFormat: "Y-m-d",
+                        minDate: "today",
+                        disable: disabledDates
+                    });
+                })
+                .catch(error => console.error('Error fetching booked dates:', error));
+        });
 
         // checkbox in order summary rules
         document.addEventListener('DOMContentLoaded', function() {

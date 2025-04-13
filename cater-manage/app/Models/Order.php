@@ -23,9 +23,10 @@ class Order extends Model
         'event_start_time',
         'event_start_end'
     ];
-    public function scopePendingForUser($query, $userId) {
+    public function scopePendingForUser($query, $userId)
+    {
         return $query->where('user_id', $userId)
-                    ->where('status', 'pending');
+            ->where('status', 'pending');
     }
 
     public function orderItems()
@@ -44,5 +45,11 @@ class Order extends Model
     public function getPaidAttribute()
     {
         return $this->status === 'paid';
+    }
+    public function hasPackageItem()
+    {
+        return $this->orderItems->contains(function ($cartItem) {
+            return $cartItem->itemable instanceof \App\Models\Package;
+        });
     }
 }
