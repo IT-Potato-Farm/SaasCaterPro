@@ -1,7 +1,89 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    async function addSelectedPackageToCart(packageId) {
+    window.openItem= async function (packageId) {
+        console.log('Opening package with ID:', packageId);
+        try {
+            const {
+                package: pkg,
+                foods,
+                utilities
+            } = await fetchPackageData(packageId);
+            console.log('Package:', pkg);
+            console.log('Foods:', foods);
+            console.log('utils:', utilities);
+
+            const htmlContent = `
+                <div class="max-h-[80vh] overflow-y-auto">
+                    <!-- Header Section -->
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
+                        <p class="text-gray-600 text-sm">${pkg.description}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Image Section -->
+                        <div class="relative group">
+                            <img src="/packagePics/${pkg.image}" 
+                                 alt="${pkg.name}" 
+                                 class="w-full h-64 object-cover rounded-xl shadow-lg">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
+                                <div class="text-white flex justify-between items-end">
+                                    <div>
+                                        <p class="text-sm">Per pax</p>
+                                        <p class="text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
+                                    </div>
+                                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Min. ${pkg.min_pax} Pax</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Foods Section -->
+                        <div class="bg-gray-50 p-2 rounded-xl border border-gray-200">
+                            <h3 class="text-lg font-semibold mb-4">Included Foods</h3>
+                            <form id="packageSelectionForm">
+                                ${renderFoods(foods)}
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Utilities Section -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-semibold mb-4">Utilities</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${renderUtilities(utilities)}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            Swal.fire({
+                html: htmlContent,
+                width: 800,
+                showCloseButton: true,
+                showConfirmButton: false,
+                background: '#fff'
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                confirmButtonText: 'Try Again'
+            }).then(result => {
+                if (result.isConfirmed) openItem(packageId);
+            });
+        }
+    }
+
+    window.addSelectedPackageToCart= async function (packageId) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const form = document.getElementById('packageSelectionForm');
         const checkboxes = form.querySelectorAll('input[type="checkbox"]');
@@ -53,6 +135,7 @@
         });
 
         try {
+            const data = await fetchPackageData(packageId); 
             const response = await fetch('/cart/add', {
                 method: 'POST',
                 headers: {
@@ -63,7 +146,8 @@
                 body: JSON.stringify({
                     package_id: packageId,
                     quantity: 1,
-                    selected_options: selectedOptions // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
+                    selected_options: selectedOptions, // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
+                    included_utilities: data.utilities
                 })
             });
 
@@ -72,7 +156,7 @@
                 throw new Error(errorData.message || 'Something went wrong.');
             }
 
-            const data = await response.json();
+            const responseData = await response.json();
 
             Swal.fire({
                 position: 'top-end',
@@ -96,6 +180,7 @@
     }
 
     const packageCache = new Map();
+    
     // FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
     async function fetchPackageData(packageId) {
         if (packageCache.has(packageId)) {
@@ -178,84 +263,7 @@
         `).join('');
     }
 
-    async function openItem(packageId) {
-        try {
-            const {
-                package: pkg,
-                foods,
-                utilities
-            } = await fetchPackageData(packageId);
-            console.log('Package:', pkg);
-            console.log('Foods:', foods);
-
-            const htmlContent = `
-                <div class="max-h-[80vh] overflow-y-auto">
-                    <!-- Header Section -->
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
-                        <p class="text-gray-600 text-sm">${pkg.description}</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <!-- Image Section -->
-                        <div class="relative group">
-                            <img src="/packagePics/${pkg.image}" 
-                                 alt="${pkg.name}" 
-                                 class="w-full h-64 object-cover rounded-xl shadow-lg">
-                            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
-                                <div class="text-white flex justify-between items-end">
-                                    <div>
-                                        <p class="text-sm">Per pax</p>
-                                        <p class="text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
-                                    </div>
-                                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Min. ${pkg.min_pax} Pax</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Foods Section -->
-                        <div class="bg-gray-50 p-2 rounded-xl border border-gray-200">
-                            <h3 class="text-lg font-semibold mb-4">Included Foods</h3>
-                            <form id="packageSelectionForm">
-                                ${renderFoods(foods)}
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Utilities Section -->
-                    <div class="border-t border-gray-200 pt-6">
-                        <h3 class="text-lg font-semibold mb-4">Utilities</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            ${renderUtilities(utilities)}
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 text-center">
-                        <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
-                            Add to cart
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            Swal.fire({
-                html: htmlContent,
-                width: 800,
-                showCloseButton: true,
-                showConfirmButton: false,
-                background: '#fff'
-            });
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message,
-                confirmButtonText: 'Try Again'
-            }).then(result => {
-                if (result.isConfirmed) openItem(packageId);
-            });
-        }
-    }
+    
 </script>
 
 

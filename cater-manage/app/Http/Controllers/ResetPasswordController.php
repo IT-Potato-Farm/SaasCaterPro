@@ -58,6 +58,17 @@ class ResetPasswordController extends Controller
                 'regex:/[a-z]/',      // at least one lowercase
                 'regex:/[A-Z]/',      // at least one uppercase
                 'regex:/[0-9]/',      // at least one number
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/[a-z]/', $value)) {
+                        $fail('The password must contain at least one lowercase letter.');
+                    }
+                    if (!preg_match('/[A-Z]/', $value)) {
+                        $fail('The password must contain at least one uppercase letter.');
+                    }
+                    if (!preg_match('/[0-9]/', $value)) {
+                        $fail('The password must contain at least one number.');
+                    }
+                },
                 function ($attribute, $value, $fail) use ($request) {
                     $user = User::where('email', $request->email)->first();
                     if ($user && Hash::check($value, $user->password)) {

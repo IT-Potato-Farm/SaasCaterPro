@@ -125,7 +125,7 @@
                                             @if ($step['status'])
                                                 @if ($key === 'cancelled' && $order->status === 'cancelled')
                                                     <!-- Render X icon for cancelled -->
-                                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                    <svg class="w-4 h-4 text-red-700" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
