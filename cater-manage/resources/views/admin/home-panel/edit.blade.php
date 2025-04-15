@@ -49,8 +49,8 @@
             @if($HomePageContents->background_color)
             <div class="mb-4">
                 <label for="background_color" class="block text-sm font-medium text-gray-700">Background Color</label>
-                <input type="text" name="background_color" id="background_color" value="{{ old('background_color', $HomePageContents->background_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->background_color }}; border: 1px solid #ddd;" title="{{ $HomePageContents->background_color }}" ></div>
+                <input type="color" name="background_color" id="background_color" value="{{ old('background_color', $HomePageContents->background_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                {{-- <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->background_color }}; border: 1px solid #ddd;" title="{{ $HomePageContents->background_color }}" ></div> --}}
             </div>
             @endif
 
@@ -58,16 +58,16 @@
             @if($HomePageContents->text_color)
             <div class="mb-4">
                 <label for="text_color" class="block text-sm font-medium text-gray-700">Text Color</label>
-                <input type="text" name="text_color" id="text_color" value="{{ old('text_color', $HomePageContents->text_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->text_color }}; border: 1px solid #ddd;" title="{{ $HomePageContents->text_color }}"></div>
+                <input type="color" name="text_color" id="text_color" value="{{ old('text_color', $HomePageContents->text_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                {{-- <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->text_color }}; border: 1px solid #ddd;" title="{{ $HomePageContents->text_color }}"></div> --}}
             </div>
             @endif
 
             @if($HomePageContents->button_text_1_color)
             <div class="mb-4">
                 <label for="button_text_1_color" class="block text-sm font-medium text-gray-700">Button 1 Text Color</label>
-                <input type="text" name="button_text_1_color" id="button_text_1_color" value="{{ old('button_text_1_color', $HomePageContents->button_text_1_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_text_1_color }}; border: 1px solid #ddd; " title="{{ $HomePageContents->button_text_1_color }}"></div>
+                <input type="color" name="button_text_1_color" id="button_text_1_color" value="{{ old('button_text_1_color', $HomePageContents->button_text_1_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                {{-- <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_text_1_color }}; border: 1px solid #ddd; " title="{{ $HomePageContents->button_text_1_color }}"></div> --}}
             </div>
             @endif
 
@@ -75,24 +75,24 @@
             @if($HomePageContents->button_color_1)
             <div class="mb-4">
                 <label for="button_color_1" class="block text-sm font-medium text-gray-700">Button 1 Color</label>
-                <input type="text" name="button_color_1" id="button_color_1" value="{{ old('button_color_1', $HomePageContents->button_color_1) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_color_1 }}; border: 1px solid #ddd;" title="{{ $HomePageContents->button_color_1 }}"></div>
+                <input type="color" name="button_color_1" id="button_color_1" value="{{ old('button_color_1', $HomePageContents->button_color_1) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                {{-- <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_color_1 }}; border: 1px solid #ddd;" title="{{ $HomePageContents->button_color_1 }}"></div> --}}
             </div>
             @endif
 
             @if($HomePageContents->button_text_2_color)
             <div class="mb-4">
                 <label for="button_text_2_color" class="block text-sm font-medium text-gray-700">Button 2 Text Color</label>
-                <input type="text" name="button_text_2_color" id="button_text_2_color" value="{{ old('button_text_2_color', $HomePageContents->button_text_2_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_text_2_color }}; border: 1px solid #ddd;" title="{{ $HomePageContents->button_text_2_color }}"></div>
+                <input type="color" name="button_text_2_color" id="button_text_2_color" value="{{ old('button_text_2_color', $HomePageContents->button_text_2_color) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                {{-- <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_text_2_color }}; border: 1px solid #ddd;" title="{{ $HomePageContents->button_text_2_color }}"></div> --}}
             </div>
             @endif
 
             @if($HomePageContents->button_color_2)
             <div class="mb-4">
                 <label for="button_color_2" class="block text-sm font-medium text-gray-700">Button 2 Color</label>
-                <input type="text" name="button_color_2" id="button_color_2" value="{{ old('button_color_2', $HomePageContents->button_color_2) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_color_2 }}; border: 1px solid #ddd;" title="{{ $HomePageContents->button_color_2 }}"></div>
+                <input type="color" name="button_color_2" id="button_color_2" value="{{ old('button_color_2', $HomePageContents->button_color_2) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                {{-- <div style="width: 30px; height: 30px; background-color: {{ $HomePageContents->button_color_2 }}; border: 1px solid #ddd;" title="{{ $HomePageContents->button_color_2 }}"></div> --}}
             </div>
             @endif
 
