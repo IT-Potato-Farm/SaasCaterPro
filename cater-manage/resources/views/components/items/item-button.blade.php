@@ -82,16 +82,7 @@
                             </div>
                         </div>
 
-                        <!-- Status -->
-                        <div>
-                            <label for="swal-status" class="block text-sm font-medium text-gray-700">Status:</label>
-                            <select id="swal-status" name="status"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="available">Available</option>
-                                <option value="unavailable">Unavailable</option>
-                            </select>
-                            <div id="status-error" class="error-message"></div>
-                        </div>
+                        
                     </div>
                 </form>`,
             showCancelButton: true,

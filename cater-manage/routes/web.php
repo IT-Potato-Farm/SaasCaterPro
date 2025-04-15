@@ -31,13 +31,14 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PackageUtilityController;
+use App\Http\Controllers\Admin\BookingSettingController;
 
 // route navigation each page
 
 // DEBUG EMAIL
 Route::get('/debug-order-email/{orderId}', function ($orderId) {
     $order = Order::find($orderId);  // Replace with the actual method to retrieve the order.
-    
+
     if ($order) {
         return view('emails.order_confirmation', compact('order'));  // Adjust view path accordingly
     } else {
@@ -249,9 +250,15 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
+    // BOOK SETTINGS SERVICE
+    Route::get('/booking-settings', [BookingSettingController::class, 'index'])->name('admin.booking-settings.index');
+    Route::get('/booking-settings/edit', [BookingSettingController::class, 'edit'])->name('admin.booking-settings.edit');
+    Route::put('/booking-settings/update', [BookingSettingController::class, 'update'])->name('admin.booking-settings.update');
+
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     // ROUTE IN ADMIN DASHBOARDS
     Route::get('/admin/finaldashboard', [AdminController::class, 'goDashboard'])->name('admin.finaldashboard');
+    Route::get('/admin/finaldashboard/settings', [AdminController::class, 'gosettingDashboard'])->name('admin.settingdashboard');
     Route::get('/admin/finaldashboard/category', [AdminController::class, 'goCategoryDashboard'])->name('admin.categorydashboard');
     Route::get('/admin/finaldashboard/products', [AdminController::class, 'goProductsDashboard'])->name('admin.products');
     Route::get('/admin/finaldashboard/packages', [AdminController::class, 'goPackageDashboard'])->name('admin.packages');
@@ -310,8 +317,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/items/{item}/available-options', [AdminController::class, 'getItemOptions'])->name('admin.getItemOptions');
     // GET PACKAGE OPTIONS BASED ON PACKAGE
     Route::get('/admin/package-item-options/{packageId}/{itemId}', [AdminController::class, 'packageItemOptions']);
-    
-    
+
+
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     // add

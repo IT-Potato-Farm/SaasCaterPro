@@ -5,57 +5,36 @@
         Swal.fire({
             title: 'Add Category',
             html: `
-                <div class="space-y-4">
-                    <label for="name" class="text-left block text-gray-700 font-medium">Category Name</label>
-                    <input type="text" id="swal-name" name="name" required
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                    
-                </div>`,
+                <form id="category-form" method="POST" action="{{ route('categories.addCategory') }}">
+                    @csrf
+                    <div class="space-y-4 text-left">
+                        <label for="swal-name" class="block text-gray-700 font-medium">Category Name</label>
+                        <input type="text" id="swal-name" name="name" required
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </form>
+            `,
             showCancelButton: true,
             confirmButtonText: 'Add Category',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#3b82f6', // Tailwind blue-500
-            cancelButtonColor: '#ef4444',   // Tailwind red-500
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#ef4444',
             preConfirm: () => {
-                const name = document.getElementById('swal-name').value.trim();
+                const nameInput = document.getElementById('swal-name');
+                const name = nameInput.value.trim();
 
-                
-                // nagp-point to sa category controller -> pati models  
-                return fetch("{{ route('categories.addCategory') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({ name })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        throw new Error(data.message || 'Error adding category');
-                    }
-                    return data;
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(error.message);
+                if (!name) {
+                    Swal.showValidationMessage('Category name is required.');
                     return false;
-                });
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Category Added',
-                    text: 'The category was successfully added!',
-                    showConfirmButton: false,
-                    timer: 2000
-                }).then(() => {
-                    location.reload(); // Refresh 
-                });
+                }
+                
+
+                // If valid, submit the form
+                document.getElementById('category-form').submit();
             }
         });
     }
 </script>
+
 
 <button onclick="addCat()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a category</button>

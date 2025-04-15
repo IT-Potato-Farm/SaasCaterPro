@@ -33,7 +33,6 @@ class MenuItemController extends Controller
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-                'status' => 'required|in:available,unavailable',
                 'pricing.10-15'    => 'required|numeric|min:1',
                 'pricing.15-20'    => 'required|numeric|min:1',
             ]);
@@ -47,16 +46,9 @@ class MenuItemController extends Controller
 
             $menu = MenuItem::create($menuitemFields);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Item added successfully!',
-                'menu' => $menu
-            ]);
+            return redirect()->back()->with('success', 'Item added successfully!');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+            return redirect()->back()->with('error', 'Failed to add item: ' . $e->getMessage());
         }
     }
     protected function handleImageUpload($image)
@@ -95,6 +87,7 @@ class MenuItemController extends Controller
             'pricing.10-15'     => 'required|numeric|min:1',
             'pricing.15-20'     => 'required|numeric|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required|in:available,unavailable',
         ]);
         $itemFields['name'] = strip_tags($itemFields['name']);
         $itemFields['description'] = strip_tags($itemFields['description']);

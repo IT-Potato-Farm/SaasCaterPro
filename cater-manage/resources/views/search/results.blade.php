@@ -302,7 +302,7 @@
         @endif
 
         @if ($menuItems->isNotEmpty())
-            <h3 class="text-lg font-semibold mt-4">Menu Items</h3>
+            <h3 class="text-lg font-semibold mt-4">Party Trays</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
                 @foreach ($menuItems as $item)
                     <div class="menu-item bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 flex flex-col h-full hover:shadow-xl transition-shadow duration-300"
@@ -415,7 +415,7 @@
 
                     {{-- ----------------------- --}}
                     {{-- DISPLAY NA AGAD INFO NG PACKAGE  --}}
-                    <div class="bg-white p-4 shadow rounded">
+                    {{-- <div class="bg-white p-4 shadow rounded">
                         <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
                             class="w-full h-40 object-cover rounded mb-2">
                         <h4 class="font-bold text-lg">{{ $package->name }}</h4>
@@ -450,7 +450,8 @@
                                 </button>
                             </div>
                         </form>
-                    </div>
+                    </div> --}}
+
                 @endforeach
             </div>
         @endif

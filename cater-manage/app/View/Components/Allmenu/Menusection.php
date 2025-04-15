@@ -19,8 +19,8 @@ class Menusection extends Component
     public $categories;
     public function __construct()
     {
-        $this->packages = Package::with('category')->get();
-        $this->menuItems = MenuItem::with('category')->get();
+        $this->menuItems = MenuItem::with('category')->where('status', 'available')->get();
+        $this->packages = Package::with('category')->where('status', 'available')->get();
         $this->categories = Category::all();
     }
 

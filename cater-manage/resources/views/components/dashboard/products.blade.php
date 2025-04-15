@@ -1,5 +1,5 @@
 <script>
-    function openEditModalItem(id, name, description, image, pricing10_15, pricing15_20, categoryId) {
+    function openEditModalItem(id, name, description, image, pricing10_15, pricing15_20, categoryId, status) {
         console.log("Editing item:", id);
         let editUrl = "{{ url('/menuitems/') }}/" + id + "/edit";
         Swal.fire({
@@ -58,6 +58,14 @@
                         <input type="file" name="image" accept="image/*" onchange="previewImage(event, ${id})" 
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-200">
                     </div>
+
+                    <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Status</label>
+                    <select name="status" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
+                        <option value="available" ${status == 'available' ? 'selected' : ''}>Available</option>
+                        <option value="unavailable" ${status == 'unavailable' ? 'selected' : ''}>Not Available</option>
+                    </select>
+                </div>
                 </div>
 
                 </form>`,
@@ -147,9 +155,8 @@
                     <div class="p-4">
                         <div class="flex items-start justify-between gap-2 mb-3">
                             <h2 class="text-xl font-bold text-gray-800 truncate">{{ $menuItem->name }}</h2>
-                            <span
-                                class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-sm font-medium shrink-0">
-                                {{ $menuItem->category->name }}
+                            <span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-sm font-medium shrink-0">
+                                {{ $menuItem->category->name ?? 'No Category' }}
                             </span>
                         </div>
 
@@ -186,7 +193,8 @@
                                 {{ json_encode($menuItem->image) }},
                                 {{ json_encode($menuItem->pricing['10-15'] ?? 0) }},
                                 {{ json_encode($menuItem->pricing['15-20'] ?? 0) }},
-                                {{ $menuItem->category_id }} 
+                                {{ $menuItem->category_id ?? 'null' }},
+                                {{ json_encode($menuItem->status) }},
                                 )"
                                 class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

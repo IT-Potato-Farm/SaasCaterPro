@@ -24,11 +24,7 @@ class CategoryController extends Controller
 
         $category = Category::create($categoryFields);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Category added successfully!',
-            'category' => $category
-        ]);
+        return redirect()->back()->with('success', 'Category added successfully!');
     }
     public function showCategories()
     {
