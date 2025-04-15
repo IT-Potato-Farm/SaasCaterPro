@@ -155,6 +155,7 @@
                         <!-- If eventDate is a range -->
                         <?php
                         // Split the range into two dates
+                        // list($startDate, $endDate) = explode(' to ', $eventDate);
                         [$startDate, $endDate] = explode(' to ', $eventDate);
                         $startDateFormatted = \Carbon\Carbon::parse($startDate)->format('l, F j, Y');
                         $endDateFormatted = \Carbon\Carbon::parse($endDate)->format('l, F j, Y');

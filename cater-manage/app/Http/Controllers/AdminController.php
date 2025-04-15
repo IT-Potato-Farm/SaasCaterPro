@@ -43,6 +43,7 @@ class AdminController extends Controller
     public function goDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
+            
             return view('admin.finaldashboard');
         }
 
@@ -166,7 +167,7 @@ class AdminController extends Controller
                 }])
                 ->get();
 
-            
+
             $reportData = $customers->map(function ($customer) {
                 $totalAmountSpent = $customer->orders->sum(function ($order) {
                     return $order->total + $order->penalty_fee; // Sum of total and penalty fee for each order
@@ -182,14 +183,14 @@ class AdminController extends Controller
                     ->sortDesc()
                     ->keys()
                     ->take(3);
-                    $popularPackageNames = Package::whereIn('id', $popularPackages)->pluck('name');
-                    $popularPackages = $popularPackageNames->toArray();
+                $popularPackageNames = Package::whereIn('id', $popularPackages)->pluck('name');
+                $popularPackages = $popularPackageNames->toArray();
 
-                    $frequencyOfBookings = $customer->orders->groupBy(function ($order) {
-                        // Check if it's already a Carbon instance
-                        $eventDate = $order->event_date_start instanceof Carbon ? $order->event_date_start : Carbon::parse($order->event_date_start);
-                        return $eventDate->format('Y-m-d');
-                    })->count();
+                $frequencyOfBookings = $customer->orders->groupBy(function ($order) {
+                    // Check if it's already a Carbon instance
+                    $eventDate = $order->event_date_start instanceof Carbon ? $order->event_date_start : Carbon::parse($order->event_date_start);
+                    return $eventDate->format('Y-m-d');
+                })->count();
 
                 return [
                     'customer_name' => $customer->first_name . ' ' . $customer->last_name,

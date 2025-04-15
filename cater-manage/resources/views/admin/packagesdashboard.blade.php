@@ -89,7 +89,7 @@
 
 
                 <x-dashboard.packages />
-
+                <x-packages.link-item-package />
                 {{-- link items to package --}}
 
                 
@@ -122,10 +122,10 @@
                         <div class="space-y-2">
                             <label for="itemSelect"
                                 class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">Select Food</label>
-                            <select name="item_id" id="itemSelect" required
+                            <select name="item_id" id="itemSelectLinker" required
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm 
-                                       focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
-                                       transition-all duration-200 ease-in-out">
+                                    focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
+                                    transition-all duration-200 ease-in-out">
                                 <option value="" class="text-gray-400">-- Choose an Item --</option>
                                 @if ($items->isEmpty())
                                     <option value="" disabled class="text-gray-400">No items available</option>
@@ -144,7 +144,7 @@
                                 class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
                                 Select which item option to add in the items
                             </label>
-                            <select name="item_option_ids[]" id="itemOptionsSelect" multiple required
+                            <select name="item_option_ids[]" id="itemOptionsSelectLinker" multiple required
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm 
                                        focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
                                        transition-all duration-200 ease-in-out h-48">
@@ -247,33 +247,33 @@
     <script>
     
     document.addEventListener('DOMContentLoaded', function() {
-    const itemSelect = document.getElementById('itemSelect');
+    const itemSelectLinker = document.getElementById('itemSelectLinker');
     
-    if (itemSelect) {
-        itemSelect.addEventListener('change', function() {
-            const itemId = this.value;
-            const itemOptionsSelect = document.getElementById('itemOptionsSelect');
+    if (itemSelectLinker) {
+        itemSelectLinker.addEventListener('change', function() {
+            const selectedItemIdLinker= this.value;
+            const itemOptionsSelectLinker = document.getElementById('itemOptionsSelectLinker');
             
             // Clear previous disables and reset option text
-            Array.from(itemOptionsSelect.options).forEach(option => {
+            Array.from(itemOptionsSelectLinker.options).forEach(option => {
                 option.disabled = false;
                 option.textContent = option.textContent.replace(" (Already in this Item)", "");
             });
             
-            if (itemId) {
+            if (selectedItemIdLinker) {
                 // Fetch existing item options for the selected item
-                fetch(`/items/${itemId}/existing-options`)
+                fetch(`/items/${selectedItemIdLinker}/existing-options`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
                         return response.json();
                     })
-                    .then(existingOptions => {
-                        console.log('Existing options:', existingOptions);
+                    .then(existingOptionsLinker => {
+                        console.log('Existing options:', existingOptionsLinker);
                         
-                        Array.from(itemOptionsSelect.options).forEach(option => {
-                            if (existingOptions.includes(parseInt(option.value))) {
+                        Array.from(itemOptionsSelectLinker.options).forEach(option => {
+                            if (existingOptionsLinker.includes(parseInt(option.value))) {
                                 option.disabled = true;
                                 option.textContent += " (Already in this Item)";
                             }

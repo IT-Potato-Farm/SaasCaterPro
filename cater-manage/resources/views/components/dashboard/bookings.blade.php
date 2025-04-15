@@ -1,3 +1,43 @@
+<script>
+function confirmDelete(form) {
+    event.preventDefault(); 
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This order will be permanently deleted!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit(); 
+        }
+    });
+
+    return false; 
+}
+function confirmAction(message, event) {
+    event.preventDefault(); 
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, proceed!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit(); 
+        }
+    });
+
+    return false; 
+}
+</script>
 <div class="container mx-auto px-4 py-8">
     <div class="flex border flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0 ">All Bookings</h1>
@@ -216,6 +256,7 @@
                                         {{-- Ongoing Action --}}
                                         @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
                                             <form action="{{ route('orders.mark-ongoing', $order->id) }}"
+                                                onsubmit="return confirmAction('Are you sure you want to mark this order as ongoing?', event);"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('PUT')
@@ -236,6 +277,7 @@
                                         {{-- Partially Paid Action --}}
                                         @if ($order->status !== 'partial' && $order->status !== 'cancelled' && $order->status !== 'paid')
                                             <form action="{{ route('orders.mark-partial', $order->id) }}"
+                                                onsubmit="return confirmAction('Are you sure you want to mark this order as partially paid?', event);"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('PUT')
@@ -258,6 +300,7 @@
                                         <!-- Payment Status Toggle -->
                                         @if (!$order->paid)
                                             <form action="{{ route('orders.mark-paid', $order->id) }}" method="POST"
+                                                onsubmit="return confirmAction('Are you sure you want to mark this order as paid?', event);"
                                                 class="inline">
                                                 @csrf
                                                 @method('PUT')
@@ -273,8 +316,10 @@
                                                     </svg>
                                                 </button>
                                             </form>
+                                            {{-- UNPAID --}}
                                         @else
                                             <form action="{{ route('orders.mark-unpaid', $order->id) }}"
+                                                onsubmit="return confirmAction('Are you sure you want to mark this order as unpaid?', event);"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('PUT')
@@ -291,9 +336,10 @@
                                                 </button>
                                             </form>
                                         @endif
-
+                                            {{-- MARK COMPLETE --}}
                                         @if ($order->status !== 'completed' && $order->status !== 'cancelled')
                                             <form action="{{ route('orders.mark-completed', $order->id) }}"
+                                                onsubmit="return confirmAction('Are you sure you want to mark this order as completed?', event);"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('PUT')
@@ -312,6 +358,7 @@
                                         <!-- Cancel Booking -->
                                         @if ($order->status != 'cancelled')
                                             <form action="{{ route('order.cancel', $order->id) }}" method="POST"
+                                                onsubmit="return confirmAction('Are you sure you want to mark this order as cancelled', event);"
                                                 class="inline">
                                                 @csrf
                                                 @method('PUT')
@@ -375,6 +422,15 @@
                                                 </form>
                                             </div>
                                         </div>
+                                        <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="inline" onsubmit="return confirmDelete(this);" >
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors" title="Delete Order">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
                                     </div> {{-- end div of actions --}}
                                     
                                 </td>

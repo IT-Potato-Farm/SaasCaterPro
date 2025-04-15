@@ -1,18 +1,25 @@
+<script>
+    const thisYearRevenue = @json($thisYearRevenueChart);
+    const lastYearRevenue = @json($lastYearRevenueChart);
+</script>
 <section class="p-6 bg-gray-50 ">
     <div class="container mx-auto px-4 ">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
+        
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Completed Orders</p>
                 <p class="text-3xl font-bold text-gray-800">{{ $completedOrdersCount }}</p>
             </div>
 
+
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-green-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Total Revenue</p>
-                <p class="text-3xl font-bold text-gray-800">₱1.5M</p>
+                <p class="text-3xl font-bold text-gray-800">₱{{ number_format($totalRevenue, 2) }}</p>
             </div>
+
 
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -35,11 +42,19 @@
                 <div class="flex gap-4">
                     <span class="flex items-center text-sm text-gray-500">
                         <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                        This Year
+                        Today ₱{{ number_format($todayRevenue, 2) }}
+                    </span>
+                    <span class="flex items-center text-sm text-gray-500">
+                        <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                        This Motnh ₱{{ number_format($monthRevenue, 2) }}
+                    </span>
+                    <span class="flex items-center text-sm text-gray-500">
+                        <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                        This Year ₱{{ number_format($yearRevenue, 2) }}
                     </span>
                     <span class="flex items-center text-sm text-gray-500">
                         <span class="w-3 h-3 bg-gray-200 rounded-full mr-2"></span>
-                        Last Year
+                        Last Year ₱{{ number_format($lastYearRevenue, 2) }}
                     </span>
                 </div>
             </div>
@@ -48,7 +63,7 @@
             </div>
         </div>
 
-        
+
     </div>
 </section>
 
@@ -61,7 +76,7 @@
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [{
                     label: 'This Year',
-                    data: [6500, 5900, 8000, 8100, 5600, 5500, 4000, 6300, 7200, 7800, 8200, 9000],
+                    data: thisYearRevenue,
                     borderColor: '#3B82F6',
                     borderWidth: 2,
                     tension: 0.4,
@@ -74,7 +89,7 @@
                 },
                 {
                     label: 'Last Year',
-                    data: [5200, 6100, 7500, 7200, 4800, 6200, 5800, 6500, 6800, 7000, 7500, 8000],
+                    data: lastYearRevenue,
                     borderColor: '#E5E7EB',
                     borderWidth: 2,
                     tension: 0.4,
@@ -94,7 +109,7 @@
                     },
                     ticks: {
                         callback: function(value) {
-                            return '$' + value;
+                            return '₱' + value;
                         },
                         color: '#6B7280'
                     }
