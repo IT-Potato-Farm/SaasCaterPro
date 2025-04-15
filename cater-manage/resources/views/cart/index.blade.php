@@ -276,7 +276,8 @@
                                 <h2 class="text-xl font-bold text-gray-800">Ready to Checkout?</h2>
                             </div>
 
-                            <form action="{{ route('checkout.show') }}" method="GET" class="p-6">
+                            <form id="checkoutForm" action="{{ route('checkout.show') }}" method="GET"
+                                class="p-6">
                                 <!-- total guest -->
                                 <div class="mb-6">
                                     <!-- Event Date -->
@@ -284,17 +285,21 @@
                                         <label for="event_date" class="block text-sm font-semibold text-gray-700 mb-2">
                                             See the available dates here
                                         </label>
+                                        <span id="eventDateError" class="text-sm text-red-600 hidden">Please select a
+                                            date.</span>
+
                                         <!-- Note: input type changed to text for proper Flatpickr integration -->
                                         <input type="text" name="event_date" id="event_date"
                                             placeholder="Select a date or date range"
                                             class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                                             required>
                                     </div>
-                                    
+
                                     {{-- IF PACKAGE UNG ITEM SAKA LNG TO MAGS-SHOW UP --}}
-                                    @if ($cartItems->contains(function ($cartItem) {
-                                        return !is_null($cartItem->package_id); // Check if the package_id is not null
-                                    }))
+                                    @if (
+                                        $cartItems->contains(function ($cartItem) {
+                                            return !is_null($cartItem->package_id); // Check if the package_id is not null
+                                        }))
                                         <label for="total_guests" class="block text-sm font-medium text-gray-700 mb-2">
                                             Total Guests
                                             <span class="text-xs font-normal text-gray-500 block mt-1">
@@ -306,7 +311,7 @@
                                             placeholder="50"
                                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-all duration-150"
                                             required>
-                
+
                                         <p id="minPaxNotification" class="mt-1 text-xs text-red-600 hidden"></p>
                                         <p id="errorminPaxNotification" class="mt-1 text-xs text-red-500 hidden">
                                             Please fill in the total guests field.
@@ -397,8 +402,35 @@
     {{-- COMPONENT NG LAHAT NG ITEMS SA BABA NG CART PART --}}
     <x-allmenu.menusection />
     <script>
-        // JS SCRIPT DATE EVENT PICKER
         document.addEventListener('DOMContentLoaded', function() {
+            // Get all forms on the page
+            const form = document.getElementById('checkoutForm');
+            // Add submit event listener to each form
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    const eventDate = document.getElementById('event_date').value.trim();
+
+                    if (!eventDate) {
+                        event.preventDefault(); // Prevent form submission
+                        document.getElementById('eventDateError').classList.remove('hidden');
+                        document.getElementById('event_date').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        document.getElementById('event_date').focus();
+
+                        //highlight the error
+                        document.getElementById('event_date').classList.add('border-red-500');
+
+                        return false;
+                    } else {
+                        document.getElementById('eventDateError').classList.add('hidden');
+                        document.getElementById('event_date').classList.remove('border-red-500');
+                    }
+                });
+            }
+
+            // Fetch booked dates and initialize flatpickr
             fetch('/get-booked-dates')
                 .then(response => response.json())
                 .then(data => {
@@ -414,11 +446,26 @@
                         }
                     });
 
-                    flatpickr("#event_date", {
+                    // Initialize flatpickr with hooks for validation
+                    const picker = flatpickr("#event_date", {
                         mode: "range",
                         dateFormat: "Y-m-d",
                         minDate: "today",
-                        disable: disabledDates
+                        disable: disabledDates,
+                        onChange: function(selectedDates, dateStr) {
+                            // Clear error when date is selected
+                            if (dateStr) {
+                                document.getElementById('eventDateError').classList.add('hidden');
+                                document.getElementById('event_date').classList.remove(
+                                    'border-red-500');
+                            }
+                        }
+                    });
+
+                    // Add a click event to the required field indicator that focuses the input
+                    document.querySelector('label[for="event_date"]').addEventListener('click', function() {
+                        document.getElementById('event_date').focus();
+                        picker.open();
                     });
                 })
                 .catch(error => console.error('Error fetching booked dates:', error));

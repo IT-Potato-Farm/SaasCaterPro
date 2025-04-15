@@ -10,6 +10,39 @@
 </head>
 <body>
     <x-customer.navbar />
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#fef2f2',
+                iconColor: '#dc2626',
+                color: '#7f1d1d',
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'swal2-show animate-slide-in'
+                },
+                hideClass: {
+                    popup: 'swal2-hide animate-slide-out'
+                }
+            });
+        </script>
+    @endif
     <div class="container max-w-3xl mx-auto py-8 px-4">
         <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ $package->name }}</h1>
         <p class="text-gray-600 text-lg mb-8">{{ $package->description ?? 'No description provided' }}</p>

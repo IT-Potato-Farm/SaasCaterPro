@@ -29,7 +29,7 @@ class OrderController extends Controller
         // Order the results and paginate
         $orders = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings']);
+        return redirect()->route('admin.bookings');
     }
 
     // penalty function
@@ -67,89 +67,100 @@ class OrderController extends Controller
     {
         Mail::to($order->user->email)->send(new InvoiceMail($order));
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.bookings')
             ->with('success', 'Invoice sent successfully.');
     }
 
     public function markAsPaid(Order $order)
     {
         if ($order->status === 'cancelled') {
-            return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+            return redirect()->route('admin.bookings')
                 ->with('error', 'Cannot mark a cancelled order as paid.');
         }
 
         $order->status = 'paid';
         $order->save();
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.bookings')
             ->with('success', 'Order marked as paid.');
     }
 
     public function markAsUnpaid(Order $order)
     {
         if ($order->status === 'cancelled') {
-            return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+            return redirect()->route('admin.bookings')
                 ->with('error', 'Cannot mark a cancelled order as unpaid.');
         }
 
         $order->status = 'pending';
         $order->save();
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.admindashboard')
             ->with('success', 'Order marked as unpaid.');
     }
 
     public function markAsOngoing(Order $order)
     {
         if ($order->status === 'cancelled' || $order->status === 'paid') {
-            return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+            return redirect()->route('admin.bookings')
                 ->with('error', 'Cannot mark this order as ongoing.');
         }
 
         $order->status = 'ongoing';
         $order->save();
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.bookings')
             ->with('success', 'Order marked as ongoing.');
     }
 
     public function markAsPartial(Order $order)
     {
         if ($order->status === 'cancelled' || $order->status === 'paid') {
-            return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+            return redirect()->route('admin.bookings')
                 ->with('error', 'This order cannot be marked as partially paid.');
         }
 
         $order->status = 'partial';
         $order->save();
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.bookings')
             ->with('success', 'Order marked as partially paid.');
     }
     public function cancelOrder(Order $order)
     {
         if ($order->status === 'cancelled') {
-            return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+            return redirect()->route('admin.bookings')
                 ->with('error', 'Order is already cancelled.');
         }
 
         $order->status = 'cancelled';
         $order->save();
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.bookings')
             ->with('success', 'Order has been cancelled.');
     }
     public function markAsCompleted(Order $order)
     {
         if ($order->status === 'cancelled') {
-            return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+            return redirect()->route('admin.bookings')
                 ->with('error', 'Cannot mark a cancelled order as completed.');
         }
 
         $order->status = 'completed';
         $order->save();
 
-        return redirect()->route('admin.admindashboard', ['activeScreen' => 'bookings'])
+        return redirect()->route('admin.bookings')
             ->with('success', 'Order marked as completed.');
+    }
+    public function destroy($id)
+    {
+        $order = Order::findOrFail($id);
+        try {
+            $order->delete();
+    
+            return redirect()->back()->with('success', 'Order deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete the order.');
+        }
     }
 }

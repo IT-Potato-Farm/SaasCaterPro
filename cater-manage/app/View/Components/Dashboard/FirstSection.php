@@ -3,6 +3,7 @@
 namespace App\View\Components\Dashboard;
 
 use Closure;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
 use Illuminate\View\Component;
@@ -16,11 +17,61 @@ class FirstSection extends Component
     public $totalUsers;
     public $completedOrdersCount;
     public $pendingOrdersCount;
+    public $totalRevenue;
+    public $todayRevenue;
+    public $yearRevenue;
+    public $lastYearRevenue;
+    public $monthRevenue;
+    public $thisYearRevenueChart;
+    public $lastYearRevenueChart;
     public function __construct()
     {
         $this->totalUsers = User::count();
         $this->completedOrdersCount = Order::where('status', 'completed')->count();
         $this->pendingOrdersCount = Order::where('status', 'pending')->count();
+        $this->totalRevenue = Order::where('status', 'completed')->sum('total');
+        $this->todayRevenue = Order::whereDate('created_at', Carbon::today())
+                        ->sum('total'); 
+        // THIS CURRENT YR
+        $this->yearRevenue = Order::where('status', 'completed')
+            ->whereYear('created_at', now()->year)
+            ->sum('total');
+        // LAST YR
+        $this->lastYearRevenue = Order::where('status', 'completed')
+            ->whereYear('created_at', now()->subYear()->year)
+            ->sum('total');
+        // MONTH
+        $this->monthRevenue = Order::where('status', 'completed')
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->sum('total');
+
+            // CHART TOTAL EARNINGS FUNC
+            $currentYear = now()->year;
+            $lastYear = now()->subYear()->year;
+
+            $thisYearData = Order::selectRaw('MONTH(created_at) as month, SUM(total) as total')
+                ->whereYear('created_at', $currentYear)
+                ->where('status', 'completed')
+                ->groupBy('month')
+                ->pluck('total', 'month')
+                ->toArray();
+
+            $lastYearData = Order::selectRaw('MONTH(created_at) as month, SUM(total) as total')
+                ->whereYear('created_at', $lastYear)
+                ->where('status', 'completed')
+                ->groupBy('month')
+                ->pluck('total', 'month')
+                ->toArray();
+
+            // Fill missing months with 0
+            $this->thisYearRevenueChart = [];
+            $this->lastYearRevenueChart = [];
+
+            for ($i = 1; $i <= 12; $i++) {
+                $this->thisYearRevenueChart[] = $thisYearData[$i] ?? 0;
+                $this->lastYearRevenueChart[] = $lastYearData[$i] ?? 0;
+            }
     }
 
     /**

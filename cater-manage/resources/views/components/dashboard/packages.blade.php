@@ -151,7 +151,7 @@
                             '{{ asset('storage/packagepics/' . $package->image) }}',
                             '{{ $package->status }}'
                             )"
-                                class="flex-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition-colors">
+                                class="flex-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 hover:cursor-pointer transition-colors">
                                 <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -159,6 +159,7 @@
                                 </svg>
                                 Edit
                             </button>
+
                             <form action="{{ route('package.delete', $package->id) }}" method="POST"
                                 class="delete-form">
                                 @csrf

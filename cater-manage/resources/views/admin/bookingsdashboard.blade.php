@@ -10,8 +10,21 @@
 
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="{{ asset('js/toprightalert.js') }}"></script>
 </head>
 <body>
+    @if(session('success'))
+    <script>
+        showSuccessToast('{{ session('success') }}');
+    </script>
+    @endif
+    
+    @if(session('error'))
+    <script>
+        showErrorToast('{{ session('error') }}');
+    </script>
+    @endif
+
     <div class="flex h-screen">
 
         {{-- SIDENAV --}}

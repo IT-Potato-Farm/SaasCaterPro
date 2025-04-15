@@ -96,7 +96,7 @@
 
 
 <div class="max-w-4xl mx-auto p-4">
-    <h1 class="text-2xl font-semibold mb-4 text-center">ITEM OPTIONS</h1>
+    <h1 class="text-2xl font-semibold mb-4 text-center">MANAGE ITEM OPTIONS</h1>
 
     <ul class="space-y-4">
         @if ($itemOptions->isEmpty())
