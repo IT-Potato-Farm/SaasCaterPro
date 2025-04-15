@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Utility;
 use Carbon\Carbon;
 use App\Models\Item;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Package;
+use App\Models\Utility;
 use App\Models\Category;
 use App\Models\ItemOption;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
+use App\Models\BookingSetting;
 use App\Models\PackageUtility;
 use App\Models\PackageItemOption;
 use Illuminate\Support\Facades\Auth;
@@ -43,8 +44,17 @@ class AdminController extends Controller
     public function goDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            
-            return view('admin.finaldashboard');
+            $setting = BookingSetting::first();
+            return view('admin.finaldashboard', compact('setting'));
+        }
+
+        return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    }
+    public function gosettingDashboard()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $setting = BookingSetting::first();
+            return view('admin.settingdashboard', compact('setting'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
@@ -206,19 +216,19 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
-    public function dashboard()
-    {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
-            return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
-        }
-        $packages = Package::all();
-        $packageItemsGroupedByPackage = PackageItem::all()
-            ->groupBy('package_id')
-            ->map(function ($group) {
-                return $group->map(function ($item) {
-                    return ['id' => $item->id, 'name' => $item->name];
-                });
-            })->toArray();
-        return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
-    }
+    // public function dashboard()
+    // {
+    //     if (!Auth::check() || Auth::user()->role !== 'admin') {
+    //         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
+    //     }
+    //     $packages = Package::all();
+    //     $packageItemsGroupedByPackage = PackageItem::all()
+    //         ->groupBy('package_id')
+    //         ->map(function ($group) {
+    //             return $group->map(function ($item) {
+    //                 return ['id' => $item->id, 'name' => $item->name];
+    //             });
+    //         })->toArray();
+    //     return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
+    // }
 }

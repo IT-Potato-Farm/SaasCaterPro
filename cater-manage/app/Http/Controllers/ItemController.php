@@ -166,7 +166,7 @@ class ItemController extends Controller
             $item = Item::findOrFail($id);
             $item->delete();
 
-            return redirect()->back()->with('success', 'Package deleted successfully!');
+            return redirect()->back()->with('success', 'Item ulam deleted successfully!');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete item: ' . $e->getMessage());
         }

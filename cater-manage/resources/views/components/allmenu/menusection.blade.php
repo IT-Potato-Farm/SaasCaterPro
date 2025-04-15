@@ -1,17 +1,17 @@
 <script src="{{ asset('js/cart.js') }}"></script>
 <script>
     function debugAddToCart(itemId) {
-    // Check if a variant dropdown exists for the menu item
-    let variantSelect = document.getElementById('variant-' + itemId);
-    let selectedVariant = variantSelect ? variantSelect.value : null;
-    
-    // Debug log to console
-    console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
-    
-    // Call the existing addToCart function
-    // If you need to pass the type, it defaults to 'menu_item'
-    addToCart(itemId, 'menu_item');
-}
+        // Check if a variant dropdown exists for the menu item
+        let variantSelect = document.getElementById('variant-' + itemId);
+        let selectedVariant = variantSelect ? variantSelect.value : null;
+
+        // Debug log to console
+        console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
+
+        // Call the existing addToCart function
+        // If you need to pass the type, it defaults to 'menu_item'
+        addToCart(itemId, 'menu_item');
+    }
 </script>
 <nav class="holder">
     <div class="items flex justify-center gap-20 py-4 my-2 bg-red-100 text-sm font-normal">
@@ -46,6 +46,11 @@
                             </h3>
                             <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-3">
                                 {{ $package->description }}</p>
+                            <p
+                                class="text-sm font-semibold 
+                                {{ $package->status == 'available' ? 'text-green-500' : 'text-red-500' }}">
+                                {{ ucfirst($package->status) }}
+                            </p>
                         </div>
 
                         <!-- Add to Cart Button -->
@@ -82,6 +87,13 @@
                             </h3>
                             <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-3">
                                 {{ $item->description }}</p>
+
+                            <p
+                                class="text-sm font-semibold 
+                                {{ $item->status == 'available' ? 'text-green-500' : 'text-red-500' }}">
+                                {{ ucfirst($item->status) }}
+                            </p>
+
                             @php
                                 $pricingTiers = $item->pricing; // assuming pricing is cast to array in the MenuItem model
                             @endphp
@@ -93,7 +105,8 @@
                                         class="mt-1 block w-full p-2 border border-gray-300 rounded">
                                         @foreach ($pricingTiers as $variant => $price)
                                             <option value="{{ $variant }}">{{ $variant }}
-                                                (₱{{ number_format($price, 2) }})</option>
+                                                (₱{{ number_format($price, 2) }})
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>

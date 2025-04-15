@@ -30,8 +30,9 @@ class FirstSection extends Component
         $this->completedOrdersCount = Order::where('status', 'completed')->count();
         $this->pendingOrdersCount = Order::where('status', 'pending')->count();
         $this->totalRevenue = Order::where('status', 'completed')->sum('total');
-        $this->todayRevenue = Order::whereDate('created_at', Carbon::today())
-                        ->sum('total'); 
+        $this->todayRevenue = Order::where('status', 'completed')
+                        ->whereDate('created_at', Carbon::today())
+                        ->sum('total');
         // THIS CURRENT YR
         $this->yearRevenue = Order::where('status', 'completed')
             ->whereYear('created_at', now()->year)
