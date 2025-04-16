@@ -434,17 +434,7 @@
             fetch('/get-booked-dates')
                 .then(response => response.json())
                 .then(data => {
-                    let disabledDates = [];
-
-                    data.forEach(range => {
-                        let start = new Date(range.start);
-                        let end = new Date(range.end);
-
-                        while (start <= end) {
-                            disabledDates.push(start.toISOString().split('T')[0]); // Format: YYYY-MM-DD
-                            start.setDate(start.getDate() + 1);
-                        }
-                    });
+                    let disabledDates = data.map(range => range.start); 
 
                     const picker = flatpickr("#event_date", {
                         mode: "range",
@@ -452,7 +442,7 @@
                         minDate: "today",
                         disable: disabledDates,
                         onChange: function(selectedDates, dateStr) {
-                            // Clear error when date is selected
+                            // Clear error when a date is selected
                             if (dateStr) {
                                 document.getElementById('eventDateError').classList.add('hidden');
                                 document.getElementById('event_date').classList.remove(
@@ -460,6 +450,8 @@
                             }
                         }
                     });
+
+                    // Focus + open Flatpickr when label is clicked
                     document.querySelector('label[for="event_date"]').addEventListener('click', function() {
                         document.getElementById('event_date').focus();
                         picker.open();

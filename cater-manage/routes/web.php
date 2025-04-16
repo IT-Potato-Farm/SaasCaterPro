@@ -130,12 +130,13 @@ Route::get('/home', function () {
 
 
 // DATE ROUTE FUNCTION API FOR GETTING THE DATEEEESSSS   partial, ongoing, paid, completed statuses are blocked.
+
 Route::get('/get-booked-dates', function () {
 
     $bookingSetting = \App\Models\BookingSetting::first();  // assuming one global setting
     $limit = $bookingSetting->events_per_day ?? 1;
 
-    $orders = Order::whereNotIn('status', ['cancelled'])
+    $fullyBookedDates = Order::whereNotIn('status', ['cancelled'])
         ->get()
         ->flatMap(function ($order) {
             $startDateTime = new DateTime($order->event_date_start . ' ' . $order->event_start_time);
@@ -153,15 +154,23 @@ Route::get('/get-booked-dates', function () {
         ->filter(function ($count) use ($limit) {
             return $count >= $limit;
         })
-        ->map(function ($count, $date) {
-            return [
-                'start' => $date,
-                'end' => $date,  // single day
-            ];
-        })
-        ->values();
+        ->keys()  // Only the date values
+        ->toArray();
+    // Get blocked dates from BookingSetting
+    $blockedDates = $bookingSetting->blocked_dates ?? [];
 
-    return response()->json($orders);
+    // Merge both lists and remove duplicates
+    $disabledDates = array_unique(array_merge($fullyBookedDates, $blockedDates));
+
+    // Format as [{ start: date, end: date }]
+    $formatted = collect($disabledDates)->map(function ($date) {
+        return [
+            'start' => $date,
+            'end' => $date,  // single day block
+        ];
+    })->values();
+
+    return response()->json($formatted);
 });
 
 
