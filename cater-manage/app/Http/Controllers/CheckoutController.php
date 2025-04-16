@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
+use Carbon\Carbon;
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use App\Models\BookingSetting;
 use App\Mail\OrderConfirmationMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -17,6 +19,27 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         $user = Auth::user();
+        $booking_settings = BookingSetting::first();
+        // Set the start and end times from booking settings
+        if (!$booking_settings || !$booking_settings->service_start_time || !$booking_settings->service_end_time || !$booking_settings->events_per_day) {
+            return redirect()->back()->with('error', 'Booking settings are not configured properly.');
+        }
+        $start = Carbon::createFromTimeString($booking_settings->service_start_time);
+        $end = Carbon::createFromTimeString($booking_settings->service_end_time);
+        $eventsPerDay = $booking_settings->events_per_day;
+
+        $intervalMinutes = $start->diffInMinutes($end) / $eventsPerDay;
+        $timeSlots = [];
+
+        for ($i = 0; $i < $eventsPerDay; $i++) {
+            $slotStart = $start->copy()->addMinutes($intervalMinutes * $i);
+            $slotEnd = $slotStart->copy()->addMinutes($intervalMinutes);
+
+            $timeSlots[] = [
+                'start' => $slotStart->format('H:i'),
+                'end' => $slotEnd->format('H:i'),
+            ];
+        }
 
         // Step 1: pagde nakalogin, store guest cart sa session then redirect to login
         if (!$user) {
@@ -96,7 +119,7 @@ class CheckoutController extends Controller
         });
 
 
-        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests', 'eventDate'));
+        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests', 'eventDate', 'booking_settings', 'timeSlots'));
     }
     public function mergeGuestCart($user, $guestCart)
     {
@@ -157,12 +180,44 @@ class CheckoutController extends Controller
         $data = $request->validate([
             'event_type'    => 'required|string',
             'event_date'         => 'required|string',
-            'event_start_time' => 'required|date_format:H:i',
-            'event_start_end'  => 'required|date_format:H:i',
+            // 'event_start_time' => 'required|date_format:H:i',
+            // 'event_start_end'  => 'required|date_format:H:i',
+            'time_mode'     => 'required|string|in:slot,custom',
             'event_address' => 'required|string',
             // 'total_guests'  => 'required|integer|min:1',
             'concerns'      => 'nullable|string'
         ]);
+
+        //  time selection logic based on 'time_mode'
+        if ($data['time_mode'] === 'slot') {
+            // User chose to select from available time slots
+            $timeSlot = $request->input('event_time_slot');  // Slot selected
+            
+            if (!$timeSlot) {
+                return redirect()->back()->with('error', 'Please select a valid time slot.');
+            }
+            
+            // Split the time slot into start and end times
+            $timeParts = explode(' - ', $timeSlot);
+            if (count($timeParts) === 2) {
+                $data['event_start_time'] = $timeParts[0];  // Start time
+                $data['event_start_end'] = $timeParts[1];   // End time
+            } else {
+                return redirect()->back()->with('error', 'Invalid time slot selected.');
+            }
+        } elseif ($data['time_mode'] === 'custom') {
+            // custom time
+            $data['event_start_time'] = $request->input('custom_start_time');  // Custom start time
+            $data['event_start_end'] = $request->input('custom_end_time');  // Custom end time
+            
+            if (!$data['event_start_time'] || !$data['event_start_end']) {
+                return redirect()->back()->with('error', 'Please provide both start and end times for the event.');
+            }
+            
+            if (strtotime($data['event_start_time']) >= strtotime($data['event_start_end'])) {
+                return redirect()->back()->with('error', 'The start time must be earlier than the end time.');
+            }
+        }
 
         // Step 2: Check if the cart contains a package
         $hasPackage = $cart->items->contains(function ($item) {
@@ -200,7 +255,7 @@ class CheckoutController extends Controller
             $event_date_end   = trim($data['event_date']);
         }
 
-        
+
 
         // final order total.
         $total = $cart->items->sum(function ($item) use ($data) {
