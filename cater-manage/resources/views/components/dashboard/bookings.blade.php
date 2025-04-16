@@ -460,7 +460,12 @@ function confirmAction(message, event) {
 
     {{-- CALENDAR EVENTS --}}
     @php
+        use Carbon\Carbon;
         $calendarEvents = $orders
+        // SORT CALENDAR FORMAT PARA MAUNA UNG NKA BASED SA TIME 
+        ->sortBy(function ($order) {
+            return Carbon::parse($order->event_start_time);
+        })
             ->map(function ($order) {
                 $status = strtolower($order->status);
                 // Set default color to blue
@@ -482,7 +487,7 @@ function confirmAction(message, event) {
                     'title' => $order->event_type, // e.g., "Birthday"
                     'start' => $order->event_date_start, // Format: YYYY-MM-DD
                     // End date is exclusive in FullCalendar.
-                    'end' => \Carbon\Carbon::parse($order->event_date_end)->addDay()->toDateString(),
+                    'end' => Carbon::parse($order->event_date_end)->addDay()->toDateString(),
                     'start_time' => $order->event_start_time, // e.g., "00:24:00"
                     'end_time' => $order->event_start_end, // e.g., "15:24:00"
                     'status' => $order->status,
@@ -490,6 +495,7 @@ function confirmAction(message, event) {
                     'borderColor' => $color,
                 ];
             })
+            ->values()
             ->toArray();
     @endphp
 

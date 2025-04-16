@@ -130,7 +130,8 @@
                                         @foreach ($timeSlots as $slot)
                                             <option value="{{ $slot['start'] }} - {{ $slot['end'] }}"
                                                 @if ($slot['occupied']) disabled class="text-red-500" @endif>
-                                                {{ $slot['start'] }} - {{ $slot['end'] }}
+                                                {{ \Carbon\Carbon::createFromFormat('H:i', $slot['start'])->format('g:ia') }} - 
+                                                {{ \Carbon\Carbon::createFromFormat('H:i', $slot['end'])->format('g:ia') }}
                                                 {{ $slot['occupied'] ? '(Occupied)' : '' }}
                                             </option>
                                         @endforeach
