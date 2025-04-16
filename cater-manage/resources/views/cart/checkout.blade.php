@@ -128,8 +128,10 @@
                                         class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                                         <option value="" disabled selected>Select a time slot</option>
                                         @foreach ($timeSlots as $slot)
-                                            <option value="{{ $slot['start'] }} - {{ $slot['end'] }}">
+                                            <option value="{{ $slot['start'] }} - {{ $slot['end'] }}"
+                                                @if ($slot['occupied']) disabled class="text-red-500" @endif>
                                                 {{ $slot['start'] }} - {{ $slot['end'] }}
+                                                {{ $slot['occupied'] ? '(Occupied)' : '' }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -161,7 +163,8 @@
                                             class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                                     </div>
                                     <p id="start-time-error" class="text-red-500 hidden">
-                                        The start time must be later than {{ $booking_settings->formatted_service_start_time }}.
+                                        The start time must be later than
+                                        {{ $booking_settings->formatted_service_start_time }}.
                                     </p>
                                     <p class="text-sm text-gray-500">
                                         Service Start Time: {{ $booking_settings->formatted_service_start_time }}<br>
@@ -434,7 +437,6 @@
 
 
         <script>
-            
             // SHOW AND HIDE CUSTOM TIME 
             function toggleTimeMode() {
                 const timeMode = document.querySelector('input[name="time_mode"]:checked').value;

@@ -446,7 +446,6 @@
                         }
                     });
 
-                    // Initialize flatpickr with hooks for validation
                     const picker = flatpickr("#event_date", {
                         mode: "range",
                         dateFormat: "Y-m-d",
@@ -461,8 +460,6 @@
                             }
                         }
                     });
-
-                    // Add a click event to the required field indicator that focuses the input
                     document.querySelector('label[for="event_date"]').addEventListener('click', function() {
                         document.getElementById('event_date').focus();
                         picker.open();

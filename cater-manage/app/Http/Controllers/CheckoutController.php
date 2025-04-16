@@ -19,27 +19,208 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         $user = Auth::user();
+        // EVENT DATE
+        $eventDate = $request->query('event_date');
+        session(['event_date' => $eventDate]);
+
         $booking_settings = BookingSetting::first();
         // Set the start and end times from booking settings
         if (!$booking_settings || !$booking_settings->service_start_time || !$booking_settings->service_end_time || !$booking_settings->events_per_day) {
             return redirect()->back()->with('error', 'Booking settings are not configured properly.');
         }
+
+        // Get service hours
         $start = Carbon::createFromTimeString($booking_settings->service_start_time);
         $end = Carbon::createFromTimeString($booking_settings->service_end_time);
-        $eventsPerDay = $booking_settings->events_per_day;
 
-        $intervalMinutes = $start->diffInMinutes($end) / $eventsPerDay;
-        $timeSlots = [];
+        // Get rest time and events per day settings
+        $rest_minutes = $booking_settings->rest_time ?? 30; // Default to 30 minutes if not set
+        $eventsPerDay = $booking_settings->events_per_day ?? 2; // Default to 2 if not set
 
-        for ($i = 0; $i < $eventsPerDay; $i++) {
-            $slotStart = $start->copy()->addMinutes($intervalMinutes * $i);
-            $slotEnd = $slotStart->copy()->addMinutes($intervalMinutes);
+        // Calculate total service minutes available
+        $totalServiceMinutes = $start->diffInMinutes($end);
 
-            $timeSlots[] = [
-                'start' => $slotStart->format('H:i'),
-                'end' => $slotEnd->format('H:i'),
+        // Find existing bookings for this date
+        $existingBookings = Order::whereDate('event_date_start', $eventDate)
+            ->whereNotIn('status', ['cancelled'])
+            ->get(['event_start_time', 'event_start_end']);
+
+        // If we have existing bookings, we need to block those times and the rest periods
+        $occupiedRanges = [];
+        foreach ($existingBookings as $booking) {
+            $bookingStart = Carbon::parse($booking->event_start_time);
+            $bookingEnd = Carbon::parse($booking->event_start_end);
+
+            $occupiedRanges[] = [
+                'start' => $bookingStart,
+                'end' => $bookingEnd->copy()->addMinutes($rest_minutes) // Add rest time after booking
             ];
         }
+
+        // Sort occupied ranges by start time
+        usort($occupiedRanges, function ($a, $b) {
+            return $a['start']->lt($b['start']) ? -1 : 1;
+        });
+
+        // Calculate available slots
+        $timeSlots = [];
+        $availableStart = $start->copy();
+
+        // If we don't have any existing bookings, create slots with specific handling for the last slot
+        if (count($occupiedRanges) === 0) {
+            // For a 2-slot system, handle it specifically to make the last slot extend to end time
+            if ($eventsPerDay == 2) {
+                // First slot calculation - use a reasonable duration for first slot
+                $firstSlotDuration = min(150, $totalServiceMinutes / 2); // 2.5 hours (150 min) or half of available time
+                $firstSlotEnd = $availableStart->copy()->addMinutes($firstSlotDuration);
+
+                $timeSlots[] = [
+                    'start' => $availableStart->format('H:i'),
+                    'end' => $firstSlotEnd->format('H:i'),
+                    'occupied' => false
+                ];
+
+                // Calculate start time for second slot (after rest period)
+                $secondSlotStart = $firstSlotEnd->copy()->addMinutes($rest_minutes);
+
+                // If second slot can start before end time, add it
+                if ($secondSlotStart->lt($end)) {
+                    $timeSlots[] = [
+                        'start' => $secondSlotStart->format('H:i'),
+                        'end' => $end->format('H:i'), // Second slot extends to service end time
+                        'occupied' => false
+                    ];
+                }
+            } else {
+                // For more than 2 events per day, use the original evenly divided calculation
+                // but make the last slot extend to the end time
+
+                // Calculate slot duration for all slots except the last one
+                $slotDuration = ($totalServiceMinutes - (($eventsPerDay - 1) * $rest_minutes)) / $eventsPerDay;
+
+                for ($i = 0; $i < $eventsPerDay; $i++) {
+                    if ($i < $eventsPerDay - 1) {
+                        // For all slots except the last one
+                        $slotEnd = $availableStart->copy()->addMinutes($slotDuration);
+                    } else {
+                        // Last slot extends to the end time
+                        $slotEnd = $end->copy();
+                    }
+
+                    if ($slotEnd->gt($end)) {
+                        $slotEnd = $end->copy(); // Ensure we don't go past the end time
+                    }
+
+                    $timeSlots[] = [
+                        'start' => $availableStart->format('H:i'),
+                        'end' => $slotEnd->format('H:i'),
+                        'occupied' => false
+                    ];
+
+                    // Move to next slot start with rest time
+                    $availableStart = $slotEnd->copy()->addMinutes($rest_minutes);
+
+                    if ($availableStart->gte($end)) {
+                        break; // No more slots can fit
+                    }
+                }
+            }
+        } else {
+            // We have existing bookings, so we need to work around them
+
+            // First, add slots before the first booking if there's room
+            if ($availableStart->lt($occupiedRanges[0]['start'])) {
+                $gapMinutes = $availableStart->diffInMinutes($occupiedRanges[0]['start']);
+                $slotDuration = min($gapMinutes, $totalServiceMinutes / $eventsPerDay);
+
+                if ($slotDuration >= 60) { // Only create slots of at least 1 hour
+                    $slotEnd = $availableStart->copy()->addMinutes($slotDuration);
+                    $timeSlots[] = [
+                        'start' => $availableStart->format('H:i'),
+                        'end' => $slotEnd->format('H:i'),
+                        'occupied' => false
+                    ];
+                }
+            }
+
+            // Then check for slots between bookings
+            for ($i = 0; $i < count($occupiedRanges); $i++) {
+                // Mark the existing booking slot as occupied
+                $timeSlots[] = [
+                    'start' => $occupiedRanges[$i]['start']->format('H:i'),
+                    'end' => Carbon::parse($existingBookings[$i]->event_start_end)->format('H:i'),
+                    'occupied' => true
+                ];
+
+                // Check if there's another booking after this one
+                if ($i < count($occupiedRanges) - 1) {
+                    $gapStart = $occupiedRanges[$i]['end'];
+                    $gapEnd = $occupiedRanges[$i + 1]['start'];
+
+                    if ($gapStart->lt($gapEnd)) {
+                        $gapMinutes = $gapStart->diffInMinutes($gapEnd);
+                        $slotDuration = min($gapMinutes, $totalServiceMinutes / $eventsPerDay);
+
+                        if ($slotDuration >= 60) { // Only create slots of at least 1 hour
+                            $slotEnd = $gapStart->copy()->addMinutes($slotDuration);
+                            if ($slotEnd->lte($gapEnd)) {
+                                $timeSlots[] = [
+                                    'start' => $gapStart->format('H:i'),
+                                    'end' => $slotEnd->format('H:i'),
+                                    'occupied' => false
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Finally, check for a slot after the last booking
+            $lastBookingEnd = end($occupiedRanges)['end'];
+            if ($lastBookingEnd->lt($end)) {
+                $remainingMinutes = $lastBookingEnd->diffInMinutes($end);
+
+                // If there's enough time and this would be the last slot, extend it to the end time
+                if ($remainingMinutes >= 60) { // At least 1 hour available
+                    $timeSlots[] = [
+                        'start' => $lastBookingEnd->format('H:i'),
+                        'end' => $end->format('H:i'), // Extend to the service end time
+                        'occupied' => false
+                    ];
+                }
+            }
+        }
+
+        // Sort the time slots by start time
+        usort($timeSlots, function ($a, $b) {
+            return $a['start'] <=> $b['start'];
+        });
+
+        // Ensure we don't exceed the maximum events per day
+        $availableSlots = array_filter($timeSlots, function ($slot) {
+            return !$slot['occupied'];
+        });
+
+        if (count($availableSlots) > $eventsPerDay - count($existingBookings)) {
+            // Remove excess available slots
+            $slotsToKeep = $eventsPerDay - count($existingBookings);
+            $keptSlots = 0;
+
+            foreach ($timeSlots as $key => $slot) {
+                if (!$slot['occupied']) {
+                    if ($keptSlots >= $slotsToKeep) {
+                        unset($timeSlots[$key]);
+                    } else {
+                        $keptSlots++;
+                    }
+                }
+            }
+
+            // Re-index the array
+            $timeSlots = array_values($timeSlots);
+        }
+
+        // dd($timeSlots, $existingBookings);
 
         // Step 1: pagde nakalogin, store guest cart sa session then redirect to login
         if (!$user) {
@@ -85,9 +266,7 @@ class CheckoutController extends Controller
         // session(['total_guests' => $totalGuests]);
 
 
-        // EVENT DATE
-        $eventDate = $request->query('event_date');
-        session(['event_date' => $eventDate]);
+
 
         $totalPrice = $cart->items->sum(function ($item) use ($totalGuests) {
             //  party trays items Variant pricing logic
@@ -192,11 +371,11 @@ class CheckoutController extends Controller
         if ($data['time_mode'] === 'slot') {
             // User chose to select from available time slots
             $timeSlot = $request->input('event_time_slot');  // Slot selected
-            
+
             if (!$timeSlot) {
                 return redirect()->back()->with('error', 'Please select a valid time slot.');
             }
-            
+
             // Split the time slot into start and end times
             $timeParts = explode(' - ', $timeSlot);
             if (count($timeParts) === 2) {
@@ -209,11 +388,11 @@ class CheckoutController extends Controller
             // custom time
             $data['event_start_time'] = $request->input('custom_start_time');  // Custom start time
             $data['event_start_end'] = $request->input('custom_end_time');  // Custom end time
-            
+
             if (!$data['event_start_time'] || !$data['event_start_end']) {
                 return redirect()->back()->with('error', 'Please provide both start and end times for the event.');
             }
-            
+
             if (strtotime($data['event_start_time']) >= strtotime($data['event_start_end'])) {
                 return redirect()->back()->with('error', 'The start time must be earlier than the end time.');
             }

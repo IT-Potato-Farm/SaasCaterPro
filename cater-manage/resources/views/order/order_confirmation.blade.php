@@ -81,6 +81,13 @@
                             </p>
                         @endif
                         <p class="text-gray-600"><span class="font-medium">Type:</span> {{ $order->event_type }}</p>
+                        @if ($order->event_start_time && $order->event_start_end)
+                            <p class="text-gray-600">
+                                <span class="font-medium">Event Time:</span>
+                                {{ \Carbon\Carbon::parse($order->event_start_time)->format('g:i A') }} -
+                                {{ \Carbon\Carbon::parse($order->event_start_end)->format('g:i A') }}
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>

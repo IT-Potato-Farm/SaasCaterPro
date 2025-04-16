@@ -131,16 +131,37 @@ Route::get('/home', function () {
 
 // DATE ROUTE FUNCTION API FOR GETTING THE DATEEEESSSS   partial, ongoing, paid, completed statuses are blocked.
 Route::get('/get-booked-dates', function () {
-    $bookedDates = Order::whereNotIn('status', ['cancelled'])
-        ->get()
-        ->map(function ($order) {
-            return [
-                'start' => $order->event_date_start,
-                'end' => $order->event_date_end,
-            ];
-        });
 
-    return response()->json($bookedDates);
+    $bookingSetting = \App\Models\BookingSetting::first();  // assuming one global setting
+    $limit = $bookingSetting->events_per_day ?? 1;
+
+    $orders = Order::whereNotIn('status', ['cancelled'])
+        ->get()
+        ->flatMap(function ($order) {
+            $startDateTime = new DateTime($order->event_date_start . ' ' . $order->event_start_time);
+            $endDateTime = new DateTime($order->event_date_end . ' ' . $order->event_start_end);
+            $dateChunks = [];
+
+            while ($startDateTime <= $endDateTime) {
+                $dateChunks[] = $startDateTime->format('Y-m-d');
+                $startDateTime->modify('+1 day');
+            }
+
+            return $dateChunks;
+        })
+        ->countBy()  // counts how many times each date appears
+        ->filter(function ($count) use ($limit) {
+            return $count >= $limit;
+        })
+        ->map(function ($count, $date) {
+            return [
+                'start' => $date,
+                'end' => $date,  // single day
+            ];
+        })
+        ->values();
+
+    return response()->json($orders);
 });
 
 
