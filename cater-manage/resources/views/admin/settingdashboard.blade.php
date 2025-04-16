@@ -95,6 +95,14 @@
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+                            <div class="space-y-2">
+                                <label for="rest_time" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Rest Time Between Events (in minutes)
+                                </label>
+                                <input type="number" name="rest_time" id="rest_time"
+                                    value="{{ old('rest_time', $setting->rest_time ?? 60) }}"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
 
                             <!-- Blocked Dates -->
                             <div class="mb-6">

@@ -11,7 +11,9 @@ class BookingSetting extends Model
         'service_end_time',
         'events_per_day',
         'blocked_dates',
+        'rest_time',
     ];
+    
 
     protected $casts = [
         'blocked_dates' => 'array',
