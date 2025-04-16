@@ -99,25 +99,113 @@
 
                             <!-- TIME START AND END -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Event Start Time -->
+
                                 <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                        How would you like to select time?
+                                    </label>
+                                    <div class="flex items-center gap-4">
+                                        <label class="flex items-center space-x-2">
+                                            <input type="radio" name="time_mode" value="slot" checked
+                                                onclick="toggleTimeMode()">
+                                            <span>Choose from available slots</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="radio" name="time_mode" value="custom"
+                                                onclick="toggleTimeMode()">
+                                            <span>Enter custom time</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Time Slot Dropdown -->
+                                <div class="space-y-2" id="time_slot_wrapper">
+                                    <label for="event_time_slot" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Choose Time Slot
+                                    </label>
+
+                                    <select name="event_time_slot" id="event_time_slot"
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                        <option value="" disabled selected>Select a time slot</option>
+                                        @foreach ($timeSlots as $slot)
+                                            <option value="{{ $slot['start'] }} - {{ $slot['end'] }}">
+                                                {{ $slot['start'] }} - {{ $slot['end'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Custom Time Inputs -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="custom_time_wrapper"
+                                    style="display: none;">
+                                    <div class="space-y-2">
+                                        <label for="custom_start_time"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Custom Start Time
+                                        </label>
+                                        <input type="time" name="custom_start_time" id="custom_start_time"
+                                            min="{{ $booking_settings->formatted_service_start_time }}"
+                                            max="{{ $booking_settings->formatted_service_end_time }}"
+                                            value="{{ $booking_settings->formatted_service_start_time }}"
+                                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label for="custom_end_time"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Custom End Time
+                                        </label>
+                                        <input type="time" name="custom_end_time" id="custom_end_time"
+                                            min="{{ $booking_settings->formatted_service_start_time }}"
+                                            max="{{ $booking_settings->formatted_service_end_time }}"
+                                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                    </div>
+                                    <p id="start-time-error" class="text-red-500 hidden">
+                                        The start time must be later than {{ $booking_settings->formatted_service_start_time }}.
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        Service Start Time: {{ $booking_settings->formatted_service_start_time }}<br>
+                                        Service End Time: {{ $booking_settings->formatted_service_end_time }}
+                                    </p>
+                                </div>
+
+                                {{-- DISABLE MUNA --}}
+                                <!-- Event Start Time -->
+                                {{-- <div class="space-y-2">
                                     <label for="event_start_time"
                                         class="block text-sm font-semibold text-gray-700 mb-2">
                                         Start Time
                                     </label>
+
                                     <input type="time" name="event_start_time" id="event_start_time"
+                                        min="{{ $booking_settings->formatted_service_start_time }}"
+                                        max="{{ $booking_settings->formatted_service_start_time }}"
                                         class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                                         required>
-                                </div>
-                                {{-- event end --}}
-                                <div class="space-y-2">
-                                    <label for="event_start_end" class="block text-sm font-semibold text-gray-700 mb-2">
+
+                                    <p class="text-xs text-gray-500">
+                                        Allowed time: {{ $booking_settings->display_service_start_time }} -
+                                        {{ $booking_settings->display_service_end_time }}
+                                    </p>
+                                </div> --}}
+
+                                {{-- event end time --}}
+                                {{-- <div class="space-y-2">
+                                    <label for="event_start_end"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
                                         End Time
                                     </label>
                                     <input type="time" name="event_start_end" id="event_start_end"
+                                        min="{{ $booking_settings->formatted_service_start_time }}"
+                                        max="{{ $booking_settings->formatted_service_end_time }}"
                                         class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                                         required>
-                                </div>
+
+                                    <p class="text-xs text-gray-500">
+                                        Allowed time: {{ $booking_settings->display_service_start_time }} -
+                                        {{ $booking_settings->display_service_end_time }}
+                                    </p>
+                                </div> --}}
                             </div>
                         </div>
 
@@ -346,6 +434,15 @@
 
 
         <script>
+            
+            // SHOW AND HIDE CUSTOM TIME 
+            function toggleTimeMode() {
+                const timeMode = document.querySelector('input[name="time_mode"]:checked').value;
+                document.getElementById('time_slot_wrapper').style.display = (timeMode === 'slot') ? 'block' : 'none';
+                document.getElementById('custom_time_wrapper').style.display = (timeMode === 'custom') ? 'grid' : 'none';
+            }
+
+            document.addEventListener('DOMContentLoaded', toggleTimeMode);
             document.addEventListener('DOMContentLoaded', function() {
                 const totalGuests = document.querySelector('input[name="total_guests"]')?.value;
                 const eventDate = document.querySelector('input[name="event_date"]')?.value;
