@@ -360,8 +360,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
     Route::get('/orders/filter', [OrderController::class, 'index'])->name('orders.filter');
 
-    // cancel order
-    Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
+    
 
 
     // booking  management
@@ -380,6 +379,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    // cancel order
+    Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
     Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');

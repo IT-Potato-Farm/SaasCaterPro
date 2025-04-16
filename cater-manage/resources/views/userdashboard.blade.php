@@ -10,13 +10,27 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Heroicons -->
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+    <script src="{{ asset('js/toprightalert.js') }}"></script>
 </head>
 
 <body class="bg-gray-50">
     <x-customer.navbar />
     <div class="flex h-screen">
        
-
+        
+        
+    
+        @if(session('success'))
+        <script>
+            showSuccessToast('{{ session('success') }}');
+        </script>
+        @endif
+        
+        @if(session('error'))
+        <script>
+            showErrorToast('{{ session('error') }}');
+        </script>
+        @endif
         <!-- Main Content -->
         <div class="flex-1 flex flex-col ml-64">
             <!-- Header -->
