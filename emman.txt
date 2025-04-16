@@ -37,3 +37,29 @@ SET ADMIN
 $user = \App\Models\User::find(1);
 $user->role = 'admin';  
 $user->save();
+
+
+
+CREATE  DATA FOR BOOKINGSETTING USING SEEDER
+php artisan make:seeder BookingSettingSeeder
+
+use Illuminate\Database\Seeder;
+use App\Models\BookingSetting;
+
+class BookingSettingSeeder extends Seeder
+{
+    public function run()
+    {
+        BookingSetting::firstOrCreate([
+            'id' => 1,
+        ], [
+            'service_start_time' => '08:00:00',
+            'service_end_time' => '20:00:00',
+            'events_per_day' => 2,
+            'blocked_dates' => json_encode([]),
+        ]);
+    }
+}
+RUN: php artisan db:seed --class=BookingSettingSeeder
+
+

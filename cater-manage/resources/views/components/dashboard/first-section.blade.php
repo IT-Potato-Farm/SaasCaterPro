@@ -4,9 +4,9 @@
 </script>
 <section class="p-6 bg-gray-50 ">
     <div class="container mx-auto px-4 ">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        
+
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Completed Orders</p>
@@ -25,17 +25,54 @@
                 class="bg-white p-6 rounded-lg border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Pending Orders</p>
                 <div class="flex items-baseline gap-2">
-                    <p class="text-3xl font-bold text-gray-800">{{ $pendingOrdersCount }}</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ $pendingOrdersCount ?? 'No data' }}</p>
                 </div>
             </div>
 
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-purple-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Total Users</p>
-                <p class="text-3xl font-bold text-gray-800">{{ $totalUsers }}</p>
+                <p class="text-3xl font-bold text-gray-800">{{ $totalUsers ?? '0' }}</p>
+            </div>
+
+            <!-- POPULAR PACKAGE -->
+            @if ($mostPopularPackage)
+                <div
+                    class="bg-white p-6 rounded-lg border-l-4 border-indigo-500 shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <p class="text-gray-500 text-sm mb-2">Most Popular Package</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $mostPopularPackage->name }}</p>
+                    <p class="text-sm text-gray-600">Chosen {{ $mostPopularCount }} {{ $mostPopularCount === 1 ? 'time' : 'times' }}</p>
+
+                </div>
+            @else
+                <div class="bg-white p-6 rounded-lg border-l-4 border-gray-300 shadow-sm">
+                    <p class="text-gray-500 text-sm mb-2">Most Popular Package</p>
+                    <p class="text-gray-400">No orders yet</p>
+                </div>
+            @endif
+
+            <!--  WHAT EVENTS ARE USUALLY BOOKED -->
+            <div
+                class="bg-white p-6 rounded-lg border-l-4 border-pink-500 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <p class="text-gray-500 text-sm mb-2">Most Frequent Event Type</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $mostFrequentEvent ?? 'No Data' }}</p>
+            </div>
+
+            <!-- Orders for Today -->
+            <div
+                class="bg-white p-6 rounded-lg border-l-4 border-teal-500 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <p class="text-gray-500 text-sm mb-2">Orders for Today</p>
+                <p class="text-3xl font-bold text-gray-800">{{ $ordersToday ?? 'None' }}</p>
+            </div>
+
+            <!-- Returning Customers -->
+            <div
+                class="bg-white p-6 rounded-lg border-l-4 border-rose-500 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <p class="text-gray-500 text-sm mb-2">Returning Customers</p>
+                <p class="text-3xl font-bold text-gray-800">{{ $returningCustomers ?? 'No data' }}</p>
             </div>
         </div>
-
+         <!-- Charts Row -->
         <div class="bg-white p-6 rounded-lg shadow-sm mt-5">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <h3 class="text-xl font-semibold text-gray-800 mb-2 md:mb-0">Total Earnings</h3>

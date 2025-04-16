@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script src="{{ asset('js/toprightalert.js') }}"></script>
 </head>
@@ -45,7 +47,7 @@
                             <h1 class="text-2xl font-bold text-gray-800">Adjust Booking Service </h1>
                         </div>
 
-                        
+
 
                         <form action="{{ route('admin.booking-settings.update') }}" method="POST">
                             @csrf
@@ -112,11 +114,13 @@
                                 <div id="blocked-dates-container">
                                     @if ($setting && $setting->blocked_dates)
                                         @foreach ($setting->blocked_dates as $index => $date)
-                                            <div class="flex items-center mb-2 blocked-date-row">
-                                                <input type="date" name="blocked_dates[]"
-                                                    class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            <div class="flex  items-center mb-2 blocked-date-row">
+                                                <input type="text" name="blocked_dates[]"
+                                                    placeholder="Select a date"
+                                                    class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 hover:cursor-pointer focus:ring-blue-500 blocked-date-picker"
                                                     value="{{ $date }}">
-                                                <button type="button" class="ml-2 text-red-500 remove-date-btn">
+                                                <button type="button"
+                                                    class="ml-2 text-red-500 remove-date-btn hover:cursor-pointer">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                                                         viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd"
@@ -129,7 +133,7 @@
                                     @endif
                                 </div>
                                 <button type="button" id="add-blocked-date"
-                                    class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center">
+                                    class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded hover:cursor-pointer inline-flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20"
                                         fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -159,32 +163,54 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
+                        const container = document.getElementById('blocked-dates-container');
+
+                        // Initialize Flatpickr for all existing inputs
+                        function initFlatpickrForInputs() {
+                            container.querySelectorAll('.blocked-date-picker').forEach(input => {
+                                flatpickr(input, {
+                                    dateFormat: "Y-m-d",
+                                    minDate: "today",
+                                    disableMobile: true
+                                });
+                            });
+                        }
+
+                        initFlatpickrForInputs();
+
                         // Add new date field
                         document.getElementById('add-blocked-date').addEventListener('click', function() {
-                            const container = document.getElementById('blocked-dates-container');
                             const newDateRow = document.createElement('div');
                             newDateRow.className = 'flex items-center mb-2 blocked-date-row';
                             newDateRow.innerHTML = `
-                                <input type="date" 
-                                       name="blocked_dates[]" 
-                                       class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <button type="button" 
-                                        class="ml-2 text-red-500 remove-date-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            `;
+            <input type="text" 
+                   name="blocked_dates[]"
+                   placeholder="Select a date" 
+                   class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 hover:cursor-pointer focus:ring-blue-500 blocked-date-picker">
+            <button type="button" 
+                    class="ml-2 text-red-500 remove-date-btn hover:cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        `;
                             container.appendChild(newDateRow);
 
-                            // Add event listener for new remove button
+                            // Initialize Flatpickr on the new input
+                            flatpickr(newDateRow.querySelector('.blocked-date-picker'), {
+                                dateFormat: "Y-m-d",
+                                minDate: "today",
+                                disableMobile: true
+                            });
+
+                            // Add event listener to new remove button
                             newDateRow.querySelector('.remove-date-btn').addEventListener('click', function() {
                                 container.removeChild(newDateRow);
                             });
                         });
 
-                        // Remove date field (for existing buttons)
-                        document.querySelectorAll('.remove-date-btn').forEach(function(button) {
+                        // Attach remove logic to existing buttons
+                        container.querySelectorAll('.remove-date-btn').forEach(button => {
                             button.addEventListener('click', function() {
                                 const row = this.closest('.blocked-date-row');
                                 row.parentNode.removeChild(row);
