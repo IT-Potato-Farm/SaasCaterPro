@@ -9,9 +9,9 @@
 <script>
     function addItem() {
             Swal.fire({
-                title: '<span class="text-2xl font-bold text-gray-800">Add Item</span>',
+                title: '<span class="text-2xl font-bold text-gray-800">Add Item Ulam</span>',
                 html: `
-                    <form id="addItemForm" class="grid grid-cols-1 gap-6">
+                    <form id="addItemForm"  class="grid grid-cols-1 gap-6">
                         <!-- Item Name -->
                         <div>
                             <label for="swal-name" class="block text-sm font-medium text-gray-700">Item Name</label>

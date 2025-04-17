@@ -92,10 +92,10 @@ class OrderController extends Controller
                 ->with('error', 'Cannot mark a cancelled order as unpaid.');
         }
 
-        $order->status = 'pending';
+        $order->status = 'unpaid';
         $order->save();
 
-        return redirect()->route('admin.admindashboard')
+        return redirect()->route('admin.bookings')
             ->with('success', 'Order marked as unpaid.');
     }
 

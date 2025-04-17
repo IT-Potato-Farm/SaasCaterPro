@@ -85,6 +85,26 @@
         }
     });
 }
+//  Confirm delete 
+function confirmDeletePackage(button) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This package will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            focusConfirm: false,
+            customClass: {
+                confirmButton: 'bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
+                cancelButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
+            }
+        });
+    }
 
 </script>
 <div class="container mx-auto px-4 py-8">
@@ -164,7 +184,7 @@
                                 class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="button" onclick="confirmDelete(this)"
+                                <button type="button" onclick="confirmDeletePackage(this)"
                                     class="flex-1 px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 transition-colors">
                                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">

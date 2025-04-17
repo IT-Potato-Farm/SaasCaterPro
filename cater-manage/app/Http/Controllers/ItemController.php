@@ -127,16 +127,11 @@ class ItemController extends Controller
             } else {
                 $item->itemOptions()->detach();
             }
-            return response()->json([
-                'success' => true,
-                'message' => 'Item updated successfully!',
-            ], 200);
+            return redirect()->back()->with('success', 'Item updated successfully!');
         } catch (\Exception $e) {
             Log::error("Error updating item: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+            
+            return redirect()->back()->with('error', 'Error updating item: ' . $e->getMessage());
         }
     }
 

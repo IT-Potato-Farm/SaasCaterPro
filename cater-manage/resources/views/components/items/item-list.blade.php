@@ -5,7 +5,9 @@
         // Store all available options in a separate variable
         window.allItemOptions_{{ $item->id }} = @json(\App\Models\ItemOption::all()->toArray());
     @endforeach
+
 </script>
+
 <script>
     function openEditItem(id, name, description, selectedOptions, allOptions) {
         let editUrl = "{{ route('item.edit', ':id') }}".replace(':id', id);
@@ -67,54 +69,46 @@
             },
             preConfirm: () => {
                 const form = document.getElementById(`editForm-${id}`);
-
                 if (form.reportValidity()) {
+
+                    
                     const selectedOptions = [];
-                    form.querySelectorAll('input[name="item_options[]"]:checked').forEach(function(
-                    checkbox) {
+                    form.querySelectorAll('input[name="item_options[]"]:checked').forEach(function(checkbox) {
                         selectedOptions.push(checkbox.value);
                     });
-                    console.log("Selected options MODAL ULAM:", selectedOptions);
 
-                    // Create FormData object
-                    const formData = new FormData(form);
-
-                    // Add selected options as an array
+                    
+                    form.querySelectorAll('input[name="selected_options[]"]').forEach(input => input.remove());
                     selectedOptions.forEach(optionId => {
-                        formData.append('selected_options[]', optionId);
+                        let hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'selected_options[]';
+                        hiddenInput.value = optionId;
+                        form.appendChild(hiddenInput);
                     });
 
-                    return fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': formData.get('_token'),
-                            },
-                            body: formData
-                        })
-                        .then(response => {
-                            console.log('Response:', response); // Log the response
-                            return response
-                        .json(); // This line may throw an error if response is not JSON
-                        })
-                        .then(data => {
-                            console.log('Success:', data);
-                            if (data.success) {
-                                Swal.fire('Success!', 'Item updated successfully.', 'success')
-                                    .then(() => {
-                                        // Reload the page to show updated data
-                                        window.location.reload();
-                                    });
-                            } else {
-                                Swal.fire('Error!', data.message ||
-                                    'There was a problem updating the item.', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire('Error!', 'Something went wrong. Please try again later.',
-                                'error');
-                        });
+                    form.submit();  
                 }
+            }
+        });
+    }
+    //  Confirm delete 
+    function confirmDeleteUlam(button) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This ulam will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            focusConfirm: false,
+            customClass: {
+                confirmButton: 'bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
+                cancelButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
             }
         });
     }
@@ -176,7 +170,7 @@
                             <form action="{{ route('item.delete', $item->id) }}" method="POST" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="button" onclick="confirmDelete(this)"
+                                <button type="button" onclick="confirmDeleteUlam(this)"
                                     class="flex-1 px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 hover:cursor-pointer transition-colors">
                                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">

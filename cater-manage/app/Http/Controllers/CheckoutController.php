@@ -262,13 +262,21 @@ class CheckoutController extends Controller
 
         // fetch total guests 
         // $totalGuests = $request->query('total_guests', 50);
-        // //  store in the session to give later in the store() method
         // session(['total_guests' => $totalGuests]);
 
+        $dateRange = explode(' to ', $eventDate);
+        if (count($dateRange) === 2) {
+            $event_date_start = trim($dateRange[0]);
+            $event_date_end = trim($dateRange[1]);
+        } else {
+            $event_date_start = trim($eventDate);
+            $event_date_end = trim($eventDate);
+        }
+
+        $days = Carbon::parse($event_date_start)->diffInDays(Carbon::parse($event_date_end)) + 1;
 
 
-
-        $totalPrice = $cart->items->sum(function ($item) use ($totalGuests) {
+        $totalPrice = $cart->items->sum(function ($item) use ($totalGuests, $days) {
             //  party trays items Variant pricing logic
             if ($item->menu_item_id && $item->menuItem) {
                 $pricingTiers = $item->menuItem->pricing;
@@ -292,13 +300,13 @@ class CheckoutController extends Controller
             // sa package items maximum of totalGuests and the packages min pax.
             if ($item->package_id && $item->package) {
                 $guests = max($totalGuests, $item->package->min_pax);
-                return $item->package->price_per_person * $guests * $item->quantity;
+                return $item->package->price_per_person * $guests * $item->quantity * $days;
             }
             return 0;
         });
 
 
-        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests', 'eventDate', 'booking_settings', 'timeSlots'));
+        return view('cart.checkout', compact('cart', 'totalPrice', 'pendingOrder', 'totalGuests', 'eventDate', 'booking_settings', 'timeSlots', 'days'));
     }
     public function mergeGuestCart($user, $guestCart)
     {
@@ -434,10 +442,13 @@ class CheckoutController extends Controller
             $event_date_end   = trim($data['event_date']);
         }
 
+        // Calculate number of days including both start and end
+        $days = Carbon::parse($event_date_start)->diffInDays(Carbon::parse($event_date_end)) + 1;
 
 
         // final order total.
-        $total = $cart->items->sum(function ($item) use ($data) {
+        // Packages - charged per guest per day, menu items are charged per order.
+        $total = $cart->items->sum(function ($item) use ($data, $days) {
             // sa menu items, check if a variant is set and use its price from the JSON pricing.
             if ($item->menu_item_id && $item->menuItem) {
                 $pricingTiers = $item->menuItem->pricing;
@@ -453,7 +464,7 @@ class CheckoutController extends Controller
             if ($item->package_id && $item->package) {
                 // if less than yung total guest sa package min pax, ic-count based on the min pax lagi
                 $guests = max($data['total_guests'], $item->package->min_pax);
-                return $item->package->price_per_person * $guests * $item->quantity;
+                return $item->package->price_per_person * $guests * $item->quantity * $days;
             }
             return 0;
         });
