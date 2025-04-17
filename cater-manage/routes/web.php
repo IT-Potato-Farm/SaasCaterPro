@@ -310,12 +310,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 
 
-    // ITEM STORE
+    // ULAM ITEM STORE
     Route::resource('items', ItemController::class);
     Route::post('/items/check-name', [ItemController::class, 'checkName'])->name('items.checkName');
     Route::put('/items/{id}/edit', [ItemController::class, 'update'])->name('item.edit');
     Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('item.delete');
-    // ITEM OPTIONS
+
+    // ITEM OPTIONS 
     Route::post('/items-option/store', [ItemOptionController::class, 'store'])->name('itemOptions.store');
     Route::put('/item-options/{id}', [ItemOptionController::class, 'update'])->name('itemOption.edit');
     Route::delete('/item-options/{id}', [ItemOptionController::class, 'destroy'])->name('itemOption.delete');

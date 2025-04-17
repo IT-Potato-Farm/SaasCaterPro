@@ -57,15 +57,7 @@
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <div id="min_pax-error" class="error-message"></div>
                         </div>
-                        <div>
-                            <label for="swal-status" class="block text-sm font-medium text-gray-700">Status:</label>
-                            <select id="swal-status" name="status"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="available">Available</option>
-                                <option value="unavailable">Not Available</option>
-                            </select>
-                            <div id="status-error" class="error-message"></div>
-                        </div>
+                        
                     </div>
                 </form>`,
             showCancelButton: true,
@@ -101,7 +93,7 @@
                 minPaxInput.addEventListener('input', () => validateField(minPaxInput, 'min_pax'));
             },
             preConfirm: async () => {
-              
+
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 const formData = new FormData(document.getElementById('addPackageForm'));
                 let hasErrors = false;
@@ -117,14 +109,14 @@
                 if (hasErrors) return false;
 
                 return fetch("{{ route('package.store') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: formData
-                })
-                .then(handleResponse)
-                .catch(handleError);
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: formData
+                    })
+                    .then(handleResponse)
+                    .catch(handleError);
             }
         }).then(handleSweetAlertResult);
     }
@@ -157,22 +149,22 @@
     function validateField(input, fieldName) {
         const value = input.value.trim();
         const errorElement = document.getElementById(`${fieldName}-error`);
-        
+
         if (!value) {
             errorElement.textContent = `${fieldName.replace('_', ' ')} is required`;
             return true;
         }
-        
+
         if (fieldName === 'min_pax' && (value < 1 || !Number.isInteger(Number(value)))) {
             errorElement.textContent = 'Minimum pax must be at least 1';
             return true;
         }
-        
+
         if (fieldName === 'price_per_person' && value < 0.01) {
             errorElement.textContent = 'Price must be at least 0.01';
             return true;
         }
-        
+
         errorElement.textContent = '';
         return false;
     }
@@ -183,20 +175,20 @@
             errorElement.textContent = 'Please upload an image';
             return true;
         }
-        
+
         const file = input.files[0];
         const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-        
+
         if (!validTypes.includes(file.type)) {
             errorElement.textContent = 'Invalid image format (JPEG, PNG, JPG, GIF only)';
             return true;
         }
-        
+
         if (file.size > 10 * 1024 * 1024) { // 10MB
             errorElement.textContent = 'Image size must be less than 10MB';
             return true;
         }
-        
+
         errorElement.textContent = '';
         return false;
     }
@@ -204,7 +196,9 @@
     async function handleResponse(response) {
         if (!response.ok) {
             const data = await response.json();
-            showValidationErrors(data.errors || { message: data.message });
+            showValidationErrors(data.errors || {
+                message: data.message
+            });
             throw new Error(data.message || 'Server error');
         }
         return response.json();
@@ -225,13 +219,22 @@
     function handleSweetAlertResult(result) {
         if (result.isConfirmed) {
             Swal.fire({
+                toast: true,
+                position: 'top-end',
                 icon: 'success',
                 title: 'Package Added!',
                 text: 'The new package has been successfully created',
-                timer: 2000
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
             }).then(() => location.reload());
         }
     }
 </script>
 
-<button onclick="addPackage()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a package heree2</button>
+<button onclick="addPackage()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a package
+    heree2</button>

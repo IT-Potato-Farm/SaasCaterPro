@@ -36,7 +36,6 @@ class PackageController extends Controller
                 'price_per_person' => 'required|numeric|min:0',
                 'min_pax' => 'required|integer|min:1',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-                'status' => 'required|in:available,unavailable',
             ]);
 
             $packageitemFields['name'] = strip_tags($packageitemFields['name']);
@@ -57,7 +56,7 @@ class PackageController extends Controller
                 'message' => 'Package added successfully!',
                 'package' => $package
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

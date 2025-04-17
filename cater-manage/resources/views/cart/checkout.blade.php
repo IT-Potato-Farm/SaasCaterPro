@@ -130,7 +130,8 @@
                                         @foreach ($timeSlots as $slot)
                                             <option value="{{ $slot['start'] }} - {{ $slot['end'] }}"
                                                 @if ($slot['occupied']) disabled class="text-red-500" @endif>
-                                                {{ \Carbon\Carbon::createFromFormat('H:i', $slot['start'])->format('g:ia') }} - 
+                                                {{ \Carbon\Carbon::createFromFormat('H:i', $slot['start'])->format('g:ia') }}
+                                                -
                                                 {{ \Carbon\Carbon::createFromFormat('H:i', $slot['end'])->format('g:ia') }}
                                                 {{ $slot['occupied'] ? '(Occupied)' : '' }}
                                             </option>
@@ -319,6 +320,9 @@
                                                         <span class="text-sm font-normal text-gray-500 block mt-1">
                                                             ₱{{ number_format($itemPrice, 2) }} × {{ $totalGuests }}
                                                             guests
+                                                            <span class="text-sm text-gray-500 ml-1">×
+                                                                {{ $days }}
+                                                                {{ Str::plural('day', $days) }}</span>
                                                         </span>
                                                     @else
                                                         <span class="text-sm font-normal text-gray-500 block mt-1">
@@ -394,6 +398,7 @@
                             </div>
                         @endif
                     </div>
+                    
                     <!-- Order Totals Card -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Order Total</h2>
@@ -401,6 +406,7 @@
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal ({{ $cart->items->count() }} items)</span>
+
                                 <span class="font-medium">₱{{ number_format($totalPrice, 2) }}</span>
                             </div>
 
@@ -412,8 +418,9 @@
                             <div class="border-t border-gray-200 my-3"></div>
 
                             <div class="flex justify-between text-lg font-bold text-gray-900">
-                                <span>Total</span>
-                                <span>₱{{ number_format($totalPrice, 2) }}</span>
+                                <span>Totals</span>
+                                <span>₱{{ number_format($totalPrice, 2) }} </span>
+
                             </div>
                         </div>
                     </div>
