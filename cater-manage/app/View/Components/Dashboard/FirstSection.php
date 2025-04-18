@@ -56,9 +56,12 @@ class FirstSection extends Component
             ->where('status', '!=', 'cancelled')
             ->count();
         // RETURNINGG CUSTOMRRT
-        $this->returningCustomers = Order::select('user_id')
+        $this->returningCustomers = Order::whereNotNull('user_id')
+            ->where('status', '!=', 'cancelled')
+            ->select('user_id')
             ->groupBy('user_id')
             ->havingRaw('COUNT(*) > 1')
+            ->get()
             ->count();
 
         $this->completedOrdersCount = Order::where('status', 'completed')->count();

@@ -52,4 +52,8 @@ class Order extends Model
             return $cartItem->itemable instanceof \App\Models\Package;
         });
     }
+    public function getEventDaysAttribute()
+{
+    return \Carbon\Carbon::parse($this->event_date_start)->diffInDays(\Carbon\Carbon::parse($this->event_date_end)) + 1;
+}
 }

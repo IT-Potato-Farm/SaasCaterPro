@@ -1,5 +1,5 @@
 {{-- CART PAGE --}}
-<script src="{{ asset('js/cart.js') }}"></script>
+<script src="{{ asset('js/partyTrayCart.js') }}"></script>
 <script>
     function debugAddToCart(itemId) {
         // Check if a variant dropdown exists for the menu item
