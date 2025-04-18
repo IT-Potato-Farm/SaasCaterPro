@@ -16,6 +16,31 @@ use App\Notifications\OrderConfirmationEmail;
 
 class CheckoutController extends Controller
 {
+    public function getAvailableSlots(Request $request)
+    {
+        $eventDate = $request->query('event_date');
+        if (!$eventDate) {
+            return response()->json(['error' => 'Event date is required'], 400);
+        }
+
+        $bookingSettings = BookingSetting::first();
+        if (!$bookingSettings || !$bookingSettings->service_start_time || !$bookingSettings->service_end_time || !$bookingSettings->events_per_day) {
+            return response()->json(['error' => 'Booking settings are not configured properly'], 500);
+        }
+
+        $timeSlots = $this->generateTimeSlots($bookingSettings, $eventDate);
+
+
+        $formattedSlots = array_map(function ($slot) {
+            return [
+                'start' => Carbon::createFromFormat('H:i', $slot['start'])->format('H:i'),
+                'end' => Carbon::createFromFormat('H:i', $slot['end'])->format('H:i'),
+            ];
+        }, $timeSlots);
+
+        return response()->json(array_values($formattedSlots));
+    }
+    
     public function show(Request $request)
     {
         $user = Auth::user();
@@ -256,36 +281,110 @@ class CheckoutController extends Controller
             // 'total_guests'  => 'required|integer|min:1',
             'concerns'      => 'nullable|string'
         ]);
+        $bookingSettings = BookingSetting::first();
+        if (!$bookingSettings) {
+            return redirect()->back()->with('error', 'Booking settings are not configured.');
+        }
+
 
         //  time selection logic based on 'time_mode'
         if ($data['time_mode'] === 'slot') {
             // User chose to select from available time slots
-            $timeSlot = $request->input('event_time_slot');  // Slot selected
-
-            if (!$timeSlot) {
-                return redirect()->back()->with('error', 'Please select a valid time slot.');
-            }
-
-            // Split the time slot into start and end times
-            $timeParts = explode(' - ', $timeSlot);
-            if (count($timeParts) === 2) {
-                $data['event_start_time'] = $timeParts[0];  // Start time
-                $data['event_start_end'] = $timeParts[1];   // End time
-            } else {
+            $slotData = $request->validate([
+                'event_time_slot' => 'required|string'
+            ]);
+            $timeParts = explode(' - ', $slotData['event_time_slot']);
+            if (count($timeParts) !== 2) {
                 return redirect()->back()->with('error', 'Invalid time slot selected.');
             }
+
+
+            try {
+                $startTime = Carbon::createFromFormat('H:i', $timeParts[0]);
+                $endTime = Carbon::createFromFormat('H:i', $timeParts[1]);
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Invalid time slot format.');
+            }
+
+            $serviceStart = Carbon::createFromTimeString($bookingSettings->service_start_time);
+            $serviceEnd = Carbon::createFromTimeString($bookingSettings->service_end_time);
+
+            // Validate within service hours and start before end
+            if ($startTime->lt($serviceStart) || $endTime->gt($serviceEnd) || $startTime->gte($endTime)) {
+                $serviceStartDisplay = $serviceStart->format('g:iA');
+                $serviceEndDisplay = $serviceEnd->format('g:iA');
+                return redirect()->back()->with('error', "Selected time must be between {$serviceStartDisplay}-{$serviceEndDisplay} and start time must be before end time.");
+            }
+            // Check for overlaps with existing bookings
+            $eventDate = trim(explode(' to ', $data['event_date'])[0]); // Get start date
+            $existingBookings = Order::whereDate('event_date_start', $eventDate)
+                ->whereNotIn('status', ['cancelled'])
+                ->get(['event_start_time', 'event_start_end']);
+
+            foreach ($existingBookings as $booking) {
+                $bookingStart = Carbon::parse($booking->event_start_time);
+                $bookingEnd = Carbon::parse($booking->event_start_end);
+                if ($startTime->lte($bookingEnd) && $endTime->gte($bookingStart)) {
+                    $bookingStartDisplay = $bookingStart->format('g:iA');
+                    $bookingEndDisplay = $bookingEnd->format('g:iA');
+                    return redirect()->back()->with('error', "Selected time overlaps with a booked slot ({$bookingStartDisplay}-{$bookingEndDisplay}).");
+                }
+            }
+
+            $data['event_start_time'] = $startTime->format('H:i');
+            $data['event_start_end'] = $endTime->format('H:i');
+
         } elseif ($data['time_mode'] === 'custom') {
             // custom time
-            $data['event_start_time'] = $request->input('custom_start_time');  // Custom start time
-            $data['event_start_end'] = $request->input('custom_end_time');  // Custom end time
+            // $data['event_start_time'] = $request->input('custom_start_time');  
+            // $data['event_start_end'] = $request->input('custom_end_time');  
+            $customSlot = $request->validate([
+                'custom_time_slot' => 'required|string'
+            ])['custom_time_slot'];
+            $timeParts = explode('|', $customSlot);
 
-            if (!$data['event_start_time'] || !$data['event_start_end']) {
-                return redirect()->back()->with('error', 'Please provide both start and end times for the event.');
-            }
+            $startTime = $timeParts[0]; // e.g., "13:00"
+            $endTime = $timeParts[1];   // e.g., "16:00"
 
-            if (strtotime($data['event_start_time']) >= strtotime($data['event_start_end'])) {
-                return redirect()->back()->with('error', 'The start time must be earlier than the end time.');
+            // Validate custom time
+            $start = Carbon::createFromFormat('H:i', $startTime);
+            $end = Carbon::createFromFormat('H:i', $endTime);
+            $serviceStart = Carbon::createFromTimeString($bookingSettings->service_start_time);
+            $serviceEnd = Carbon::createFromTimeString($bookingSettings->service_end_time);
+
+            // Check if within service hours and start before end
+            if ($start->lt($serviceStart) || $end->gt($serviceEnd) || $start->gte($end)) {
+                $serviceStartDisplay = $serviceStart->format('g:iA');
+                $serviceEndDisplay = $serviceEnd->format('g:iA');
+                return redirect()->back()->with('error', "Selected time must be between {$serviceStartDisplay}-{$serviceEndDisplay} and start time must be before end time.");
             }
+            // Check for overlaps with existing bookings
+            $eventDate = trim(explode(' to ', $data['event_date'])[0]); // Get start date
+            $existingBookings = Order::whereDate('event_date_start', $eventDate)
+                ->whereNotIn('status', ['cancelled'])
+                ->get(['event_start_time', 'event_start_end']);
+
+            foreach ($existingBookings as $booking) {
+                $bookingStart = Carbon::parse($booking->event_start_time);
+                $bookingEnd = Carbon::parse($booking->event_start_end);
+                if ($start->lte($bookingEnd) && $end->gte($bookingStart)) {
+                    $bookingStartDisplay = $bookingStart->format('g:iA');
+                    $bookingEndDisplay = $bookingEnd->format('g:iA');
+                    return redirect()->back()->with('error', "Selected time overlaps with a booked slot ({$bookingStartDisplay}-{$bookingEndDisplay}).");
+                }
+            }
+            // if (count($timeParts) !== 2) {
+            //     return redirect()->back()->with('error', 'Invalid custom time slot selected.');
+            // }
+            // if (!$data['event_start_time'] || !$data['event_start_end']) {
+            //     return redirect()->back()->with('error', 'Please provide both start and end times for the event.');
+            // }
+            
+            $data['event_start_time'] = $startTime;
+            $data['event_start_end'] = $endTime;
+            // if (strtotime($data['event_start_time']) >= strtotime($data['event_start_end'])) {
+            //     return redirect()->back()->with('error', 'The start time must be earlier than the end time.');
+            // }
         }
 
         // Step 2: Check if the cart contains a package

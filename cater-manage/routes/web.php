@@ -172,8 +172,8 @@ Route::get('/get-booked-dates', function () {
 
     return response()->json($formatted);
 });
-
-
+Route::get('/bookings/occupied-times', [OrderController::class, 'getOccupiedTimes'])->name('bookings.occupied-times');
+Route::get('/bookings/available-slots', [CheckoutController::class, 'getAvailableSlots'])->name('bookings.available-slots');
 //CATEGORY ROUTES
 // Route::post('/create-category', [PostCategories::class,'createCategory']);
 

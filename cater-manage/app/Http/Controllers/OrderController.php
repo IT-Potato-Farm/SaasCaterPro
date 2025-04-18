@@ -2,13 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Order;
 use App\Mail\InvoiceMail;
 use Illuminate\Http\Request;
+use App\Models\BookingSetting;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
+    
+    public function getOccupiedTimes(Request $request)
+    {
+        $eventDate = $request->query('event_date');
+
+        if (!$eventDate) {
+            return response()->json(['error' => 'Event date is required'], 400);
+        }
+
+        $bookingSetting = BookingSetting::first();
+        $restTime = $bookingSetting ? $bookingSetting->rest_time : 0;
+
+        $existingBookings = Order::whereDate('event_date_start', $eventDate)
+            ->whereNotIn('status', ['cancelled'])
+            ->orderBy('event_start_time')  // Important: sort by start time
+            ->get(['event_start_time', 'event_start_end']);
+
+        $timesWithRest = $existingBookings->map(function ($booking) use ($restTime) {
+            return [
+                'start' => Carbon::parse($booking->event_start_time)->format('H:i'),
+                'end'   => Carbon::parse($booking->event_start_end)->format('H:i'),
+            ];
+        })->toArray();
+
+        // Adjust to consider rest time as the "gap"
+        $adjusted = [];
+        foreach ($timesWithRest as $key => $time) {
+            $adjusted[] = [
+                'start' => $time['start'],
+                'end' => $time['end']
+            ];
+
+            // For the last one skip, but for all others shift the next start
+            if (isset($timesWithRest[$key + 1])) {
+                $next = Carbon::createFromFormat('H:i', $time['end'])->addMinutes($restTime)->format('H:i');
+                // Adjust the start of the next event if rest_time pushes it forward
+                if ($next > $timesWithRest[$key + 1]['start']) {
+                    $timesWithRest[$key + 1]['start'] = $next;
+                }
+            }
+        }
+
+        return response()->json($adjusted);
+    }
+
     public function index(Request $request)
     {
         $query = Order::query();
@@ -157,7 +204,7 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         try {
             $order->delete();
-    
+
             return redirect()->back()->with('success', 'Order deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete the order.');
