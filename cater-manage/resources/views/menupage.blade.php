@@ -20,6 +20,7 @@
     <script>
         
     </script>
-    <script src="{{ asset('js/cart.js') }}"></script>
+    <script src="{{ asset('js/addPackageToCart.js') }}"></script>
+    <script src="{{ asset('js/partyTrayCart.js') }}"></script>
 </body>
 </html>

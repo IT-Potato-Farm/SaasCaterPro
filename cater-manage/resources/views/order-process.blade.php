@@ -204,7 +204,9 @@
                     <div class="p-4 sm:p-6 border-b border-gray-100">
                         <h3 class="text-lg font-semibold text-gray-800">Order Details</h3>
                     </div>
-                    
+                    @php
+                        $days = $order->event_days;
+                    @endphp
                     <div class="overflow-x-auto">
                         <!-- Mobile View - Card Layout -->
                         <div class="sm:hidden divide-y divide-gray-200">
@@ -212,13 +214,14 @@
                                 @php
                                     $isPackage = $item->item_type === 'package';
                                     $guestCount = is_numeric($item->variant) ? (int) $item->variant : 1;
+                                    
                                     $subtotal = $isPackage 
                                         ? $item->price * $guestCount * $item->quantity 
                                         : $item->price * $item->quantity;
                         
                                     $priceBreakdown = $isPackage
-                                        ? '₱' . number_format($item->price, 2) . ' × ' . $guestCount . ' guests' . ($item->quantity > 1 ? ' × ' . $item->quantity . ' package(s)' : '')
-                                        : '₱' . number_format($item->price, 2) . ' × ' . $item->quantity;
+                                    ? '₱' . number_format($item->price, 2) . ' × ' . $guestCount . ' guests × ' . $days . ' day' . ($days > 1 ? 's' : '') . ($item->quantity > 1 ? ' × ' . $item->quantity . ' package(s)' : '')
+                                    : '₱' . number_format($item->price, 2) . ' × ' . $item->quantity;
                                 @endphp
                                 
                                 <div class="p-4">
@@ -262,7 +265,7 @@
                                             <div class="mt-2 text-xs text-gray-500">
                                                 <div>Qty: {{ $item->quantity }}</div>
                                                 <div>Variant: {{ $isPackage ? ($item->variant ? $item->variant . ' guests' : '-') : ($item->variant ? $item->variant . ' per pax' : '-') }}</div>
-                                                <div class="text-gray-600 mt-1">{{ $priceBreakdown }}</div>
+                                                <div class="text-gray-600 mt-1">{{ $priceBreakdown }} </div>
                                             </div>
                                             
                                             @if ($isPackage && method_exists($item->itemable, 'packageItems'))
@@ -357,8 +360,8 @@
                                             : $item->price * $item->quantity;
                             
                                         $priceBreakdown = $isPackage
-                                            ? '₱' . number_format($item->price, 2) . ' × ' . $guestCount . ' guests' . ($item->quantity > 1 ? ' × ' . $item->quantity . ' package(s)' : '')
-                                            : '₱' . number_format($item->price, 2) . ' × ' . $item->quantity;
+                                        ? '₱' . number_format($item->price, 2) . ' × ' . $guestCount . ' guests × ' . $days . ' day' . ($days > 1 ? 's' : '') . ($item->quantity > 1 ? ' × ' . $item->quantity . ' package(s)' : '')
+                                        : '₱' . number_format($item->price, 2) . ' × ' . $item->quantity;
                                     @endphp
                         
                                     <tr class="hover:bg-gray-50 transition-colors duration-150">
@@ -406,7 +409,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="text-gray-900">₱{{ number_format($subtotal, 2) }}</div>
-                                            <div class="text-xs text-gray-500">{{ $priceBreakdown }}</div>
+                                            <div class="text-xs text-gray-500">{{ $priceBreakdown }} </div>
                                         </td>
                                     </tr>
                         

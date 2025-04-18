@@ -1,6 +1,6 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<script src="{{ asset('js/cart.js') }}"></script>
+{{-- <script src="{{ asset('js/partyTrayCart.js') }}"></script> --}}
 @php
     $cartCount = 0;
     // check if the user is logged in and has a cart

@@ -70,9 +70,13 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-4">Event Details</h2>
                     <div class="space-y-2">
-                        <p class="text-gray-600"><span class="font-medium">Date Start:</span>
-                            {{ $order->event_date_start }}</p>
-                        <p class="text-gray-600"><span class="font-medium">Date End:</span> {{ $order->event_date_end }}
+                        <p class="text-gray-600">
+                            <span class="font-medium">Event Date:</span>
+                            @if(\Carbon\Carbon::parse($order->event_date_start)->isSameDay(\Carbon\Carbon::parse($order->event_date_end)))
+                                {{ \Carbon\Carbon::parse($order->event_date_start)->format('F j, Y') }}
+                            @else
+                                {{ \Carbon\Carbon::parse($order->event_date_start)->format('F j, Y') }} - {{ \Carbon\Carbon::parse($order->event_date_end)->format('F j, Y') }}
+                            @endif
                         </p>
                         <p class="text-gray-600"><span class="font-medium">Location:</span> {{ $order->event_address }}
                         </p>

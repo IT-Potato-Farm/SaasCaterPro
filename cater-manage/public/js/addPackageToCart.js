@@ -1,7 +1,5 @@
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ asset('js/addPackageToCart.js') }}"></script>
-{{-- <script>
-    window.openItem = async function(packageId) {
+
+    window.openItem= async function (packageId) {
         console.log('Opening package with ID:', packageId);
         try {
             const {
@@ -15,7 +13,7 @@
 
             const htmlContent = `
                 <div class="max-h-[80vh] overflow-y-auto">
-                    <div id="modal-message" class="hidden mb-4 p-3 rounded text-sm"></div>
+                <div id="modal-message" class="hidden mb-4 p-3 rounded text-sm"></div>
                     <!-- Header Section -->
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
@@ -83,7 +81,7 @@
         }
     }
 
-    window.addSelectedPackageToCart = async function(packageId) {
+    window.addSelectedPackageToCart= async function (packageId) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const form = document.getElementById('packageSelectionForm');
         const checkboxes = form.querySelectorAll('input[type="checkbox"]');
@@ -108,10 +106,6 @@
             const checked = Array.from(groupCheckboxes).filter(cb => cb.checked);
             if (checked.length === 0) {
                 showModalMessage('error', 'Please select at least one option for every food item.');
-                document.getElementById('modal-message').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
                 return;
             }
         }
@@ -135,7 +129,7 @@
         });
 
         try {
-            const data = await fetchPackageData(packageId);
+            const data = await fetchPackageData(packageId); 
             const response = await fetch('/cart/add', {
                 method: 'POST',
                 headers: {
@@ -180,7 +174,7 @@
     }
 
     const packageCache = new Map();
-
+    
     // FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
     async function fetchPackageData(packageId) {
         if (packageCache.has(packageId)) {
@@ -218,14 +212,14 @@
 
     // FUNCTION FOR FOOD ITEMS RENDER
     function renderFoods(foods) {
-        console.log('Rendering foods:', foods);
+        console.log('Rendering foods:', foods); 
 
         if (!foods || foods.length === 0) {
             return '<p class="text-gray-500">No food items available.</p>';
         }
 
         return foods.map(packageItem => {
-            const item = packageItem.item;
+            const item = packageItem.item; 
             const optionsHtml = (packageItem.options || []).map(option => `
             <label class="inline-flex items-center space-x-2 mb-2 mr-4">
                 <input 
@@ -262,105 +256,18 @@
             </div>
         `).join('');
     }
-
     function showModalMessage(type, message) {
         const msgBox = document.getElementById('modal-message');
         if (!msgBox) return;
-
+    
         msgBox.textContent = message;
         msgBox.classList.remove('hidden', 'bg-red-100', 'bg-green-100', 'text-red-700', 'text-green-700');
-
+    
         if (type === 'error') {
             msgBox.classList.add('bg-red-100', 'text-red-700');
         } else if (type === 'success') {
             msgBox.classList.add('bg-green-100', 'text-green-700');
         }
     }
-</script> --}}
 
-
-
-{{-- <section id="menu" class="menu-section py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"> --}}
-<section id="menu" class="menu-section py-16 ">
-
-    <h2
-        class="text-center font-extrabold text-4xl md:text-5xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-12 px-4 py-2 ">
-        Packages
-    </h2>
-
-    <div class="container mx-auto px-4 max-w-6xl ">
-        @if ($packages->isNotEmpty())
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                @foreach ($packages as $package)
-                    <div
-                        class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:-translate-y-2 transition-transform">
-                        <div class="relative h-56">
-                            <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
-                                class="w-full h-full object-fill transition-transform duration-300 group-hover:scale-105" />
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
-                                <h3 class="text-2xl font-bold text-white">{{ $package->name }}</h3>
-                            </div>
-                        </div>
-
-                        <div class="p-6 flex flex-col h-full">
-                            <div class="flex-grow">
-                                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
-                                    {{ $package->description }}
-                                </p>
-
-                                <div class="space-y-3 mb-6">
-                                    <div
-                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Price per
-                                            Pax</span>
-                                        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
-                                            ₱{{ number_format($package->price_per_person, 2) }}
-                                        </span>
-                                    </div>
-
-                                    <div
-                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Minimum
-                                            Pax</span>
-                                        <span class="text-lg font-bold text-purple-600 dark:text-purple-400">
-                                            {{ $package->min_pax }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="openItem({{ $package->id }})"
-                                    class="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02]">
-                                    Show More Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="text-center py-12">
-                <div class="inline-flex flex-col items-center">
-                    <svg class="w-24 h-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                    <h3 class="text-xl font-semibold text-gray-500 dark:text-gray-400">
-                        No available packages at the moment
-                    </h3>
-                    <p class="text-gray-500 dark:text-gray-400 mt-2">
-                        Check back later for new packages!
-                    </p>
-                </div>
-            </div>
-        @endif
-    </div>
-
-    <div class="flex justify-center mt-12">
-        <a href="{{ route('all-menu') }}"
-            class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors duration-300 shadow-lg">
-            <span>Explore Full Menu</span>
-            <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </a>
-    </div>
-</section>
+    

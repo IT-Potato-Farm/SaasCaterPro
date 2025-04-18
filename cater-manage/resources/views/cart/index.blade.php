@@ -1,19 +1,6 @@
 {{-- CART PAGE --}}
-<script src="{{ asset('js/cart.js') }}"></script>
-<script>
-    function debugAddToCart(itemId) {
-        // Check if a variant dropdown exists for the menu item
-        let variantSelect = document.getElementById('variant-' + itemId);
-        let selectedVariant = variantSelect ? variantSelect.value : null;
+<script src="{{ asset('js/partyTrayCart.js') }}"></script>
 
-        // Debug log to console
-        console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
-
-        // Call the existing addToCart function
-        // If you need to pass the type, it defaults to 'menu_item'
-        addToCart(itemId, 'menu_item');
-    }
-</script>
 
 @php
     // array of packages from the cart with their names and min_pax.
