@@ -148,7 +148,7 @@
                                     style="display: {{ old('time_mode', 'slot') === 'slot' ? 'grid' : 'none' }};">
                                     <div class="space-y-2">
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Choose Time Slot
+                                            Available Time
                                         </label>
                                         <div id="event_time_slots" class="space-y-2">
                                             @if (empty($timeSlots) || !is_array($timeSlots))

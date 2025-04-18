@@ -41,7 +41,8 @@
                     class="bg-white p-6 rounded-lg border-l-4 border-indigo-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                     <p class="text-gray-500 text-sm mb-2">Most Popular Package</p>
                     <p class="text-2xl font-bold text-gray-800">{{ $mostPopularPackage->name }}</p>
-                    <p class="text-sm text-gray-600">Chosen {{ $mostPopularCount }} {{ $mostPopularCount === 1 ? 'time' : 'times' }}</p>
+                    <p class="text-sm text-gray-600">Chosen {{ $mostPopularCount }}
+                        {{ $mostPopularCount === 1 ? 'time' : 'times' }}</p>
 
                 </div>
             @else
@@ -62,7 +63,11 @@
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-teal-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Orders for Today</p>
-                <p class="text-3xl font-bold text-gray-800">{{ $ordersToday ?? 'None' }}</p>
+                @if ($ordersToday > 0)
+                    <p class="text-3xl font-bold text-gray-800">{{ $ordersToday }}</p>
+                @else
+                    <p class="text-3xl font-bold text-gray-500">No orders today</p>
+                @endif
             </div>
 
             <!-- Returning Customers -->
@@ -72,7 +77,7 @@
                 <p class="text-3xl font-bold text-gray-800">{{ $returningCustomers ?? 'No data' }}</p>
             </div>
         </div>
-         <!-- Charts Row -->
+        <!-- Charts Row -->
         <div class="bg-white p-6 rounded-lg shadow-sm mt-5">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <h3 class="text-xl font-semibold text-gray-800 mb-2 md:mb-0">Total Earnings</h3>
