@@ -1,49 +1,50 @@
 <script>
-function confirmDelete(form) {
-    event.preventDefault(); 
+    function confirmDelete(form) {
+        event.preventDefault();
 
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "This order will be permanently deleted!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit(); 
-        }
-    });
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This order will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
 
-    return false; 
-}
-function confirmAction(message, event) {
-    event.preventDefault(); 
+        return false;
+    }
 
-    Swal.fire({
-        title: 'Are you sure?',
-        text: message,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, proceed!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            event.target.submit(); 
-        }
-    });
+    function confirmAction(message, event) {
+        event.preventDefault();
 
-    return false; 
-}
+        Swal.fire({
+            title: 'Are you sure?',
+            text: message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, proceed!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit();
+            }
+        });
+
+        return false;
+    }
 </script>
 <div class="container mx-auto px-4 py-8">
     <div class="flex border flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0 ">All Bookings</h1>
         <div class="flex space-x-3">
             <!-- Refresh -->
-            <a href="{{route('admin.bookings')}}"
+            <a href="{{ route('admin.bookings') }}"
                 class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
@@ -194,7 +195,8 @@ function confirmAction(message, event) {
                                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                                             </path>
                                         </svg>
-                                        {{ \Carbon\Carbon::parse($order->event_date_start)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($order->event_date_end)->format('M d, Y') }}
+                                        {{ \Carbon\Carbon::parse($order->event_date_start)->format('M d, Y') }} -
+                                        {{ \Carbon\Carbon::parse($order->event_date_end)->format('M d, Y') }}
                                     </div>
                                 </td>
 
@@ -336,7 +338,7 @@ function confirmAction(message, event) {
                                                 </button>
                                             </form>
                                         @endif
-                                            {{-- MARK COMPLETE --}}
+                                        {{-- MARK COMPLETE --}}
                                         @if ($order->status !== 'completed' && $order->status !== 'cancelled')
                                             <form action="{{ route('orders.mark-completed', $order->id) }}"
                                                 onsubmit="return confirmAction('Are you sure you want to mark this order as completed?', event);"
@@ -383,37 +385,35 @@ function confirmAction(message, event) {
                                                     d="M12 4v16m8-8H4"></path>
                                             </svg>
                                         </button>
-    
+
                                         <!-- Penalty Modal-->
-                                        <div id="penaltyModal-{{ $order->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex justify-center items-center">
-                                            <div class="bg-white p-8 rounded-xl shadow-2xl w-96 border border-gray-100">
+                                        <div id="penaltyModal-{{ $order->id }}"
+                                            class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex justify-center items-center">
+                                            <div
+                                                class="bg-white p-8 rounded-xl shadow-2xl w-96 border border-gray-100">
                                                 <h2 class="text-xl font-bold text-gray-900 mb-6">Add Penalty</h2>
-                                                <form action="{{ route('orders.add-penalty', $order->id) }}" method="POST">
+                                                <form action="{{ route('orders.add-penalty', $order->id) }}"
+                                                    method="POST">
                                                     @csrf
                                                     <div class="space-y-6">
                                                         <div>
-                                                            <label class="block text-base font-medium text-gray-700 mb-2">
+                                                            <label
+                                                                class="block text-base font-medium text-gray-700 mb-2">
                                                                 Penalty Amount (₱)
                                                             </label>
-                                                            <input 
-                                                                type="number" 
-                                                                name="penalty_fee" 
-                                                                step="0.01"
-                                                                min="0"
-                                                                placeholder="Enter amount..."
+                                                            <input type="number" name="penalty_fee" step="0.01"
+                                                                min="0" placeholder="Enter amount..."
                                                                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-500  transition-colors duration-200"
                                                                 required>
                                                         </div>
-                                                        
+
                                                         <div class="flex justify-end gap-3 mt-8">
-                                                            <button 
-                                                                type="button"
+                                                            <button type="button"
                                                                 onclick="closePenaltyModal({{ $order->id }})"
                                                                 class="px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                                                                 Cancel
                                                             </button>
-                                                            <button 
-                                                                type="submit"
+                                                            <button type="submit"
                                                                 class="px-4 py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium shadow-sm hover:shadow-red-200 transition-all duration-200">
                                                                 Add Penalty
                                                             </button>
@@ -422,17 +422,22 @@ function confirmAction(message, event) {
                                                 </form>
                                             </div>
                                         </div>
-                                        <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="inline" onsubmit="return confirmDelete(this);" >
+                                        <form action="{{ route('orders.destroy', $order->id) }}" method="POST"
+                                            class="inline" onsubmit="return confirmDelete(this);">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors" title="Delete Order">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            <button type="submit"
+                                                class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                                title="Delete Order">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                 </svg>
                                             </button>
                                         </form>
                                     </div> {{-- end div of actions --}}
-                                    
+
                                 </td>
                             </tr>
                         @endforeach
@@ -462,10 +467,12 @@ function confirmAction(message, event) {
     @php
         use Carbon\Carbon;
         $calendarEvents = $orders
-        // SORT CALENDAR FORMAT PARA MAUNA UNG NKA BASED SA TIME 
-        ->sortBy(function ($order) {
-            return Carbon::parse($order->event_start_time);
+            // SORT CALENDAR FORMAT PARA MAUNA UNG NKA BASED SA TIME
+            ->sortBy(function ($order) {
+            // Parse the full datetime (date + time) for accurate sorting
+            return Carbon::parse($order->event_date_start . ' ' . $order->event_start_time)->timestamp;
         })
+
             ->map(function ($order) {
                 $status = strtolower($order->status);
                 // Set default color to blue
@@ -483,13 +490,14 @@ function confirmAction(message, event) {
                 } elseif ($status === 'cancelled') {
                     $color = '#EF4444'; // Red
                 }
+                // Parse start date and time properly
                 return [
                     'title' => $order->event_type, // e.g., "Birthday"
                     'start' => $order->event_date_start, // Format: YYYY-MM-DD
-                    // End date is exclusive in FullCalendar.
+                    // End date is exclusive in FullCalendar, so add a day to make it span correctly
                     'end' => Carbon::parse($order->event_date_end)->addDay()->toDateString(),
-                    'start_time' => $order->event_start_time, // e.g., "00:24:00"
-                    'end_time' => $order->event_start_end, // e.g., "15:24:00"
+                    'start_time' => $order->event_start_time, 
+                    'end_time' => $order->event_start_end, 
                     'status' => $order->status,
                     'backgroundColor' => $color,
                     'borderColor' => $color,
@@ -498,6 +506,7 @@ function confirmAction(message, event) {
             ->values()
             ->toArray();
     @endphp
+
 
     {{-- CALENDAR BOOKINGS --}}
     <div class="container mx-auto px-4 py-8">
@@ -508,6 +517,7 @@ function confirmAction(message, event) {
             <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
                 <div id="calendar" class="p-4 md:p-6 min-h-[680px]"></div>
             </div>
+
         </div>
     </div>
 
@@ -547,6 +557,7 @@ function confirmAction(message, event) {
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
                 },
+                eventOrder: 'start', 
                 views: {
                     listMonth: {
                         buttonText: 'List View'
@@ -561,11 +572,12 @@ function confirmAction(message, event) {
                     var title = arg.event.title;
                     var startTime = formatTime(arg.event.extendedProps.start_time);
                     var endTime = formatTime(arg.event.extendedProps.end_time);
+
                     return {
                         html: `<div class="px-2 py-1 text-sm font-medium">
-                        ${title}<br>
-                        <span class="text-xs text-white">${startTime} - ${endTime}</span>
-                    </div>`
+                            ${title}<br>
+                            <span class="text-xs text-white">${startTime} - ${endTime}</span>
+                        </div>`
                     };
                 },
                 eventTimeFormat: {
@@ -573,6 +585,9 @@ function confirmAction(message, event) {
                     minute: '2-digit',
                     meridiem: 'short'
                 },
+               
+                displayEventTime: true,
+                displayEventEnd: true,
                 buttonText: {
                     today: 'Today'
                 },

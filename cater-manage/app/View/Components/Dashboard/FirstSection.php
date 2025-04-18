@@ -44,21 +44,22 @@ class FirstSection extends Component
             ->first();
         $this->mostPopularPackage = $this->mostPopular ? Package::find($this->mostPopular->item_reference_id) : null;
         $this->mostPopularCount = $this->mostPopular ? $this->mostPopular->total : 0;
-        
+
         // FREQUENT EVENT
         $this->mostFrequentEvent = Order::select('event_type', DB::raw('count(*) as total'))
             ->groupBy('event_type')
             ->orderByDesc('total')
             ->first()?->event_type;
-            // ORDERS TODAY
-        $this->ordersToday = Order::whereDate('created_at', today())
+        // ORDERS TODAY
+        $this->ordersToday = Order::whereDate('event_date_start', '<=', today())
+            ->whereDate('event_date_end', '>=', today())
             ->where('status', '!=', 'cancelled')
             ->count();
         // RETURNINGG CUSTOMRRT
         $this->returningCustomers = Order::select('user_id')
-                    ->groupBy('user_id')
-                    ->havingRaw('COUNT(*) > 1')
-                    ->count();
+            ->groupBy('user_id')
+            ->havingRaw('COUNT(*) > 1')
+            ->count();
 
         $this->completedOrdersCount = Order::where('status', 'completed')->count();
         $this->pendingOrdersCount = Order::where('status', 'pending')->count();
