@@ -55,6 +55,8 @@ class FirstSection extends Component
             ->whereDate('event_date_end', '>=', today())
             ->where('status', '!=', 'cancelled')
             ->count();
+            
+
         // RETURNINGG CUSTOMRRT
         $this->returningCustomers = Order::whereNotNull('user_id')
             ->where('status', '!=', 'cancelled')

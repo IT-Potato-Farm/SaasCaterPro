@@ -244,16 +244,21 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center space-x-3">
                                         {{-- Invoice --}}
-                                        <a href="{{ route('order.invoice', $order->id) }}"
-                                            class="text-indigo-600 hover:text-indigo-900 px-2 py-1 rounded-md hover:bg-indigo-50 transition-colors"
-                                            title="Generate Invoice">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                </path>
-                                            </svg>
-                                        </a>
+                                        <form action="{{ route('order.invoice', $order->id) }}"
+                                            onsubmit="return confirmAction('Are you sure you want to generate the invoice?', event);"
+                                            method="GET" class="inline">
+                                            <button type="submit"
+                                                class="text-indigo-600 hover:text-indigo-900 px-2 py-1 rounded-md hover:bg-indigo-50 hover:cursor-pointer transition-colors"
+                                                title="Generate Invoice">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </form>
 
                                         {{-- Ongoing Action --}}
                                         @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
@@ -263,7 +268,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded-md hover:bg-blue-50 transition-colors"
+                                                    class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded-md hover:bg-blue-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Ongoing">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -284,7 +289,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-orange-600 hover:text-orange-900 px-2 py-1 rounded-md hover:bg-orange-50 transition-colors"
+                                                    class="text-orange-600 hover:text-orange-900 px-2 py-1 rounded-md hover:bg-orange-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Partially Paid">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -307,7 +312,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-green-600 hover:text-green-900 px-2 py-1 rounded-md hover:bg-green-50 transition-colors"
+                                                    class="text-green-600 hover:text-green-900 px-2 py-1 rounded-md hover:bg-green-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Paid">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -326,7 +331,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                                    class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Unpaid">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -346,7 +351,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-purple-600 hover:text-purple-900 px-2 py-1 rounded-md hover:bg-purple-50 transition-colors"
+                                                    class="text-purple-600 hover:text-purple-900 px-2 py-1 rounded-md hover:bg-purple-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Completed">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -365,7 +370,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                                    class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                                     title="Cancel Booking">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -377,7 +382,7 @@
                                         @endif
                                         {{-- PENALTY BTN --}}
                                         <button type="button" onclick="openPenaltyModal({{ $order->id }})"
-                                            class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                            class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                             title="Add Penalty">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -421,13 +426,14 @@
                                                     </div>
                                                 </form>
                                             </div>
+
                                         </div>
                                         <form action="{{ route('orders.destroy', $order->id) }}" method="POST"
                                             class="inline" onsubmit="return confirmDelete(this);">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                                class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                                 title="Delete Order">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -469,9 +475,9 @@
         $calendarEvents = $orders
             // SORT CALENDAR FORMAT PARA MAUNA UNG NKA BASED SA TIME
             ->sortBy(function ($order) {
-            // Parse the full datetime (date + time) for accurate sorting
-            return Carbon::parse($order->event_date_start . ' ' . $order->event_start_time)->timestamp;
-        })
+                // Parse the full datetime (date + time) for accurate sorting
+                return Carbon::parse($order->event_date_start . ' ' . $order->event_start_time)->timestamp;
+            })
 
             ->map(function ($order) {
                 $status = strtolower($order->status);
@@ -496,8 +502,8 @@
                     'start' => $order->event_date_start, // Format: YYYY-MM-DD
                     // End date is exclusive in FullCalendar, so add a day to make it span correctly
                     'end' => Carbon::parse($order->event_date_end)->addDay()->toDateString(),
-                    'start_time' => $order->event_start_time, 
-                    'end_time' => $order->event_start_end, 
+                    'start_time' => $order->event_start_time,
+                    'end_time' => $order->event_start_end,
                     'status' => $order->status,
                     'backgroundColor' => $color,
                     'borderColor' => $color,
@@ -557,7 +563,7 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
                 },
-                eventOrder: 'start', 
+                eventOrder: 'start',
                 views: {
                     listMonth: {
                         buttonText: 'List View'
@@ -585,7 +591,7 @@
                     minute: '2-digit',
                     meridiem: 'short'
                 },
-               
+
                 displayEventTime: true,
                 displayEventEnd: true,
                 buttonText: {
