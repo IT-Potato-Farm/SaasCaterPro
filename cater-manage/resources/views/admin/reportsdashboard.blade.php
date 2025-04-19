@@ -29,21 +29,25 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <!-- Orders Card -->
                         <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">72</h2>
-                            <p class="text-gray-600 text-center">Orders</p>
+                            <h2 class="text-4xl font-bold text-center">{{ $totalOrders }}</h2>
+                            <p class="text-gray-600 text-center">Total Orders</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-4xl font-bold text-center">{{ $completedOrders }}</h2>
+                            <p class="text-gray-600 text-center">Completed Orders</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-4xl font-bold text-center">{{ $pendingOrders }}</h2>
+                            <p class="text-gray-600 text-center">Pending Orders</p>
                         </div>
 
                         <!-- Revenue Card -->
                         <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">₱256,000</h2>
-                            <p class="text-gray-600 text-center">Revenue</p>
+                            <h2 class="text-4xl font-bold text-center">₱{{ number_format($totalRevenue, 2) }}</h2>
+                            <p class="text-gray-600 text-center">Total Revenue</p>
                         </div>
 
-                        <!-- Conversion Rate Card -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">18%</h2>
-                            <p class="text-gray-600 text-center">Conversion Rate</p>
-                        </div>
+
 
                         <!-- Average Order Value Card -->
                         <div class="bg-white rounded-lg shadow p-6">
@@ -56,7 +60,26 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <!-- Sales Overview Chart -->
                         <div class="bg-white rounded-lg shadow p-6">
+                            
                             <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
+                            <div class="flex gap-4">
+                                <span class="flex items-center text-sm text-gray-500">
+                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                    Today 
+                                </span>
+                                <span class="flex items-center text-sm text-gray-500">
+                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                    This Motnh 
+                                </span>
+                                <span class="flex items-center text-sm text-gray-500">
+                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                    This Year ₱
+                                </span>
+                                <span class="flex items-center text-sm text-gray-500">
+                                    <span class="w-3 h-3 bg-gray-200 rounded-full mr-2"></span>
+                                    Last Year ₱
+                                </span>
+                            </div>
                             <div class="h-64">
                                 <canvas id="salesOverviewChart"></canvas>
                             </div>
@@ -64,11 +87,18 @@
 
                         <!-- Revenue by Event Type -->
                         <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-xl font-semibold mb-4">Revenue by Event Type</h2>
+                            <h2 class="text-xl font-semibold mb-4">Revenue by Event Type1</h2>
                             <div class="h-64">
-                                <canvas id="eventTypeChart"></canvas>
+                                @if (!empty($eventTypeRevenue))
+                                    <canvas id="eventTypeChart"></canvas>
+                                @else
+                                    <div class="flex items-center justify-center h-full text-gray-400">
+                                        <p>No revenue data available.</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Bottom Row -->
@@ -82,37 +112,50 @@
                         </div>
 
                         <!-- Top Packages Table -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-xl font-semibold mb-4">Top Packages</h2>
+                        <!-- Top Packages -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-semibold text-gray-800">Top Packages</h2>
+                            </div>
                             <div class="overflow-x-auto">
-                                <table class="min-w-full">
+                                <table class="min-w-full divide-y divide-gray-200">
                                     <thead>
                                         <tr>
-                                            <th class="text-left py-2 font-semibold">Package</th>
-                                            <th class="text-right py-2 font-semibold">Orders</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Package
+                                            </th>
+                                            <th
+                                                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Orders
+                                            </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="py-2">Silver Package</td>
-                                            <td class="text-right py-2">34</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2">Gold Package</td>
-                                            <td class="text-right py-2">29</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2">Bronze Package</td>
-                                            <td class="text-right py-2">21</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2">Platinum Package</td>
-                                            <td class="text-right py-2">18</td>
-                                        </tr>
+                                    <tbody class="divide-y divide-gray-200">
+                                        @forelse ($topPackages as $package)
+                                            <tr>
+                                                <td
+                                                    class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {{ $package['name'] }}
+                                                </td>
+                                                <td
+                                                    class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">
+                                                    {{ $package['total'] }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="2" class="px-4 py-3 text-center text-sm text-gray-500">
+                                                    No data available.
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
 
@@ -131,7 +174,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Orders</p>
-                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">72</h3>
+                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">{{ $totalOrders }}</h3>
                                 </div>
                                 <div class="p-3 rounded-lg bg-blue-50">
                                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
@@ -150,11 +193,12 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Revenue</p>
-                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">¥256,000</h3>
+                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">
+                                        ₱{{ number_format($totalRevenue, 2) }}</h3>
                                 </div>
                                 <div class="p-3 rounded-lg bg-green-50">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                                         </path>
@@ -236,7 +280,7 @@
                             <div
                                 class="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 mb-4">
                                 <!-- Pie chart would go here -->
-                                
+
                                 <p>Pie chart visualization</p>
                             </div>
                             <div class="space-y-3">
@@ -344,136 +388,35 @@
                                 </table>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </main>
         </div>
 
     </div>
+
+    {{-- EVENT TYPE REVENUE CHART --}}
+    @if (!empty($eventTypeRevenue))
+        <script>
+            const eventTypeLabels = @json(array_keys($eventTypeRevenue));
+            const eventTypeData = @json(array_values($eventTypeRevenue));
+        </script>
+        <script src="{{ asset('js/eventTypeRevenue-chart.js') }}"></script>
+    @endif
+    {{-- CHART TOTAL EARNING JS --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sales Overview Chart
-            const salesOverviewCtx = document.getElementById('salesOverviewChart').getContext('2d');
-            const salesOverviewChart = new Chart(salesOverviewCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
-                        'Dec'
-                    ],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [10, 18, 22, 25, 35, 30, 35, 30, 35, 40, 45, 50],
-                        fill: true,
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-            // Revenue by Event Type Chart
-            const eventTypeCtx = document.getElementById('eventTypeChart').getContext('2d');
-            const eventTypeChart = new Chart(eventTypeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Wedding', 'Birthday', 'Anniversary', 'Corporate', 'Other'],
-                    datasets: [{
-                        data: [36, 28, 15, 12, 9],
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 1)', // Blue
-                            'rgba(99, 179, 237, 1)', // Light Blue
-                            'rgba(147, 197, 253, 1)', // Lighter Blue
-                            'rgba(191, 219, 254, 1)', // Very Light Blue
-                            'rgba(224, 242, 254, 1)' // Extremely Light Blue
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                usePointStyle: true,
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    if (data.labels.length && data.datasets.length) {
-                                        return data.labels.map(function(label, i) {
-                                            const meta = chart.getDatasetMeta(0);
-                                            const style = meta.controller.getStyle(i);
-
-                                            return {
-                                                text: label + ' ' + data.datasets[0].data[i] +
-                                                    '%',
-                                                fillStyle: style.backgroundColor,
-                                                strokeStyle: style.borderColor,
-                                                lineWidth: style.borderWidth,
-                                                pointStyle: 'circle',
-                                                hidden: !chart.getDataVisibility(i),
-                                                index: i
-                                            };
-                                        });
-                                    }
-                                    return [];
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Sales Performance Chart
-            const salesPerformanceCtx = document.getElementById('salesPerformanceChart').getContext('2d');
-            const salesPerformanceChart = new Chart(salesPerformanceCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['4 weeks ago', '3 weeks ago', '2 weeks ago', '1 week ago', 'This week'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [1.5, 1.0, 1.7, 3.2, 3.8],
-                        backgroundColor: 'rgba(59, 130, 246, 0.8)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 6,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        });
+        const thisYearRevenue = @json($thisYearRevenueChart);
+        const lastYearRevenue = @json($lastYearRevenueChart);
     </script>
+    <script src="{{ asset('js/sales-overview-chart.js') }}"></script>
+
+
+    {{-- SALES PERFORMANCE CHART --}}
+    <script>
+        window.salesPerformanceData = @json($weeklySales);
+    </script>
+    <script src="{{ asset('js/salesPerformanceChart.js') }}"></script>
 </body>
 
 </html>

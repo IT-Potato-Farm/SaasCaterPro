@@ -60,6 +60,7 @@
             </div>
 
             <!-- Orders for Today -->
+            
             <div
                 class="bg-white p-6 rounded-lg border-l-4 border-teal-500 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <p class="text-gray-500 text-sm mb-2">Orders for Today</p>
