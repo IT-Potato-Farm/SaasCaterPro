@@ -62,19 +62,20 @@
                             <div class="relative inline-block">
                                 <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
                                     class="px-3 py-1 rounded bg-gray-100 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="today"selected >Today</option>
+                                    <option value="today"selected>Today</option>
+                                    <option value="thisWeek">This Week</option>
                                     <option value="month">This Month</option>
                                     <option value="sixMonths">Last 6 Months</option>
-                                    <option value="year" >This Year</option>
+                                    <option value="year">This Year</option>
                                     <option value="lastYear">Last Year</option>
                                 </select>
                             </div>
-
+                            
 
                             <div class="h-64">
                                 <div id="totalRevenueLabel" class="mt-2 text-lg font-semibold text-gray-700">
-                                    Total Revenue:
-                                    {{ '₱' . number_format($yearRevenue ?? 0, 0) }}
+                                    Total Revenue: <span
+                                        id="totalRevenueValue">{{ '₱' . number_format($yearRevenue ?? 0, 0) }}</span>
                                 </div>
                                 <canvas id="salesOverviewChart"></canvas>
                             </div>
@@ -407,27 +408,30 @@
         const totalRevenues = {
             today: {{ $todayRevenue ?? 0 }},
             month: {{ $monthRevenue ?? 0 }},
+            thisWeek: {{ $thisWeekRevenue ?? 0 }},
             sixMonths: {{ $lastSixMonthsRevenue ?? 0 }},
             year: {{ $yearRevenue ?? 0 }},
             lastYear: {{ $lastYearRevenue ?? 0 }}
         };
-    
+
         const chartDataSets = {
             today: @json($todayRevenueChart),
             month: @json($thisMonthRevenueChart),
+            thisWeek: @json($thisWeekRevenueChart),
             sixMonths: @json($lastSixMonthsRevenueChart),
             year: @json($thisYearRevenueChart),
             lastYear: @json($lastYearRevenueChart)
         };
-    
+
         const chartLabels = {
             today: @json($todayRevenueLabels),
             month: @json($thisMonthRevenueLabels),
+            thisWeek: @json($thisWeekRevenueLabels),
             sixMonths: @json($lastSixMonthsRevenueLabels),
             year: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             lastYear: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         };
-    
+
         const chartColors = {
             thisYear: "#3B82F6",
             lastYear: "#E5E7EB",
@@ -439,18 +443,18 @@
         };
         // TODAY DEFAULT CHART
         let activeButton = 'today';
-    
-        document.addEventListener("DOMContentLoaded", function () {
+
+        document.addEventListener("DOMContentLoaded", function() {
             const select = document.getElementById('salesRangeSelect');
             const initialRange = select ? select.value : 'today';
 
             activeButton = initialRange;
-    
+
             const ctxElement = document.getElementById("salesOverviewChart");
             if (!ctxElement) return;
-    
+
             const ctx = ctxElement.getContext("2d");
-    
+
             window.salesOverviewChart = new Chart(ctx, {
                 type: "line",
                 data: {
@@ -459,10 +463,11 @@
                         label: {
                             today: "Today",
                             month: "This Month",
+                            thisWeek: "This Week",
                             sixMonths: "Last 6 Months",
                             year: "This Year",
                             lastYear: "Last Year"
-                        }[initialRange] || "Sales",
+                        } [initialRange] || "Sales",
                         data: chartDataSets[initialRange] || [],
                         borderColor: chartColors.thisYear,
                         borderWidth: 2,
@@ -489,7 +494,7 @@
                                 color: chartColors.gridY
                             },
                             ticks: {
-                                callback: function (value) {
+                                callback: function(value) {
                                     return new Intl.NumberFormat("en-PH", {
                                         style: "currency",
                                         currency: "PHP",
@@ -521,7 +526,7 @@
                             padding: 12,
                             usePointStyle: true,
                             callbacks: {
-                                label: function (context) {
+                                label: function(context) {
                                     let value = context.raw || 0;
                                     return (
                                         context.dataset.label +
@@ -540,51 +545,54 @@
             });
 
             const total = totalRevenues[initialRange] || 0;
-            const totalLabel = document.getElementById('totalRevenueLabel');
-            if (totalLabel) {
-                totalLabel.textContent = `Total Revenue: ${new Intl.NumberFormat("en-PH", {
+            const totalValueElement = document.getElementById('totalRevenueValue');
+            if (totalValueElement) {
+                totalValueElement.textContent = new Intl.NumberFormat("en-PH", {
                     style: "currency",
                     currency: "PHP",
                     minimumFractionDigits: 0
-                }).format(total)}`;
+                }).format(total);
             }
         });
-    
+
         function filterChartSales(range) {
             if (!window.salesOverviewChart) {
                 console.error("Chart is not initialized yet.");
                 return;
             }
-    
+
             const newData = chartDataSets[range];
-    
+
             if (!newData) {
                 alert("No data for this range.");
                 return;
             }
-    
+
             activeButton = range;
 
             window.salesOverviewChart.data.labels = chartLabels[range] || [];
             window.salesOverviewChart.data.datasets[0].data = newData;
-    
+
             window.salesOverviewChart.data.datasets[0].label = {
                 today: "Today",
                 month: "This Month",
+                thisWeek: "This Week",
                 sixMonths: "Last 6 Months",
                 year: "This Year",
                 lastYear: "Last Year"
-            }[range] || "Sales";
-    
+            } [range] || "Sales";
+
             window.salesOverviewChart.update();
-    
+
             const total = totalRevenues[range] || 0;
-            document.getElementById('totalRevenueLabel').textContent =
-                `Total Revenue: ${new Intl.NumberFormat("en-PH", {
+            const totalValueElement = document.getElementById('totalRevenueValue');
+            if (totalValueElement) {
+                totalValueElement.textContent = new Intl.NumberFormat("en-PH", {
                     style: "currency",
                     currency: "PHP",
                     minimumFractionDigits: 0
-                }).format(total)}`;
+                }).format(total);
+            }
         }
     </script>
 

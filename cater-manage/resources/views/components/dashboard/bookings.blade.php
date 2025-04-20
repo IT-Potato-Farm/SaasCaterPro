@@ -128,33 +128,33 @@
             </div>
         </div>
     @else
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-4 sm:px-6 lg:px-8">
-                <table id="ordersTable" class="min-w-full divide-y divide-gray-200 ">
-                    <thead class="bg-gray-50">
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-4 sm:px-6 lg:px-8 overflow-x-auto">
+                <table id="ordersTable" class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 hidden sm:table-header-group">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Order ID
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Customer
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Event Details
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Total
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -164,17 +164,51 @@
                             <tr class="hover:bg-gray-50 transition-colors"
                                 data-status="{{ strtolower($order->status) }}"
                                 data-date="{{ \Carbon\Carbon::parse($order->event_date)->format('Y-m-d') }}">
-                                <!-- Booking ID -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('order.show', $order->id) }}"
-                                        class="hover:underline text-sm font-medium text-gray-900">
-                                        #{{ $order->id }}
-                                    </a>
-                                    <div class="text-xs text-gray-500">{{ $order->created_at->format('M d, Y') }}</div>
+                                <!-- Mobile First Column (Order ID + Status) -->
+                                <td class="px-3 sm:px-6 py-4 whitespace-nowrap sm:whitespace-normal">
+                                    <div class="sm:hidden flex justify-between items-start">
+                                        <div>
+                                            <a href="{{ route('order.show', $order->id) }}"
+                                                class="hover:underline text-sm font-medium text-gray-900">
+                                                #{{ $order->id }}
+                                            </a>
+                                            <div class="text-xs text-gray-500">
+                                                {{ $order->created_at->format('M d, Y') }}</div>
+                                        </div>
+                                        @php
+                                            $statusStyles = [
+                                                'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
+                                                'partially paid' => [
+                                                    'bg' => 'bg-yellow-100',
+                                                    'text' => 'text-yellow-800',
+                                                ],
+                                                'ongoing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                'paid' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
+                                                'completed' => ['bg' => 'bg-green-200', 'text' => 'text-green-800'],
+                                                'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
+                                            ];
+                                            $status = $statusStyles[$order->status] ?? [
+                                                'bg' => 'bg-gray-100',
+                                                'text' => 'text-gray-800',
+                                            ];
+                                        @endphp
+                                        <span
+                                            class="px-2 py-0.5 inline-flex text-xs leading-4 font-semibold rounded-full {{ $status['bg'] }} {{ $status['text'] }}">
+                                            {{ ucfirst($order->status) }}
+                                        </span>
+                                    </div>
+                                    <div class="hidden sm:block">
+                                        <a href="{{ route('order.show', $order->id) }}"
+                                            class="hover:underline text-sm font-medium text-gray-900">
+                                            #{{ $order->id }}
+                                        </a>
+                                        <div class="text-xs text-gray-500">{{ $order->created_at->format('M d, Y') }}
+                                        </div>
+                                    </div>
                                 </td>
 
                                 <!-- Customer Info -->
-                                <td class="px-6 py-4">
+                                <td class="px-3 sm:px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <div>
                                             <div class="text-sm font-medium text-gray-900">
@@ -186,7 +220,7 @@
                                 </td>
 
                                 <!-- Event Details -->
-                                <td class="px-6 py-4">
+                                <td class="px-3 sm:px-6 py-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $order->event_type }}</div>
                                     <div class="flex items-center text-xs text-gray-500 mt-1">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
@@ -201,7 +235,7 @@
                                 </td>
 
                                 <!-- Total -->
-                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-medium text-gray-900">
                                         ₱{{ number_format($order->total, 2) }}
                                     </div>
@@ -218,22 +252,8 @@
                                     @endif
                                 </td>
 
-                                <!-- Status -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $statusStyles = [
-                                            'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
-                                            'partially paid' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
-                                            'ongoing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                            'paid' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                                            'completed' => ['bg' => 'bg-green-200', 'text' => 'text-green-800'],
-                                            'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
-                                        ];
-                                        $status = $statusStyles[$order->status] ?? [
-                                            'bg' => 'bg-gray-100',
-                                            'text' => 'text-gray-800',
-                                        ];
-                                    @endphp
+                                <!-- Status (Desktop) -->
+                                <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                                     <span
                                         class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $status['bg'] }} {{ $status['text'] }}">
                                         {{ ucfirst($order->status) }}
@@ -241,17 +261,17 @@
                                 </td>
 
                                 <!-- Actions -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center space-x-3">
-                                        {{-- Invoice --}}
+                                <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-1 sm:gap-2 items-center">
+                                        <!-- Invoice -->
                                         <form action="{{ route('order.invoice', $order->id) }}"
                                             onsubmit="return confirmAction('Are you sure you want to generate the invoice?', event);"
                                             method="GET" class="inline">
                                             <button type="submit"
-                                                class="text-indigo-600 hover:text-indigo-900 px-2 py-1 rounded-md hover:bg-indigo-50 hover:cursor-pointer transition-colors"
+                                                class="text-indigo-600 hover:text-indigo-900 p-1 sm:p-1.5 rounded-md hover:bg-indigo-50 hover:cursor-pointer transition-colors"
                                                 title="Generate Invoice">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
                                                         d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
@@ -260,7 +280,7 @@
                                             </button>
                                         </form>
 
-                                        {{-- Ongoing Action --}}
+                                        <!-- Ongoing Action -->
                                         @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
                                             <form action="{{ route('orders.mark-ongoing', $order->id) }}"
                                                 onsubmit="return confirmAction('Are you sure you want to mark this order as ongoing?', event);"
@@ -268,10 +288,10 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded-md hover:bg-blue-50 hover:cursor-pointer transition-colors"
+                                                    class="text-blue-600 hover:text-blue-900 p-1 sm:p-1.5 rounded-md hover:bg-blue-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Ongoing">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
                                                             d="M4 4v5h.582m15.836 2A9 9 0 111 12a9 9 0 0118 0z">
@@ -281,7 +301,7 @@
                                             </form>
                                         @endif
 
-                                        {{-- Partially Paid Action --}}
+                                        <!-- Partially Paid Action -->
                                         @if ($order->status !== 'partial' && $order->status !== 'cancelled' && $order->status !== 'paid')
                                             <form action="{{ route('orders.mark-partial', $order->id) }}"
                                                 onsubmit="return confirmAction('Are you sure you want to mark this order as partially paid?', event);"
@@ -289,10 +309,10 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-orange-600 hover:text-orange-900 px-2 py-1 rounded-md hover:bg-orange-50 hover:cursor-pointer transition-colors"
+                                                    class="text-orange-600 hover:text-orange-900 p-1 sm:p-1.5 rounded-md hover:bg-orange-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Partially Paid">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M12 2a10 10 0 100 20 10 10 0 000-20z">
                                                         </path>
@@ -312,10 +332,10 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-green-600 hover:text-green-900 px-2 py-1 rounded-md hover:bg-green-50 hover:cursor-pointer transition-colors"
+                                                    class="text-green-600 hover:text-green-900 p-1 sm:p-1.5 rounded-md hover:bg-green-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Paid">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
                                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
@@ -323,7 +343,6 @@
                                                     </svg>
                                                 </button>
                                             </form>
-                                            {{-- UNPAID --}}
                                         @else
                                             <form action="{{ route('orders.mark-unpaid', $order->id) }}"
                                                 onsubmit="return confirmAction('Are you sure you want to mark this order as unpaid?', event);"
@@ -331,10 +350,10 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
+                                                    class="text-red-600 hover:text-red-900 p-1 sm:p-1.5 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Unpaid">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
                                                             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
@@ -343,7 +362,8 @@
                                                 </button>
                                             </form>
                                         @endif
-                                        {{-- MARK COMPLETE --}}
+
+                                        <!-- Mark Complete -->
                                         @if ($order->status !== 'completed' && $order->status !== 'cancelled')
                                             <form action="{{ route('orders.mark-completed', $order->id) }}"
                                                 onsubmit="return confirmAction('Are you sure you want to mark this order as completed?', event);"
@@ -351,10 +371,10 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-purple-600 hover:text-purple-900 px-2 py-1 rounded-md hover:bg-purple-50 hover:cursor-pointer transition-colors"
+                                                    class="text-purple-600 hover:text-purple-900 p-1 sm:p-1.5 rounded-md hover:bg-purple-50 hover:cursor-pointer transition-colors"
                                                     title="Mark as Completed">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                     </svg>
@@ -370,21 +390,22 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
+                                                    class="text-red-600 hover:text-red-900 p-1 sm:p-1.5 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                                     title="Cancel Booking">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
                                                 </button>
                                             </form>
                                         @endif
-                                        {{-- PENALTY BTN --}}
+
+                                        <!-- Penalty Button -->
                                         <button type="button" onclick="openPenaltyModal({{ $order->id }})"
-                                            class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
+                                            class="text-red-600 hover:text-red-900 p-1 sm:p-1.5 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                             title="Add Penalty">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 4v16m8-8H4"></path>
@@ -393,57 +414,58 @@
 
                                         <!-- Penalty Modal-->
                                         <div id="penaltyModal-{{ $order->id }}"
-                                            class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex justify-center items-center">
+                                            class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex justify-center items-center z-50">
                                             <div
-                                                class="bg-white p-8 rounded-xl shadow-2xl w-96 border border-gray-100">
-                                                <h2 class="text-xl font-bold text-gray-900 mb-6">Add Penalty</h2>
+                                                class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-sm mx-4 sm:mx-0 border border-gray-100">
+                                                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Add
+                                                    Penalty</h2>
                                                 <form action="{{ route('orders.add-penalty', $order->id) }}"
                                                     method="POST">
                                                     @csrf
-                                                    <div class="space-y-6">
+                                                    <div class="space-y-4 sm:space-y-6">
                                                         <div>
                                                             <label
-                                                                class="block text-base font-medium text-gray-700 mb-2">
+                                                                class="block text-sm sm:text-base font-medium text-gray-700 mb-1 sm:mb-2">
                                                                 Penalty Amount (₱)
                                                             </label>
                                                             <input type="number" name="penalty_fee" step="0.01"
                                                                 min="0" placeholder="Enter amount..."
-                                                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-500  transition-colors duration-200"
+                                                                class="w-full px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-500 transition-colors duration-200"
                                                                 required>
                                                         </div>
 
-                                                        <div class="flex justify-end gap-3 mt-8">
+                                                        <div class="flex justify-end gap-2 sm:gap-3 mt-6 sm:mt-8">
                                                             <button type="button"
                                                                 onclick="closePenaltyModal({{ $order->id }})"
-                                                                class="px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                                                                class="px-3 py-2 sm:px-4 sm:py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                                                                 Cancel
                                                             </button>
                                                             <button type="submit"
-                                                                class="px-4 py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium shadow-sm hover:shadow-red-200 transition-all duration-200">
+                                                                class="px-3 py-2 sm:px-4 sm:py-2.5 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium shadow-sm hover:shadow-red-200 transition-all duration-200">
                                                                 Add Penalty
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </form>
                                             </div>
-
                                         </div>
+
+                                        <!-- Delete Button -->
                                         <form action="{{ route('orders.destroy', $order->id) }}" method="POST"
                                             class="inline" onsubmit="return confirmDelete(this);">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
+                                                class="text-red-600 hover:text-red-900 p-1 sm:p-1.5 rounded-md hover:bg-red-50 hover:cursor-pointer transition-colors"
                                                 title="Delete Order">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                 </svg>
                                             </button>
                                         </form>
-                                    </div> {{-- end div of actions --}}
-
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -453,7 +475,7 @@
 
             <!-- Pagination -->
             @if ($orders->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
                     <div class="flex flex-col sm:flex-row items-center justify-between">
                         <div class="mb-4 sm:mb-0 text-sm text-gray-700">
                             Showing <span class="font-medium">{{ $orders->firstItem() }}</span> to <span
@@ -515,21 +537,21 @@
 
 
     {{-- CALENDAR BOOKINGS --}}
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-6 sm:py-8">
         <div class="max-w-6xl mx-auto">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center font-serif">Event Calendar</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center font-serif">
+                Event Calendar
+            </h1>
 
             <!-- Calendar Container -->
-            <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
-                <div id="calendar" class="p-4 md:p-6 min-h-[680px]"></div>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                <div id="calendar" class="p-3 sm:p-4 md:p-6 min-h-[480px] sm:min-h-[600px] md:min-h-[680px]"></div>
             </div>
-
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script>
-        // penalty modal
         function openPenaltyModal(orderId) {
             document.getElementById(`penaltyModal-${orderId}`).classList.remove('hidden');
         }
@@ -537,7 +559,7 @@
         function closePenaltyModal(orderId) {
             document.getElementById(`penaltyModal-${orderId}`).classList.add('hidden');
         }
-        //  function to convert "HH:mm:ss" into a 12-hour format with AM/PM.
+
         function formatTime(timeString) {
             if (!timeString) return '';
             const [hours, minutes, seconds] = timeString.split(':');
@@ -553,36 +575,30 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var events = @json($calendarEvents);
+            const calendarEl = document.getElementById('calendar');
+            const events = @json($calendarEvents);
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
                 },
-                eventOrder: 'start',
-                views: {
-                    listMonth: {
-                        buttonText: 'List View'
-                    }
-                },
-                contentHeight: 'auto',
                 events: events,
-                eventClassNames: 'hover:shadow-md transition-shadow',
+                contentHeight: 'auto',
+                eventOrder: 'start',
+                eventClassNames: 'hover:shadow transition-shadow text-xs sm:text-sm',
                 dayHeaderClassNames: 'text-gray-700 font-semibold',
-                // AM/PM format.
                 eventContent: function(arg) {
-                    var title = arg.event.title;
-                    var startTime = formatTime(arg.event.extendedProps.start_time);
-                    var endTime = formatTime(arg.event.extendedProps.end_time);
+                    const title = arg.event.title;
+                    const startTime = formatTime(arg.event.extendedProps.start_time);
+                    const endTime = formatTime(arg.event.extendedProps.end_time);
 
                     return {
-                        html: `<div class="px-2 py-1 text-sm font-medium">
+                        html: `<div class="px-1 sm:px-2 py-1 text-xs sm:text-sm font-medium">
                             ${title}<br>
-                            <span class="text-xs text-white">${startTime} - ${endTime}</span>
+                            <span class="text-[10px] sm:text-xs text-white">${startTime} - ${endTime}</span>
                         </div>`
                     };
                 },
@@ -591,9 +607,6 @@
                     minute: '2-digit',
                     meridiem: 'short'
                 },
-
-                displayEventTime: true,
-                displayEventEnd: true,
                 buttonText: {
                     today: 'Today'
                 },
@@ -601,10 +614,9 @@
                 fixedWeekCount: false,
                 initialDate: new Date(),
                 themeSystem: 'bootstrap5',
-                windowResize: function(view) {
-                    if (window.innerWidth < 768) {
-                        calendar.changeView('dayGridMonth');
-                    }
+                windowResize: function() {
+                    const view = window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth';
+                    calendar.changeView(view);
                 }
             });
 

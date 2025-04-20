@@ -149,11 +149,14 @@ class AdminController extends Controller
     public function goBookingsDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            return view('admin.bookingsdashboard');
+            $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(10);
+            return view('admin.bookingsdashboard', compact('orders'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
+
+
     public function goReportsDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
@@ -179,10 +182,15 @@ class AdminController extends Controller
                 ->count();
 
             $totalRevenue = Order::where('status', 'completed')->sum('total');
-
+            // today revenue
             $todayRevenue = Order::where('status', 'completed')
                 ->whereDate('created_at', Carbon::today())
                 ->sum('total');
+            // THIS WEEK 
+            $thisWeekRevenue = Order::whereBetween('created_at', [
+                Carbon::now()->startOfWeek(),  
+                Carbon::now()->endOfWeek()     
+            ])->sum('total');
 
             // THIS CURRENT YR
             $yearRevenue = Order::where('status', 'completed')
@@ -247,6 +255,30 @@ class AdminController extends Controller
             for ($i = 1; $i <= $daysInMonth; $i++) {
                 $thisMonthRevenueLabels[] = Carbon::createFromDate(now()->year, now()->month, $i)->format('F j'); // Example: "April 1"
             }
+            // THIS WEEK
+
+            $weekStart = Carbon::now()->startOfWeek();
+            $weekEnd = Carbon::now()->endOfWeek();
+
+
+            $thisWeekData = Order::selectRaw('DAYNAME(event_date_start) as day, SUM(total) as total')
+                ->where('status', 'completed')
+                ->whereBetween('event_date_start', [$weekStart, $weekEnd])
+                ->groupBy('day')
+                ->pluck('total', 'day')
+                ->mapWithKeys(function ($total, $day) {
+                    return [ucfirst(strtolower($day)) => $total];
+                })
+                ->toArray();
+
+            // Ensure all 7 days are present
+            $weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            $thisWeekRevenueChart = [];
+            foreach ($weekDays as $day) {
+                $thisWeekRevenueChart[] = $thisWeekData[$day] ?? 0;
+            }
+            $thisWeekRevenueLabels = $weekDays;
+
             // LAST 6 MONTHS START DATE
             $sixMonthsAgo = Carbon::now()->subMonths(6)->startOfMonth();
             $now = Carbon::now();
@@ -328,6 +360,7 @@ class AdminController extends Controller
                 'ordersToday',
                 'totalRevenue',
                 'todayRevenue',
+                'thisWeekRevenue',
                 'yearRevenue',
                 'lastYearRevenue',
                 'monthRevenue',
@@ -336,6 +369,8 @@ class AdminController extends Controller
                 'todayRevenueLabels',
                 'thisMonthRevenueChart',
                 'thisMonthRevenueLabels',
+                'thisWeekRevenueChart',
+                'thisWeekRevenueLabels',
                 'thisYearRevenueChart',
                 'lastYearRevenueChart',
                 'topPackages',
