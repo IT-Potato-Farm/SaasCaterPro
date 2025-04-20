@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookings Dashboard</title>
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
@@ -415,7 +415,7 @@
                             return [
                                 'title' => $order->event_type, // e.g., "Birthday"
                                 'start' => $order->event_date_start, // Format: YYYY-MM-DD
-                                // End date is exclusive in FullCalendar, so add a day to make it span correctly
+                                
                                 'end' => Carbon::parse($order->event_date_end)->addDay()->toDateString(),
                                 'start_time' => $order->event_start_time,
                                 'end_time' => $order->event_start_end,
