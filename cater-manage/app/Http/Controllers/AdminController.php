@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use DatePeriod;
+use DateInterval;
 use Carbon\Carbon;
 use App\Models\Item;
 use App\Models\User;
@@ -155,17 +157,17 @@ class AdminController extends Controller
     public function goReportsDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            // SALES PERFORMANCE
+            // SALES PERFORMANCE 
             $weeklySales = collect([]);
             for ($i = 4; $i >= 0; $i--) {
                 $weekStart = now()->subWeeks($i)->startOfWeek();
                 $weekEnd = now()->subWeeks($i)->endOfWeek();
 
                 $total = Order::whereBetween('created_at', [$weekStart, $weekEnd])
-                    ->where('status', 'completed') 
-                    ->sum('total');           
+                    ->where('status', 'completed')
+                    ->sum('total');
 
-                $weeklySales->push(round($total, 2));  
+                $weeklySales->push(round($total, 2));
             }
 
             $totalOrders = Order::count();
@@ -175,7 +177,28 @@ class AdminController extends Controller
                 ->whereDate('event_date_end', '>=', now())
                 ->where('status', '!=', 'cancelled')
                 ->count();
+
             $totalRevenue = Order::where('status', 'completed')->sum('total');
+
+            $todayRevenue = Order::where('status', 'completed')
+                ->whereDate('created_at', Carbon::today())
+                ->sum('total');
+
+            // THIS CURRENT YR
+            $yearRevenue = Order::where('status', 'completed')
+                ->whereYear('created_at', now()->year)
+                ->sum('total');
+
+            // LAST YR
+            $lastYearRevenue = Order::where('status', 'completed')
+                ->whereYear('created_at', now()->subYear()->year)
+                ->sum('total');
+
+            // MONTH
+            $monthRevenue = Order::where('status', 'completed')
+                ->whereYear('created_at', now()->year)
+                ->whereMonth('created_at', now()->month)
+                ->sum('total');
 
             $eventTypeRevenue = Order::where('status', 'completed')
                 ->selectRaw('event_type, SUM(total) as total_revenue')
@@ -183,19 +206,92 @@ class AdminController extends Controller
                 ->pluck('total_revenue', 'event_type')
                 ->toArray();
 
+            // CHART REVENUE
+            // today
+            $todayRevenueChart = array_fill(0, 24, 0);
+            $todayData = Order::selectRaw('HOUR(created_at) as hour, SUM(total) as total')
+                ->where('status', 'completed')
+                ->whereDate('created_at', Carbon::today())
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->pluck('total', 'hour')
+                ->toArray();
+
+            foreach ($todayData as $hour => $total) {
+                $todayRevenueChart[$hour] = $total;
+            }
+
+            $todayRevenueLabels = [];
+            for ($i = 0; $i < 24; $i++) {
+                $todayRevenueLabels[] = Carbon::createFromTime($i)->format('g A');
+            }
+
+            // This Month (Daily)
+            // This month's revenue with correct number of days
+            $daysInMonth = Carbon::now()->daysInMonth;
+            $thisMonthRevenueChart = array_fill(0, $daysInMonth, 0);
+            $thisMonthData = Order::selectRaw('DAY(event_date_start) as day, SUM(total) as total')
+                ->where('status', 'completed')
+                ->whereYear('event_date_start', now()->year)
+                ->whereMonth('event_date_start', now()->month)
+                ->groupBy('day')
+                ->orderBy('day')
+                ->pluck('total', 'day')
+                ->toArray();
+
+            foreach ($thisMonthData as $day => $total) {
+                $thisMonthRevenueChart[$day - 1] = $total; // Adjust for 0-based array
+            }
+
+            $thisMonthRevenueLabels = [];
+            for ($i = 1; $i <= $daysInMonth; $i++) {
+                $thisMonthRevenueLabels[] = Carbon::createFromDate(now()->year, now()->month, $i)->format('F j'); // Example: "April 1"
+            }
+            // LAST 6 MONTHS START DATE
+            $sixMonthsAgo = Carbon::now()->subMonths(6)->startOfMonth();
+            $now = Carbon::now();
+
+            $lastSixMonthsRevenue = Order::whereBetween('event_date_start', [$sixMonthsAgo, $now])
+                ->where('status', 'completed')
+                ->sum('total');
+
+            $lastSixMonthsRevenueDataRaw = Order::selectRaw('DATE_FORMAT(event_date_start, "%b %Y") as month, SUM(total) as total')
+                ->whereBetween('event_date_start', [$sixMonthsAgo, $now])
+                ->where('status', 'completed')
+                ->groupBy('month')
+                ->orderByRaw('MIN(event_date_start)')
+                ->pluck('total', 'month')
+                ->toArray();
+
+            // Ensure all 6 months are present, even if zero
+            $lastSixMonthsRevenueLabels = [];
+            $lastSixMonthsRevenueChart = [];
+            $period = new DatePeriod(
+                $sixMonthsAgo,
+                new DateInterval('P1M'),
+                $now->copy()->addMonth()->startOfMonth()  // one extra to include current month
+            );
+
+            foreach ($period as $monthDate) {
+                $label = $monthDate->format('M Y');  // e.g. Apr 2025
+                $lastSixMonthsRevenueLabels[] = $label;
+                $lastSixMonthsRevenueChart[] = $lastSixMonthsRevenueDataRaw[$label] ?? 0;
+            }
+
+            // dd($thisMonthRevenueChart);
             // CHART TOTAL EARNINGS
             $currentYear = now()->year;
             $lastYear = now()->subYear()->year;
 
-            $thisYearData = Order::selectRaw('MONTH(created_at) as month, SUM(total) as total')
-                ->whereYear('created_at', $currentYear)
+            $thisYearData = Order::selectRaw('MONTH(event_date_start) as month, SUM(total) as total')
+                ->whereYear('event_date_start', $currentYear)
                 ->where('status', 'completed')
                 ->groupBy('month')
                 ->pluck('total', 'month')
                 ->toArray();
 
-            $lastYearData = Order::selectRaw('MONTH(created_at) as month, SUM(total) as total')
-                ->whereYear('created_at', $lastYear)
+            $lastYearData = Order::selectRaw('MONTH(event_date_start) as month, SUM(total) as total')
+                ->whereYear('event_date_start', $lastYear)
                 ->where('status', 'completed')
                 ->groupBy('month')
                 ->pluck('total', 'month')
@@ -231,10 +327,21 @@ class AdminController extends Controller
                 'pendingOrders',
                 'ordersToday',
                 'totalRevenue',
+                'todayRevenue',
+                'yearRevenue',
+                'lastYearRevenue',
+                'monthRevenue',
                 'eventTypeRevenue',
+                'todayRevenueChart',
+                'todayRevenueLabels',
+                'thisMonthRevenueChart',
+                'thisMonthRevenueLabels',
                 'thisYearRevenueChart',
                 'lastYearRevenueChart',
-                'topPackages'
+                'topPackages',
+                'lastSixMonthsRevenue',
+                'lastSixMonthsRevenueChart',
+                'lastSixMonthsRevenueLabels'
             ));
         }
 

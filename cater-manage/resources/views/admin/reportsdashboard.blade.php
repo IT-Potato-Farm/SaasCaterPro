@@ -49,38 +49,33 @@
 
 
 
-                        <!-- Average Order Value Card -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">₱3,556</h2>
-                            <p class="text-gray-600 text-center">Avg. Order Value</p>
-                        </div>
+
                     </div>
 
                     <!-- Charts Row -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <!-- Sales Overview Chart -->
                         <div class="bg-white rounded-lg shadow p-6">
-                            
-                            <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
-                            <div class="flex gap-4">
-                                <span class="flex items-center text-sm text-gray-500">
-                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                                    Today 
-                                </span>
-                                <span class="flex items-center text-sm text-gray-500">
-                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                                    This Motnh 
-                                </span>
-                                <span class="flex items-center text-sm text-gray-500">
-                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                                    This Year ₱
-                                </span>
-                                <span class="flex items-center text-sm text-gray-500">
-                                    <span class="w-3 h-3 bg-gray-200 rounded-full mr-2"></span>
-                                    Last Year ₱
-                                </span>
+
+                            <h2 class="text-xl font-semibold mb-4">Sales Overview </h2>
+
+                            <div class="relative inline-block">
+                                <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
+                                    class="px-3 py-1 rounded bg-gray-100 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="today"selected >Today</option>
+                                    <option value="month">This Month</option>
+                                    <option value="sixMonths">Last 6 Months</option>
+                                    <option value="year" >This Year</option>
+                                    <option value="lastYear">Last Year</option>
+                                </select>
                             </div>
+
+
                             <div class="h-64">
+                                <div id="totalRevenueLabel" class="mt-2 text-lg font-semibold text-gray-700">
+                                    Total Revenue:
+                                    {{ '₱' . number_format($yearRevenue ?? 0, 0) }}
+                                </div>
                                 <canvas id="salesOverviewChart"></canvas>
                             </div>
                         </div>
@@ -106,7 +101,9 @@
                         <!-- Sales Performance Chart -->
                         <div class="bg-white rounded-lg shadow p-6">
                             <h2 class="text-xl font-semibold mb-4">Sales Performance</h2>
+
                             <div class="h-64">
+
                                 <canvas id="salesPerformanceChart"></canvas>
                             </div>
                         </div>
@@ -404,12 +401,192 @@
         </script>
         <script src="{{ asset('js/eventTypeRevenue-chart.js') }}"></script>
     @endif
-    {{-- CHART TOTAL EARNING JS --}}
+
+    {{-- CHART TOTAL SALES OVERVIEW EARNING JS DE TO GUMAGANA IF NASA IBANG FILES YAWA --}}
     <script>
-        const thisYearRevenue = @json($thisYearRevenueChart);
-        const lastYearRevenue = @json($lastYearRevenueChart);
+        const totalRevenues = {
+            today: {{ $todayRevenue ?? 0 }},
+            month: {{ $monthRevenue ?? 0 }},
+            sixMonths: {{ $lastSixMonthsRevenue ?? 0 }},
+            year: {{ $yearRevenue ?? 0 }},
+            lastYear: {{ $lastYearRevenue ?? 0 }}
+        };
+    
+        const chartDataSets = {
+            today: @json($todayRevenueChart),
+            month: @json($thisMonthRevenueChart),
+            sixMonths: @json($lastSixMonthsRevenueChart),
+            year: @json($thisYearRevenueChart),
+            lastYear: @json($lastYearRevenueChart)
+        };
+    
+        const chartLabels = {
+            today: @json($todayRevenueLabels),
+            month: @json($thisMonthRevenueLabels),
+            sixMonths: @json($lastSixMonthsRevenueLabels),
+            year: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            lastYear: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        };
+    
+        const chartColors = {
+            thisYear: "#3B82F6",
+            lastYear: "#E5E7EB",
+            gridY: "#F3F4F6",
+            tickText: "#6B7280",
+            tooltipBg: "#1F2937",
+            tooltipBorder: "#374151",
+            tooltipText: "#F9FAFB",
+        };
+        // TODAY DEFAULT CHART
+        let activeButton = 'today';
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            const select = document.getElementById('salesRangeSelect');
+            const initialRange = select ? select.value : 'today';
+
+            activeButton = initialRange;
+    
+            const ctxElement = document.getElementById("salesOverviewChart");
+            if (!ctxElement) return;
+    
+            const ctx = ctxElement.getContext("2d");
+    
+            window.salesOverviewChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: chartLabels[initialRange] || [],
+                    datasets: [{
+                        label: {
+                            today: "Today",
+                            month: "This Month",
+                            sixMonths: "Last 6 Months",
+                            year: "This Year",
+                            lastYear: "Last Year"
+                        }[initialRange] || "Sales",
+                        data: chartDataSets[initialRange] || [],
+                        borderColor: chartColors.thisYear,
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: "rgba(59, 130, 246, 0.05)",
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: "#fff",
+                        pointBorderColor: chartColors.thisYear,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 500,
+                        easing: 'easeOutQuart'
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: chartColors.gridY
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return new Intl.NumberFormat("en-PH", {
+                                        style: "currency",
+                                        currency: "PHP",
+                                        minimumFractionDigits: 0,
+                                    }).format(value);
+                                },
+                                color: chartColors.tickText,
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: chartColors.tickText
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: chartColors.tooltipBg,
+                            titleColor: chartColors.tooltipText,
+                            bodyColor: chartColors.tooltipText,
+                            borderColor: chartColors.tooltipBorder,
+                            borderWidth: 1,
+                            padding: 12,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function (context) {
+                                    let value = context.raw || 0;
+                                    return (
+                                        context.dataset.label +
+                                        ": " +
+                                        new Intl.NumberFormat("en-PH", {
+                                            style: "currency",
+                                            currency: "PHP",
+                                            minimumFractionDigits: 0,
+                                        }).format(value)
+                                    );
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            const total = totalRevenues[initialRange] || 0;
+            const totalLabel = document.getElementById('totalRevenueLabel');
+            if (totalLabel) {
+                totalLabel.textContent = `Total Revenue: ${new Intl.NumberFormat("en-PH", {
+                    style: "currency",
+                    currency: "PHP",
+                    minimumFractionDigits: 0
+                }).format(total)}`;
+            }
+        });
+    
+        function filterChartSales(range) {
+            if (!window.salesOverviewChart) {
+                console.error("Chart is not initialized yet.");
+                return;
+            }
+    
+            const newData = chartDataSets[range];
+    
+            if (!newData) {
+                alert("No data for this range.");
+                return;
+            }
+    
+            activeButton = range;
+
+            window.salesOverviewChart.data.labels = chartLabels[range] || [];
+            window.salesOverviewChart.data.datasets[0].data = newData;
+    
+            window.salesOverviewChart.data.datasets[0].label = {
+                today: "Today",
+                month: "This Month",
+                sixMonths: "Last 6 Months",
+                year: "This Year",
+                lastYear: "Last Year"
+            }[range] || "Sales";
+    
+            window.salesOverviewChart.update();
+    
+            const total = totalRevenues[range] || 0;
+            document.getElementById('totalRevenueLabel').textContent =
+                `Total Revenue: ${new Intl.NumberFormat("en-PH", {
+                    style: "currency",
+                    currency: "PHP",
+                    minimumFractionDigits: 0
+                }).format(total)}`;
+        }
     </script>
-    <script src="{{ asset('js/sales-overview-chart.js') }}"></script>
 
 
     {{-- SALES PERFORMANCE CHART --}}
