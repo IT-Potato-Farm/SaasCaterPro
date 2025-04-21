@@ -139,6 +139,46 @@
                     <span class="menu-text">Users</span>
                 </a>
             </li>
+            <li class="relative">
+                <a href="javascript:void(0);" onclick="toggleDropdown('cmsDropdown')"
+                    class="flex items-center justify-between p-3 hover:bg-gray-700 rounded-md">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.29.562 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="menu-text">CMS</span>
+                    </div>
+                    <svg id="arrowIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2 transform transition-transform duration-300" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+            
+                <ul id="cmsDropdown" class="ml-8 mt-2 space-y-2 hidden">
+                    <li>
+                        <a href="" class="block p-2 text-white rounded hover:bg-gray-700 {{ Request::routeIs('admin.nav.index') ? 'bg-gray-900' : '' }}">
+                            Navigation
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.hero.index')}}" class="block p-2 text-white rounded hover:bg-gray-700 {{ Request::routeIs('admin.hero.index') ? 'bg-gray-900' : '' }}">
+                            Hero Section
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.whychoose.index')}}" class="block p-2 text-white rounded hover:bg-gray-700 {{ Request::routeIs('admin.whychoose.index') ? 'bg-gray-900' : '' }}">
+                            Why Choose Us Section
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" class="block p-2 text-white rounded hover:bg-gray-700 {{ Request::routeIs('admin.footer.index') ? 'bg-gray-900' : '' }}">
+                            Footer
+                        </a>
+                    </li>
+                </ul>
+            </li>
             <li>
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                     class="flex items-center p-3 hover:bg-gray-700 rounded-md">
@@ -235,4 +275,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+</script>
+<script>
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const arrow = dropdown.previousElementSibling.querySelector('#arrowIcon');
+        
+        dropdown.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+    }
 </script>

@@ -305,11 +305,11 @@
                                                     </div>
                                                 @endif --}}
 
-                                                @if ($order->penalty_fee > 0)
+                                                {{-- @if ($order->penalty_fee > 0)
                                                     <div class="text-xs text-red-500">
                                                         Penalty: +₱{{ number_format($order->penalty_fee, 2) }}
                                                     </div>
-                                                @endif
+                                                @endif --}}
                                             </td>
                                             
                                             <!-- Status -->

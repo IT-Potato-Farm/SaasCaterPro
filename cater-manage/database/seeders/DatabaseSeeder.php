@@ -22,5 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
         ]);
+        // $this->call(HeroSectionSeeder::class);
+        // $this->call(WhyChooseUsSectionSeeder::class);
     }
 }

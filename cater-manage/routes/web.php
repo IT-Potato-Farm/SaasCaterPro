@@ -5,6 +5,7 @@ use App\Models\Order;
 use App\Mail\TestEmail;
 use App\Models\Package;
 use App\Models\CartItem;
+use App\Models\WhyChooseUsSection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -31,7 +32,9 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PackageUtilityController;
+use App\Http\Controllers\Admin\HeroSectionController;
 use App\Http\Controllers\Admin\BookingSettingController;
+use App\Http\Controllers\Admin\WhyChooseUsSectionController;
 
 // route navigation each page
 
@@ -278,8 +281,25 @@ Route::middleware('auth')->group(function () {
 // SEARCH
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
+
+
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
+
+    // CMS MANAGEMENT
+    Route::prefix('admin')->name('admin.')->group(function () {
+
+        // Hero Section CMS
+        Route::get('/hero-section', [HeroSectionController::class, 'index'])->name('hero.index');
+        Route::get('/hero-section/{id}/edit', [HeroSectionController::class, 'edit'])->name('hero.edit');
+        Route::put('/hero-section/{id}', [HeroSectionController::class, 'update'])->name('hero.update');
+
+        // WHY CHOOSE US
+        Route::get('/whychooseus-section', [WhyChooseUsSectionController::class, 'index'])->name('whychoose.index');
+        Route::get('/whychooseus-section/{id}/edit', [WhyChooseUsSectionController::class, 'edit'])->name('whychoose.edit');
+        Route::put('/whychooseus-section/{id}', [WhyChooseUsSectionController::class, 'update'])->name('whychoose.update');
+    });
+
     // BOOK SETTINGS SERVICE
     Route::get('/booking-settings', [BookingSettingController::class, 'index'])->name('admin.booking-settings.index');
     Route::get('/booking-settings/edit', [BookingSettingController::class, 'edit'])->name('admin.booking-settings.edit');
@@ -361,7 +381,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
     Route::get('/orders/filter', [OrderController::class, 'index'])->name('orders.filter');
 
-    
+
 
 
     // booking  management
