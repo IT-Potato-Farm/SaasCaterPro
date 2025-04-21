@@ -173,6 +173,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('admin.aboutus.index')}}" class="block p-2 text-white rounded hover:bg-gray-700 {{ Request::routeIs('admin.aboutus.index') ? 'bg-gray-900' : '' }}">
+                            About Us Section
+                        </a>
+                    </li>
+                    <li>
                         <a href="" class="block p-2 text-white rounded hover:bg-gray-700 {{ Request::routeIs('admin.footer.index') ? 'bg-gray-900' : '' }}">
                             Footer
                         </a>

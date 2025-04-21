@@ -42,6 +42,10 @@ class HeroSectionController extends Controller
             'background_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $data['title'] = trim(preg_replace('/\s+/', ' ', $data['title']));
+        $data['subtitle'] = trim(preg_replace('/\s+/', ' ', $data['subtitle']));
+        $data['description'] = trim(preg_replace('/\s+/', ' ', $data['description']));
+
         if ($request->hasFile('background_image')) {
             // Delete old image if it exists
             if ($hero->background_image && file_exists(public_path($hero->background_image))) {

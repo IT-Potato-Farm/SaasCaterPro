@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HERO SECTION CMS</title>
+    <title>About US SECTION CMS</title>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,13 +27,13 @@
                     <!-- Page Header -->
                     <div class="bg-white shadow-md rounded-lg mb-4 md:mb-6 p-4">
                         <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold text-center text-gray-800">
-                            HERO SECTION PAGE
+                            ABOUT US SECTION PAGE
                         </h1>
                     </div>
                     
-                    @if ($heroSection)
+                    @if ($aboutUs)
                         <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
-                            <form id="editForm" action="{{ route('admin.hero.update', $heroSection->id) }}"
+                            <form id="editForm" action="{{ route('admin.aboutus.update', $aboutUs->id) }}"
                                 method="POST" class="space-y-4 md:space-y-6" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
@@ -48,25 +48,14 @@
                                     <label for="title" class="block text-sm md:text-base font-medium text-gray-700">Title</label>
                                     <div class="flex items-center">
                                         <input type="text" id="title" name="title"
-                                            value="{{ $heroSection->title }}"
+                                            value="{{ $aboutUs->title }}"
                                             class="block w-full px-3 py-2 text-xl md:text-2xl lg:text-3xl font-semibold text-gray-800 border-b border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors"
                                             required>
                                         <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
                                     </div>
                                 </div>
 
-                                <!-- Subtitle Field -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="subtitle"
-                                        class="block text-sm md:text-base font-medium text-gray-700">Subtitle</label>
-                                    <div class="flex items-center">
-                                        <input type="text" id="subtitle" name="subtitle"
-                                            value="{{ $heroSection->subtitle }}"
-                                            class="block w-full px-3 py-2 text-lg md:text-xl text-gray-600 border-b border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors"
-                                            required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
-                                    </div>
-                                </div>
+                                
 
                                 <!-- Description Field -->
                                 <div class="space-y-1 md:space-y-2">
@@ -75,7 +64,7 @@
                                     <div class="flex items-start">
                                         <textarea id="description" name="description" rows="4"
                                             class="block w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base"
-                                            required>{{ $heroSection->description }}</textarea>
+                                            required>{{ $aboutUs->description }}</textarea>
                                         <i class="fas fa-edit text-blue-500 text-sm mt-2 ml-2"></i>
                                     </div>
                                 </div>
@@ -85,9 +74,9 @@
                                     <label for="background_image"
                                         class="block text-sm md:text-base font-medium text-gray-700">Background Image</label>
                                     <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-                                        @if ($heroSection->background_image)
+                                        @if ($aboutUs->background_image)
                                             <div class="relative group">
-                                                <img src="{{ asset($heroSection->background_image) }}"
+                                                <img src="{{ asset($aboutUs->background_image) }}"
                                                     class="rounded-md shadow-lg w-full max-w-xs" alt="Background Image">
                                                 <div
                                                     class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-md">

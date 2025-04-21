@@ -33,6 +33,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PackageUtilityController;
 use App\Http\Controllers\Admin\HeroSectionController;
+use App\Http\Controllers\Admin\AboutUsSectionController;
 use App\Http\Controllers\Admin\BookingSettingController;
 use App\Http\Controllers\Admin\WhyChooseUsSectionController;
 
@@ -286,18 +287,20 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    // CMS MANAGEMENT
+    // CMS MANAGEMENT admin.hero.index
     Route::prefix('admin')->name('admin.')->group(function () {
 
         // Hero Section CMS
         Route::get('/hero-section', [HeroSectionController::class, 'index'])->name('hero.index');
-        Route::get('/hero-section/{id}/edit', [HeroSectionController::class, 'edit'])->name('hero.edit');
         Route::put('/hero-section/{id}', [HeroSectionController::class, 'update'])->name('hero.update');
 
         // WHY CHOOSE US
         Route::get('/whychooseus-section', [WhyChooseUsSectionController::class, 'index'])->name('whychoose.index');
-        Route::get('/whychooseus-section/{id}/edit', [WhyChooseUsSectionController::class, 'edit'])->name('whychoose.edit');
         Route::put('/whychooseus-section/{id}', [WhyChooseUsSectionController::class, 'update'])->name('whychoose.update');
+
+        // ABOUT US
+        Route::get('/adboutus-section', [AboutUsSectionController::class, 'index'])->name('aboutus.index');
+        Route::put('/aboutus-section/{id}', [AboutUsSectionController::class, 'update'])->name('aboutus.update');
     });
 
     // BOOK SETTINGS SERVICE

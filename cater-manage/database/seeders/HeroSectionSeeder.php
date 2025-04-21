@@ -15,9 +15,11 @@ class HeroSectionSeeder extends Seeder
     {
         HeroSection::create([
             'background_image' => 'images/sectionhero.jpg',
-            'title' => 'SAAS',
-            'subtitle' => 'CATERING AND FOOD SERVICES',
-            'description' => 'Offers an exquisite goodness taste of Halal Cuisine',
+            'title' => trim(preg_replace('/\s+/', ' ', 'SAAS')),
+            'subtitle' => trim(preg_replace('/\s+/', ' ', 'CATERING AND FOOD SERVICES')),
+            'description' => trim(preg_replace('/\s+/', ' ', 'Offers an exquisite goodness taste of Halal Cuisine')),
         ]);
+
+        
     }
 }
