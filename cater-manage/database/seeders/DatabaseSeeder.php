@@ -24,5 +24,7 @@ class DatabaseSeeder extends Seeder
         ]);
         // $this->call(HeroSectionSeeder::class);
         // $this->call(WhyChooseUsSectionSeeder::class);
+        // $this->call(AboutUsSectionSeeder::class);
+        // $this->call(FooterSectionSeeder::class);
     }
 }

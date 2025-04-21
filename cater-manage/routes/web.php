@@ -33,9 +33,12 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PackageUtilityController;
 use App\Http\Controllers\Admin\HeroSectionController;
+use App\Http\Controllers\Admin\FooterSectionController;
 use App\Http\Controllers\Admin\AboutUsSectionController;
 use App\Http\Controllers\Admin\BookingSettingController;
 use App\Http\Controllers\Admin\WhyChooseUsSectionController;
+use App\Http\Controllers\PrivacyPolicyController;
+use App\Models\PrivacyPolicy;
 
 // route navigation each page
 
@@ -50,6 +53,9 @@ Route::get('/debug-order-email/{orderId}', function ($orderId) {
     }
 });
 
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy.policy');
 
 Route::get('/loginpage', [UserController::class, 'gologin'])->name('login');
 
@@ -282,7 +288,7 @@ Route::middleware('auth')->group(function () {
 // SEARCH
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
-
+Route::get('/privacy-policyshow', [PrivacyPolicyController::class, 'show'])->name('privacy-policy.show');
 
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -301,6 +307,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
         // ABOUT US
         Route::get('/adboutus-section', [AboutUsSectionController::class, 'index'])->name('aboutus.index');
         Route::put('/aboutus-section/{id}', [AboutUsSectionController::class, 'update'])->name('aboutus.update');
+        // FOOTER
+        Route::get('/footer-section', [FooterSectionController::class, 'index'])->name('footer.index');
+        Route::put('/footer-section/{id}', [FooterSectionController::class, 'update'])->name('footer.update');
+        // PRIVACY POLICY
+
+        Route::get('/admin/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy.index');
+        Route::put('/admin/privacy-policy/{id}', [PrivacyPolicyController::class, 'update'])->name('privacy.update');
+        
+
     });
 
     // BOOK SETTINGS SERVICE
