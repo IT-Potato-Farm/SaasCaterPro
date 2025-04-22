@@ -5,6 +5,7 @@ use App\Models\Order;
 use App\Mail\TestEmail;
 use App\Models\Package;
 use App\Models\CartItem;
+use App\Models\PrivacyPolicy;
 use App\Models\WhyChooseUsSection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -21,6 +22,7 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
@@ -28,6 +30,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\ItemOptionController;
 use App\Http\Controllers\PackageItemController;
+use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -37,8 +40,6 @@ use App\Http\Controllers\Admin\FooterSectionController;
 use App\Http\Controllers\Admin\AboutUsSectionController;
 use App\Http\Controllers\Admin\BookingSettingController;
 use App\Http\Controllers\Admin\WhyChooseUsSectionController;
-use App\Http\Controllers\PrivacyPolicyController;
-use App\Models\PrivacyPolicy;
 
 // route navigation each page
 
@@ -52,6 +53,11 @@ Route::get('/debug-order-email/{orderId}', function ($orderId) {
         return "Order not found!";
     }
 });
+
+// SAMPLE PRINT 
+Route::get('/reports/orders/print', [ReportsController::class, 'printOrdersReport'])
+    ->name('reports.orders.print')
+    ->middleware('auth');
 
 Route::get('/privacy-policy', function () {
     return view('privacy-policy');

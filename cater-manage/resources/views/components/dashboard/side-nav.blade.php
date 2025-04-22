@@ -1,4 +1,4 @@
-<aside id="sidebar" class="bg-gray-800 text-white w-64 transition-all duration-300">
+<aside id="sidebar" class="bg-gray-800 text-white w-64 transition-all duration-300 print:hidden">
     <div class="p-4 flex justify-between items-center">
         <span id="sidebar-title" class="text-xl font-bold">Admin Panel</span>
         <button id="toggle-sidebar" class="text-white focus:outline-none hover:cursor-pointer">
@@ -161,8 +161,8 @@
                 <!-- Submenu for Reports with classes for initial hidden state -->
                 <ul class="sub-menu pl-4 space-y-2 transition-all duration-300 ease-in-out max-h-0 overflow-hidden">
                     <li>
-                        <a href="{{ route('admin.reports', ['type' => 'bookings']) }}" class="block p-3 pl-10 hover:bg-gray-600 rounded-md {{ Request::input('type') == 'bookings' ? 'bg-gray-700' : '' }}">
-                            Bookings Report
+                        <a href="{{ route('reports.orders.print', ['type' => 'bookings']) }}" class="block p-3 pl-10 hover:bg-gray-600 rounded-md {{ Request::input('type') == 'bookings' ? 'bg-gray-700' : '' }}">
+                            Orders Report
                         </a>
                     </li>
                     <li>
@@ -192,7 +192,7 @@
                 </a>
             </li>
             
-            <li>
+            {{-- <li>
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                     class="flex items-center p-3 hover:bg-gray-700 rounded-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24"
@@ -205,7 +205,7 @@
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                     @csrf
                 </form>
-            </li>
+            </li> --}}
         </ul>
     </nav>
 </aside>

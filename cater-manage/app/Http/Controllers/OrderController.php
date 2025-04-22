@@ -67,10 +67,10 @@ class OrderController extends Controller
 
         // Filter by event_date range if provided
         if ($request->filled('date_from')) {
-            $query->whereDate('event_date', '>=', $request->input('date_from'));
+            $query->whereDate('event_date_start', '>=', $request->input('date_from'));
         }
         if ($request->filled('date_to')) {
-            $query->whereDate('event_date', '<=', $request->input('date_to'));
+            $query->whereDate('event_date_end', '<=', $request->input('date_to'));
         }
 
         // Order the results and paginate

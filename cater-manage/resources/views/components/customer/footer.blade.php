@@ -58,7 +58,7 @@
                         
                         <!-- Privacy Policy -->
                         <div class="flex items-center">
-                            <a href="{{ route('privacy.policy') }}" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                            <a href="{{ route('privacy-policy.show') }}" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                                 <i class="fas fa-file-alt mr-3 text-blue-500"></i>
                                 <span class="text-sm">Privacy Policy</span>
                             </a>

@@ -24,6 +24,7 @@
                 <x-dashboard.header />
                 <div class="container mx-auto px-4 py-8">
                     <h1 class="text-4xl font-bold mb-8">Reports</h1>
+                    
 
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -157,8 +158,10 @@
                     </div>
                 </div>
 
+
+
                 {{-- 2ND DUMMY REPORTS --}}
-                <div class="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
+                {{-- <div class="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
                     <!-- Dashboard Header -->
                     <div class="mb-8">
                         <h1 class="text-3xl font-bold text-gray-800">Reports Dashboard</h1>
@@ -385,7 +388,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> --}}
 
                     </div>
                 </div>
