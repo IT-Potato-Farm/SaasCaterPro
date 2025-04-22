@@ -61,5 +61,9 @@ class BookingSettingSeeder extends Seeder
     }
 }
 RUN: php artisan db:seed --class=BookingSettingSeeder
-
-
+php artisan db:seed
+php artisan db:seed --class=HeroSectionSeeder
+php artisan db:seed --class=WhyChooseUsSectionSeeder
+php artisan db:seed --class=AboutUsSectionSeeder
+php artisan db:seed --class=FooterSectionSeeder
+php artisan db:seed --class=PrivacyPolicySeeder

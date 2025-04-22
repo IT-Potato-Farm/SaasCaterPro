@@ -1,0 +1,28 @@
+ADMIN FLOW FOR MANAGING PACKAGES AND PARTY TRAYS
+
+ADD FIRST
+CATEGORIES - FOR CATEGORIZING PARTY TRAYS 
+
+ADDING FOR PARTY TRAYS
+LIKE PASTA ETC BLABLA
+
+FLOW IN PACKAGE
+
+ADD ULAM -> ADD ULAM OPTION -> ADD PACKAGE
+LINK ULAM ITEMS -> TO A PACKAGE (ex: Chicken in Package: Set A) -> SELECT ULAM OPTIONS LIKE fRIED, CURRY, ETC
+
+LINK ULAM OPTIONS SA ULAM EX: LINK FRIED, CURRY, SA CHICKEN (ULAM ITEM)
+
+FLOW IN UTILS
+
+CREATE UTILITY -> LINK UTILS -> TO A PACKAGE
+
+$user = App\Models\User::create([
+    'first_name' => 'Jinshi',
+    'last_name' => 'secret',
+    'email' => 'johnemmanjuaquera06@gmail.com',
+    'role' => 'customer',
+    'mobile' => '09158500764',
+    'password' => bcrypt('Johnemman1'),
+]);
+$user->update(['email_verified_at' => now()]);

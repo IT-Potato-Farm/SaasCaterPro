@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\BookingSetting;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,9 +23,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
         ]);
-        // $this->call(HeroSectionSeeder::class);
-        // $this->call(WhyChooseUsSectionSeeder::class);
-        // $this->call(AboutUsSectionSeeder::class);
-        // $this->call(FooterSectionSeeder::class);
+        $this->call(BookingSettingSeeder::class);
+        $this->call(HeroSectionSeeder::class);
+        $this->call(WhyChooseUsSectionSeeder::class);
+        $this->call(AboutUsSectionSeeder::class);
+        $this->call(FooterSectionSeeder::class);
+        $this->call(PrivacyPolicySeeder::class);
     }
 }
