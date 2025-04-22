@@ -22,7 +22,7 @@ class UserController extends Controller
         }
 
         // If not logged in
-        return view('loginpage');
+        return view('loginpage')->with('message', session('message', ''));
     }
 
     public function login(Request $request)
@@ -79,7 +79,7 @@ class UserController extends Controller
             }
         }
 
-        
+
         return back()->withErrors([
             'loginpassword' => 'Password is incorrect.',
         ])->onlyInput('loginemail');

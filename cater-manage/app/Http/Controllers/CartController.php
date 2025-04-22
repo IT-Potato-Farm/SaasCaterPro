@@ -19,13 +19,17 @@ class CartController extends Controller
     {
         $user = Auth::user();
         if (!$user) {
-            $cart = session()->get('cart', ['items' => []]); // Guest cart (session)
-            $cartItems = collect($cart['items']); // Convert to collection for easier handling
-        } else {
-            // Fetch or create cart for logged-in users
-            $cart = Cart::firstOrCreate(['user_id' => $user->id]);
-            $cartItems = $cart->items; // Retrieve cart items from DB
+            return redirect()->route('loginpage')->with('message', 'Please log in to view your cart.');
+
         }
+        // if (!$user) {
+        //     $cart = session()->get('cart', ['items' => []]); // Guest cart (session)
+        //     $cartItems = collect($cart['items']); // Convert to collection for easier handling
+        // } else {
+        //     // Fetch or create cart for logged-in users
+        //     $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+        //     $cartItems = $cart->items; // Retrieve cart items from DB
+        // }
 
         // Fetch pending order only if user is logged in
         $activeStatuses = ['pending', 'partial', 'ongoing', 'paid'];
@@ -166,7 +170,7 @@ class CartController extends Controller
                 $existingPackageItem = $cartItems->where('package_id', $validated['package_id'])->first();
                 if ($existingPackageItem) {
                     $existingPackageItem->update(['quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2),
-                    'selected_utilities' => $utilities, 
+                    'selected_utilities' => $utilities,
                 ]);
                     $messages['success'][] = 'Package updated in cart.';
 

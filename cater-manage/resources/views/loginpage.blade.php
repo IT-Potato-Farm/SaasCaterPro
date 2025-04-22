@@ -10,6 +10,7 @@
 </head>
 
 <body>
+
     <main class="bg-red-100 flex justify-center items-center min-h-screen">
         <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
             <div class="flex justify-center mb-8">
@@ -21,14 +22,19 @@
             </div>
 
             @if (session('success'))
-                <script>
-                    Swal.fire({
+            <script>
+                Swal.fire({
                         icon: 'success',
                         title: 'Account Created!',
                         text: '{{ session('success') }}',
                         confirmButtonText: 'OK'
                     });
-                </script>
+            </script>
+            @endif
+            @if (session('message'))
+                <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded mb-4">
+                    {{ session('message') }}
+                </div>
             @endif
 
             <form id="loginForm" action="{{ route('user.login') }}" class="space-y-6" method="post" novalidate>
@@ -41,7 +47,7 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('loginemail') border-red-500 @enderror"
                         placeholder="name@email.com">
                     @error('loginemail')
-                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -70,9 +76,10 @@
                         </span>
                     </div>
                     @error('loginpassword')
-                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                     @enderror
-                    <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Forgot
+                    <a href="{{ route('password.request') }}"
+                        class="text-sm text-blue-600 hover:underline mt-2 inline-block">Forgot
                         password?</a>
                 </div>
 

@@ -54,7 +54,9 @@ Route::get('/debug-order-email/{orderId}', function ($orderId) {
     }
 });
 
-// SAMPLE PRINT 
+
+
+// SAMPLE PRINT
 Route::get('/reports/orders/print', [ReportsController::class, 'printOrdersReport'])
     ->name('reports.orders.print')
     ->middleware('auth');
@@ -204,7 +206,7 @@ Route::get('/bookings/available-slots', [CheckoutController::class, 'getAvailabl
 // Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
 
 // Route::get('/menu-details/{id}', [MenuController::class, 'getMenuDetails']);
-// void na yung MENUU 
+// void na yung MENUU
 
 
 
@@ -227,7 +229,7 @@ Route::resource('package_items', PackageItemController::class);
 Route::post('/packageitemoption/store', [PackageItemController::class, 'optionstore'])->name('package_food_item_options.store');
 Route::post('/package-items/check-name', [PackageItemController::class, 'checkName'])->name('package_items.checkName');
 
-
+// NAME VALIDATION UNIQUE
 Route::get('/get-existing-menu-items/{package}', [PackageItemController::class, 'getExistingMenuItems']);
 Route::get('/get-existing-package-items/{package}', [PackageItemController::class, 'getExistingpackageItems']);
 
@@ -245,20 +247,18 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 
 
 
-// ------------------------------------------------
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
-Route::get('/cartdup', [CartController::class, 'index'])->name('cart.sanagumana');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // cart
 Route::middleware(['auth', 'verified'])->group(function () {
+    // ------------------------------------------------
+
 
 
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
 
 });
+
 Route::patch('/cart/update/{id}', [CartItemController::class, 'update'])->name('cart.item.update');
 Route::delete('/cart/item/{id}', [CartItemController::class, 'destroy'])->name('cart.item.destroy');
 
@@ -278,9 +278,9 @@ Route::get('/cart/count', function () {
 })->name('cart.count');
 
 // order
-Route::get('/checkoutpage', function () {
-    return view('checkoutpage');
-});
+// Route::get('/checkoutpage', function () {
+//     return view('checkoutpage');
+// });
 
 
 // CHECKOUT ROUTEE
@@ -295,6 +295,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
 Route::get('/privacy-policyshow', [PrivacyPolicyController::class, 'show'])->name('privacy-policy.show');
+
 
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -320,7 +321,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         Route::get('/admin/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy.index');
         Route::put('/admin/privacy-policy/{id}', [PrivacyPolicyController::class, 'update'])->name('privacy.update');
-        
+
 
     });
 
@@ -360,7 +361,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/items/{id}/edit', [ItemController::class, 'update'])->name('item.edit');
     Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('item.delete');
 
-    // ITEM OPTIONS 
+    // ITEM OPTIONS
     Route::post('/items-option/store', [ItemOptionController::class, 'store'])->name('itemOptions.store');
     Route::put('/item-options/{id}', [ItemOptionController::class, 'update'])->name('itemOption.edit');
     Route::delete('/item-options/{id}', [ItemOptionController::class, 'destroy'])->name('itemOption.delete');
@@ -423,7 +424,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
 });
 
+// CUSTOMER ROUTE IF LOGGED IN
 Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
+    Route::get('/cartdup', [CartController::class, 'index3'])->name('cart.sanagumana');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     // cancel order
     Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');

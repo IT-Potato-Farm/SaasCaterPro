@@ -19,7 +19,7 @@ class BookingSettingSeeder extends Seeder
             'service_start_time' => '08:00:00',
             'service_end_time' => '20:00:00',
             'events_per_day' => 2,
-            'blocked_dates' => json_encode([]),
+            'blocked_dates' => [],
         ]);
     }
 }
