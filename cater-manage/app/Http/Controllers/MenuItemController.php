@@ -32,25 +32,41 @@ class MenuItemController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'name' => 'required|string|max:255',
                 'description' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-                'pricing.10-15'    => 'required|numeric|min:1',
-                'pricing.15-20'    => 'required|numeric|min:1',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+                'pricing.10-15' => 'required|numeric|min:1',
+                'pricing.15-20' => 'required|numeric|min:1',
             ]);
 
+            // Sanitize
             $menuitemFields['name'] = strip_tags($menuitemFields['name']);
             $menuitemFields['description'] = strip_tags($menuitemFields['description']);
 
+            
             if ($request->hasFile('image')) {
                 $menuitemFields['image'] = $this->handleImageUpload($request->file('image'));
             }
 
             $menu = MenuItem::create($menuitemFields);
 
-            return redirect()->back()->with('success', 'Item added successfully!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added successfully!',
+                'data' => $menu
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors(),
+                'message' => 'Validation failed'
+            ], 422);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add item: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add item: ' . $e->getMessage()
+            ], 500);
         }
     }
+
     protected function handleImageUpload($image)
     {
 
@@ -95,7 +111,7 @@ class MenuItemController extends Controller
         $item = MenuItem::findOrFail($id);
 
         if ($request->hasFile('image')) {
-            
+
             Storage::disk('public')->delete('party_traypics/' . $item->image);
             $itemFields['image'] = $this->handleImageUpload($request->file('image'));
         }
@@ -122,7 +138,7 @@ class MenuItemController extends Controller
         }
 
         $menuItem->delete();
-        
+
         return redirect()->back()->with('success', 'Party tray deleted successfully!');
     }
 }
