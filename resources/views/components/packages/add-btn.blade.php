@@ -1,4 +1,5 @@
 {{-- ADD PACKAGE BUTTON SA ADMIN DASHBOARD  --}}
+@props(['categories'])
 <style>
     .image-preview {
         display: none;
