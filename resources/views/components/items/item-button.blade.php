@@ -1,4 +1,7 @@
+@props(['categories'])
 @php
+    dump($categories ?? 'NOT SET');
+    dump(get_defined_vars());
     $categoryOptions = '';
     foreach ($categories as $category) {
         $categoryOptions .= '<option value="' . $category->id . '">' . e($category->name) . '</option>';
@@ -95,26 +98,27 @@
                 const imagePreview = document.getElementById('image-preview');
                 const nameInput = document.getElementById('swal-name');
 
-                imageInput.addEventListener('change', function (e) {
+                imageInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = function (e) {
+                        reader.onload = function(e) {
                             imagePreview.src = e.target.result;
                             imagePreview.style.display = 'block';
                         };
                         reader.readAsDataURL(file);
 
                         const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                        document.getElementById('image-error').textContent = validTypes.includes(file.type)
-                            ? ''
-                            : 'Please upload a valid image file (JPEG, PNG, GIF, WEBP)';
+                        document.getElementById('image-error').textContent = validTypes.includes(
+                                file.type) ?
+                            '' :
+                            'Please upload a valid image file (JPEG, PNG, GIF, WEBP)';
                     } else {
                         imagePreview.style.display = 'none';
                     }
                 });
 
-                nameInput.addEventListener('blur', function () {
+                nameInput.addEventListener('blur', function() {
                     if (!nameInput.value.trim()) {
                         document.getElementById('name-error').textContent = 'Item name is required';
                         return;
@@ -123,7 +127,8 @@
                     fetch(`${checkNameUrl}?name=${encodeURIComponent(nameInput.value)}`)
                         .then(response => response.json())
                         .then(data => {
-                            document.getElementById('name-error').textContent = data.available ? '' : 'This item name is already taken';
+                            document.getElementById('name-error').textContent = data.available ?
+                                '' : 'This item name is already taken';
                         });
                 });
             },
@@ -145,15 +150,18 @@
                     hasErrors = true;
                 }
                 if (!pricing10to15.value || pricing10to15.value <= 0) {
-                    document.getElementById('pricing-10-15-error').textContent = 'Valid price is required for 10-15 pax';
+                    document.getElementById('pricing-10-15-error').textContent =
+                        'Valid price is required for 10-15 pax';
                     hasErrors = true;
                 }
                 if (!pricing15to20.value || pricing15to20.value <= 0) {
-                    document.getElementById('pricing-15-20-error').textContent = 'Valid price is required for 15-20 pax';
+                    document.getElementById('pricing-15-20-error').textContent =
+                        'Valid price is required for 15-20 pax';
                     hasErrors = true;
                 }
                 if (descriptionInput.value.trim().length > 1000) {
-                    document.getElementById('description-error').textContent = 'Description is too long (max 1000 characters)';
+                    document.getElementById('description-error').textContent =
+                        'Description is too long (max 1000 characters)';
                     hasErrors = true;
                 }
                 if (imageInput.files.length === 0) {
@@ -163,10 +171,12 @@
                     const file = imageInput.files[0];
                     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
                     if (file.size > 10 * 1024 * 1024) {
-                        document.getElementById('image-error').textContent = 'Image size must not exceed 10MB';
+                        document.getElementById('image-error').textContent =
+                            'Image size must not exceed 10MB';
                         hasErrors = true;
                     } else if (!validTypes.includes(file.type)) {
-                        document.getElementById('image-error').textContent = 'Please upload a valid image file (JPEG, PNG, GIF, WEBP)';
+                        document.getElementById('image-error').textContent =
+                            'Please upload a valid image file (JPEG, PNG, GIF, WEBP)';
                         hasErrors = true;
                     }
                 }
@@ -177,7 +187,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (!data.available) {
-                            document.getElementById('name-error').textContent = 'This item name is already taken';
+                            document.getElementById('name-error').textContent =
+                                'This item name is already taken';
                             return false;
                         }
 
@@ -188,15 +199,19 @@
                             },
                             body: formData
                         }).then(response => {
-                            if (!response.ok) return response.json().then(data => { throw new Error(data.message || 'Error'); });
+                            if (!response.ok) return response.json().then(data => {
+                                throw new Error(data.message || 'Error');
+                            });
                             return response.json();
                         }).then(data => {
                             if (!data.success) {
                                 if (data.errors) {
                                     Object.keys(data.errors).forEach(field => {
-                                        const errorElement = document.getElementById(`${field}-error`);
+                                        const errorElement = document.getElementById(
+                                            `${field}-error`);
                                         if (errorElement) {
-                                            errorElement.textContent = data.errors[field][0];
+                                            errorElement.textContent = data.errors[
+                                                field][0];
                                         }
                                     });
                                 }

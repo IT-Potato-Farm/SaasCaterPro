@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Package;
 use App\Models\Utility;
 use App\Models\Category;
+use App\Models\MenuItem;
 use App\Models\OrderItem;
 use App\Models\ItemOption;
 use App\Models\PackageItem;
@@ -74,7 +75,9 @@ class AdminController extends Controller
     public function goProductsDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            return view('admin.productsdashboard');
+            $menuItems = MenuItem::all();
+            $categories = Category::all();
+            return view('admin.productsdashboard', compact('categories', 'menuItems'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
@@ -188,8 +191,8 @@ class AdminController extends Controller
                 ->sum('total');
             // THIS WEEK 
             $thisWeekRevenue = Order::whereBetween('created_at', [
-                Carbon::now()->startOfWeek(),  
-                Carbon::now()->endOfWeek()     
+                Carbon::now()->startOfWeek(),
+                Carbon::now()->endOfWeek()
             ])->sum('total');
 
             // THIS CURRENT YR

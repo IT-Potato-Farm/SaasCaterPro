@@ -46,7 +46,7 @@
 
 
 <div class="border border-cyan-200 bg-cyan-50 rounded-xl shadow-lg p-6 mt-5">
-    <h2 class="text-2xl font-bold text-cyan-800 mb-5 text-center">All Categories</h2>
+    <h2 class="text-2xl font-bold text-cyan-800 mb-5 text-center">All Categories </h2>
     
     @if($categories->isEmpty())
         <p class="text-center text-cyan-600">No categories found. Create your first category!</p>

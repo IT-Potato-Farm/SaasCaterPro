@@ -15,10 +15,10 @@ class Products extends Component
      */
     public $menuItems;
     public $categories;
-    public function __construct()
+    public function __construct($menuItems, $categories)
     {
-        $this->menuItems=MenuItem::all();
-        $this->categories=Category::all();
+        $this->menuItems = $menuItems;
+        $this->categories = $categories;
     }
 
     /**

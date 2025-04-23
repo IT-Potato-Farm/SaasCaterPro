@@ -33,9 +33,9 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <x-dashboard.header />
                 <div class="mt-5">
-                    <x-items.item-button />
+                    <x-items.item-button  :categories="$categories"/>
                     {{-- PARTY TTRAYS LISTS --}}
-                    <x-dashboard.products />
+                    <x-dashboard.products  :categories="$categories" :menuItems="$menuItems"/>
                 </div>
                 
             </main>

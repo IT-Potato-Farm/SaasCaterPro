@@ -1,3 +1,5 @@
+@props(['menuItems', 'categories'])
+
 <script>
     function openEditModalItem(id, name, description, image, pricing10_15, pricing15_20, categoryId, status) {
         console.log("Editing item:", id);

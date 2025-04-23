@@ -67,3 +67,16 @@ php artisan db:seed --class=WhyChooseUsSectionSeeder
 php artisan db:seed --class=AboutUsSectionSeeder
 php artisan db:seed --class=FooterSectionSeeder
 php artisan db:seed --class=PrivacyPolicySeeder
+
+
+
+GUIDE IN DEPLOYMENT
+
+GIT PUSH IN VSCODE 
+
+
+//ACCESS SITE 
+on cmd run:
+ssh -p 65002 u982884330@145.223.108.133 (account ntin to)
+password: #uy3J4Uqci2wbW*
+cd  domains/honeydew-rabbit-666270.hostingersite.com/saascater
