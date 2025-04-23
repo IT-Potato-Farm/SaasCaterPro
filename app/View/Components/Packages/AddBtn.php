@@ -15,7 +15,7 @@ class AddBtn extends Component
     public $categories;
     public function __construct($categories)
     {
-        $this->categories = Category::all();
+        $this->categories = $categories;
     }
 
     /**
