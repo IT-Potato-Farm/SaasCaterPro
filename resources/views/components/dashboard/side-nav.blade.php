@@ -120,7 +120,12 @@
             </div>
             <div>
                 <p class="text-sm font-medium">Admin User</p>
-                <a href="/logout" class="text-xs text-gray-400 hover:text-white transition duration-200">Logout</a>
+                <form action="{{route('logout')}}" method="post">
+                    @csrf
+                    <button class="text-xs text-gray-400 hover:text-white hover:cursor-pointer transition duration-200">
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
     </div>
