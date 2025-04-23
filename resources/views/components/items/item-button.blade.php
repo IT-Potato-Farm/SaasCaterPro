@@ -1,7 +1,6 @@
 @props(['categories'])
 @php
-    dump($categories ?? 'NOT SET');
-    dump(get_defined_vars());
+    
     $categoryOptions = '';
     foreach ($categories as $category) {
         $categoryOptions .= '<option value="' . $category->id . '">' . e($category->name) . '</option>';
