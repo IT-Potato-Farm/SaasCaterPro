@@ -3,7 +3,10 @@
 /public/build
 /public/hot
 /public/storage
-
+/public/ItemsStored
+/public/packagePics
+/public/packageUtilityPics
+/public/packageItemOptionPics
 /storage/*.key
 /storage/pail
 /vendor
