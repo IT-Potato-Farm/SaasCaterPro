@@ -22,7 +22,7 @@
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6">
                 {{-- <x-dashboard.header /> --}}
-                
+
                 <div class="mt-4 ">
                     <!-- Page Header -->
                     <div class="bg-white shadow-md rounded-lg mb-4 md:mb-6 p-4">
@@ -30,7 +30,7 @@
                             HERO SECTION PAGE
                         </h1>
                     </div>
-                    
+
                     @if ($heroSection)
                         <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
                             <form id="editForm" action="{{ route('admin.hero.update', $heroSection->id) }}"
@@ -45,7 +45,8 @@
 
                                 <!-- Title Field -->
                                 <div class="space-y-1 md:space-y-2">
-                                    <label for="title" class="block text-sm md:text-base font-medium text-gray-700">Title</label>
+                                    <label for="title"
+                                        class="block text-sm md:text-base font-medium text-gray-700">Title</label>
                                     <div class="flex items-center">
                                         <input type="text" id="title" name="title"
                                             value="{{ $heroSection->title }}"
@@ -83,7 +84,8 @@
                                 <!-- Background Image Field -->
                                 <div class="space-y-1 md:space-y-2">
                                     <label for="background_image"
-                                        class="block text-sm md:text-base font-medium text-gray-700">Background Image</label>
+                                        class="block text-sm md:text-base font-medium text-gray-700">Background
+                                        Image</label>
                                     <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
                                         @if ($heroSection->background_image)
                                             <div class="relative group">
@@ -108,7 +110,12 @@
                                                 <input type="file" id="background_image" name="background_image"
                                                     class="hidden" accept="image/*">
                                             </label>
-                                            <p class="text-xs md:text-sm text-gray-500 mt-2" id="file-name">No file selected</p>
+                                            <p class="text-xs md:text-sm text-gray-500 mt-2" id="file-name">No file
+                                                selected</p>
+                                            <p id="image-error" class="text-sm text-red-600 mt-1"></p>
+                                            <img id="preview-image"
+                                                class="mt-4 w-full max-w-xs rounded-md shadow-md hidden" />
+
                                         </div>
                                     </div>
                                 </div>
@@ -133,16 +140,32 @@
     </div>
 
     <script>
-        // Show selected file name
-        document.getElementById('background_image')?.addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name || 'No file selected';
-            document.getElementById('file-name').textContent = fileName;
+        const fileInput = document.getElementById('background_image');
+        const fileNameDisplay = document.getElementById('file-name');
+        const previewImage = document.getElementById('preview-image');
+        const imageError = document.getElementById('image-error');
+
+        fileInput?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            fileNameDisplay.textContent = file?.name || 'No file selected';
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    previewImage.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.classList.add('hidden');
+            }
+
+            imageError.textContent = ''; // Reset error if any
         });
 
-        // Form submission handling
+        // Handle form submission
         document.getElementById('editForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
-
             const formData = new FormData(this);
 
             fetch(this.action, {
@@ -152,31 +175,39 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
+                .then(async response => {
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw errorData;
                     }
-                    throw new Error('Network response was not ok.');
+                    return response.json();
                 })
                 .then(data => {
                     const successMessage = document.getElementById('success-message');
                     successMessage.classList.remove('hidden');
                     setTimeout(() => successMessage.classList.add('hidden'), 3000);
-                    
-                    // Scroll to show the success message
-                    successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'An error occurred while saving changes.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
+
+                    successMessage.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
                     });
+                })
+                .catch(errorData => {
+                    if (errorData.errors && errorData.errors.background_image) {
+                        imageError.textContent = errorData.errors.background_image[0];
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while saving changes.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
                 });
         });
     </script>
 
+
 </body>
+
 </html>

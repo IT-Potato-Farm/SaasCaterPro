@@ -30,6 +30,8 @@ class CartController extends Controller
         //     $cart = Cart::firstOrCreate(['user_id' => $user->id]);
         //     $cartItems = $cart->items; // Retrieve cart items from DB
         // }
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+        $cartItems = $cart->items;
 
         // Fetch pending order only if user is logged in
         $activeStatuses = ['pending', 'partial', 'ongoing', 'paid'];

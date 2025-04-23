@@ -16,182 +16,129 @@
         $cartCount = collect($cart['items'])->sum('quantity'); // Sum up item quantities in session cart
     }
 @endphp
+
 <nav class="border-gray-200 bg-gray-900">
-    <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
-        <!-- Left: Logo -->
-        <a href="{{ route('landing') }}" class="flex items-center space-x-3">
-            <img src="{{ asset('images/saaslogo.png') }}" class="h-12" alt="Saas Logo" />
-            <span
-                class="text-2xl font-semibold whitespace-nowrap text-white dark:text-white hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300">SaasCaterPro</span>
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 sm:px-6">
+        <!-- Logo and Brand -->
+        <a href="{{ route('landing') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <img src="{{ asset('images/saaslogo.png') }}" class="h-8 sm:h-10" alt="Saas Logo" />
+            <span class="text-xl sm:text-2xl font-semibold whitespace-nowrap text-white hover:text-amber-300 transition-colors">SaasCaterPro</span>
         </a>
 
-        <!-- Middle: Navigation Links -->
-        {{-- @if (Route::currentRouteName() == 'landing')
-            <div class="hidden md:block">
-                <ul class="font-medium flex space-x-8 rtl:space-x-reverse">
-                    <li>
-                        <a href="{{ route('landing') }}"
-                            class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                            Home
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="scrollToSection('menu')"
-                            class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                            Menu
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="scrollToSection('aboutus')"
-                            class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-amber-300 md:p-0">
-                            About Us
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        @endif --}}
-
-        {{-- SEARCH --}}
-        <div class="hidden md:block relative">
-            <form action="{{ route('search') }}" method="GET" class="flex items-center">
-                <input type="text" name="query" placeholder="Search for meals or packages..."
-                    class="py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 w-56"
-                    value="{{ request('query') }}">
-                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
+        <!-- Centered Search Bar (Desktop) -->
+        <div class="hidden md:flex flex-1 justify-center px-4">
+            <form action="{{ route('search') }}" method="GET" class="w-full max-w-md">
+                <div class="relative flex">
+                    <input type="text" name="query" placeholder="Search meals..."
+                           class="flex-grow py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+                           value="{{ request('query') }}">
+                    <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </div>
             </form>
         </div>
 
-        <!-- SEARCH FOR MOOBILE -->
-        <div class="md:hidden mt-3 px-2">
-            <form action="{{ route('search') }}" method="GET" class="flex items-center">
-                <input type="text" name="query" placeholder="Search for meals or packages..."
-                    class="py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 w-full"
-                    value="{{ request('query') }}">
-                <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
-            </form>
-        </div>
-
-        <!-- Right: Cart and Account/Login -->
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('cart.index') }}"
-                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
-                <span>Cart</span>
-                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                    fill="currentColor">
-                    <path
-                        d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
+        <!-- Mobile Menu Button -->
+        <div class="flex items-center md:order-3 space-x-2 sm:space-x-4">
+            <!-- Cart -->
+            <a href="{{ route('cart.index') }}" class="relative flex items-center space-x-1 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
+                <span class="hidden sm:inline">Cart</span>
+                <svg class="w-5 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
                 </svg>
-                <span id="cart-count"
-                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                     {{ $cartCount }}
                 </span>
             </a>
 
-            {{-- CART DUPLI --}}
-            {{-- <a href="{{ route('cart.index2') }}"
-                class="relative flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
-                <span>Cart2</span>
-                <svg class="w-6 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                    fill="currentColor">
-                    <path
-                        d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z" />
-                </svg>
-                <span id="cart-count"
-                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {{ $cartCount }}
-                </span>
-            </a> --}}
-
+            <!-- User Dropdown -->
             @auth
                 <div class="relative">
                     <button onclick="toggleDropdown()"
-                        class="flex items-center space-x-2 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-4 py-2.5">
-                        <span>Hello, {{ auth()->user()->first_name }}</span>
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                                clip-rule="evenodd" />
-                        </svg>
+                            class="flex items-center space-x-1 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
+                                <span class="hidden sm:inline">Hello, {{ auth()->user()->first_name }}</span>
+                                <span class="sm:hidden">Account</span>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                                </svg>
                     </button>
 
-                    <!-- dropdown -->
-                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow z-50">
+                    <!-- Dropdown Menu -->
+                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50">
                         @if (Auth::check() && Auth::user()->role === 'admin')
-                            <a href="{{ route('admin.finaldashboard') }}"
-                                class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                            <a href="{{ route('admin.finaldashboard') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
                                 Dashboard
                             </a>
                         @endif
-
-                        <a href="{{ route('userdashboard') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                        <a href="{{ route('userdashboard') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
                             My Account
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
                                 Logout
                             </button>
                         </form>
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}"
-                    class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                <a href="{{ route('login') }}" class="text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
                     Login
                 </a>
             @endauth
-        </div>
 
-        <!-- Mobile menu button -->
-        <button data-collapse-toggle="mobile-menu" type="button"
-            class="md:hidden inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            aria-controls="mobile-menu" aria-expanded="false">
-            <span class="sr-only">Open main menu</span>
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 17 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M1 1h15M1 7h15M1 13h15" />
-            </svg>
-        </button>
+            <button data-collapse-toggle="mobile-menu" type="button" 
+                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none text-gray-400 hover:bg-gray-700">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                </svg>
+            </button>
+        </div>
     </div>
 
-    <!-- Mobile menu, hidden by default -->
-    <div class="hidden w-full md:hidden" id="mobile-menu">
-        <ul
-            class="font-medium flex flex-col p-4 border border-green-100 rounded-lg bg-red-600 dark:bg-gray-800 dark:border-gray-700">
-            <li>
-                <a href="{{ route('landing') }}"
-                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
-                    Home
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="scrollToSection('menu')"
-                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
-                    Menu
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="scrollToSection('aboutus')"
-                    class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 hover:text-black mb-2">
-                    About Us
-                </a>
-            </li>
-        </ul>
+    <!-- Mobile Menu Content -->
+    <div class="hidden w-full md:hidden bg-gray-800" id="mobile-menu">
+        <div class="px-4 py-2">
+            <!-- Mobile Search -->
+            <form action="{{ route('search') }}" method="GET" class="mb-4">
+                <div class="flex">
+                    <input type="text" name="query" placeholder="Search meals..."
+                           class="flex-1 py-2 px-3 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+                           value="{{ request('query') }}">
+                    <button type="submit" class="bg-amber-400 hover:bg-amber-500 rounded-r-lg p-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Mobile Navigation Links -->
+            <ul class="space-y-2">
+                <li>
+                    <a href="{{ route('landing') }}" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="scrollToSection('menu')" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                        Menu
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="scrollToSection('aboutus')" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                        About Us
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
+
 <script>
     // cart function live update without refresh
 
