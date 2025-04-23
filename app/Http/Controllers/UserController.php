@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
@@ -178,11 +179,22 @@ class UserController extends Controller
     {
         return view('auth.verify-email');
     }
-    public function verifyEmail(EmailVerificationRequest $request)
+    public function verifyEmail(Request $request, $id, $hash)
     {
-        $request->fulfill();
+        $user = User::findOrFail($id);
 
-        return redirect()->route('admin.admindashboard');
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403, 'Invalid verification link.');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('login')->with('message', 'Email already verified.');
+        }
+
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+
+        return redirect()->route('login')->with('message', 'Email successfully verified! You can now log in.');
     }
     public function verifyHandler(Request $request)
     {

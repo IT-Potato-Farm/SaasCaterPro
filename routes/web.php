@@ -120,16 +120,17 @@ Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.log
 Route::post('/register/registeracc', [UserController::class, 'register'])->name('user.register');
 
 
+ // email veirification handler
+ Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
 
+ 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
     // email verification notice
     Route::get('/email/verify', [UserController::class, 'verifyNotice'])->name('verification.notice');
 
-    // email veirification handler
-    Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
-
+   
     // resend verification email
 
     Route::post('/email/verification-notification', [UserController::class, 'verifyHandler'])->middleware(['throttle:6,1'])->name('verification.send');
