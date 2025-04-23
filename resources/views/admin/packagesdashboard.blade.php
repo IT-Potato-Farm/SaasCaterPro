@@ -59,7 +59,7 @@
                 <x-packages.add-package-item-btn />
                 <x-items.add-item-option />
 
-                <x-packages.addbtn :categories="$categories" />
+                <x-packages.add-btn :categories="$categories" />
                 {{-- <x-packages.add-package-option-btn :packages="$packages" :package-items="$packageItems" /> --}}
 
 
