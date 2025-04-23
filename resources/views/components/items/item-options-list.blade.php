@@ -1,5 +1,10 @@
-@props(['itemsOptions'])
+@props(['itemOptions'])
+
+
 <script>
+    
+         // Check if the data is being passed to JavaScript
+
     function openEditItemOption(id, type, description, image) {
         let editUrl = "{{ route('itemOption.edit', ':id') }}".replace(':id', id);
 

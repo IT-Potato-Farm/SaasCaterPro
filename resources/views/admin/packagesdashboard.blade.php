@@ -77,7 +77,7 @@
                 {{-- all items list like chicken, beef, and etc  --}}
                 <x-items.item-list :items="$items" />
 
-                {{-- item options --}}
+                {{-- item options list --}}
                 <x-items.item-options-list :itemOptions="$itemOptions" />
 
 
