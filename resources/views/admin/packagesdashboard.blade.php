@@ -60,7 +60,7 @@
                 <x-packages.add-package-item-btn />
                 <x-items.add-item-option />
 
-                <x-packages.addbtn />
+                {{-- <x-packages.addbtn /> --}}
                 <x-packages.add-package-option-btn />
                 
                 
