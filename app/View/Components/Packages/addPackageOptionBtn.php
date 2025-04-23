@@ -16,10 +16,10 @@ class addPackageOptionBtn extends Component
     public $packageItems;
     public $packages;
     
-    public function __construct()
+    public function __construct($packages, $packageItems)
     {
-        $this->packageItems = PackageItem::all();
-        $this->packages = Package::all();
+        $this->packageItems = $packageItems;
+        $this->packages = $packages;
         
     }
 
