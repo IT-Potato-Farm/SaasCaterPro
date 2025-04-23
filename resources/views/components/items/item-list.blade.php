@@ -1,3 +1,4 @@
+@props(['items'])
 <script>
     // Define item options as global window variables for easier access
     @foreach ($items as $item)

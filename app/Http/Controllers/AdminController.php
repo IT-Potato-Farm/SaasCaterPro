@@ -93,7 +93,7 @@ class AdminController extends Controller
                     });
                 })->toArray();
 
-            $items = Item::all();
+            $items = Item::with('itemOptions')->get();
             $itemOptions = ItemOption::all();
             $packages = Package::all();
             $packageItems = PackageItem::all();

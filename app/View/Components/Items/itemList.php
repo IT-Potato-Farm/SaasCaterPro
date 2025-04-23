@@ -13,9 +13,9 @@ class itemList extends Component
      * Create a new component instance.
      */
     public $items;
-    public function __construct()
+    public function __construct($items)
     {
-        $this->items = Item::with('itemOptions')->get();
+        $this->items = $items;
     }
 
     /**
