@@ -1,3 +1,6 @@
+
+@props(['items', 'packages'])
+
 <form action="{{ route('admin.addItemToPackage') }}" method="POST" class="space-y-6" onsubmit="return validateForm(event)">
     @csrf
     <!-- Package Dropdown -->

@@ -61,18 +61,18 @@
                 <x-items.add-item-option />
 
                 {{-- <x-packages.addbtn /> --}}
-                <x-packages.add-package-option-btn :packages="$packages" :package-items="$packageItems" />
+                {{-- <x-packages.add-package-option-btn :packages="$packages" :package-items="$packageItems" /> --}}
                 
                 
 
 
                 
-
-
 
                 <x-dashboard.packages />
-                <x-packages.link-item-package />
+
+                <x-packages.link-item-package :packages="$packages" :items="$items" />
                 {{-- link items to package --}}
+
 
                 
             

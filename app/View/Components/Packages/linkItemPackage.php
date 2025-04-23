@@ -16,10 +16,10 @@ class linkItemPackage extends Component
     public $packages;
     public $items;
     
-    public function __construct()
+    public function __construct($packages, $items)
     {
-        $this->packages = Package::all();
-        $this->items = Item::all();
+        $this->packages = $packages;
+        $this->items = $items;
         
     }
 
