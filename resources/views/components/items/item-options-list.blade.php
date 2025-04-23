@@ -1,3 +1,4 @@
+@props(['itemsOptions'])
 <script>
     function openEditItemOption(id, type, description, image) {
         let editUrl = "{{ route('itemOption.edit', ':id') }}".replace(':id', id);

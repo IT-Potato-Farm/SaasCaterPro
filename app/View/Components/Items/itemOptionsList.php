@@ -13,9 +13,9 @@ class itemOptionsList extends Component
      * Create a new component instance.
      */
     public $itemOptions;
-    public function __construct()
+    public function __construct($itemOptions)
     {
-        $this->itemOptions = ItemOption::all();
+        $this->itemOptions = $itemOptions;
     }
 
     /**

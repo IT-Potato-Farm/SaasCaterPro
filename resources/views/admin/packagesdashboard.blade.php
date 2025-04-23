@@ -10,7 +10,6 @@
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
     <script>
-        
         let packageItemsMapping = @json($packageItemsGroupedByPackage);
         console.log(packageItemsMapping);
 
@@ -34,19 +33,19 @@
 </head>
 
 <body>
-    
 
 
-    @if(session('success'))
-    <script>
-        showSuccessToast('{{ session('success') }}');
-    </script>
+
+    @if (session('success'))
+        <script>
+            showSuccessToast('{{ session('success') }}');
+        </script>
     @endif
-    
-    @if(session('error'))
-    <script>
-        showErrorToast('{{ session('error') }}');
-    </script>
+
+    @if (session('error'))
+        <script>
+            showErrorToast('{{ session('error') }}');
+        </script>
     @endif
 
     <div class="flex h-screen">
@@ -62,11 +61,11 @@
 
                 {{-- <x-packages.addbtn /> --}}
                 {{-- <x-packages.add-package-option-btn :packages="$packages" :package-items="$packageItems" /> --}}
-                
-                
 
 
-                
+
+
+
 
                 <x-dashboard.packages />
 
@@ -74,21 +73,22 @@
                 {{-- link items to package --}}
 
 
-                
-            
-                
-
-
 
                 {{-- all items list like chicken, beef, and etc  --}}
-                <x-items.item-list :items="$items"/>
+                <x-items.item-list :items="$items" />
 
                 {{-- item options --}}
-                <x-items.item-options-list />
+                <x-items.item-options-list :itemOptions="$itemOptions" />
+
+
+
+
+
 
 
                 {{-- LINK ITEM OPTION TO ITEM (EX. FRIED, BUTTERED -> CHICKEN) --}}
-                <div class="max-w-2xl mx-auto bg-white shadow-xl rounded-2xl p-8 space-y-8 transition-all duration-300 hover:shadow-2xl">
+                <div
+                    class="max-w-2xl mx-auto bg-white shadow-xl rounded-2xl p-8 space-y-8 transition-all duration-300 hover:shadow-2xl">
                     <header class="space-y-4 border-b border-gray-200 pb-6">
                         <h2 class="text-3xl font-extrabold text-center text-gray-900 bg-clip-text">
                             Link Options to Menu Items
@@ -103,7 +103,8 @@
                         <!-- Item Dropdown -->
                         <div class="space-y-2">
                             <label for="itemSelect"
-                                class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">Select Food</label>
+                                class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">Select
+                                Food</label>
                             <select name="item_id" id="itemSelectLinker" required
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm 
                                     focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
@@ -158,7 +159,7 @@
                         </button>
                     </form>
 
-                    {{-- LINKED OPTIONS DISPLAY AND UNLINK OPTIONS TO THE ITEMS--}}
+                    {{-- LINKED OPTIONS DISPLAY AND UNLINK OPTIONS TO THE ITEMS --}}
                     @if ($items->isNotEmpty())
                         <div class="space-y-6">
                             @foreach ($items as $item)
@@ -227,49 +228,50 @@
     </div>
 
     <script>
-    
-    document.addEventListener('DOMContentLoaded', function() {
-    const itemSelectLinker = document.getElementById('itemSelectLinker');
-    
-    if (itemSelectLinker) {
-        itemSelectLinker.addEventListener('change', function() {
-            const selectedItemIdLinker= this.value;
-            const itemOptionsSelectLinker = document.getElementById('itemOptionsSelectLinker');
-            
-            // Clear previous disables and reset option text
-            Array.from(itemOptionsSelectLinker.options).forEach(option => {
-                option.disabled = false;
-                option.textContent = option.textContent.replace(" (Already in this Item)", "");
-            });
-            
-            if (selectedItemIdLinker) {
-                // Fetch existing item options for the selected item
-                fetch(`/items/${selectedItemIdLinker}/existing-options`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(existingOptionsLinker => {
-                        console.log('Existing options:', existingOptionsLinker);
-                        
-                        Array.from(itemOptionsSelectLinker.options).forEach(option => {
-                            if (existingOptionsLinker.includes(parseInt(option.value))) {
-                                option.disabled = true;
-                                option.textContent += " (Already in this Item)";
-                            }
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching item options:', error);
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemSelectLinker = document.getElementById('itemSelectLinker');
+
+            if (itemSelectLinker) {
+                itemSelectLinker.addEventListener('change', function() {
+                    const selectedItemIdLinker = this.value;
+                    const itemOptionsSelectLinker = document.getElementById('itemOptionsSelectLinker');
+
+                    // Clear previous disables and reset option text
+                    Array.from(itemOptionsSelectLinker.options).forEach(option => {
+                        option.disabled = false;
+                        option.textContent = option.textContent.replace(" (Already in this Item)",
+                            "");
                     });
+
+                    if (selectedItemIdLinker) {
+                        // Fetch existing item options for the selected item
+                        fetch(`/items/${selectedItemIdLinker}/existing-options`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(existingOptionsLinker => {
+                                console.log('Existing options:', existingOptionsLinker);
+
+                                Array.from(itemOptionsSelectLinker.options).forEach(option => {
+                                    if (existingOptionsLinker.includes(parseInt(option
+                                        .value))) {
+                                        option.disabled = true;
+                                        option.textContent += " (Already in this Item)";
+                                    }
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error fetching item options:', error);
+                            });
+                    }
+                });
+            } else {
+                console.error('Item select element not found');
             }
         });
-    } else {
-        console.error('Item select element not found');
-    }
-});
     </script>
 
 
