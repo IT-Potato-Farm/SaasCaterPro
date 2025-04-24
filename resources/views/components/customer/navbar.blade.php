@@ -1,19 +1,14 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-{{-- <script src="{{ asset('js/partyTrayCart.js') }}"></script> --}}
 @php
     $cartCount = 0;
-    // check if the user is logged in and has a cart
     if (Auth::check()) {
-        // If logged in and the user has a cart
         if (Auth::user()->cart) {
-            // Sum up all item quantities in the cart for logged-in user
             $cartCount = Auth::user()->cart->items->sum('quantity');
         }
     } else {
-        // If not logged in, check the session for the cart
-        $cart = session()->get('cart', ['items' => []]); // Retrieve cart from session (default to empty)
-        $cartCount = collect($cart['items'])->sum('quantity'); // Sum up item quantities in session cart
+        $cart = session()->get('cart', ['items' => []]);
+        $cartCount = collect($cart['items'])->sum('quantity');
     }
 @endphp
 
@@ -41,11 +36,11 @@
             </form>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <div class="flex items-center md:order-3 space-x-2 sm:space-x-4">
+        <!-- Desktop Cart and User (hidden on mobile) -->
+        <div class="hidden md:flex items-center space-x-4">
             <!-- Cart -->
             <a href="{{ route('cart.index') }}" class="relative flex items-center space-x-1 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
-                <span class="hidden sm:inline">Cart</span>
+                <span>Cart</span>
                 <svg class="w-5 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
                     <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
                 </svg>
@@ -59,11 +54,10 @@
                 <div class="relative">
                     <button onclick="toggleDropdown()"
                             class="flex items-center space-x-1 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
-                                <span class="hidden sm:inline">Hello, {{ auth()->user()->first_name }}</span>
-                                <span class="sm:hidden">Account</span>
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
-                                </svg>
+                        <span>Hello, {{ auth()->user()->first_name }}</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                        </svg>
                     </button>
 
                     <!-- Dropdown Menu -->
@@ -89,15 +83,16 @@
                     Login
                 </a>
             @endauth
-
-            <button data-collapse-toggle="mobile-menu" type="button" 
-                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none text-gray-400 hover:bg-gray-700">
-                <span class="sr-only">Open main menu</span>
-                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
-                </svg>
-            </button>
         </div>
+
+        <!-- Mobile Menu Button -->
+        <button data-collapse-toggle="mobile-menu" type="button" 
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none text-gray-400 hover:bg-gray-700">
+            <span class="sr-only">Open main menu</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+            </svg>
+        </button>
     </div>
 
     <!-- Mobile Menu Content -->
@@ -134,57 +129,74 @@
                         About Us
                     </a>
                 </li>
+                
+                <!-- Mobile Cart (text only) -->
+                <li>
+                    <a href="{{ route('cart.index') }}" class="flex items-center py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                        <span class="mr-2">Cart</span>
+                        <span id="mobile-cart-count" class="ml-auto bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                            {{ $cartCount }}
+                        </span>
+                    </a>
+                </li>
+                
+                <!-- Mobile Login/Account -->
+                @auth
+                    <li>
+                        <a href="{{ route('userdashboard') }}" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                            My Account
+                        </a>
+                    </li>
+                    @if (Auth::user()->role === 'admin')
+                        <li>
+                            <a href="{{ route('admin.finaldashboard') }}" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                                Dashboard
+                            </a>
+                        </li>
+                    @endif
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ route('login') }}" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                            Login
+                        </a>
+                    </li>
+                @endauth
             </ul>
         </div>
     </div>
 </nav>
 
 <script>
-    // cart function live update without refresh
-
-    //dropdown toggle
     function toggleDropdown() {
         document.getElementById('accountDropdown').classList.toggle('hidden');
     }
 
-
-
     function scrollToSection(id) {
         const element = document.getElementById(id);
         if (element) {
-            const targetPos = element.getBoundingClientRect().top + window.scrollY;
-            const startPos = window.scrollY;
-            const distance = targetPos - startPos;
-            const duration = 600;
-            let startTime = null;
-
-            function easeInOutQuad(t) {
-                return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-            }
-
-            function animate(currentTime) {
-                if (startTime === null) startTime = currentTime;
-                const timeElapsed = currentTime - startTime;
-                const progress = Math.min(timeElapsed / duration, 1);
-                const easing = easeInOutQuad(progress);
-                window.scrollTo(0, startPos + distance * easing);
-                if (timeElapsed < duration) {
-                    requestAnimationFrame(animate);
-                }
-            }
-            requestAnimationFrame(animate);
+            element.scrollIntoView({ behavior: 'smooth' });
         }
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         setInterval(function() {
             $.ajax({
                 url: "{{ route('cart.count') }}",
                 type: 'GET',
                 success: function(response) {
-                    let cartCountElement = document.getElementById('cart-count');
-                    if (cartCountElement) {
-                        cartCountElement.innerText = response.count;
-                    }
+                    const cartCountElement = document.getElementById('cart-count');
+                    const mobileCartCountElement = document.getElementById('mobile-cart-count');
+                    
+                    if (cartCountElement) cartCountElement.innerText = response.count;
+                    if (mobileCartCountElement) mobileCartCountElement.innerText = response.count;
                 },
                 error: function(xhr) {
                     console.error("Error fetching cart count:", xhr.responseText);

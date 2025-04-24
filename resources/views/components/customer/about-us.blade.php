@@ -1,13 +1,13 @@
-
 @php
     $about = \App\Models\AboutUsSection::first();
 @endphp
-<section id="aboutus" class="flex flex-col items-center justify-center text-center bg-white min-h-[50vh]">
-    <div class="max-w-xl">
-        <h2 class="text-4xl font-extrabold text-gray-900 mb-6">{{$about->title ?? 'About Us'}}</h2>
-        <p class="text-lg text-gray-700 leading-relaxed ">
-            {{$about->description }}
-            {{-- {{ optional($about)->description ?? 'Testingg' }} --}}
+<section id="aboutus" class="w-full py-8 md:py-12 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-24 bg-white min-h-[50vh] flex items-center justify-center">
+    <div class="max-w-4xl mx-auto lg:text-center">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 lg:text-center">
+            {{$about->title ?? 'About Us'}}
+        </h2>
+        <p class="text-base sm:text-lg text-gray-700 leading-relaxed">
+            {{$about->description ?? ''}}
         </p>
     </div>
 </section>
