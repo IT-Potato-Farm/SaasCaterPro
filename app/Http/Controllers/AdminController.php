@@ -153,6 +153,21 @@ class AdminController extends Controller
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
             $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(10);
+            $statusStyles = [
+                'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
+                'partially paid' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
+                'ongoing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                'paid' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
+                'completed' => ['bg' => 'bg-green-200', 'text' => 'text-green-800'],
+                'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
+            ];
+    
+            foreach ($orders as $order) {
+                $status = strtolower($order->status);
+                $style = $statusStyles[$status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800'];
+                $order->bgColor = $style['bg'];
+                $order->textColor = $style['text'];
+            }
             return view('admin.bookingsdashboard', compact('orders'));
         }
 
