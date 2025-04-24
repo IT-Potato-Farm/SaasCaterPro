@@ -61,7 +61,7 @@
                             <td style="color: #1e293b; padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
                                 <div style="display: flex; gap: 16px;">
                                     @if ($isPackage && !empty($cartItem->itemable->image))
-                                        <img src="{{ asset('storage/packagePics/' . $cartItem->itemable->image) }}"
+                                        <img src="{{ asset('storage/packagepics/' . $cartItem->itemable->image) }}"
                                             alt="{{ $itemName }}"
                                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb;">
                                     @elseif (!$isPackage && !empty($cartItem->itemable->image))

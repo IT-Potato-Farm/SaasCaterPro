@@ -23,7 +23,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <!-- Image Section -->
                         <div class="relative group">
-                            <img src="/packagePics/${pkg.image}" 
+                            <img src="/packagepics/${pkg.image}" 
                                  alt="${pkg.name}" 
                                  class="w-full h-64 object-cover rounded-xl shadow-lg">
                             <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">

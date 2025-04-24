@@ -228,7 +228,7 @@
                                     <div class="flex items-start">
                                         @php
                                             $imagePath = $isPackage 
-                                                ? 'storage/packagePics/' . ($item->itemable->image ?? '') 
+                                                ? 'storage/packagepics/' . ($item->itemable->image ?? '') 
                                                 : 'storage/party_traypics/' . ($item->itemable->image ?? '');
                                         @endphp
                         

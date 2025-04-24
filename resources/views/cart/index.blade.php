@@ -175,7 +175,7 @@
                                         <!-- Product Image -->
                                         <td class="py-3">
                                             @if ($itemImage)
-                                                <img src="{{ asset(isset($cartItem->menu_item_id) ? 'storage/party_traypics/' . $itemImage : 'storage/packagePics/' . $itemImage) }}"
+                                                <img src="{{ asset(isset($cartItem->menu_item_id) ? 'storage/party_traypics/' . $itemImage : 'storage/packagepics/' . $itemImage) }}"
                                                     alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
                                             @else
                                                 <img src="https://via.placeholder.com/64" alt="No Image"

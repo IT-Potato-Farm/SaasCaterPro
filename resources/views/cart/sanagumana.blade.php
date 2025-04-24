@@ -212,7 +212,7 @@
                                                 <img src="{{ asset('ItemsStored/' . $itemImage) }}"
                                                     alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
                                             @elseif ($package_id && $itemImage)
-                                                <img src="{{ asset('packagePics/' . $itemImage) }}"
+                                                <img src="{{ asset('packagepics/' . $itemImage) }}"
                                                     alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
                                             @else
                                                 <img src="https://via.placeholder.com/64" alt="No Image"
