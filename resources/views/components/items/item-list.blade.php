@@ -12,7 +12,6 @@
 <script>
     function openEditItem(id, name, description, selectedOptions, allOptions) {
         let editUrl = "{{ route('item.edit', ':id') }}".replace(':id', id);
-        console.log("Selected options:", selectedOptions);
         if (description === null || description === 'null') {
             description = '';
         }
@@ -50,7 +49,7 @@
                         <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
                         <textarea name="description" 
                                 class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
-                                required>${description}</textarea>
+                                >${description}</textarea>
                     </div>
                     <!-- ulam items fried, buttered, etc -->
                     <div class="mb-2">

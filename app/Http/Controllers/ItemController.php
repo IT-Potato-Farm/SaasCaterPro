@@ -104,14 +104,14 @@ class ItemController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            Log::info("Updating item with ID: $id");
+            
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'selected_options' => 'nullable|array',
                 'selected_options.*' => 'exists:item_options,id',
             ]);
-            Log::info("Validated data: ", $data);
+            
 
             //  prevent XSS
             $data['name'] = strip_tags($data['name']);
