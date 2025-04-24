@@ -64,7 +64,7 @@ class ItemController extends Controller
             ]);
 
             //sanitize
-            $fields['name'] = strip_tags($fields['name']);
+            $fields['name'] = htmlspecialchars(strip_tags($fields['name']), ENT_QUOTES, 'UTF-8');
             $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
 
             $item = Item::create($fields);

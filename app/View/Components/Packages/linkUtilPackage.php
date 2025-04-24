@@ -15,9 +15,10 @@ class linkUtilPackage extends Component
      */
     
     public $packages;
-    public function __construct()
+    public function __construct($packages)
     {
-        $this->packages = Package::all();
+
+        $this->packages = $packages;
         
     }
 

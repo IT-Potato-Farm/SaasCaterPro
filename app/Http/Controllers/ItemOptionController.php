@@ -20,6 +20,11 @@ class ItemOptionController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        $data['type'] = htmlspecialchars(strip_tags($data['type']), ENT_QUOTES, 'UTF-8');
+        if ($data['description']) {
+            $data['description'] = htmlspecialchars(strip_tags($data['description']), ENT_QUOTES, 'UTF-8');
+        }  
+        
         if ($request->hasFile('image')) {
             $data['image'] = $this->handleImageUpload($request->file('image'));
         }
@@ -35,7 +40,7 @@ class ItemOptionController extends Controller
 
     // LINK ITEMS SA PACKAGE
 
-    
+
 
 
     public function update(Request $request, $itemOptionId)
@@ -46,6 +51,12 @@ class ItemOptionController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        $data['type'] = htmlspecialchars(strip_tags($data['type']), ENT_QUOTES, 'UTF-8');
+        if ($data['description']) {
+            $data['description'] = htmlspecialchars(strip_tags($data['description']), ENT_QUOTES, 'UTF-8');
+        }    
+        
+
         $itemOption = ItemOption::findOrFail($itemOptionId);
 
 
@@ -55,6 +66,9 @@ class ItemOptionController extends Controller
             }
 
             $data['image'] = $this->handleImageUpload($request->file('image'));
+        } else {
+
+            $data['image'] = $itemOption->image;
         }
 
         $itemOption->update($data);
@@ -90,7 +104,7 @@ class ItemOptionController extends Controller
     }
     public function linkItemOptionToItem(Request $request)
     {
-        
+
         // Validate input
         $request->validate([
             'item_id' => 'required|exists:items,id',
@@ -134,6 +148,4 @@ class ItemOptionController extends Controller
 
         return response()->json($existingOptions);
     }
-
-    
 }

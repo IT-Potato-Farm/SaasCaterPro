@@ -42,7 +42,7 @@
                 </svg>
             </button>
             <ul id="cmsDropdown" class="ml-8 mt-1 space-y-1 hidden">
-                <li><a href="" class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Navigation</a></li>
+                {{-- <li><a href="" class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Navigation</a></li> --}}
                 <li><a href="{{ route('admin.hero.index')}}" class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Hero Section</a></li>
                 <li><a href="{{ route('admin.whychoose.index')}}" class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Why Choose Us</a></li>
                 <li><a href="{{ route('admin.aboutus.index')}}" class="block py-2 px-4 text-sm rounded hover:bg-gray-700">About Us</a></li>
@@ -62,7 +62,7 @@
         <!-- Party Trays -->
         <a href="{{ route('admin.products') }}" class="flex items-center space-x-2 py-2 px-4 rounded {{ Request::routeIs('admin.products') ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700' }} transition duration-200">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 18h16M4 18a8 8 0 0116 0M4 18h16M12 4v4m0 0a4 4 0 00-4 4h8a4 4 0 00-4-4z" />
             </svg>
             <span>Party Trays</span>
         </a>
@@ -70,9 +70,15 @@
         <!-- Packages -->
         <a href="{{ route('admin.packages') }}" class="flex items-center space-x-2 py-2 px-4 rounded {{ Request::routeIs('admin.packages') ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700' }} transition duration-200">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12V7a2 2 0 00-2-2H6a2 2 0 00-2 2v5m16 0l-8 5-8-5m16 0l-8-5-8 5" />
             </svg>
             <span>Packages</span>
+        </a>
+        <a href="{{ route('admin.utilities') }}" class="flex items-center space-x-2 py-2 px-4 rounded {{ Request::routeIs('admin.utilities') ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700' }} transition duration-200">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M4 6h16v4H4V6zm0 8h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z" />
+            </svg>
+            <span>Utilities</span>
         </a>
 
         <!-- Bookings -->

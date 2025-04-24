@@ -259,7 +259,7 @@
                         @endforeach
                     </div>
                 @endif
-                <x-packages.link-util-package />
+                <x-packages.link-util-package :packages="$packages" />
             </main>
         </div>
     </div>

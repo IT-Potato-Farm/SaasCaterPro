@@ -204,10 +204,10 @@ class CartController extends Controller
 
             if ($existingMenuItem) {
                 $existingMenuItem->update(['quantity' => $existingMenuItem->quantity + $validated['quantity']]);
-                $messages['success'][] = 'Menu item updated in cart.';
+                $messages['success'][] = 'Party Tray updated in cart.';
             } else {
                 $cart->items()->create($validated);
-                $messages['success'][] = 'Menu item added to cart.';
+                $messages['success'][] = 'Party tray added to cart.';
             }
         } else {
             $cart['items'][] = $validated;

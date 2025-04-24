@@ -2,11 +2,13 @@
 
 
 <script>
-    
-         // Check if the data is being passed to JavaScript
+    // Check if the data is being passed to JavaScript
 
     function openEditItemOption(id, type, description, image) {
         let editUrl = "{{ route('itemOption.edit', ':id') }}".replace(':id', id);
+        if (description === null || description === 'null') {
+            description = '';
+        }
 
         Swal.fire({
             title: `<div class="flex items-center gap-2">

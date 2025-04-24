@@ -13,7 +13,9 @@
     function openEditItem(id, name, description, selectedOptions, allOptions) {
         let editUrl = "{{ route('item.edit', ':id') }}".replace(':id', id);
         console.log("Selected options:", selectedOptions);
-
+        if (description === null || description === 'null') {
+            description = '';
+        }
         // Generate checkboxes for all available options
         let optionsHtml = '';
         allOptions.forEach(function(option) {
