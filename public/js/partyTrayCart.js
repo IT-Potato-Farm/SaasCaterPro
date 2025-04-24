@@ -29,6 +29,20 @@ async function addToCart(itemId, type = 'menu_item') {
             body: JSON.stringify(payload)
         });
 
+        if (response.status === 401) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Login Required',
+                text: 'Please log in to add items to your cart',
+                confirmButtonText: 'Login Now'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/loginpage';
+                }
+            });
+            return;
+        }
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || 'Something went wrong.');

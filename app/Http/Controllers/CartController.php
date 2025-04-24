@@ -94,6 +94,13 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
+        if (!Auth::check()) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Please login to continue'], 401);
+            }
+            return redirect()->route('login')->with('error', 'Please login to add items to cart.');
+        }
+
         $validated = $request->validate([
             'menu_item_id' => 'nullable|exists:menu_items,id',
             'package_id'   => 'nullable|exists:packages,id',
@@ -108,7 +115,8 @@ class CartController extends Controller
         }
 
         $user = Auth::user();
-        $cart = $user ? $this->getUserCart($user) : $this->getGuestCart();
+        $cart = $this->getUserCart($user);
+        // $cart = $user ? $this->getUserCart($user) : $this->getGuestCart();
         $cartItems = $this->getCartItems($cart);
 
         $messages = [];

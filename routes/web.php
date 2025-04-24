@@ -55,7 +55,6 @@ Route::get('/debug-order-email/{orderId}', function ($orderId) {
 });
 
 
-
 // SAMPLE PRINT
 Route::get('/reports/orders/print', [ReportsController::class, 'printOrdersReport'])
     ->name('reports.orders.print')
@@ -123,7 +122,7 @@ Route::post('/register/registeracc', [UserController::class, 'register'])->name(
  // email veirification handler
  Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
 
- 
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
@@ -427,10 +426,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // CUSTOMER ROUTE IF LOGGED IN
 Route::middleware(['auth'])->group(function () {
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
     Route::get('/cartdup', [CartController::class, 'index3'])->name('cart.sanagumana');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     // cancel order
     Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');

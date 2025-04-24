@@ -1,15 +1,15 @@
 
     window.openItem= async function (packageId) {
-        console.log('Opening package with ID:', packageId);
+        // console.log('Opening package with ID:', packageId);
         try {
             const {
                 package: pkg,
                 foods,
                 utilities
             } = await fetchPackageData(packageId);
-            console.log('Package:', pkg);
-            console.log('Foods:', foods);
-            console.log('utils:', utilities);
+            // console.log('Package:', pkg);
+            // console.log('Foods:', foods);
+            // console.log('utils:', utilities);
 
             const htmlContent = `
                 <div class="max-h-[80vh] overflow-y-auto">
@@ -23,7 +23,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <!-- Image Section -->
                         <div class="relative group">
-                            <img src="/packagepics/${pkg.image}" 
+                            <img src="/storage/packagepics/${pkg.image}" 
                                  alt="${pkg.name}" 
                                  class="w-full h-64 object-cover rounded-xl shadow-lg">
                             <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
@@ -144,6 +144,20 @@
                     included_utilities: data.utilities
                 })
             });
+            
+            if (response.status === 401) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Login Required',
+                    text: 'Please log in to add items to your cart',
+                    confirmButtonText: 'Login Now'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/loginpage';
+                    }
+                });
+                return;
+            }
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -212,7 +226,7 @@
 
     // FUNCTION FOR FOOD ITEMS RENDER
     function renderFoods(foods) {
-        console.log('Rendering foods:', foods); 
+        // console.log('Rendering foods:', foods); 
 
         if (!foods || foods.length === 0) {
             return '<p class="text-gray-500">No food items available.</p>';
