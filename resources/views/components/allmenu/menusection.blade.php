@@ -34,7 +34,7 @@
                 <div
                     class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:-translate-y-2 transition-transform">
                     <div class="relative h-56">
-                        <img src="{{ asset('storage/packagePics/' . $package->image) }}" alt="{{ $package->name }}"
+                        <img src="{{ asset('storage/packagepics/' . $package->image) }}" alt="{{ $package->name }}"
                             class="w-full h-full object-fill transition-transform duration-300 group-hover:scale-105" />
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
                             <h3 class="text-2xl font-bold text-white">{{ $package->name }}</h3>
