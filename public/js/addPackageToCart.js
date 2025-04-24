@@ -1,5 +1,6 @@
 
     window.openItem= async function (packageId) {
+        console.log('test if nag syncc');
         // console.log('Opening package with ID:', packageId);
         try {
             const {
