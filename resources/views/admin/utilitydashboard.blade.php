@@ -12,11 +12,11 @@
 
     <script>
         function openEditModalItem(id, name, description, quantity, image, selectedPackageIds) {
-            console.log("Editing utility:", id);
-            console.log("Package ID passed to modal:", selectedPackageIds);
+            // console.log("Editing utility:", id);
+            // console.log("Package ID passed to modal:", selectedPackageIds);
 
             let editUrl = "{{ route('utilities.update', ':id') }}".replace(':id', id);
-            console.log(editUrl);
+            // console.log(editUrl);
 
             // Dynamically populate the dropdown with available packages
             let packages = @json($packages);
@@ -71,7 +71,7 @@
                 <input type="file" name="image" 
                     class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
                 <div class="mt-2">
-                    ${image ? `<img src="{{ asset('storage/Utilities/${image}') }}" alt="Utility Image" class="w-32 h-32 object-cover">` : `<p>No image available</p>`}
+                    ${image ? `<img src="{{ asset('storage/utilities/${image}') }}" alt="Utility Image" class="w-32 h-32 object-cover">` : `<p>No image available</p>`}
                 </div>
             </div>
         </form>`,

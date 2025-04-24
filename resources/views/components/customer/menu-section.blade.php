@@ -1,4 +1,5 @@
-<script src="{{ asset('js/addPackageToCart.js') }}"></script>
+{{-- <script src="{{ asset('js/addPackageToCart.js') }}"></script> --}}
+<script src="{{ asset('js/addPackageToCart.js') }}?v={{ filemtime(public_path('js/addPackageToCart.js')) }}"></script>
 
 
 

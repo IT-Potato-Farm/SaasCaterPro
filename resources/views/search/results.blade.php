@@ -15,8 +15,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/partyTrayCart.js') }}"></script>
-    <script src="{{ asset('js/addPackageToCart.js') }}"></script>
-    
+    {{-- <script src="{{ asset('js/addPackageToCart.js') }}"></script> --}}
+    <script src="{{ asset('js/addPackageToCart.js') }}?v={{ filemtime(public_path('js/addPackageToCart.js')) }}"></script>
+
 </head>
 
 <body>

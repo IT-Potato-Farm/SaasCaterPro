@@ -17,10 +17,10 @@
     <x-customer.navbar />
     {{-- <x-allmenu.mini-nav /> --}}
     <x-allmenu.menusection />
-    <script>
-        
-    </script>
-    <script src="{{ asset('js/addPackageToCart.js') }}"></script>
+    
+    <script src="{{ asset('js/addPackageToCart.js') }}?v={{ filemtime(public_path('js/addPackageToCart.js')) }}"></script>
+
+    {{-- <script src="{{ asset('js/addPackageToCart.js') }}"></script> --}}
     <script src="{{ asset('js/partyTrayCart.js') }}"></script>
 </body>
 </html>
