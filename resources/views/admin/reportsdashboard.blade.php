@@ -21,9 +21,8 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                <x-dashboard.header />
-                <div class="container mx-auto px-4 py-8">
-                    <h1 class="text-4xl font-bold mb-8">Reports</h1>
+                <div class="container mx-auto px-4 ">
+                    {{-- <h1 class="text-4xl font-bold mb-8">DASHBOARD</h1> --}}
                     
 
                     <!-- Stats Cards -->
