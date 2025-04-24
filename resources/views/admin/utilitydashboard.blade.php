@@ -206,7 +206,7 @@
 
                                 <div class="mt-4 aspect-video overflow-hidden rounded-lg border border-gray-200">
                                     @if ($utility->image)
-                                        <img src="{{ asset('storage/Utilities/' . $utility->image) }}"
+                                        <img src="{{ asset('storage/utilities/' . $utility->image) }}"
                                             alt="{{ $utility->name }}" class="w-full h-full object-cover">
                                     @else
                                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">
