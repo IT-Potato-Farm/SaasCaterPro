@@ -20,10 +20,7 @@ class ItemOptionController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $data['type'] = htmlspecialchars(strip_tags($data['type']), ENT_QUOTES, 'UTF-8');
-        if ($data['description']) {
-            $data['description'] = htmlspecialchars(strip_tags($data['description']), ENT_QUOTES, 'UTF-8');
-        }  
+         
         
         if ($request->hasFile('image')) {
             $data['image'] = $this->handleImageUpload($request->file('image'));
@@ -51,10 +48,7 @@ class ItemOptionController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $data['type'] = htmlspecialchars(strip_tags($data['type']), ENT_QUOTES, 'UTF-8');
-        if ($data['description']) {
-            $data['description'] = htmlspecialchars(strip_tags($data['description']), ENT_QUOTES, 'UTF-8');
-        }    
+          
         
 
         $itemOption = ItemOption::findOrFail($itemOptionId);

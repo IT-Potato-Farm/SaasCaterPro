@@ -29,9 +29,7 @@ class UtilityController extends Controller
                 'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             ]);
 
-            // Sanitize
-            $fields['name'] = strip_tags($fields['name']);
-            $fields['description'] = strip_tags($fields['description'] ?? '');
+            
 
             if ($request->hasFile('image')) {
                 $fields['image'] = $this->handleImageUpload($request->file('image'));
@@ -80,9 +78,8 @@ class UtilityController extends Controller
                 'package_ids' => 'nullable|array', 
                 'package_ids.*' => 'exists:packages,id', 
             ]);
-            // prevent XSS
-            $data['name'] = strip_tags($data['name']);
-            $data['description'] = strip_tags($data['description'] ?? '');
+            
+            
 
             if ($request->hasFile('image')) {
                 if ($utility->image && Storage::disk('public')->exists('utilities/' . $utility->image)) {

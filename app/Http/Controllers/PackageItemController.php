@@ -88,8 +88,7 @@ class PackageItemController extends Controller
                 'description' => 'nullable|string',
             ]);
 
-            $fields['name'] = strip_tags($fields['name']);
-            $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
+           
 
             $packageItem = PackageItem::create($fields);
 
@@ -146,10 +145,7 @@ class PackageItemController extends Controller
             ]);
 
 
-            $fields['type'] = strip_tags($fields['type']);
-            $fields['description'] = isset($fields['description'])
-                ? strip_tags($fields['description'])
-                : null;
+            
             if ($request->hasFile('image')) {
                 $destinationPath = public_path('packageItemOptionPics');
                 if (!is_dir($destinationPath)) {

@@ -37,9 +37,7 @@ class MenuItemController extends Controller
                 'pricing.15-20' => 'required|numeric|min:1',
             ]);
 
-            // Sanitize
-            $menuitemFields['name'] = strip_tags($menuitemFields['name']);
-            $menuitemFields['description'] = strip_tags($menuitemFields['description']);
+            
 
             
             if ($request->hasFile('image')) {
@@ -105,8 +103,7 @@ class MenuItemController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:available,unavailable',
         ]);
-        $itemFields['name'] = strip_tags($itemFields['name']);
-        $itemFields['description'] = strip_tags($itemFields['description']);
+       
 
         $item = MenuItem::findOrFail($id);
 

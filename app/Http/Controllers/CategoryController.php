@@ -20,7 +20,7 @@ class CategoryController extends Controller
             
         ]);
 
-        $categoryFields['name'] = strip_tags($categoryFields['name']);
+        
 
         $category = Category::create($categoryFields);
 
@@ -36,7 +36,7 @@ class CategoryController extends Controller
         $categoryFields = $request->validate([
             'name' => 'required'
         ]);
-        $categoryFields['name'] = strip_tags($categoryFields['name']);
+        
         // hanapin nya muna ung id
         $category = Category::findOrFail($id);
 

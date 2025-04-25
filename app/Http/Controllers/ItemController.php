@@ -63,9 +63,7 @@ class ItemController extends Controller
                 'description' => 'nullable|string',
             ]);
 
-            //sanitize
-            $fields['name'] = htmlspecialchars(strip_tags($fields['name']), ENT_QUOTES, 'UTF-8');
-            $fields['description'] = isset($fields['description']) ? strip_tags($fields['description']) : null;
+            
 
             $item = Item::create($fields);
             return response()->json([
@@ -113,9 +111,7 @@ class ItemController extends Controller
             ]);
             
 
-            //  prevent XSS
-            $data['name'] = strip_tags($data['name']);
-            $data['description'] = isset($data['description']) ? strip_tags($data['description']) : null;
+            
 
             $item = Item::findOrFail($id);
 

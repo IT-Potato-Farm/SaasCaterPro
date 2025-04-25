@@ -38,8 +38,7 @@ class PackageController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             ]);
 
-            $packageitemFields['name'] = strip_tags($packageitemFields['name']);
-            $packageitemFields['description'] = strip_tags($packageitemFields['description']);
+           
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -331,8 +330,7 @@ class PackageController extends Controller
                 'status' => 'required|in:available,unavailable',
             ]);
 
-            $data['name'] = strip_tags($data['name']);
-            $data['description'] = isset($data['description']) ? strip_tags($data['description']) : null;
+            
             $package = Package::findOrFail($id);
 
             if ($request->hasFile('image')) {
