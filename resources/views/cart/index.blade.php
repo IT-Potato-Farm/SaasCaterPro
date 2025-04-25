@@ -33,7 +33,9 @@
 <body>
     <x-customer.navbar />
     <div class="container mx-auto py-8 px-4">
-        @if (isset($pendingOrder))
+        {{-- IF MERON PENDING ORDER EXISTING ETO LALABAS --}}
+       
+        {{-- @if (isset($pendingOrder))
             <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
 
                 <div class="flex items-center">
@@ -49,13 +51,12 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endif --}}
         @if ($cart->items->isEmpty())
             <!-- Empty Cart Message -->
             <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-gray-500" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-gray-500" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1" />
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H5" />
@@ -66,7 +67,18 @@
             </div>
         @else
             <h1 class="text-3xl font-bold mb-6 text-center">Your Cart</h1>
+
+            {{-- CHECK IF MERON PACKAGE --}}
+            <!-- Check if cart has at least one package -->
+            @php
+                $cartHasPackage = $cart->items->contains(function ($cartItem) {
+                    return !is_null($cartItem->package_id);
+                });
+            @endphp
+
+            
             <div class="flex flex-col md:flex-row gap-8">
+
                 <!-- Left Section: Cart Items Table -->
                 <div class="md:w-3/4">
                     <div class="bg-white shadow-md rounded p-4">
@@ -255,8 +267,41 @@
                     </div>
                 </div>
 
-                @if (!isset($pendingOrder))
-                    <!-- Order Summary -->
+                @if (isset($pendingOrder))
+                    {{-- IF MERON PENDING ORDER --}}
+                    <aside class="md:w-1/4">
+                        <div
+                            class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h2 class="text-lg font-semibold mb-2">Notice</h2>
+                            <p>You already have a pending order <strong>(Order
+                                    #{{ $pendingOrder->id }})</strong>. Please complete or cancel it before making a
+                                new
+                                booking.</p>
+                        </div>
+                    </aside>
+                @elseif (!$cartHasPackage)
+                    {{-- If WALA PACKAGE SA CART ETO MAG NOTICE --}}
+                    <aside class="md:w-1/4">
+                        <div
+                            class="bg-amber-50 border-l-4 border-amber-400 text-amber-800 p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h2 class="text-lg font-semibold mb-2">Package Required</h2>
+                            <p>You need to add at least one package to your cart to proceed with checkout. Menu items
+                                alone cannot be checked out.</p>
+                            <div class="mt-4">
+                                <a href="{{ route('all-menu') }}"
+                                    class="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition">
+                                    <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Browse Packages
+                                </a>
+                            </div>
+                        </div>
+                    </aside>
+                @else
+                    {{-- show the checkout form --}}
                     <aside class="md:w-1/4">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                             <div class="p-6 border-b border-gray-100">
@@ -269,7 +314,8 @@
                                 <div class="mb-6">
                                     <!-- Event Date -->
                                     <div class="space-y-2">
-                                        <label for="event_date" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label for="event_date"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
                                             See the available dates here
                                         </label>
                                         <span id="eventDateError" class="text-sm text-red-600 hidden">Please select a
@@ -287,7 +333,8 @@
                                         $cartItems->contains(function ($cartItem) {
                                             return !is_null($cartItem->package_id); // Check if the package_id is not null
                                         }))
-                                        <label for="total_guests" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <label for="total_guests"
+                                            class="block text-sm font-medium text-gray-700 mb-2">
                                             Total Guests
                                             <span class="text-xs font-normal text-gray-500 block mt-1">
                                                 Including additional guests. Help us prepare the right quantity of food
@@ -357,8 +404,8 @@
                                 <button type="submit" id="checkoutButton"
                                     title="{{ isset($pendingOrder) ? 'You already have a pending order. Complete that order first.' : 'Proceed to Checkout' }}"
                                     class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium inline-flex items-center justify-center transition-all duration-200
-                                {{ isset($pendingOrder) ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-md focus:ring-2 focus:ring-green-500 focus:ring-offset-2' }}"
-                                    @if (isset($pendingOrder)) disabled @endif>
+                            {{ isset($pendingOrder) || !$cartHasPackage ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-md focus:ring-2 focus:ring-green-500 focus:ring-offset-2' }}"
+                                    @if (isset($pendingOrder)) || !$cartHasPackage disabled @endif>
                                     <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                         fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -370,15 +417,6 @@
                             </form>
                         </div>
                     </aside>
-                @else
-                    <aside class="md:w-1/4">
-                        <div
-                            class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-xl shadow-sm border border-gray-200">
-                            <h2 class="text-lg font-semibold mb-2">Notice</h2>
-                            <p>You already have a pending order. Please complete or cancel it before making a new
-                                booking.</p>
-                        </div>
-                    </aside>
                 @endif
 
             </div>
@@ -388,6 +426,8 @@
 
     {{-- COMPONENT NG LAHAT NG ITEMS SA BABA NG CART PART --}}
     <x-allmenu.menusection />
+
+    {{-- CART INDEX JS --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Get all forms on the page
@@ -421,7 +461,7 @@
             fetch('/get-booked-dates')
                 .then(response => response.json())
                 .then(data => {
-                    let disabledDates = data.map(range => range.start); 
+                    let disabledDates = data.map(range => range.start);
 
                     const picker = flatpickr("#event_date", {
                         mode: "range",

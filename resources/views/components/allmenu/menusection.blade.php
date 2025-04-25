@@ -1,4 +1,4 @@
-{{-- <script src="{{ asset('js/addPackageToCart.js') }}"></script> --}}
+<script src="{{ asset('js/addPackageToCart.js') }}"></script>
 {{-- <script>
     function debugAddToCart(itemId) {
         // Check if a variant dropdown exists for the menu item

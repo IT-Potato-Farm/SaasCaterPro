@@ -72,7 +72,7 @@
                                             </td>
                                             <td class="px-6 py-4 text-sm">{{ $order->created_at->format('d M Y') }}</td>
                                             <td class="px-6 py-4 text-center">
-                                                @if ($order->paid)
+                                                @if ($order->status == 'completed')
                                                     <div class="inline-flex items-center gap-1 text-green-600">
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
