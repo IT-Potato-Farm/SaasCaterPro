@@ -8,10 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <!-- Heroicons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-pap0+X+J6XlKqmvdZJzH8g4OoJ1+xM2JpUpbO8hzF2Pz2BXl+AGoD54YkS++1MJaa4xSLSFI0pY2vLxA0f5s0A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer" /> --}}
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
         
     <script src="{{ asset('js/toprightalert.js') }}"></script>

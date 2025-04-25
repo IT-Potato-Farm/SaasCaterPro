@@ -1,5 +1,4 @@
-{{-- CART PAGE --}}
-<script src="{{ asset('js/partyTrayCart.js') }}"></script>
+
 
 
 @php
@@ -27,12 +26,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    {{-- CART PAGE --}}
+<script src="{{ asset('js/partyTrayCart.js') }}"></script>
 
 </head>
-
 <body>
     <x-customer.navbar />
-    <div class="container mx-auto py-8 px-4">
+    <div class="container mx-auto py-8 px-4 ">
         {{-- IF MERON PENDING ORDER EXISTING ETO LALABAS --}}
        
         {{-- @if (isset($pendingOrder))
