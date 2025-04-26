@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\BookingSetting;
+use App\Models\NavbarSetting;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -29,5 +30,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AboutUsSectionSeeder::class);
         $this->call(FooterSectionSeeder::class);
         $this->call(PrivacyPolicySeeder::class);
+        $this->call(NavbarSettingSeeder::class);
     }
 }

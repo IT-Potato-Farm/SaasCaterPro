@@ -58,7 +58,7 @@
                 {{-- <x-dashboard.header /> --}}
 
                 <div class="container mx-auto mb-8">
-                    
+
                     <div class="flex space-x-4 mb-6">
                         <button onclick="scrollToPackageManagement()"
                             class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
@@ -114,7 +114,8 @@
                     <div id="item-management" class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
                         <div class="border-b border-gray-100">
                             <nav class="flex" aria-label="Tabs">
-                                <button class=" cursor-pointer px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600"
+                                <button
+                                    class=" cursor-pointer px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600"
                                     id="items-tab">
                                     Menu Items
                                 </button>
@@ -180,12 +181,10 @@
 
                                     <!-- Item Option Dropdown -->
                                     <div class="space-y-2">
-                                        <label for="itemOptionsSelect"
-                                            class="block text-sm font-medium text-gray-700">
+                                        <label for="itemOptionsSelect" class="block text-sm font-medium text-gray-700">
                                             Select Options to Add
                                         </label>
-                                        <select name="item_option_ids[]" id="itemOptionsSelectLinker" multiple
-                                            required
+                                        <select name="item_option_ids[]" id="itemOptionsSelectLinker" multiple required
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
                                 focus:ring-blue-500 focus:border-blue-500 sm:text-sm h-32">
                                             @if ($itemOptions->isEmpty())
@@ -272,18 +271,19 @@
                     </div>
 
                     <!-- Package Management Section -->
-                    <div id="package-management" class=" bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+                    <div id="package-management"
+                        class=" bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
 
 
                         <!-- Tab Navigation -->
                         <div class="mb-4">
                             <ul class="flex space-x-4 border-b-2">
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500" id="tab1-button"
-                                    onclick="switchTab(1)">Package</li>
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500" id="tab2-button"
-                                    onclick="switchTab(2)">Utility</li>
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500" id="tab3-button"
-                                    onclick="switchTab(3)">Party Tray</li>
+                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
+                                    id="tab1-button" onclick="switchTab(1)">Package</li>
+                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
+                                    id="tab2-button" onclick="switchTab(2)">Utility</li>
+                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
+                                    id="tab3-button" onclick="switchTab(3)">Party Tray</li>
                             </ul>
                         </div>
 
@@ -293,8 +293,8 @@
                             <h2 class="text-lg font-semibold text-gray-800">Package Management</h2>
                             <x-packages.add-btn :categories="$categories" />
                             <div class="flex justify-center items-center mb-6">
-                                
-                                
+
+
                                 <x-dashboard.packages />
                             </div>
                             <div class="space-x-2">
@@ -311,15 +311,15 @@
                         {{-- PARTY TRAY --}}
                         <div class="tab-content hidden" id="tab3-content">
                             <h2 class="text-lg font-semibold text-gray-800">Party Tray Management</h2>
-                            <x-items.item-button  :categories="$categories"/>
+                            <x-items.item-button :categories="$categories" />
                             {{-- PARTY TRAY LIST --}}
-                            <x-dashboard.products  :categories="$categories" :menuItems="$menuItems"/>
+                            <x-dashboard.products :categories="$categories" :menuItems="$menuItems" />
                         </div>
 
                     </div>
 
 
-                    
+
 
 
 

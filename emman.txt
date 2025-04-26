@@ -13,6 +13,15 @@ $user = App\Models\User::create([
     'mobile' => '09158500364',
     'password' => bcrypt('Johnemman1'),
 ]);
+
+$user = App\Models\User::create([
+    'first_name' => 'Kendrick',
+    'last_name' => 'Serrano',
+    'email' => 'kendrickserrano7@gmail.com',
+    'role' => 'admin',
+    'mobile' => '09154700301',
+    'password' => bcrypt('Kendrick1'),
+]);
 tapos etoo
 $user->update(['email_verified_at' => now()]);
 
@@ -67,8 +76,8 @@ php artisan db:seed --class=WhyChooseUsSectionSeeder
 php artisan db:seed --class=AboutUsSectionSeeder
 php artisan db:seed --class=FooterSectionSeeder
 php artisan db:seed --class=PrivacyPolicySeeder
-
-
+php artisan db:seed --class=PrivacyPolicySeeder
+php artisan db:seed --class=NavbarSettingSeeder
 
 GUIDE IN DEPLOYMENT
 
