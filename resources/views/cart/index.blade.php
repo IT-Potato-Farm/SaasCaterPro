@@ -1,6 +1,3 @@
-
-
-
 @php
     // array of packages from the cart with their names and min_pax.
     $packagesMinPax = [];
@@ -27,17 +24,78 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     {{-- CART PAGE --}}
-<script src="{{ asset('js/partyTrayCart.js') }}"></script>
-
+    <script src="{{ asset('js/partyTrayCart.js') }}"></script>
+    <style>
+        @media (max-width: 768px) {
+            /* Force table to not be like tables anymore */
+            .responsive-table table, 
+            .responsive-table thead, 
+            .responsive-table tbody, 
+            .responsive-table th, 
+            .responsive-table td, 
+            .responsive-table tr { 
+                display: block; 
+            }
+            
+            /* Hide table headers (but not display: none;, for accessibility) */
+            .responsive-table thead tr { 
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            .responsive-table tr {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 1rem;
+            }
+            
+            .responsive-table td { 
+                /* Behave  like a "row" */
+                border: none;
+                border-bottom: 1px solid #eee; 
+                position: relative;
+                padding-left: 50%; 
+                white-space: normal;
+                text-align:left;
+            }
+            
+            .responsive-table td:before { 
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 0.75rem;
+                left: 1rem;
+                width: 45%; 
+                padding-right: 10px; 
+                white-space: nowrap;
+                text-align:left;
+                font-weight: bold;
+            }
+            
+            /* Label the data */
+            .responsive-table td:nth-of-type(1):before { content: "Product"; }
+            .responsive-table td:nth-of-type(2):before { content: "Name"; }
+            .responsive-table td:nth-of-type(3):before { content: "Selected Options"; }
+            .responsive-table td:nth-of-type(4):before { content: "Quantity"; }
+            .responsive-table td:nth-of-type(5):before { content: "Price"; }
+            .responsive-table td:nth-of-type(6):before { content: "Pax"; }
+            
+            .responsive-table td.py-3 {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <x-customer.navbar />
+
     <div class="container mx-auto py-8 px-4 ">
         {{-- IF MERON PENDING ORDER EXISTING ETO LALABAS --}}
        
         @if (isset($pendingOrder))
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
 
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
                 <div class="flex items-center">
                     <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor" viewBox="0 0 20 20">
@@ -68,207 +126,177 @@
         @else
             <h1 class="text-3xl font-bold mb-6 text-center">Your Cart</h1>
 
-            {{-- CHECK IF MERON PACKAGE --}}
-            <!-- Check if cart has at least one package -->
             @php
                 $cartHasPackage = $cart->items->contains(function ($cartItem) {
                     return !is_null($cartItem->package_id);
                 });
             @endphp
 
-            
             <div class="flex flex-col md:flex-row gap-8">
-
                 <!-- Left Section: Cart Items Table -->
                 <div class="md:w-3/4">
-                    <div class="bg-white shadow-md rounded p-4">
-                        <table class="w-full border-collapse">
-                            <thead>
-                                <tr class="border-b">
-                                    {{-- checkbox --}}
-                                    {{-- <th class="py-2 text-left w-12">
-                                        <input type="checkbox" />
-                                    </th> --}}
-                                    <th class="py-2 text-left">Product</th>
-                                    <th class="py-2 text-left">Name</th>
-                                    <th class="py-2 text-left">Selected Options</th>
-                                    <th class="py-2 text-center">Quantity</th>
-                                    <th class="py-2 text-left">Price</th>
-                                    <th class="py-2 text-left"> Pax</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cart-items">
-                                @php
-                                    $extendedTotal = 0; // Extended estimation for order summary
-                                @endphp
-
-                                @foreach ($cart->items as $cartItem)
+                    <div class="bg-white shadow-md rounded p-4 overflow-x-auto">
+                        <div class="responsive-table">
+                            <table class="w-full border-collapse">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="py-2 text-left">Product</th>
+                                        <th class="py-2 text-left">Name</th>
+                                        <th class="py-2 text-left">Selected Options</th>
+                                        <th class="py-2 text-center">Quantity</th>
+                                        <th class="py-2 text-left">Price</th>
+                                        <th class="py-2 text-left">Pax</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-items">
                                     @php
-                                        if ($cartItem->menu_item_id && $cartItem->menuItem) {
-                                            $itemName = $cartItem->menuItem->name;
-                                            $itemImage = $cartItem->menuItem->image ?? null;
-                                            // For menu items, use the JSON pricing (should be cast as array)
-                                            $pricingTiers = $cartItem->menuItem->pricing;
-
-                                            // Clean up the variant (if any)
-                                            $selectedVariant = isset($cartItem->variant)
-                                                ? trim($cartItem->variant)
-                                                : null;
-
-                                            if (!empty($selectedVariant) && isset($pricingTiers[$selectedVariant])) {
-                                                // Use the price from the selected variant
-                                                $itemPrice = $pricingTiers[$selectedVariant];
-                                            } else {
-                                                // Fallback: determine the price based on quantity if no valid variant is stored
-                                                if ($cartItem->quantity >= 10 && $cartItem->quantity <= 15) {
-                                                    $itemPrice = $pricingTiers['10-15'] ?? 0;
-                                                } elseif ($cartItem->quantity > 15 && isset($pricingTiers['15-20'])) {
-                                                    $itemPrice = $pricingTiers['15-20'];
-                                                } else {
-                                                    // Fallback: use the first available tier
-                                                    $itemPrice = reset($pricingTiers);
-                                                }
-                                            }
-                                            $displayPrice = $itemPrice;
-                                            $lineTotal = $itemPrice * $cartItem->quantity;
-                                            $minPax = '-'; // Not applicable for menu items
-                                        } elseif ($cartItem->package_id && $cartItem->package) {
-                                            $itemName = $cartItem->package->name;
-                                            $itemImage = $cartItem->package->image ?? null;
-                                            $itemPrice = $cartItem->package->price_per_person ?? 0;
-                                            $displayPrice = $itemPrice;
-                                            // sa packages calculate based on price per person, minimum pax and quantity
-                                            $minPax = $cartItem->package->min_pax ?? 1;
-                                            $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
-
-                                            // PACKAGE NAME
-                                            $itemNames = [];
-                                            if ($cartItem->package && $cartItem->package->packageItems) {
-                                                foreach ($cartItem->package->packageItems as $packageItem) {
-                                                    $itemNames[$packageItem->item->id] =
-                                                        $packageItem->item->name ?? 'Unnamed Item';
-                                                }
-                                            }
-                                            // SELECTED OPTION
-                                            $selectedOptionsString = '';
-
-                                            if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
-                                                foreach ($cartItem->selected_options as $itemId => $optionArray) {
-                                                    if (isset($itemNames[$itemId])) {
-                                                        $types = array_map(function ($option) {
-                                                            return $option['type'] ?? 'Unknown';
-                                                        }, $optionArray);
-
-                                                        $selectedOptionsString .=
-                                                            "{$itemNames[$itemId]}: " . implode(', ', $types) . '<br>';
-                                                    } else {
-                                                        $selectedOptionsString .= "No match for item ID: {$itemId}<br>";
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            $itemName = 'Unknown';
-                                            $itemPrice = 0;
-                                            $itemImage = null;
-                                            $displayPrice = 0;
-                                            $lineTotal = 0;
-                                            $minPax = '-';
-                                        }
-                                        $extendedTotal += $lineTotal;
+                                        $extendedTotal = 0;
                                     @endphp
 
-                                    <tr class="border-b">
-                                        <!-- Checkbox -->
-                                        {{-- <td class="py-3">
-                                            <input type="checkbox" name="selected_items[]"
-                                                value="{{ $cartItem->id }}" />
-                                        </td> --}}
+                                    @foreach ($cart->items as $cartItem)
+                                        @php
+                                            if ($cartItem->menu_item_id && $cartItem->menuItem) {
+                                                $itemName = $cartItem->menuItem->name;
+                                                $itemImage = $cartItem->menuItem->image ?? null;
+                                                $pricingTiers = $cartItem->menuItem->pricing;
+                                                $selectedVariant = isset($cartItem->variant)
+                                                    ? trim($cartItem->variant)
+                                                    : null;
 
-                                        <!-- Product Image -->
-                                        <td class="py-3">
-                                            @if ($itemImage)
-                                                <img src="{{ asset(isset($cartItem->menu_item_id) ? 'storage/party_traypics/' . $itemImage : 'storage/packagepics/' . $itemImage) }}"
-                                                    alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
-                                            @else
-                                                <img src="https://via.placeholder.com/64" alt="No Image"
-                                                    class="w-16 h-16 object-cover rounded" />
-                                            @endif
-                                        </td>
+                                                if (!empty($selectedVariant) && isset($pricingTiers[$selectedVariant])) {
+                                                    $itemPrice = $pricingTiers[$selectedVariant];
+                                                } else {
+                                                    if ($cartItem->quantity >= 10 && $cartItem->quantity <= 15) {
+                                                        $itemPrice = $pricingTiers['10-15'] ?? 0;
+                                                    } elseif ($cartItem->quantity > 15 && isset($pricingTiers['15-20'])) {
+                                                        $itemPrice = $pricingTiers['15-20'];
+                                                    } else {
+                                                        $itemPrice = reset($pricingTiers);
+                                                    }
+                                                }
+                                                $displayPrice = $itemPrice;
+                                                $lineTotal = $itemPrice * $cartItem->quantity;
+                                                $minPax = '-';
+                                            } elseif ($cartItem->package_id && $cartItem->package) {
+                                                $itemName = $cartItem->package->name;
+                                                $itemImage = $cartItem->package->image ?? null;
+                                                $itemPrice = $cartItem->package->price_per_person ?? 0;
+                                                $displayPrice = $itemPrice;
+                                                $minPax = $cartItem->package->min_pax ?? 1;
+                                                $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
 
-                                        <!-- Item Name -->
-                                        <td class="py-3">
-                                            {{ $itemName }}
+                                                $itemNames = [];
+                                                if ($cartItem->package && $cartItem->package->packageItems) {
+                                                    foreach ($cartItem->package->packageItems as $packageItem) {
+                                                        $itemNames[$packageItem->item->id] =
+                                                            $packageItem->item->name ?? 'Unnamed Item';
+                                                    }
+                                                }
+                                                
+                                                $selectedOptionsString = '';
+                                                if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
+                                                    foreach ($cartItem->selected_options as $itemId => $optionArray) {
+                                                        if (isset($itemNames[$itemId])) {
+                                                            $types = array_map(function ($option) {
+                                                                return $option['type'] ?? 'Unknown';
+                                                            }, $optionArray);
+                                                            $selectedOptionsString .=
+                                                                "{$itemNames[$itemId]}: " . implode(', ', $types) . '<br>';
+                                                        } else {
+                                                            $selectedOptionsString .= "No match for item ID: {$itemId}<br>";
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                $itemName = 'Unknown';
+                                                $itemPrice = 0;
+                                                $itemImage = null;
+                                                $displayPrice = 0;
+                                                $lineTotal = 0;
+                                                $minPax = '-';
+                                            }
+                                            $extendedTotal += $lineTotal;
+                                        @endphp
 
-                                        </td>
-
-                                        <!-- Selected Options Column -->
-                                        @if ($cartItem->package_id)
+                                        <tr class="border-b">
+                                            <!-- Product Image -->
                                             <td class="py-3">
-
-                                                {!! $selectedOptionsString ?: 'N/A' !!}
+                                                @if ($itemImage)
+                                                    <img src="{{ asset(isset($cartItem->menu_item_id) ? 'storage/party_traypics/' . $itemImage : 'storage/packagepics/' . $itemImage) }}"
+                                                        alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
+                                                @else
+                                                    <img src="https://via.placeholder.com/64" alt="No Image"
+                                                        class="w-16 h-16 object-cover rounded" />
+                                                @endif
                                             </td>
-                                        @else
-                                            <td class="py-3"> NOT APPLICABLE</td>
-                                        @endif
 
-                                        <!-- Edit Quantity -->
-                                        <td class="py-3 text-center align-middle">
-                                            <div class="flex flex-col items-center space-y-2">
-                                                <form action="{{ route('cart.item.update', $cartItem->id) }}"
-                                                    method="POST" class="flex items-center">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" name="action" value="decrement"
-                                                        class="px-2 border border-gray-300 rounded-l">-</button>
-                                                    <input type="text" name="quantity"
-                                                        value="{{ $cartItem->quantity }}"
-                                                        class="w-12 text-center border-t border-b border-gray-300"
-                                                        readonly />
-                                                    <button type="submit" name="action" value="increment"
-                                                        class="px-2 border border-gray-300 rounded-r">+</button>
-                                                </form>
+                                            <!-- Item Name -->
+                                            <td class="py-3">
+                                                {{ $itemName }}
+                                            </td>
 
-                                                <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="text-red-600 hover:text-red-800 underline">Remove</button>
-                                                </form>
-                                            </div>
-                                        </td>
+                                            <!-- Selected Options Column -->
+                                            <td class="py-3">
+                                                @if ($cartItem->package_id)
+                                                    {!! $selectedOptionsString ?: 'N/A' !!}
+                                                @else
+                                                    NOT APPLICABLE
+                                                @endif
+                                            </td>
 
-                                        <!-- Price -->
-                                        <td class="py-3">
-                                            @if ($cartItem->package_id)
-                                                ₱{{ number_format($displayPrice, 2) }} <small>(per pax)</small>
-                                            @else
-                                                ₱{{ number_format($displayPrice, 2) }}
-                                                {{-- @if (!empty($selectedVariant))
-                                                    <small>({{ $selectedVariant }})</small>
-                                                @endif --}}
-                                            @endif
-                                        </td>
+                                            <!-- Edit Quantity -->
+                                            <td class="py-3 text-center align-middle">
+                                                <div class="flex flex-col items-center space-y-2">
+                                                    <form action="{{ route('cart.item.update', $cartItem->id) }}"
+                                                        method="POST" class="flex items-center">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" name="action" value="decrement"
+                                                            class="px-2 border border-gray-300 rounded-l">-</button>
+                                                        <input type="text" name="quantity"
+                                                            value="{{ $cartItem->quantity }}"
+                                                            class="w-12 text-center border-t border-b border-gray-300"
+                                                            readonly />
+                                                        <button type="submit" name="action" value="increment"
+                                                            class="px-2 border border-gray-300 rounded-r">+</button>
+                                                    </form>
 
-                                        <!-- Min pax (Only for packages) -->
-                                        <td class="py-3">
-                                            @if ($cartItem->menu_item_id)
-                                                {{ !empty($selectedVariant) ? $selectedVariant : 'N/A' }} pax
-                                            @else
-                                                {{ $minPax }} minimum pax
-                                            @endif
-                                        </td>
+                                                    <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="text-red-600 hover:text-red-800 underline">Remove</button>
+                                                    </form>
+                                                </div>
+                                            </td>
 
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            <!-- Price -->
+                                            <td class="py-3">
+                                                @if ($cartItem->package_id)
+                                                    ₱{{ number_format($displayPrice, 2) }} <small>(per pax)</small>
+                                                @else
+                                                    ₱{{ number_format($displayPrice, 2) }}
+                                                @endif
+                                            </td>
 
+                                            <!-- Min pax (Only for packages) -->
+                                            <td class="py-3">
+                                                @if ($cartItem->menu_item_id)
+                                                    {{ !empty($selectedVariant) ? $selectedVariant : 'N/A' }} pax
+                                                @else
+                                                    {{ $minPax }} minimum pax
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 @if (isset($pendingOrder))
-                    {{-- IF MERON PENDING ORDER --}}
                     <aside class="md:w-1/4">
                         <div
                             class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-xl shadow-sm border border-gray-200">
@@ -280,7 +308,6 @@
                         </div>
                     </aside>
                 @elseif (!$cartHasPackage)
-                    {{-- If WALA PACKAGE SA CART ETO MAG NOTICE --}}
                     <aside class="md:w-1/4">
                         <div
                             class="bg-amber-50 border-l-4 border-amber-400 text-amber-800 p-6 rounded-xl shadow-sm border border-gray-200">
@@ -301,7 +328,6 @@
                         </div>
                     </aside>
                 @else
-                    {{-- show the checkout form --}}
                     <aside class="md:w-1/4">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                             <div class="p-6 border-b border-gray-100">
@@ -360,7 +386,7 @@
                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path fill-rule="evenodd"
-                                                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                                                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
                                                 clip-rule="evenodd" />
                                         </svg>
                                         <div>
@@ -420,11 +446,9 @@
                         </div>
                     </aside>
                 @endif
-
             </div>
         @endif
     </div>
-
 
     {{-- COMPONENT NG LAHAT NG ITEMS SA BABA NG CART PART --}}
     <x-allmenu.menusection />
@@ -576,8 +600,5 @@
             });
         </script>
     @endif
-
-
 </body>
-
 </html>

@@ -85,14 +85,26 @@
             @endauth
         </div>
 
-        <!-- Mobile Menu Button -->
-        <button data-collapse-toggle="mobile-menu" type="button" 
-                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden focus:outline-none text-gray-400 hover:bg-gray-700">
-            <span class="sr-only">Open main menu</span>
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
-            </svg>
-        </button>
+        <!-- Mobile Cart Icon (always visible) -->
+        <div class="md:hidden flex items-center space-x-4">
+            <a href="{{ route('cart.index') }}" class="relative flex items-center text-white hover:text-amber-300">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
+                </svg>
+                <span id="mobile-cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                    {{ $cartCount }}
+                </span>
+            </a>
+            
+            <!-- Mobile Menu Button -->
+            <button data-collapse-toggle="mobile-menu" type="button" 
+                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg focus:outline-none text-gray-400 hover:bg-gray-700">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- Mobile Menu Content -->
@@ -127,16 +139,6 @@
                 <li>
                     <a href="#" onclick="scrollToSection('aboutus')" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
                         About Us
-                    </a>
-                </li>
-                
-                <!-- Mobile Cart (text only) -->
-                <li>
-                    <a href="{{ route('cart.index') }}" class="flex items-center py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
-                        <span class="mr-2">Cart</span>
-                        <span id="mobile-cart-count" class="ml-auto bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                            {{ $cartCount }}
-                        </span>
                     </a>
                 </li>
                 

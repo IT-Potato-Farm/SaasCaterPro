@@ -1,62 +1,58 @@
 
-    window.openItem= async function (packageId) {
+    window.openItem = async function (packageId) {
         console.log('test if nag syncc');
-        // console.log('Opening package with ID:', packageId);
         try {
             const {
                 package: pkg,
                 foods,
                 utilities
             } = await fetchPackageData(packageId);
-            // console.log('Package:', pkg);
-            // console.log('Foods:', foods);
-            // console.log('utils:', utilities);
 
             const htmlContent = `
-                <div class="max-h-[80vh] overflow-y-auto">
-                <div id="modal-message" class="hidden mb-4 p-3 rounded text-sm"></div>
+                <div class="max-h-[80vh] overflow-y-auto px-4 md:px-6 py-4">
+                <div id="modal-message" class="hidden mb-5 p-3 rounded text-sm"></div>
                     <!-- Header Section -->
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${pkg.name}</h2>
-                        <p class="text-gray-600 text-sm">${pkg.description}</p>
+                    <div class="mb-5 md:mb-7">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">${pkg.name}</h2>
+                        <p class="text-gray-600 text-xs md:text-sm">${pkg.description}</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-1 gap-5 md:gap-7 mb-7 md:mb-9">
                         <!-- Image Section -->
                         <div class="relative group">
                             <img src="/storage/packagepics/${pkg.image}" 
-                                 alt="${pkg.name}" 
-                                 class="w-full h-64 object-cover rounded-xl shadow-lg">
-                            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-xl">
+                                alt="${pkg.name}" 
+                                class="w-full h-48 md:h-64 object-cover rounded-lg md:rounded-xl shadow">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5 bg-gradient-to-t from-black/60 to-transparent rounded-lg md:rounded-xl">
                                 <div class="text-white flex justify-between items-end">
                                     <div>
-                                        <p class="text-sm">Per pax</p>
-                                        <p class="text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
+                                        <p class="text-xs md:text-sm">Per pax</p>
+                                        <p class="text-xl md:text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
                                     </div>
-                                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Min. ${pkg.min_pax} Pax</span>
+                                    <span class="bg-white/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm">Min. ${pkg.min_pax} Pax</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Foods Section -->
-                        <div class="bg-gray-50 p-2 rounded-xl border border-gray-200">
-                            <h3 class="text-lg font-semibold mb-4">Included Foods</h3>
-                            <form id="packageSelectionForm">
+                        <div class="bg-gray-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-gray-200">
+                            <h3 class="text-base md:text-lg font-semibold mb-4 md:mb-5">Included Foods</h3>
+                            <form id="packageSelectionForm" class="space-y-4">
                                 ${renderFoods(foods)}
                             </form>
                         </div>
                     </div>
 
                     <!-- Utilities Section -->
-                    <div class="border-t border-gray-200 pt-6">
-                        <h3 class="text-lg font-semibold mb-4">Utilities</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border-t border-gray-200 pt-5 md:pt-7">
+                        <h3 class="text-base md:text-lg font-semibold mb-4 md:mb-5">Utilities</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                             ${renderUtilities(utilities)}
                         </div>
                     </div>
                     
-                    <div class="mt-6 text-center">
-                        <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                    <div class="mt-6 md:mt-8 text-center">
+                        <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-5 py-3 md:px-7 md:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm md:text-base">
                             Add to cart
                         </button>
                     </div>
@@ -65,10 +61,11 @@
 
             Swal.fire({
                 html: htmlContent,
-                width: 800,
+                width: window.innerWidth < 768 ? '90%' : 800,
                 showCloseButton: true,
                 showConfirmButton: false,
-                background: '#fff'
+                background: '#fff',
+                padding: '0'
             });
         } catch (error) {
             Swal.fire({
@@ -81,6 +78,7 @@
             });
         }
     }
+
 
     window.addSelectedPackageToCart= async function (packageId) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -227,29 +225,27 @@
 
     // FUNCTION FOR FOOD ITEMS RENDER
     function renderFoods(foods) {
-        // console.log('Rendering foods:', foods); 
-
         if (!foods || foods.length === 0) {
-            return '<p class="text-gray-500">No food items available.</p>';
+            return '<p class="text-gray-500 py-2">No food items available.</p>';
         }
-
+    
         return foods.map(packageItem => {
             const item = packageItem.item; 
             const optionsHtml = (packageItem.options || []).map(option => `
-            <label class="inline-flex items-center space-x-2 mb-2 mr-4">
+            <label class="inline-flex items-center space-x-3 mb-3 mr-5">
                 <input 
                     type="checkbox" 
                     name="food_item_${item.id}[]" 
                     value="${option.id}" 
                     data-type="${option.type}" 
-                    class="form-checkbox text-blue-600">
-                <span>${option.type}</span>
+                    class="form-checkbox h-4 w-4 md:h-5 md:w-5 text-blue-600">
+                <span class="text-sm md:text-base">${option.type}</span>
             </label>
         `).join('');
-
+    
             return `
             <div class="mb-6">
-                <div class="font-semibold text-gray-700 mb-2">${item.name}</div>
+                <div class="font-semibold text-gray-700 mb-3 text-base md:text-lg">${item.name}</div>
                 <div class="flex flex-wrap">
                     ${optionsHtml}
                 </div>
@@ -260,12 +256,12 @@
     // FUNCTION FOR FOOD ITEMS RENDER
     function renderUtilities(utilities) {
         if (!utilities || utilities.length === 0) {
-            return '<p class="text-gray-500">No utilities</p>';
+            return '<p class="text-gray-500 py-3">No utilities</p>';
         }
         return utilities.map(util => `
-            <div class="flex p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+            <div class="flex p-4 md:p-5 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
                 <div class="flex-1">
-                    <h4 class="font-medium text-gray-800 mb-1">${util.name}</h4>
+                    <h4 class="font-medium text-gray-800 mb-2 text-base md:text-lg">${util.name}</h4>
                     ${util.description ? `<p class="text-sm text-gray-600">${util.description}</p>` : ''}
                 </div>
             </div>
