@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management Dashboard</title>
+    <title>Package Management Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
@@ -52,8 +52,8 @@
             /* Make the chart div taller when printing if needed */
             .print-h-auto {
                 height: auto !important;
-                min-height: 400px !important;
-                /* or adjust based on your chart size */
+                min-height: 350px !important;
+                
             }
         }
     </style>
@@ -187,7 +187,7 @@
                                     class="text-gray-900 font-bold">₱{{ number_format($yearRevenue ?? 0, 0) }}</span>
                             </div>
 
-                            <div class="h-64 no-break-inside ">
+                            <div class="h-64  ">
                                 <canvas class="chart-container" id="salesOverviewChart"></canvas>
                             </div>
                         </div>
@@ -231,7 +231,7 @@
                                 </div>
                             </div>
 
-                            <div class="h-64  ">
+                            <div class="h-64 no-break-inside print-h-auto ">
                                 <canvas class="chart-container" id="salesPerformanceChart"></canvas>
                             </div>
                         </div>
