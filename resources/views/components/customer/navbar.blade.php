@@ -1,6 +1,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @php
+    $navbar = \App\Models\NavbarSetting::first();
     $cartCount = 0;
     if (Auth::check()) {
         if (Auth::user()->cart) {
@@ -16,9 +17,19 @@
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 sm:px-6">
         <!-- Logo and Brand -->
         <a href="{{ route('landing') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            @if ($navbar && $navbar->logo)
+                <img src="{{ asset('storage/' . $navbar->logo) }}" class="h-8 sm:h-10" alt="Logo" />
+            @else
+                <img src="{{ asset('images/saaslogo.png') }}" class="h-8 sm:h-10" alt="Default Logo" />
+            @endif
+            <span class="text-xl sm:text-2xl font-semibold whitespace-nowrap text-white hover:text-amber-300 transition-colors">
+                {{ $navbar->title ?? 'SaasCaterPro' }}
+            </span>
+        </a>
+        {{-- <a href="{{ route('landing') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="{{ asset('images/saaslogo.png') }}" class="h-8 sm:h-10" alt="Saas Logo" />
             <span class="text-xl sm:text-2xl font-semibold whitespace-nowrap text-white hover:text-amber-300 transition-colors">SaasCaterPro</span>
-        </a>
+        </a> --}}
 
         <!-- Centered Search Bar (Desktop) -->
         <div class="hidden md:flex flex-1 justify-center px-4">
@@ -63,7 +74,7 @@
                     <!-- Dropdown Menu -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50">
                         @if (Auth::check() && Auth::user()->role === 'admin')
-                            <a href="{{ route('admin.finaldashboard') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+                            <a href="{{ route('admin.reports') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
                                 Dashboard
                             </a>
                         @endif

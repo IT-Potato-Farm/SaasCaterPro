@@ -25,6 +25,7 @@
 
                 <div class="mt-4 ">
                     <!-- Page Header -->
+                    
                     <div class="bg-white shadow-md rounded-lg mb-4 md:mb-6 p-4">
                         <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold text-center text-gray-800">
                             HERO SECTION PAGE

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\HeroSection;
 use Illuminate\Http\Request;
+use App\Models\NavbarSetting;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
 
@@ -14,6 +15,7 @@ class HeroSectionController extends Controller
      */
     public function index()
     {
+        
         $heroSection = HeroSection::first();
         return view('admin.cms.hero', compact('heroSection'));
     }

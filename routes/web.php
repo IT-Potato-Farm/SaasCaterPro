@@ -30,6 +30,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\ItemOptionController;
 use App\Http\Controllers\PackageItemController;
+use App\Http\Controllers\NavbarSettingController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserDashboardController;
@@ -119,8 +120,8 @@ Route::post('/login/loginacc', [UserController::class, 'login'])->name('user.log
 Route::post('/register/registeracc', [UserController::class, 'register'])->name('user.register');
 
 
- // email veirification handler
- Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
+// email veirification handler
+Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
 
 
 Route::middleware('auth')->group(function () {
@@ -129,7 +130,7 @@ Route::middleware('auth')->group(function () {
     // email verification notice
     Route::get('/email/verify', [UserController::class, 'verifyNotice'])->name('verification.notice');
 
-   
+
     // resend verification email
 
     Route::post('/email/verification-notification', [UserController::class, 'verifyHandler'])->middleware(['throttle:6,1'])->name('verification.send');
@@ -303,6 +304,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // CMS MANAGEMENT admin.hero.index
     Route::prefix('admin')->name('admin.')->group(function () {
 
+        // NAVBAR CMS
+        Route::get('/navbar', [NavbarSettingController::class, 'index'])->name('navbar.index');
+        Route::get('/navbar/edit', [NavbarSettingController::class, 'edit'])->name('navbar.edit');
+        Route::put('/navbar/update', [NavbarSettingController::class, 'update'])->name('navbar.update');
         // Hero Section CMS
         Route::get('/hero-section', [HeroSectionController::class, 'index'])->name('hero.index');
         Route::put('/hero-section/{id}', [HeroSectionController::class, 'update'])->name('hero.update');
@@ -321,8 +326,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         Route::get('/admin/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy.index');
         Route::put('/admin/privacy-policy/{id}', [PrivacyPolicyController::class, 'update'])->name('privacy.update');
-
-
     });
 
     // BOOK SETTINGS SERVICE

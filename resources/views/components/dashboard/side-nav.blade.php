@@ -13,7 +13,7 @@
 
     <!-- Logo -->
     <div class="px-4 ">
-        <a href="{{ route('admin.finaldashboard') }}" class="flex items-center space-x-2">
+        <a href="{{ route('admin.reports') }}" class="flex items-center space-x-2">
 
             <span class="text-xl font-bold">ADMIN PANEL</span>
         </a>
@@ -22,14 +22,14 @@
     <!-- Navigation - Using content from your complex side-nav -->
     <nav class="flex flex-col space-y-2 px-2">
         <!-- Dashboard -->
-        <a href="{{ route('admin.finaldashboard') }}"
+        {{-- <a href="{{ route('admin.finaldashboard') }}"
             class="flex items-center space-x-2 py-2 px-4 rounded {{ Request::routeIs('admin.finaldashboard') ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700' }} transition duration-200">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             <span>Dashboard</span>
-        </a>
+        </a> --}}
         <a href="{{ route('admin.reports') }}"
             class="flex items-center space-x-2 py-2 px-4 rounded {{ Request::routeIs('admin.reports') ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700' }} transition duration-200">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,6 +58,8 @@
             </button>
             <ul id="cmsDropdown" class="ml-8 mt-1 space-y-1 hidden">
                 {{-- <li><a href="" class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Navigation</a></li> --}}
+                <li><a href="{{ route('admin.navbar.index') }}"
+                        class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Navbar Section</a></li>
                 <li><a href="{{ route('admin.hero.index') }}"
                         class="block py-2 px-4 text-sm rounded hover:bg-gray-700">Hero Section</a></li>
                 <li><a href="{{ route('admin.whychoose.index') }}"

@@ -35,14 +35,14 @@
                         <p class="leading-relaxed mb-6">
                             {{ $about->description ?? '' }}
                         </p>
-                        @if($about->additional_content)
+                        {{-- @if($about->additional_content)
                         <div class="mt-6 space-y-4 text-gray-700">
                             {!! $about->additional_content !!}
                         </div>
-                        @endif
+                        @endif --}}
                     </div>
                     
-                    @if($about->button_text && $about->button_link)
+                    {{-- @if($about->button_text && $about->button_link)
                     <div class="mt-8">
                         <a href="{{ $about->button_link }}" 
                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
@@ -52,7 +52,7 @@
                             </svg>
                         </a>
                     </div>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
         </div>

@@ -74,7 +74,7 @@ class UserController extends Controller
             }
             // if admin punta dashboard
             if ($user->role === 'admin') {
-                return redirect()->route('admin.finaldashboard')->with('success', 'Login successful!');
+                return redirect()->route('admin.reports')->with('success', 'Login successful!');
             } else {
                 return redirect()->route('landing')->with('success', 'Login successful!');
             }
@@ -88,8 +88,10 @@ class UserController extends Controller
 
     public function logout()
     {
-        session()->flush();
+        // session()->flush();
         Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect()->route('landing');
     }
 
