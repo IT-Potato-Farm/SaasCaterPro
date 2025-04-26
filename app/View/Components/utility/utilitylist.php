@@ -9,7 +9,7 @@ use App\Models\PackageUtility;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 
-class utilitylist extends Component
+class UtilityList extends Component
 {
     /**
      * Create a new component instance.
@@ -18,11 +18,11 @@ class utilitylist extends Component
     public $package_utilities;
     public $packages;
 
-    public function __construct()
+    public function __construct($utilities, $packageUtilities, $packages)
     {
-        $this->utilities = Utility::with('packages')->get();
-        $this->package_utilities = PackageUtility::all();
-        $this->packages = Package::all();
+        $this->utilities = $utilities;
+        $this->package_utilities = $packageUtilities;
+        $this->packages = $packages;
     }
 
     /**

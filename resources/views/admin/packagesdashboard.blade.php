@@ -305,7 +305,7 @@
                         <div class="tab-content hidden " id="tab2-content">
                             <h2 class="text-lg font-semibold text-gray-800">Utility Management</h2>
                             <x-packages.add-package-utility />
-                            <x-utility.utilitylist />
+                            <x-utility.utilitylist :packages="$packages" :utilities="$utilities" :package-utilities="$package_utilities" />
                             <x-packages.link-util-package :packages="$packages" />
                         </div>
                         {{-- PARTY TRAY --}}

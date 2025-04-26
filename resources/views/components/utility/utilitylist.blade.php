@@ -1,3 +1,5 @@
+
+@props(['utilities', 'packages', 'package_utilities'])
 <script>
     function openEditModalUtil(id, name, description, quantity, image, selectedPackageIds) {
         // console.log("Editing utility:", id);

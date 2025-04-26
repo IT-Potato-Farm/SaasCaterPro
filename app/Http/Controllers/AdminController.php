@@ -98,7 +98,9 @@ class AdminController extends Controller
             $packages = Package::all();
             $packageItems = PackageItem::all();
             $menuItems = MenuItem::all();
-            return view('admin.packagesdashboard', compact('packageItemsGroupedByPackage', 'items', 'categories', 'itemOptions', 'packages', 'packageItems', 'menuItems'));
+            $utilities = Utility::with('packages')->get();
+            $package_utilities = PackageUtility::all();
+            return view('admin.packagesdashboard', compact('packageItemsGroupedByPackage', 'items', 'categories', 'itemOptions', 'packages', 'packageItems', 'menuItems', 'utilities', 'package_utilities'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
