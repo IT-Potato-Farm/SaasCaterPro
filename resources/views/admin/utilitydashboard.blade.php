@@ -14,6 +14,9 @@
         function openEditModalItem(id, name, description, quantity, image, selectedPackageIds) {
             // console.log("Editing utility:", id);
             // console.log("Package ID passed to modal:", selectedPackageIds);
+            if (description === null || description === 'null') {
+                description = '';
+            }
 
             let editUrl = "{{ route('utilities.update', ':id') }}".replace(':id', id);
             // console.log(editUrl);
@@ -53,7 +56,7 @@
                 <div class="relative">
                     <textarea name="description" 
                         class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
-                        required>${description}</textarea>
+                        >${description}</textarea>
                 </div>
             </div>
             <div class="mb-5">
@@ -113,11 +116,11 @@
                     uncheckedPackageIds.forEach(pkgId => {
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'removed_package_ids[]'; 
+                        hiddenInput.name = 'removed_package_ids[]';
                         hiddenInput.value = pkgId;
                         form.appendChild(hiddenInput);
                     });
-                    
+
                     if (form.reportValidity()) {
                         form.submit();
                     }
@@ -145,16 +148,16 @@
 </head>
 
 <body>
-    @if(session('success'))
-    <script>
-        showSuccessToast('{{ session('success') }}');
-    </script>
+    @if (session('success'))
+        <script>
+            showSuccessToast('{{ session('success') }}');
+        </script>
     @endif
-    
-    @if(session('error'))
-    <script>
-        showErrorToast('{{ session('error') }}');
-    </script>
+
+    @if (session('error'))
+        <script>
+            showErrorToast('{{ session('error') }}');
+        </script>
     @endif
     <div class="flex h-screen">
 

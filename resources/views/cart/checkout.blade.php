@@ -11,8 +11,12 @@
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="{{ asset('js/timeslotCheckout.js') }}"></script>
-    
+    <script src="{{ asset('js/checkout.js') }}"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
         #event_time_slots input[type="radio"]+label {
             padding: 0.5rem;
@@ -87,7 +91,7 @@
             <div class="lg:w-3/5 xl:w-2/3">
                 <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
                     <h2 class="text-2xl font-bold text-gray-800 mb-8">Event Information</h2>
-                    <form action="{{ route('checkout.store') }}" method="POST" class="space-y-8">
+                    <form id="checkout_form" action="{{ route('checkout.store') }}" method="POST" class="space-y-8">
                         @csrf
                         <!-- Event Details Section -->
                         <div class="space-y-8">
@@ -156,7 +160,7 @@
                                     </div>
 
                                     <!-- Request Custom Time Button -->
-                                    <div class="mt-4">
+                                    {{-- <div class="mt-4">
                                         <button type="button" id="request_custom_time"
                                             class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
@@ -166,14 +170,14 @@
                                             </svg>
                                             Request Custom Time
                                         </button>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Hidden input to keep track of time mode -->
                                     <input type="hidden" name="time_mode" value="slot" id="time_mode_input">
                                 </div>
 
                                 <!-- Custom Time Slots (Initially Hidden) -->
-                                <div class="grid grid-cols-1 gap-6" id="custom_time_wrapper" style="display: none;">
+                                {{-- <div class="grid grid-cols-1 gap-6" id="custom_time_wrapper" style="display: none;">
                                     <div class="space-y-2">
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                                             Select Custom Time Slot
@@ -194,7 +198,7 @@
                                             Back to Default Time Slots
                                         </button>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <p class="text-sm text-gray-500 col-span-1 md:col-span-2">
                                     Service Hours:
@@ -242,13 +246,29 @@
                         <!-- Locatio Section -->
                         <div class="space-y-8">
                             <div class="space-y-2">
-                                <label for="event_address" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Event Address
+                                <label for="barangay" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Barangay
                                 </label>
-                                <textarea name="event_address" id="event_address" rows="3" placeholder="Enter full event address"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                    required></textarea>
+                                <select id="barangay" name="barangay" class="w-full select2" required>
+                                    <option value="" disabled selected>Loading barangays...</option>
+                                </select>
                             </div>
+
+                            <!-- Area Details Input -->
+                            <div class="space-y-2">
+                                <label for="area_details" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Area Details
+                                </label>
+                                <input type="text" id="area_details" name="area_details"
+                                    placeholder="e.g., Purok 2, Zone 1"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    required />
+                            </div>
+
+
+                            {{-- HIDDEN EVENT ADDRESS --}}
+                            <input type="hidden" id="event_address" name="event_address" />
+
                             <!-- concerns and other shits -->
                             <div class="space-y-2">
                                 <label for="concerns" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -468,23 +488,8 @@
 
         </div>
 
-        <script>
-            // Event type handling
-            const eventTypeSelect = document.getElementById('event_type_select');
-            const customEventContainer = document.getElementById('custom_event_type_container');
-            if (eventTypeSelect && customEventContainer) {
-                eventTypeSelect.addEventListener('change', function() {
-                    const isOther = this.value === 'Other';
-                    customEventContainer.style.display = isOther ? 'block' : 'none';
-                    const customEventInput = document.getElementById('custom_event_type');
-                    if (customEventInput) {
-                        customEventInput.value = isOther ? customEventInput.value : '';
-                        customEventInput.required = isOther;
-                    }
-                });
-            }
-        </script>
         
+
 </body>
 
 </html>

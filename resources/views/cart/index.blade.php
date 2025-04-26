@@ -35,7 +35,7 @@
     <div class="container mx-auto py-8 px-4 ">
         {{-- IF MERON PENDING ORDER EXISTING ETO LALABAS --}}
        
-        {{-- @if (isset($pendingOrder))
+        @if (isset($pendingOrder))
             <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
 
                 <div class="flex items-center">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-        @endif --}}
+        @endif
         @if ($cart->items->isEmpty())
             <!-- Empty Cart Message -->
             <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
@@ -392,11 +392,13 @@
                                 </div>
 
                                 <!-- Total Price -->
-                                <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="mb-6 p-4 md:p-3 lg:p-4 bg-gray-50 rounded-lg border border-gray-200">
                                     <div class="flex justify-between items-center">
                                         <span class="font-medium text-gray-700">Total Price:</span>
                                         <span id="order-summary-total"
-                                            class="font-bold text-gray-900 text-lg">₱{{ number_format($extendedTotal, 2) }}</span>
+                                              class="font-bold text-gray-900 text-lg md:text-base lg:text-lg">
+                                              ₱{{ number_format($extendedTotal, 2) }}
+                                        </span>
                                     </div>
                                 </div>
 

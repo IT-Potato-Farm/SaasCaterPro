@@ -34,7 +34,7 @@
                         <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
                         <textarea name="description" 
                                   class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
-                                  required>${description}</textarea>
+                                  >${description}</textarea>
                     </div>
 
                     <!-- Image -->
