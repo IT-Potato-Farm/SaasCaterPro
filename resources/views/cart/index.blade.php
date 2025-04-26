@@ -194,19 +194,27 @@
                                                 }
                                                 
                                                 $selectedOptionsString = '';
-                                                if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
-                                                    foreach ($cartItem->selected_options as $itemId => $optionArray) {
-                                                        if (isset($itemNames[$itemId])) {
-                                                            $types = array_map(function ($option) {
-                                                                return $option['type'] ?? 'Unknown';
-                                                            }, $optionArray);
-                                                            $selectedOptionsString .=
-                                                                "{$itemNames[$itemId]}: " . implode(', ', $types) . '<br>';
-                                                        } else {
-                                                            $selectedOptionsString .= "No match for item ID: {$itemId}<br>";
+                                                    if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
+                                                        foreach ($cartItem->selected_options as $itemId => $optionArray) {
+                                                            if (isset($itemNames[$itemId])) {
+                                                                $itemName = $itemNames[$itemId];
+                                                                
+                                                                // Check if it's a food item without options (only one option that matches the food name)
+                                                                if (count($optionArray) === 1 && ($optionArray[0]['type'] === $itemName)) {
+                                                                    // Just show the item name once
+                                                                    $selectedOptionsString .= "{$itemName}<br>";
+                                                                } else {
+                                                                    // For items with options, show item name and option types
+                                                                    $types = array_map(function ($option) {
+                                                                        return $option['type'] ?? 'Unknown';
+                                                                    }, $optionArray);
+                                                                    $selectedOptionsString .= "{$itemName}: " . implode(', ', $types) . '<br>';
+                                                                }
+                                                            } else {
+                                                                $selectedOptionsString .= "No match for item ID: {$itemId}<br>";
+                                                            }
                                                         }
                                                     }
-                                                }
                                             } else {
                                                 $itemName = 'Unknown';
                                                 $itemPrice = 0;

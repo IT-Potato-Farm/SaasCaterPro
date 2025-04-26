@@ -1,6 +1,6 @@
 @props(['categories'])
 @php
-    
+
     $categoryOptions = '';
     foreach ($categories as $category) {
         $categoryOptions .= '<option value="' . $category->id . '">' . e($category->name) . '</option>';
@@ -37,61 +37,85 @@
         const csrfToken = "{{ $csrfToken }}";
 
         Swal.fire({
-            title: '<span class="text-2xl font-bold text-gray-800">Add Party Tray</span>',
+            title: '<span class="text-xl font-semibold text-gray-800">Add Party Tray</span>',
             html: `
-                <form id="addItemForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
-                    <div class="flex flex-col items-center justify-center">
-                        <img id="image-preview" src="#" alt="Image Preview" class="image-preview">
-                        <label for="swal-image" class="mt-4 block text-sm font-medium text-gray-700">Upload Image</label>
-                        <input type="file" id="swal-image" name="image" accept="image/*"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <div id="image-error" class="error-message"></div>
+            <form id="addItemForm" class="space-y-5" enctype="multipart/form-data">
+                <!-- Image Upload -->
+                <div class="flex flex-col items-center space-y-3 p-4 bg-gray-50 rounded-lg">
+                    <img id="image-preview" src="#" alt="Preview" class="w-full h-40 object-contain rounded-lg bg-white border border-gray-200">
+                    <label class="w-full">
+                        <div class="flex flex-col items-center justify-center py-3 px-4 border border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-100 transition">
+                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-sm text-gray-600 mt-1">Click to upload image</span>
+                        </div>
+                        <input type="file" id="swal-image" name="image" accept="image/*" class="hidden">
+                    </label>
+                    <div id="image-error" class="text-xs text-red-500"></div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="swal-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="swal-category" name="category_id" required class="w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                            ${categoryOptions}
+                        </select>
+                        <div id="category-error" class="mt-1 text-xs text-red-500"></div>
                     </div>
-                    <div class="space-y-4">
+
+                    <div>
+                        <label for="swal-name" class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+                        <input type="text" id="swal-name" name="name" required class="w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        <div id="name-error" class="mt-1 text-xs text-red-500"></div>
+                    </div>
+
+                    <div>
+                        <label for="swal-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="swal-description" name="description" rows="2" class="w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <div id="description-error" class="mt-1 text-xs text-red-500"></div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-medium text-gray-700">Pricing</h3>
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="swal-category" class="block text-sm font-medium text-gray-700">Select Category:</label>
-                            <select id="swal-category" name="category_id" required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                ${categoryOptions}
-                            </select>
-                            <div id="category-error" class="error-message"></div>
-                        </div>
-                        <div>
-                            <label for="swal-name" class="block text-sm font-medium text-gray-700">Item Name:</label>
-                            <input type="text" id="swal-name" name="name" required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="name-error" class="error-message"></div>
-                        </div>
-                        <div>
-                            <label for="swal-description" class="block text-sm font-medium text-gray-700">Description:</label>
-                            <textarea id="swal-description" name="description"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            <div id="description-error" class="error-message"></div>
-                        </div>
-                        <div>
-                            <h3 class="block text-sm font-medium text-gray-700">Pricing</h3>
-                            <div class="grid grid-cols-2 gap-4 mt-2">
-                                <div>
-                                    <label for="swal-pricing-10-15" class="block text-sm font-medium text-gray-700">10-15 Pax Price:</label>
-                                    <input type="number" id="swal-pricing-10-15" name="pricing[10-15]" required
-                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <div id="pricing-10-15-error" class="error-message"></div>
+                            <label for="swal-pricing-10-15" class="block text-xs font-medium text-gray-600 mb-1">10-15 Pax</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500">₱</span>
                                 </div>
-                                <div>
-                                    <label for="swal-pricing-15-20" class="block text-sm font-medium text-gray-700">15-20 Pax Price:</label>
-                                    <input type="number" id="swal-pricing-15-20" name="pricing[15-20]" required
-                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <div id="pricing-15-20-error" class="error-message"></div>
-                                </div>
+                                <input type="number" id="swal-pricing-10-15" name="pricing[10-15]" required class="w-full pl-8 pr-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                             </div>
+                            <div id="pricing-10-15-error" class="mt-1 text-xs text-red-500"></div>
+                        </div>
+                        <div>
+                            <label for="swal-pricing-15-20" class="block text-xs font-medium text-gray-600 mb-1">15-20 Pax</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500">₱</span>
+                                </div>
+                                <input type="number" id="swal-pricing-15-20" name="pricing[15-20]" required class="w-full pl-8 pr-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div id="pricing-15-20-error" class="mt-1 text-xs text-red-500"></div>
                         </div>
                     </div>
-                </form>`,
+                </div>
+            </form>`,
             showCancelButton: true,
-            confirmButtonText: 'Add Menu Item',
+            confirmButtonText: 'Save Party Tray',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#3b82f6',
-            cancelButtonColor: '#ef4444',
+            focusConfirm: false,
+            customClass: {
+                popup: 'bg-white rounded-lg shadow-md p-6',
+                confirmButton: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md',
+                cancelButton: 'px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-md'
+            },
+            width: '32rem',
+            padding: '0',
             didOpen: () => {
                 const imageInput = document.getElementById('swal-image');
                 const imagePreview = document.getElementById('image-preview');
@@ -239,4 +263,17 @@
     }
 </script>
 
-<button onclick="addPartyTray()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add Party tray here</button>
+<button onclick="addPartyTray()"
+    class="cursor-pointer    group bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all flex items-center gap-4 hover:border-red-200 hover:bg-red-50">
+    <div
+        class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600 group-hover:bg-red-200 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+    </div>
+    <div class="text-left">
+        <h3 class="font-medium text-gray-800 group-hover:text-red-700">Add Party Tray</h3>
+        <p class="text-xs text-gray-500">Create new party trays</p>
+    </div>
+</button>

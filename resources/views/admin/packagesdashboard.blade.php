@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
+
     <script>
         let packageItemsMapping = @json($packageItemsGroupedByPackage);
         console.log(packageItemsMapping);
@@ -71,43 +72,23 @@
                         </button>
                     </div>
 
-                    <!-- Quick Action Buttons -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div
-                            class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all flex items-center">
-                            <span class="p-3 bg-blue-50 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                            </span>
-                            <x-packages.add-package-item-btn />
-                        </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+                        
+                        {{-- MENU ITEM BTN ULAM --}}
+                        <x-packages.add-package-item-btn />
+                        
+                        {{-- ITEM OPTION BTN --}}
+                        <x-items.add-item-option />
 
-                        <div
-                            class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all flex items-center">
-                            <span class="p-3 bg-green-50 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                            </span>
-                            <x-items.add-item-option />
-                        </div>
+                        {{-- PACKAGE BTN --}}
+                        <x-packages.add-btn :categories="$categories" />
+                        
+                        {{-- PARTY TRAY BTN --}}
+                        <x-items.item-button :categories="$categories" />
 
-                        <div
-                            class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all flex items-center">
-                            <span class="p-3 bg-purple-50 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                            </span>
-                            <x-packages.add-btn :categories="$categories" />
-                        </div>
+                        {{-- UTIL BTN --}}
+                        <x-packages.add-package-utility />
                     </div>
 
                     <!-- Item Management Sections in tabs -->
@@ -271,15 +252,14 @@
                     </div>
 
                     <!-- Package Management Section -->
-                    <div id="package-management"
-                        class=" bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+                    <div id="package-management" class=" bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
 
 
                         <!-- Tab Navigation -->
                         <div class="mb-4">
                             <ul class="flex space-x-4 border-b-2">
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
-                                    id="tab1-button" onclick="switchTab(1)">Package</li>
+                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500" id="tab1-button"
+                                    onclick="switchTab(1)">Package</li>
                                 <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
                                     id="tab2-button" onclick="switchTab(2)">Utility</li>
                                 <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
@@ -290,8 +270,8 @@
                         <!-- Tab Content -->
                         <div class="tab-content hidden" id="tab1-content">
                             <!-- Package Management Content for Tab 1 -->
-                            <h2 class="text-lg font-semibold text-gray-800">Package Management</h2>
-                            <x-packages.add-btn :categories="$categories" />
+                            <h2 class="text-lg font-semibold text-gray-800 text-center">Package Management</h2>
+                            {{-- <x-packages.add-btn :categories="$categories" /> --}}
                             <div class="flex justify-center items-center mb-6">
 
 

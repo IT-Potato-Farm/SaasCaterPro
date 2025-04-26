@@ -22,50 +22,79 @@
 <script>
     function addPackage() {
         Swal.fire({
-            title: '<span class="text-2xl font-bold text-gray-800">Add Package</span>',
+            title: '<span class="text-xl font-semibold text-gray-800">Add Package</span>',
             html: `
-                <form id="addPackageForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
-                    <div class="flex flex-col items-center justify-center">
-                        <img id="image-preview" src="#" alt="Image Preview" class="image-preview">
-                        <label for="swal-image" class="mt-4 block text-sm font-medium text-gray-700">Upload Image</label>
-                        <input type="file" id="swal-image" name="image" accept="image/*"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <div id="image-error" class="error-message"></div>
+            <form id="addPackageForm" class="space-y-5" enctype="multipart/form-data">
+                <!-- Image Upload Section -->
+                <div class="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <img id="image-preview" src="#" alt="Preview" 
+                        class="w-full max-w-xs h-40 object-contain mb-4 rounded-lg bg-white border-2 border-dashed border-gray-300">
+                    
+                    <label class="w-full">
+                        <div class="flex flex-col items-center justify-center py-3 px-4 border border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-100 transition">
+                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-sm text-gray-600 mt-1">Click to upload image</span>
+                        </div>
+                        <input type="file" id="swal-image" name="image" accept="image/*" class="hidden" onchange="previewPackageImage(event)">
+                    </label>
+                    <div id="image-error" class="mt-2 text-xs text-red-500"></div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="space-y-4">
+                    <!-- Package Name -->
+                    <div>
+                        <label for="swal-name" class="block text-sm font-medium text-gray-700 mb-1">Package Name</label>
+                        <input type="text" id="swal-name" name="name" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        <div id="name-error" class="mt-1 text-xs text-red-500"></div>
                     </div>
 
-                    <div class="space-y-4">
-                        <div>
-                            <label for="swal-name" class="block text-sm font-medium text-gray-700">Package Name:</label>
-                            <input type="text" id="swal-name" name="name" required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="name-error" class="error-message"></div>
-                        </div>
-                        <div>
-                            <label for="swal-description" class="block text-sm font-medium text-gray-700">Description:</label>
-                            <textarea id="swal-description" name="description"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            <div id="description-error" class="error-message"></div>
-                        </div>
-                        <div>
-                            <label for="swal-price" class="block text-sm font-medium text-gray-700">Price per person:</label>
-                            <input type="number" step="0.01" id="swal-price" name="price_per_person" required min="0.01"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="price_per_person-error" class="error-message"></div>
-                        </div>
-                        <div>
-                            <label for="swal-minimum" class="block text-sm font-medium text-gray-700">Minimum pax:</label>
-                            <input type="number" id="swal-minimum" name="min_pax" required min="1"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="min_pax-error" class="error-message"></div>
-                        </div>
-                        
+                    <!-- Description -->
+                    <div>
+                        <label for="swal-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="swal-description" name="description" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <div id="description-error" class="mt-1 text-xs text-red-500"></div>
                     </div>
-                </form>`,
+
+                    <!-- Pricing Section -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="swal-price" class="block text-sm font-medium text-gray-700 mb-1">Price per person</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500">₱</span>
+                                </div>
+                                <input type="number" step="0.01" id="swal-price" name="price_per_person" required min="0.01"
+                                    class="block w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div id="price_per_person-error" class="mt-1 text-xs text-red-500"></div>
+                        </div>
+
+                        <div>
+                            <label for="swal-minimum" class="block text-sm font-medium text-gray-700 mb-1">Minimum pax</label>
+                            <input type="number" id="swal-minimum" name="min_pax" required min="1"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                            <div id="min_pax-error" class="mt-1 text-xs text-red-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        `,
             showCancelButton: true,
-            confirmButtonText: 'Add package',
+            confirmButtonText: 'Add Package',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#3b82f6',
-            cancelButtonColor: '#ef4444',
+            focusConfirm: false,
+            customClass: {
+                popup: 'rounded-lg max-w-md mx-4 bg-white',
+                confirmButton: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm',
+                cancelButton: 'px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-md shadow-sm'
+            },
+            width: 'auto',
+            backdrop: 'rgba(0, 0, 0, 0.4)',
             didOpen: () => {
                 const imageInput = document.getElementById('swal-image');
                 const imagePreview = document.getElementById('image-preview');
@@ -237,5 +266,17 @@
     }
 </script>
 
-<button onclick="addPackage()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add a package
-    heree2</button>
+<button onclick="addPackage()"
+    class="cursor-pointer  group bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all flex items-center gap-4 hover:border-green-200 hover:bg-green-50">
+    <div
+        class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-200 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+    </div>
+    <div class="text-left">
+        <h3 class="font-medium text-gray-800 group-hover:text-green-700">Add Package</h3>
+        <p class="text-xs text-gray-500">Create a packages</p>
+    </div>
+</button>

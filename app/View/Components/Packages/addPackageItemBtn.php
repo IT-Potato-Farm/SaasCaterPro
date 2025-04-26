@@ -12,10 +12,10 @@ class addPackageItemBtn extends Component
     /**
      * Create a new component instance.
      */
-    public $packages;
+    // public $packages;
     public function __construct()
     {
-        $this->packages = Package::all();
+        // $this->packages = Package::all();
     }
 
     /**

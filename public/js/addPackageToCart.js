@@ -1,20 +1,23 @@
+window.openItem = async function (packageId) {
+    console.log("test if nag syncc");
+    try {
+        const {
+            package: pkg,
+            foods,
+            utilities,
+        } = await fetchPackageData(packageId);
 
-    window.openItem = async function (packageId) {
-        console.log('test if nag syncc');
-        try {
-            const {
-                package: pkg,
-                foods,
-                utilities
-            } = await fetchPackageData(packageId);
-
-            const htmlContent = `
+        const htmlContent = `
                 <div class="max-h-[80vh] overflow-y-auto px-4 md:px-6 py-4">
                 <div id="modal-message" class="hidden mb-5 p-3 rounded text-sm"></div>
                     <!-- Header Section -->
                     <div class="mb-5 md:mb-7">
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">${pkg.name}</h2>
-                        <p class="text-gray-600 text-xs md:text-sm">${pkg.description}</p>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">${
+                            pkg.name
+                        }</h2>
+                        <p class="text-gray-600 text-xs md:text-sm">${
+                            pkg.description
+                        }</p>
                     </div>
 
                     <div class="grid grid-cols-1 gap-5 md:gap-7 mb-7 md:mb-9">
@@ -27,9 +30,13 @@
                                 <div class="text-white flex justify-between items-end">
                                     <div>
                                         <p class="text-xs md:text-sm">Per pax</p>
-                                        <p class="text-xl md:text-2xl font-bold">₱${Number(pkg.price_per_person).toFixed(2)}</p>
+                                        <p class="text-xl md:text-2xl font-bold">₱${Number(
+                                            pkg.price_per_person
+                                        ).toFixed(2)}</p>
                                     </div>
-                                    <span class="bg-white/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm">Min. ${pkg.min_pax} Pax</span>
+                                    <span class="bg-white/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm">Min. ${
+                                        pkg.min_pax
+                                    } Pax</span>
                                 </div>
                             </div>
                         </div>
@@ -52,186 +59,231 @@
                     </div>
                     
                     <div class="mt-6 md:mt-8 text-center">
-                        <button onclick="addSelectedPackageToCart(${pkg.id})" id="selectPackageBtn" class="px-5 py-3 md:px-7 md:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm md:text-base">
+                        <button onclick="addSelectedPackageToCart(${
+                            pkg.id
+                        })" id="selectPackageBtn" class="px-5 py-3 md:px-7 md:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm md:text-base">
                             Add to cart
                         </button>
                     </div>
                 </div>
             `;
 
-            Swal.fire({
-                html: htmlContent,
-                width: window.innerWidth < 768 ? '90%' : 800,
-                showCloseButton: true,
-                showConfirmButton: false,
-                background: '#fff',
-                padding: '0'
-            });
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message,
-                confirmButtonText: 'Try Again'
-            }).then(result => {
-                if (result.isConfirmed) openItem(packageId);
-            });
+        Swal.fire({
+            html: htmlContent,
+            width: window.innerWidth < 768 ? "90%" : 800,
+            showCloseButton: true,
+            showConfirmButton: false,
+            background: "#fff",
+            padding: "0",
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+            confirmButtonText: "Try Again",
+        }).then((result) => {
+            if (result.isConfirmed) openItem(packageId);
+        });
+    }
+};
+
+window.addSelectedPackageToCart = async function (packageId) {
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+    const form = document.getElementById("packageSelectionForm");
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const foodItemElements = form.querySelectorAll("[data-food-id]");
+
+    // Keep track of all food items and which ones have options
+    const allFoodItems = new Map();
+    const foodItemsWithOptions = new Set();
+    const groups = {};
+
+    foodItemElements.forEach((element) => {
+        const foodId = element.getAttribute("data-food-id");
+        const foodName = element.querySelector(".font-semibold").textContent;
+        if (foodId) {
+            allFoodItems.set(foodId, foodName);
+        }
+    });
+    // Group checkboxes by food item id.
+    checkboxes.forEach((checkbox) => {
+        const name = checkbox.name; // e.g., "food_item_5[]"
+        const match = name.match(/food_item_(\d+)\[\]/);
+        if (match) {
+            const foodId = match[1];
+            foodItemsWithOptions.add(foodId);
+            if (!groups[foodId]) {
+                groups[foodId] = [];
+            }
+            groups[foodId].push(checkbox);
+        }
+    });
+
+    // Validate that each food item with options has at least one option checked
+    let validationFailed = false;
+    for (const foodId in groups) {
+        const groupCheckboxes = groups[foodId];
+        const checked = Array.from(groupCheckboxes).filter((cb) => cb.checked);
+        if (checked.length === 0) {
+            showModalMessage(
+                "error",
+                "Please select at least one option for every food item with choices."
+            );
+            validationFailed = true;
+            break;
         }
     }
 
+    if (validationFailed) return;
 
-    window.addSelectedPackageToCart= async function (packageId) {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const form = document.getElementById('packageSelectionForm');
-        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-        const groups = {};
+    // Collect selected options with objects
+    const selectedOptions = {};
 
-        // Group checkboxes by food item id.
-        checkboxes.forEach(checkbox => {
-            const name = checkbox.name; // e.g., "food_item_5[]"
-            const match = name.match(/food_item_(\d+)\[\]/);
-            if (match) {
-                const foodId = match[1];
-                if (!groups[foodId]) {
-                    groups[foodId] = [];
+    // First, add food items with options
+    checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+            const foodIdMatch = checkbox.name.match(/food_item_(\d+)/);
+            if (foodIdMatch) {
+                const foodId = foodIdMatch[1];
+                if (!selectedOptions[foodId]) {
+                    selectedOptions[foodId] = [];
                 }
-                groups[foodId].push(checkbox);
-            }
-        });
-
-        // Validate that each food item group has at least one option checked.
-        for (const foodId in groups) {
-            const groupCheckboxes = groups[foodId];
-            const checked = Array.from(groupCheckboxes).filter(cb => cb.checked);
-            if (checked.length === 0) {
-                showModalMessage('error', 'Please select at least one option for every food item.');
-                return;
-            }
-        }
-
-        // If validation passes, collect selected options with objects.
-        const selectedOptions = {};
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                const foodIdMatch = checkbox.name.match(/food_item_(\d+)/);
-                if (foodIdMatch) {
-                    const foodId = foodIdMatch[1];
-                    if (!selectedOptions[foodId]) {
-                        selectedOptions[foodId] = [];
-                    }
-                    selectedOptions[foodId].push({
-                        id: checkbox.value,
-                        type: checkbox.getAttribute('data-type')
-                    });
-                }
-            }
-        });
-
-        try {
-            const data = await fetchPackageData(packageId); 
-            const response = await fetch('/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    package_id: packageId,
-                    quantity: 1,
-                    selected_options: selectedOptions, // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
-                    included_utilities: data.utilities
-                })
-            });
-            
-            if (response.status === 401) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Login Required',
-                    text: 'Please log in to add items to your cart',
-                    confirmButtonText: 'Login Now'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/loginpage';
-                    }
+                selectedOptions[foodId].push({
+                    id: checkbox.value,
+                    type: checkbox.getAttribute("data-type"),
                 });
-                return;
             }
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Something went wrong.');
-            }
-
-            const responseData = await response.json();
-
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: '<span class="text-gray-200">Added to Cart!</span>',
-                text: data.message || 'Package added to your cart.',
-                timer: 2000,
-                showConfirmButton: false,
-                background: '#1F2937',
-                color: '#E5E7EB',
-                toast: true
-            });
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message,
-                confirmButtonText: 'OK'
-            });
         }
+    });
+
+    // Then, add food items without options (with an empty options array)
+    allFoodItems.forEach((foodName, foodId) => {
+        if (!foodItemsWithOptions.has(foodId) && !selectedOptions[foodId]) {
+            // This is a food item without options, add it with name
+            selectedOptions[foodId] = [
+                {
+                    id: foodId,
+                    type: foodName.trim(), // Use the food item name
+                },
+            ];
+        }
+    });
+
+    try {
+        const data = await fetchPackageData(packageId);
+        const response = await fetch("/cart/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                package_id: packageId,
+                quantity: 1,
+                selected_options: selectedOptions, // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
+                included_utilities: data.utilities,
+            }),
+        });
+        console.log(selectedOptions);
+
+        if (response.status === 401) {
+            Swal.fire({
+                icon: "info",
+                title: "Login Required",
+                text: "Please log in to add items to your cart",
+                confirmButtonText: "Login Now",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/loginpage";
+                }
+            });
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Something went wrong.");
+        }
+
+        const responseData = await response.json();
+
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: '<span class="text-gray-200">Added to Cart!</span>',
+            text: data.message || "Package added to your cart.",
+            timer: 2000,
+            showConfirmButton: false,
+            background: "#1F2937",
+            color: "#E5E7EB",
+            toast: true,
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+            confirmButtonText: "OK",
+        });
+    }
+};
+
+const packageCache = new Map();
+
+// FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
+async function fetchPackageData(packageId) {
+    if (packageCache.has(packageId)) {
+        return packageCache.get(packageId);
     }
 
-    const packageCache = new Map();
-    
-    // FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
-    async function fetchPackageData(packageId) {
-        if (packageCache.has(packageId)) {
-            return packageCache.get(packageId);
+    try {
+        const response = await fetch(`/package/details/${packageId}`);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server error: ${errorText.slice(0, 100)}`);
         }
 
-        try {
-            const response = await fetch(`/package/details/${packageId}`);
+        const data = await response.json();
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Server error: ${errorText.slice(0, 100)}`);
-            }
+        if (!data.success) throw new Error(data.message);
 
-            const data = await response.json();
+        // Return only relevant data for the frontend
+        const packageData = {
+            package: data.package,
+            foods: data.foods,
+            utilities: data.utilities,
+        };
 
-            if (!data.success) throw new Error(data.message);
+        // Cache the data
+        packageCache.set(packageId, packageData);
 
-            // Return only relevant data for the frontend
-            const packageData = {
-                package: data.package,
-                foods: data.foods,
-                utilities: data.utilities
-            };
+        return packageData;
+    } catch (error) {
+        console.error("Fetch error:", error);
+        throw error;
+    }
+}
 
-            // Cache the data
-            packageCache.set(packageId, packageData);
-
-            return packageData;
-        } catch (error) {
-            console.error('Fetch error:', error);
-            throw error;
-        }
+// FUNCTION FOR FOOD ITEMS RENDER
+function renderFoods(foods) {
+    if (!foods || foods.length === 0) {
+        return '<p class="text-gray-500 py-2">No food items available.</p>';
     }
 
-    // FUNCTION FOR FOOD ITEMS RENDER
-    function renderFoods(foods) {
-        if (!foods || foods.length === 0) {
-            return '<p class="text-gray-500 py-2">No food items available.</p>';
-        }
-    
-        return foods.map(packageItem => {
-            const item = packageItem.item; 
-            const optionsHtml = (packageItem.options || []).map(option => `
+    return foods
+        .map((packageItem) => {
+            const item = packageItem.item;
+            const hasOptions =
+                packageItem.options && packageItem.options.length > 0;
+
+            const optionsHtml = (packageItem.options || [])
+                .map(
+                    (option) => `
             <label class="inline-flex items-center space-x-3 mb-3 mr-5">
                 <input 
                     type="checkbox" 
@@ -241,44 +293,61 @@
                     class="form-checkbox h-4 w-4 md:h-5 md:w-5 text-blue-600">
                 <span class="text-sm md:text-base">${option.type}</span>
             </label>
-        `).join('');
-    
+        `
+                )
+                .join("");
+
             return `
-            <div class="mb-6">
+            <div class="mb-6"  data-food-id="${item.id}">
                 <div class="font-semibold text-gray-700 mb-3 text-base md:text-lg">${item.name}</div>
                 <div class="flex flex-wrap">
                     ${optionsHtml}
                 </div>
             </div>
         `;
-        }).join('');
+        })
+        .join("");
+}
+// FUNCTION FOR FOOD ITEMS RENDER
+function renderUtilities(utilities) {
+    if (!utilities || utilities.length === 0) {
+        return '<p class="text-gray-500 py-3">No utilities</p>';
     }
-    // FUNCTION FOR FOOD ITEMS RENDER
-    function renderUtilities(utilities) {
-        if (!utilities || utilities.length === 0) {
-            return '<p class="text-gray-500 py-3">No utilities</p>';
-        }
-        return utilities.map(util => `
+    return utilities
+        .map(
+            (util) => `
             <div class="flex p-4 md:p-5 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
                 <div class="flex-1">
-                    <h4 class="font-medium text-gray-800 mb-2 text-base md:text-lg">${util.name}</h4>
-                    ${util.description ? `<p class="text-sm text-gray-600">${util.description}</p>` : ''}
+                    <h4 class="font-medium text-gray-800 mb-2 text-base md:text-lg">${
+                        util.name
+                    }</h4>
+                    ${
+                        util.description
+                            ? `<p class="text-sm text-gray-600">${util.description}</p>`
+                            : ""
+                    }
                 </div>
             </div>
-        `).join('');
-    }
-    function showModalMessage(type, message) {
-        const msgBox = document.getElementById('modal-message');
-        if (!msgBox) return;
-    
-        msgBox.textContent = message;
-        msgBox.classList.remove('hidden', 'bg-red-100', 'bg-green-100', 'text-red-700', 'text-green-700');
-    
-        if (type === 'error') {
-            msgBox.classList.add('bg-red-100', 'text-red-700');
-        } else if (type === 'success') {
-            msgBox.classList.add('bg-green-100', 'text-green-700');
-        }
-    }
+        `
+        )
+        .join("");
+}
+function showModalMessage(type, message) {
+    const msgBox = document.getElementById("modal-message");
+    if (!msgBox) return;
 
-    
+    msgBox.textContent = message;
+    msgBox.classList.remove(
+        "hidden",
+        "bg-red-100",
+        "bg-green-100",
+        "text-red-700",
+        "text-green-700"
+    );
+
+    if (type === "error") {
+        msgBox.classList.add("bg-red-100", "text-red-700");
+    } else if (type === "success") {
+        msgBox.classList.add("bg-green-100", "text-green-700");
+    }
+}

@@ -165,6 +165,7 @@ class CartController extends Controller
             $quantityToAdd = min($validated['quantity'], $available);
 
             $package = Package::findOrFail($validated['package_id']);
+            
 
             // Get the utilities associated with this package
             $utilities = $package->utilities->map(function ($utility) {
@@ -176,17 +177,24 @@ class CartController extends Controller
                 ];
             })->toArray();
 
+
+            // MAKADD PARIN SA CART IF EXAMPLE SOTANGHON, TPOS WLA SYANG OPTIONS  
+            // KAHT SOTANGHON LANG AT WLANG SELECTED OPTION, MAKA ADD PARIN
+            $selectedOptions = $validated['selected_options'] ?? [];
+            $includedItems = $validated['included_utilities'] ?? [];
             if (isset($cart->user_id)) {
                 $existingPackageItem = $cartItems->where('package_id', $validated['package_id'])->first();
                 if ($existingPackageItem) {
                     $existingPackageItem->update(['quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2),
                     'selected_utilities' => $utilities,
+                    'selected_options' => $selectedOptions,
                 ]);
                     $messages['success'][] = 'Package updated in cart.';
 
                 } else {
                     $cart->items()->create(array_merge($validated, ['quantity' => $quantityToAdd,
                     'selected_utilities' => $utilities,
+                    'selected_options' => $selectedOptions, 
                 ]));
                     $messages['success'][] = 'Package added to cart.';
                 }

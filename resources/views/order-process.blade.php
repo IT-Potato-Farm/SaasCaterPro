@@ -32,56 +32,56 @@
     </script>
     @endif
     @php
-                                $steps = [
-                                    'placed' => [
-                                        'title' => 'Order Placed',
-                                        'status' => in_array($order->status, [
-                                            'placed',
-                                            'pending',
-                                            'partial',
-                                            'ongoing',
-                                            'paid',
-                                            'completed',
-                                            'cancelled',
-                                        ]),
-                                    ],
-                                    'pending' => [
-                                        'title' => 'Pending',
-                                        'status' => in_array($order->status, [
-                                            'pending',
-                                            'partial',
-                                            'ongoing',
-                                            'paid',
-                                            'completed',
-                                        ]),
-                                    ],
-                                    'partial' => [
-                                        'title' => 'Partial',
-                                        'status' => in_array($order->status, [
-                                            'partial',
-                                            'ongoing',
-                                            'paid',
-                                            'completed',
-                                        ]),
-                                    ],
-                                    'ongoing' => [
-                                        'title' => 'Ongoing',
-                                        'status' => in_array($order->status, ['ongoing', 'paid', 'completed']),
-                                    ],
-                                    'paid' => [
-                                        'title' => 'Paid',
-                                        'status' => in_array($order->status, ['paid', 'completed']),
-                                    ],
-                                    'completed' => [
-                                        'title' => 'Completed',
-                                        'status' => $order->status === 'completed',
-                                    ],
-                                    'cancelled' => [
-                                        'title' => 'Cancelled',
-                                        'status' => $order->status === 'cancelled',
-                                    ],
-                                ];
-                            @endphp
+        $steps = [
+            'placed' => [
+                'title' => 'Order Placed',
+                'status' => in_array($order->status, [
+                    'placed',
+                    'pending',
+                    'partial',
+                    'ongoing',
+                    'paid',
+                    'completed',
+                    'cancelled',
+                ]),
+            ],
+            'pending' => [
+                'title' => 'Pending',
+                'status' => in_array($order->status, [
+                    'pending',
+                    'partial',
+                    'ongoing',
+                    'paid',
+                    'completed',
+                ]),
+            ],
+            'partial' => [
+                'title' => 'Partial',
+                'status' => in_array($order->status, [
+                    'partial',
+                    'ongoing',
+                    'paid',
+                    'completed',
+                ]),
+            ],
+            'ongoing' => [
+                'title' => 'Ongoing',
+                'status' => in_array($order->status, ['ongoing', 'paid', 'completed']),
+            ],
+            'paid' => [
+                'title' => 'Paid',
+                'status' => in_array($order->status, ['paid', 'completed']),
+            ],
+            'completed' => [
+                'title' => 'Completed',
+                'status' => $order->status === 'completed',
+            ],
+            'cancelled' => [
+                'title' => 'Cancelled',
+                'status' => $order->status === 'cancelled',
+            ],
+        ];
+    @endphp
 
     
 
@@ -280,8 +280,8 @@
                                                             </svg>
                                                         </summary>
                                                         
-                                                        <div class="mt-2 space-y-3">
-                                                            <div>
+                                                        <div class="mt-2 space-y-3 ">
+                                                            <div class>
                                                                 <h4 class="text-xs font-medium text-gray-700 mb-1">Included Foods:</h4>
                                                                 <ul class="space-y-1 pl-2">
                                                                     @foreach ($item->itemable->packageItems as $packageItem)

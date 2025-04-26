@@ -54,7 +54,7 @@
         </div>
 
         <button type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm hover:shadow transition-all">
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium py-2 px-4 rounded-lg shadow-sm hover:shadow transition-all">
             Link Item to Package
         </button>
     </form>

@@ -103,8 +103,8 @@
 
 
 
-<div class=" mx-auto p-4 border">
-    <h1 class="text-2xl font-semibold mb-6 text-center">MANAGE ITEM OPTIONS</h1>
+<div class=" mx-auto p-4 ">
+    <h1 class="text-2xl font-semibold  text-center">MANAGE ITEM OPTIONS</h1>
 
     @if ($itemOptions->isEmpty())
         <div class="text-center py-12 bg-gray-50 rounded-lg">
