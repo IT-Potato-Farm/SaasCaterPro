@@ -1,32 +1,61 @@
 @php
     $about = \App\Models\AboutUsSection::first();
 @endphp
-<section id="aboutus"
-    class="w-full py-8 md:py-12 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-24 bg-white min-h-[50vh] flex items-center justify-center">
-    <div class="max-w-4xl mx-auto lg:text-center">
-        <div class="flex justify-center mb-6">
-            {{-- img --}}
-            @if ($about->background_image)
-                <img src="{{ asset('storage/' . $about->background_image) }}" alt="About Background"
-                    class="max-w-full w-64 h-auto rounded-lg shadow-md object-cover">
-            @else
-                <div class="w-64 h-40 flex items-center justify-center bg-gray-100 text-gray-500 rounded-lg shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 7l6 6-6 6M21 7l-6 6 6 6" />
-                    </svg>
-                    <span class="ml-2 text-sm">No image available</span>
+<section id="aboutus" class="w-full py-12 md:py-20 lg:py-28 px-5 sm:px-8 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16 xl:gap-20">
+            <!-- Image Column -->
+            <div class="w-full lg:w-1/2 flex justify-center lg:justify-end">
+                @if ($about->background_image)
+                    <div class="relative w-full max-w-lg">
+                        <img src="{{ asset('storage/' . $about->background_image) }}" alt="About Background"
+                            class="w-full h-auto rounded-2xl shadow-xl object-cover transition-all duration-500 hover:shadow-2xl"
+                            loading="lazy">
+                        <div class="absolute -inset-4 -z-10 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl opacity-70"></div>
+                    </div>
+                @else
+                    <div class="w-full max-w-lg h-64 md:h-80 flex flex-col items-center justify-center bg-gray-50 rounded-2xl shadow-lg p-6 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-gray-500 text-lg">No image available</span>
+                    </div>
+                @endif
+            </div>
+            
+            <!-- Content Column -->
+            <div class="w-full lg:w-1/2">
+                <div class="max-w-lg mx-auto lg:mx-0">
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                        {{ $about->title ?? 'About Us' }}
+                    </h2>
+                    <div class="prose prose-lg text-gray-600 max-w-none">
+                        <p class="leading-relaxed mb-6">
+                            {{ $about->description ?? '' }}
+                        </p>
+                        @if($about->additional_content)
+                        <div class="mt-6 space-y-4 text-gray-700">
+                            {!! $about->additional_content !!}
+                        </div>
+                        @endif
+                    </div>
+                    
+                    @if($about->button_text && $about->button_link)
+                    <div class="mt-8">
+                        <a href="{{ $about->button_link }}" 
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
+                            {{ $about->button_text }}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                    @endif
                 </div>
-            @endif
+            </div>
         </div>
-        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 lg:text-center">
-            {{ $about->title ?? 'About Us' }}
-        </h2>
-        <p class="text-base sm:text-lg text-gray-700 leading-relaxed">
-            {{ $about->description ?? '' }}
-        </p>
-
     </div>
 </section>
 
