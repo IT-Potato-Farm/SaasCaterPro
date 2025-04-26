@@ -11,7 +11,7 @@
     <script src="{{ asset('js/toprightalert.js') }}"></script>
 
     <script>
-        function openEditModalItem(id, name, description, quantity, image, selectedPackageIds) {
+        function openEditModalUtil(id, name, description, quantity, image, selectedPackageIds) {
             // console.log("Editing utility:", id);
             // console.log("Package ID passed to modal:", selectedPackageIds);
             if (description === null || description === 'null') {
@@ -225,7 +225,7 @@
                                 <div class="mt-6 flex justify-end space-x-3">
                                     <!-- Edit Icon -->
                                     <button
-                                        onclick="openEditModalItem(
+                                        onclick="openEditModalUtil(
                                             {{ $utility->id }}, 
                                             {{ json_encode($utility->name) }}, 
                                             {{ json_encode($utility->description) }},

@@ -9,60 +9,171 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #printArea, #printingHeader,
+            #printArea * {
+                visibility: visible;
+            }
+
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            /* Fix canvas charts */
+            .chart-container,
+            .apexcharts-canvas,
+            canvas {
+                max-width: 100% !important;
+                width: 100% !important;
+                height: auto !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                display: block;
+                /* Important for canvas */
+            }
+
+            /* Avoid page breaks inside charts */
+            .no-break-inside {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                display: block;
+            }
+
+            /* Make the chart div taller when printing if needed */
+            .print-h-auto {
+                height: auto !important;
+                min-height: 400px !important;
+                /* or adjust based on your chart size */
+            }
+        }
+    </style>
 
 </head>
 
 <body>
-    <div class="flex h-screen">
-
-        {{-- SIDENAV --}}
+    <div class="flex h-screen bg-gray-50">
+        <!-- SIDENAV -->
         <x-dashboard.side-nav />
-        {{-- END SIDENAV --}}
+        <!-- END SIDENAV -->
+        
 
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                <div class="container mx-auto px-4 ">
-                    {{-- <h1 class="text-4xl font-bold mb-8">DASHBOARD</h1> --}}
-                    
+        <div id="printArea" class="flex-1 flex flex-col overflow-hidden">
+            <div id="printingHeader" class="hidden print:block text-center ">
+                <h1 class="text-2xl font-bold">SAAS Food & Catering Services</h1>
+                <p class="text-sm text-gray-600">Generated on: <span id="generatedDate"></span></p>
+                <h2 class="text-xl font-semibold mt-1">Analytics Report</h2>
+            </div>
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <div class="container mx-auto">
+                    <div class="flex justify-between items-center mb-8 print:hidden">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800">Analytics Dashboard</h1>
+                            <p class="text-gray-500">Welcome back! Here's an overview of your business performance</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="printDiv('printArea')"
+                                class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                Print
+                            </button>
+                            <button onclick="downloadPDF()"
+                                class="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">
+                                Export as PDF
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <!-- Orders Card -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">{{ $totalOrders }}</h2>
-                            <p class="text-gray-600 text-center">Total Orders</p>
+                        <div
+                            class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all hover:shadow-md">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="p-2 rounded-lg bg-blue-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                </span>
+                                <span
+                                    class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">+4.6%</span>
+                            </div>
+                            <h2 class="text-3xl font-bold text-gray-900">{{ $totalOrders }}</h2>
+                            <p class="text-gray-500 text-sm mt-1">Total Orders</p>
                         </div>
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">{{ $completedOrders }}</h2>
-                            <p class="text-gray-600 text-center">Completed Orders</p>
+
+                        <div
+                            class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all hover:shadow-md">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="p-2 rounded-lg bg-green-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span
+                                    class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">+2.2%</span>
+                            </div>
+                            <h2 class="text-3xl font-bold text-gray-900">{{ $completedOrders }}</h2>
+                            <p class="text-gray-500 text-sm mt-1">Completed Orders</p>
                         </div>
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">{{ $pendingOrders }}</h2>
-                            <p class="text-gray-600 text-center">Pending Orders</p>
+
+                        <div
+                            class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all hover:shadow-md">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="p-2 rounded-lg bg-yellow-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span
+                                    class="text-xs font-medium text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">+0.8%</span>
+                            </div>
+                            <h2 class="text-3xl font-bold text-gray-900">{{ $pendingOrders }}</h2>
+                            <p class="text-gray-500 text-sm mt-1">Pending Orders</p>
                         </div>
 
                         <!-- Revenue Card -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-4xl font-bold text-center">₱{{ number_format($totalRevenue, 2) }}</h2>
-                            <p class="text-gray-600 text-center">Total Revenue</p>
+                        <div
+                            class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all hover:shadow-md">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="p-2 rounded-lg bg-purple-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span
+                                    class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">+8.3%</span>
+                            </div>
+                            <h2 class="text-3xl font-bold text-gray-900">₱{{ number_format($totalRevenue, 2) }}</h2>
+                            <p class="text-gray-500 text-sm mt-1">Total Revenue</p>
                         </div>
-
-
-
-
                     </div>
 
                     <!-- Charts Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         <!-- Sales Overview Chart -->
-                        <div class="bg-white rounded-lg shadow p-6">
-
-                            <h2 class="text-xl font-semibold mb-4">Sales Overview </h2>
-
-                            <div class="relative inline-block">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-semibold text-gray-800">Sales Overview</h2>
                                 <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
-                                    class="px-3 py-1 rounded bg-gray-100 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="today"selected>Today</option>
+                                    class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="today" selected>Today</option>
                                     <option value="thisWeek">This Week</option>
                                     <option value="month">This Month</option>
                                     <option value="sixMonths">Last 6 Months</option>
@@ -70,23 +181,29 @@
                                     <option value="lastYear">Last Year</option>
                                 </select>
                             </div>
-                            
 
-                            <div class="h-64">
-                                <div id="totalRevenueLabel" class="mt-2 text-lg font-semibold text-gray-700">
-                                    Total Revenue: <span
-                                        id="totalRevenueValue">{{ '₱' . number_format($yearRevenue ?? 0, 0) }}</span>
-                                </div>
-                                <canvas id="salesOverviewChart"></canvas>
+                            <div id="totalRevenueLabel" class="mb-4 text-sm font-medium text-gray-500">
+                                Total Revenue: <span id="totalRevenueValue"
+                                    class="text-gray-900 font-bold">₱{{ number_format($yearRevenue ?? 0, 0) }}</span>
+                            </div>
+
+                            <div class="h-64 no-break-inside ">
+                                <canvas class="chart-container" id="salesOverviewChart"></canvas>
                             </div>
                         </div>
 
                         <!-- Revenue by Event Type -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-xl font-semibold mb-4">Revenue by Event Type1</h2>
-                            <div class="h-64">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-semibold text-gray-800">Revenue by Event Type</h2>
+                                <div class="bg-blue-50 text-blue-600 text-xs font-medium py-1 px-2 rounded-full">
+                                    This Year
+                                </div>
+                            </div>
+
+                            <div class="h-64 no-break-inside print-h-auto ">
                                 @if (!empty($eventTypeRevenue))
-                                    <canvas id="eventTypeChart"></canvas>
+                                    <canvas class="chart-container" id="eventTypeChart"></canvas>
                                 @else
                                     <div class="flex items-center justify-center h-full text-gray-400">
                                         <p>No revenue data available.</p>
@@ -94,57 +211,84 @@
                                 @endif
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Bottom Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Sales Performance Chart -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-xl font-semibold mb-4">Sales Performance</h2>
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-semibold text-gray-800">Sales Performance</h2>
+                                <div class="flex space-x-2">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-blue-500 mr-1"></span>
+                                        <span class="text-xs text-gray-500">This Year</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-gray-300 mr-1"></span>
+                                        <span class="text-xs text-gray-500">Last Year</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <div class="h-64">
-
-                                <canvas id="salesPerformanceChart"></canvas>
+                            <div class="h-64  ">
+                                <canvas class="chart-container" id="salesPerformanceChart"></canvas>
                             </div>
                         </div>
 
                         <!-- Top Packages Table -->
-                        <!-- Top Packages -->
                         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                             <div class="flex justify-between items-center mb-6">
                                 <h2 class="text-lg font-semibold text-gray-800">Top Packages</h2>
+                                <a href="#" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
                             </div>
+
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead>
+                                <table class="min-w-full">
+                                    <thead class="bg-gray-50">
                                         <tr>
                                             <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-l-lg">
                                                 Package
                                             </th>
                                             <th
-                                                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider rounded-r-lg">
                                                 Orders
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-200">
+                                    <tbody class="divide-y divide-gray-100">
                                         @forelse ($topPackages as $package)
-                                            <tr>
+                                            <tr class="hover:bg-gray-50">
                                                 <td
                                                     class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $package['name'] }}
                                                 </td>
                                                 <td
-                                                    class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">
-                                                    {{ $package['total'] }}
+                                                    class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-700">
+                                                    <span class="font-medium">{{ $package['total'] }}</span>
+                                                    <span class="ml-1 text-xs text-green-600">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                                        </svg>
+                                                        3.2%
+                                                    </span>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="2" class="px-4 py-3 text-center text-sm text-gray-500">
-                                                    No data available.
+                                                <td colspan="2"
+                                                    class="px-4 py-6 text-center text-sm text-gray-500">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="h-10 w-10 mx-auto text-gray-300 mb-2" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    <p>No data available</p>
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -152,248 +296,10 @@
                                 </table>
                             </div>
                         </div>
-
-
-                    </div>
-                </div>
-
-
-
-                {{-- 2ND DUMMY REPORTS --}}
-                {{-- <div class="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
-                    <!-- Dashboard Header -->
-                    <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-gray-800">Reports Dashboard</h1>
-                        <p class="text-gray-600 mt-2">Overview of your business performance</p>
-                    </div>
-
-                    <!-- Key Metrics Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <!-- Orders Card -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Orders</p>
-                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">{{ $totalOrders }}</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-blue-50">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                        </path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-3">↗︎ 12% from last month</p>
-                        </div>
-
-                        <!-- Revenue Card -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Revenue</p>
-                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">
-                                        ₱{{ number_format($totalRevenue, 2) }}</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-green-50">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-3">↗︎ 8% from last month</p>
-                        </div>
-
-                        <!-- Conversion Rate Card -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Conversion Rate</p>
-                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">18%</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-purple-50">
-                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                                        </path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-3">↗︎ 3% from last month</p>
-                        </div>
-
-                        <!-- Avg. Order Value Card -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Avg. Order Value</p>
-                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">¥3,556</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-amber-50">
-                                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-3">↗︎ 5% from last month</p>
-                        </div>
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                        <!-- Sales Overview Chart -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 lg:col-span-2">
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-lg font-semibold text-gray-800">Sales Overview</h2>
-                                <select class="text-sm border border-gray-200 rounded-lg px-3 py-1 bg-white">
-                                    <option>Last 6 Months</option>
-                                    <option>This Year</option>
-                                    <option>Last Year</option>
-                                </select>
-                            </div>
-                            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
-                                <!-- Chart would go here -->
-                                <p>Monthly sales chart visualization</p>
-                            </div>
-                            <div class="flex justify-between mt-4 text-xs text-gray-500">
-                                <span>Jan</span>
-                                <span>Feb</span>
-                                <span>Mar</span>
-                                <span>Apr</span>
-                                <span>May</span>
-                                <span>Jun</span>
-                                <span>Jul</span>
-                                <span>Dec</span>
-                            </div>
-                        </div>
-
-                        <!-- Revenue by Event Type -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <h2 class="text-lg font-semibold text-gray-800 mb-6">Revenue by Event Type</h2>
-                            <div
-                                class="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 mb-4">
-                                <!-- Pie chart would go here -->
-
-                                <p>Pie chart visualization</p>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                                        <span class="text-sm">Wedding</span>
-                                    </div>
-                                    <span class="text-sm font-medium">36%</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                                        <span class="text-sm">Birthday</span>
-                                    </div>
-                                    <span class="text-sm font-medium">28%</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
-                                        <span class="text-sm">Anniversary</span>
-                                    </div>
-                                    <span class="text-sm font-medium">15%</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-amber-500 mr-2"></span>
-                                        <span class="text-sm">Corporate</span>
-                                    </div>
-                                    <span class="text-sm font-medium">12%</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
-                                        <span class="text-sm">Other</span>
-                                    </div>
-                                    <span class="text-sm font-medium">9%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bottom Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Sales Performance -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <h2 class="text-lg font-semibold text-gray-800 mb-6">Sales Performance</h2>
-                            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
-                                <!-- Line chart would go here -->
-
-                                <p>Weekly performance chart</p>
-                            </div>
-                            <div class="flex justify-between mt-4 text-xs text-gray-500">
-                                <span>4 weeks ago</span>
-                                <span>3 weeks ago</span>
-                                <span>1 week ago</span>
-                                <span>This week</span>
-                            </div>
-                        </div>
-
-                        <!-- Top Packages -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-lg font-semibold text-gray-800">Top Packages</h2>
-                                <button class="text-sm text-blue-600 hover:text-blue-800">View All</button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Package</th>
-                                            <th
-                                                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Orders</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200">
-                                        <tr>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                Silver Package</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">34
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                Gold Package</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">29
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                Bronze Package</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">21
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                Platinum Package</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">18
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div> --}}
-
                     </div>
                 </div>
             </main>
         </div>
-
     </div>
 
     {{-- EVENT TYPE REVENUE CHART --}}
@@ -604,6 +510,47 @@
         window.salesPerformanceData = @json($weeklySales);
     </script>
     <script src="{{ asset('js/salesPerformanceChart.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('generatedDate').textContent = now.toLocaleString('en-US', options);
+        });
+
+        function printDiv(divId) {
+            window.print();
+        }
+
+        function downloadPDF() {
+            const element = document.querySelector('main'); // Capture the main dashboard area
+            html2pdf()
+                .from(element)
+                .set({
+                    margin: 0.5,
+                    filename: 'dashboard-analytics.pdf',
+                    image: {
+                        type: 'jpeg',
+                        quality: 0.98
+                    },
+                    html2canvas: {
+                        scale: 2
+                    },
+                    jsPDF: {
+                        unit: 'in',
+                        format: 'letter',
+                        orientation: 'portrait'
+                    }
+                })
+                .save();
+        }
+    </script>
 </body>
 
 </html>

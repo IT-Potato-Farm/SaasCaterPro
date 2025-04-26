@@ -30,14 +30,14 @@
 </style>
 
 <script>
-    function addItem() {
+    function addPartyTray() {
         const categoryOptions = `{!! $categoryOptions !!}`;
         const checkNameUrl = "{{ $checkNameUrl }}";
         const storeItemUrl = "{{ $storeItemUrl }}";
         const csrfToken = "{{ $csrfToken }}";
 
         Swal.fire({
-            title: '<span class="text-2xl font-bold text-gray-800">Add Item</span>',
+            title: '<span class="text-2xl font-bold text-gray-800">Add Party Tray</span>',
             html: `
                 <form id="addItemForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
                     <div class="flex flex-col items-center justify-center">
@@ -239,4 +239,4 @@
     }
 </script>
 
-<button onclick="addItem()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add Party tray here</button>
+<button onclick="addPartyTray()" class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">Add Party tray here</button>

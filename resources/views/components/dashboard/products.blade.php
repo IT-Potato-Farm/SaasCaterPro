@@ -120,109 +120,143 @@
         }
     }
 </script>
-
-<div class="container mx-auto px-4 py-8">
-    <header class="mb-8">
-        <h1 class="text-3xl text-center font-bold text-gray-800">Party Trays</h1>
-
-        <p class="text-gray-500 mt-2">Showing {{ $menuItems->count() }} items</p>
-    </header>
+<div class="container mx-auto px-4 ">
+    
 
     @if ($menuItems->isEmpty())
         <div class="text-center py-16 bg-gray-50 rounded-xl">
-            <p class="text-cyan-600 font-medium">No menu items available. Start by adding your first item!</p>
+            <p class="text-cyan-600 font-medium">No party trays available.</p>
         </div>
     @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach ($menuItems as $menuItem)
-                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 group">
-                    <!-- img -->
-                    <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-t-lg">
-                        @if ($menuItem->image)
-                            <img src="{{ asset('storage/party_traypics/' . $menuItem->image) }}"
-                                alt="{{ $menuItem->name }}"
-                                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                loading="lazy">
-                        @else
-                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 p-4">
-                                <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span class="text-sm font-medium">No image available</span>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- product description -->
-                    <div class="p-4">
-                        <div class="flex items-start justify-between gap-2 mb-3">
-                            <h2 class="text-xl font-bold text-gray-800 truncate">{{ $menuItem->name }}</h2>
-                            <span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-sm font-medium shrink-0">
-                                {{ $menuItem->category->name ?? 'No Category' }}
-                            </span>
-                        </div>
-
-                        <p class="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-4 min-h-[3rem]">
-                            {{ $menuItem->description }}
-                        </p>
-                        {{-- pricing --}}
-                        <div class="mb-4">
-                            <p class="text-gray-700 text-sm">
-                                <strong>Price for 10-15 pax is:</strong>
-                                ₱{{ number_format($menuItem->pricing['10-15'] ?? 0, 2) }}
-                            </p>
-                            <p class="text-gray-700 text-sm">
-                                <strong>Price for 15-20 pax is:</strong>
-                                ₱{{ number_format($menuItem->pricing['15-20'] ?? 0, 2) }}
-                            </p>
-                        </div>
-
-                        <div class="flex items-center justify-between mb-4">
-
-                            <span
-                                class="px-2.5 py-1 rounded-full text-sm font-medium {{ $menuItem->status == 'available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ ucfirst($menuItem->status) }}
-                            </span>
-                        </div>
-
-                        <!-- edit and delete -->
-                        <div class="flex justify-between gap-3 pt-4 border-t border-gray-100">
-                            <button
-                                onclick="openEditModalItem(
-                                {{ $menuItem->id }}, 
-                                {{ json_encode($menuItem->name) }}, 
-                                {{ json_encode($menuItem->description) }},
-                                {{ json_encode($menuItem->image) }},
-                                {{ json_encode($menuItem->pricing['10-15'] ?? 0) }},
-                                {{ json_encode($menuItem->pricing['15-20'] ?? 0) }},
-                                {{ $menuItem->category_id ?? 'null' }},
-                                {{ json_encode($menuItem->status) }},
-                                )"
-                                class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 114.95 0 2.5 2.5 0 01-4.95 0M12 15h.01M12 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2v-5" />
-                                </svg>
-                                Edit
-                            </button>
-                            <form action="{{ route('menuitems.deleteItem', $menuItem->id) }}" method="POST"
-                                class="flex-1">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" onclick="confirmDelete(this)"
-                                    class="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors hover:cursor-pointer">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg shadow-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pricing</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach ($menuItems as $menuItem)
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <!-- Item Column with Image -->
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-16 w-16 rounded-md overflow-hidden bg-gray-50">
+                                        @if ($menuItem->image)
+                                            <img src="{{ asset('storage/party_traypics/' . $menuItem->image) }}"
+                                                alt="{{ $menuItem->name }}"
+                                                class="h-full w-full object-cover"
+                                                loading="lazy">
+                                        @else
+                                            <div class="h-full w-full flex items-center justify-center text-gray-400">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-semibold text-gray-900">{{ $menuItem->name }}</div>
+                                        <!-- Mobile-only description preview -->
+                                        <div class="md:hidden mt-1 text-xs text-gray-500 line-clamp-2">
+                                            {{ $menuItem->description }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Description Column (hidden on mobile) -->
+                            <td class="px-6 py-4 hidden md:table-cell">
+                                <div class="text-sm text-gray-500">
+                                    {{ $menuItem->description }}
+                                </div>
+                            </td>
+                            
+                            <!-- Pricing Column -->
+                            <td class="px-6 py-4">
+                                <div class="text-sm space-y-1">
+                                    <div class="text-gray-700">
+                                        <span class="font-medium">10-15 pax:</span> 
+                                        ₱{{ number_format($menuItem->pricing['10-15'] ?? 0, 2) }}
+                                    </div>
+                                    <div class="text-gray-700">
+                                        <span class="font-medium">15-20 pax:</span> 
+                                        ₱{{ number_format($menuItem->pricing['15-20'] ?? 0, 2) }}
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Category Column (hidden on mobile) -->
+                            <td class="px-6 py-4 hidden sm:table-cell">
+                                @if ($menuItem->category)
+                                    <span class="px-2 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
+                                        {{ $menuItem->category->name }}
+                                    </span>
+                                @else
+                                    <span class="text-xs text-gray-400">None</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Status Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 rounded-full text-xs font-medium {{ $menuItem->status == 'available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ ucfirst($menuItem->status) }}
+                                </span>
+                            </td>
+                            
+                            <!-- Actions Column -->
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end space-x-2">
+                                    <!-- Edit Button -->
+                                    <button
+                                        onclick="openEditModalItem(
+                                            {{ $menuItem->id }}, 
+                                            {{ json_encode($menuItem->name) }}, 
+                                            {{ json_encode($menuItem->description) }},
+                                            {{ json_encode($menuItem->image) }},
+                                            {{ json_encode($menuItem->pricing['10-15'] ?? 0) }},
+                                            {{ json_encode($menuItem->pricing['15-20'] ?? 0) }},
+                                            {{ $menuItem->category_id ?? 'null' }},
+                                            {{ json_encode($menuItem->status) }}
+                                        )"
+                                        class="p-2 bg-amber-100 text-amber-800 cursor-pointer rounded-md hover:bg-amber-200 transition-colors"
+                                        title="Edit">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 114.95 0 2.5 2.5 0 01-4.95 0M12 15h.01M12 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2v-5" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Delete Button -->
+                                    <form action="{{ route('menuitems.deleteItem', $menuItem->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button 
+                                            type="button" 
+                                            onclick="confirmDelete(this)"
+                                            class="p-2 bg-red-100 text-red-800 cursor-pointer rounded-md hover:bg-red-200 transition-colors"
+                                            title="Delete">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+        <footer class="mb-2">
+            <p class="text-gray-500 mt-2 text-center">Showing {{ $menuItems->count() }} items</p>
+        </footer>
     @endif
 </div>
