@@ -178,6 +178,7 @@
 
     <script>
         function leaveReview(orderId) {
+            console.log(orderId)
             Swal.fire({
                 title: '<span class="text-2xl font-bold text-gray-800">Leave A Review</span>',
                 html: `
@@ -220,29 +221,30 @@
                 cancelButtonText: 'Cancel',
                 confirmButtonColor: '#3b82f6',
                 cancelButtonColor: '#ef4444',
-                
+
                 preConfirm: () => {
                     document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-    
+
                     const form = document.getElementById('leaveReviewForm');
                     const formData = new FormData(form);
-    
+
                     let hasErrors = false;
-    
+
                     if (document.getElementById('swal-review').value.trim().length > 1000) {
-                        document.getElementById('review-error').textContent = 'Review max words reached. Please leave a short review.';
+                        document.getElementById('review-error').textContent =
+                            'Review max words reached. Please leave a short review.';
                         hasErrors = true;
                     }
-    
+
                     if (hasErrors) {
                         return false;
                     }
-    
+
                     const imageInput = document.getElementById('swal-image');
                     if (imageInput.files.length > 0) {
                         formData.append('image', imageInput.files[0]);
                     }
-    
+
                     return submitForm(formData);
                 }
             }).then((result) => {
@@ -259,43 +261,55 @@
                 }
             });
         }
-    
+
         function submitForm(formData) {
-            formData.append("_token", document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-    
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            formData.append("_token", token);
+            console.log("Submitting review to:", "{{ route('reviews.leaveReview') }}");
+
+
             return fetch("{{ route('reviews.leaveReview') }}", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json().then(data => {
-                if (!response.ok) {
-                    throw new Error(data.message || 'Server Error. Please try again later.');
-                }
-                return data;
-            }))
-            .then(data => {
-                if (!data.success) {
-                    if (data.errors) {
-                        Object.keys(data.errors).forEach(field => {
-                            const errorElement = document.getElementById(`${field}-error`);
-                            if (errorElement) {
-                                errorElement.textContent = data.errors[field][0];
-                            }
-                        });
-                        throw new Error('Error in validating. Please try again.');
-                    } else {
-                        throw new Error(data.message || 'Error. Please try again.');
+                    method: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    // Log the response status for debugging
+                    console.log("Response status:", response.status);
+
+                    return response.json().then(data => {
+                        if (!response.ok) {
+                            console.error("Error response:", data);
+                            throw new Error(data.message || 'Server Error. Please try again later.');
+                        }
+                        return data;
+                    });
+                })
+                .then(data => {
+                    if (!data.success) {
+                        if (data.errors) {
+                            Object.keys(data.errors).forEach(field => {
+                                const errorElement = document.getElementById(`${field}-error`);
+                                if (errorElement) {
+                                    errorElement.textContent = data.errors[field][0];
+                                }
+                            });
+                            throw new Error('Error in validating. Please try again.');
+                        } else {
+                            throw new Error(data.message || 'Error. Please try again.');
+                        }
                     }
-                }
-                return data;
-            })
-            .catch(error => {
-                Swal.showValidationMessage(error.message);
-                return false;
-            });
+                    return data;
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(error.message);
+                    return false;
+                });
         }
     </script>
-    
+
 </body>
 
 </html>
