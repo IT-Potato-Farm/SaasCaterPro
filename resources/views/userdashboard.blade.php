@@ -216,7 +216,8 @@
                 <div class="flex justify-end space-x-4 mt-6">
                     <button type="button" onclick="closeModal()"
                         class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md">Cancel</button>
-                    <button type="submit" onclick="leaveReview(orderId)" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Leave Review</button>
+                    <button type="submit" onclick="leaveReview(orderId)"
+                        class="bg-indigo-600 text-white py-2 px-4 rounded-md">Leave Review</button>
                 </div>
             </form>
         </div>
@@ -227,26 +228,24 @@
             console.log('Opening review modal for order:', orderId);
             document.getElementById('order-id').value = orderId;
             document.getElementById('leaveReviewModal').classList.remove('hidden');
-
-
+            
+            // Reset form values and errors
             document.getElementById('leaveReviewForm').reset();
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
         }
-
+    
         // Close modal
         function closeModal() {
             document.getElementById('leaveReviewModal').classList.add('hidden');
         }
-
-
+    
         document.getElementById('leaveReviewForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
-
-
+    
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-
+    
             // Validate review length
             const reviewText = document.getElementById('review').value.trim();
             if (reviewText.length > 1000) {
@@ -254,136 +253,133 @@
                     'Review is too long. Maximum 1000 characters allowed.';
                 return;
             }
-
+    
             if (reviewText.length === 0) {
                 document.getElementById('review-error').textContent =
                     'Please enter your review.';
                 return;
             }
-
+    
             submitForm(formData);
         });
-
+    
         // Submit the form to the backend
         function submitForm(formData) {
-
             const token = document.querySelector('meta[name="csrf-token"]').content;
-
+    
             // Get URL from Laravel route helper, fallback to relative path
-            // let url = "{{ route('reviews.leaveReview') }}";
-
             let url = "{{ route('reviews.leaveReview') }}";
-
+    
             if (window.location.hostname === 'saascater.site') {
                 url = 'https://saascater.site/reviews/submit';
             } else {
                 url = "{{ route('reviews.leaveReview') }}";
             }
+    
             // Ensure no trailing slash
             url = url.replace(/\/$/, '');
-        }
-
-        console.log("Submitting review to:", url, "with data:", {
-            orderId: formData.get('order_id'),
-            rating: formData.get('rating'),
-            hasImage: formData.get('image') ? true : false,
-            reviewLength: formData.get('review')?.length || 0
-        });
-        console.log("Final URL being called:", url);
-        console.log("CSRF Token:", token);
-        fetch(url, {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: formData,
-                credentials: 'same-origin',
-                cache: 'no-cache',
-                redirect: 'follow'
-            })
-            .then(async response => {
-                console.log("Response status:", response.status);
-                console.log("Response headers:", Object.fromEntries([...response.headers]));
-                const contentType = response.headers.get('content-type');
-                const isJson = contentType && contentType.includes('application/json');
-
-
-                try {
-                    const data = isJson ? await response.json() : null;
-                    console.log("Response data:", data);
-
-                    if (!response.ok) {
-                        const error = (data && data.message) || response.statusText;
-                        throw new Error(error || 'Request failed');
+    
+            console.log("Submitting review to:", url, "with data:", {
+                orderId: formData.get('order_id'),
+                rating: formData.get('rating'),
+                hasImage: formData.get('image') ? true : false,
+                reviewLength: formData.get('review')?.length || 0
+            });
+            console.log("Final URL being called:", url);
+            console.log("CSRF Token:", token);
+    
+            fetch(url, {
+                    method: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData,
+                    credentials: 'same-origin',
+                    cache: 'no-cache',
+                    redirect: 'follow'
+                })
+                .then(async response => {
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", Object.fromEntries([...response.headers]));
+                    const contentType = response.headers.get('content-type');
+                    const isJson = contentType && contentType.includes('application/json');
+    
+                    try {
+                        const data = isJson ? await response.json() : null;
+                        console.log("Response data:", data);
+    
+                        if (!response.ok) {
+                            const error = (data && data.message) || response.statusText;
+                            throw new Error(error || 'Request failed');
+                        }
+    
+                        return data;
+                    } catch (err) {
+                        console.error("Error parsing response:", err);
+                        throw new Error('Failed to parse server response');
                     }
-
-                    return data;
-                } catch (err) {
-                    console.error("Error parsing response:", err);
-                    throw new Error('Failed to parse server response');
-                }
-            })
-
-            .then(data => {
-                if (data.success) {
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: data.message || 'Review submitted successfully!',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
+                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                        });
+    
+                        closeModal();
+                        // setTimeout(() => {
+                        //     window.location.reload();
+                        // }, 1500);
+                    } else {
+                        if (data.errors) {
+                            Object.entries(data.errors).forEach(([field, messages]) => {
+                                const errorElement = document.getElementById(`${field}-error`);
+                                if (errorElement) {
+                                    errorElement.textContent = Array.isArray(messages) ? messages.join(', ') :
+                                        messages;
+                                }
+                            });
+                        } else {
+                            throw new Error(data.message || 'Submission failed');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Submission error details:', {
+                        message: error.message,
+                        stack: error.stack,
+                        name: error.name
+                    });
                     Swal.fire({
                         toast: true,
                         position: 'top-end',
-                        icon: 'success',
-                        title: data.message || 'Review submitted successfully!',
+                        icon: 'error',
+                        title: error.message || 'Failed to submit review',
                         showConfirmButton: false,
                         timer: 3000,
                         timerProgressBar: true,
+                        background: '#dc3545',
+                        color: '#fff',
                         didOpen: (toast) => {
                             toast.addEventListener('mouseenter', Swal.stopTimer);
                             toast.addEventListener('mouseleave', Swal.resumeTimer);
                         }
                     });
-
-                    closeModal();
-                    // setTimeout(() => {
-                    //     window.location.reload();
-                    // }, 1500);
-                } else {
-                    if (data.errors) {
-                        Object.entries(data.errors).forEach(([field, messages]) => {
-                            const errorElement = document.getElementById(`${field}-error`);
-                            if (errorElement) {
-                                errorElement.textContent = Array.isArray(messages) ? messages.join(', ') :
-                                    messages;
-                            }
-                        });
-                    } else {
-                        throw new Error(data.message || 'Submission failed');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Submission error details:', {
-                    message: error.message,
-                    stack: error.stack,
-                    name: error.name
                 });
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    title: error.message || 'Failed to submit review',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    background: '#dc3545',
-                    color: '#fff',
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer);
-                        toast.addEventListener('mouseleave', Swal.resumeTimer);
-                    }
-                });
-            });
         }
     </script>
+    
 </body>
 
 </html>
