@@ -176,99 +176,100 @@
         </div>
     </div>
 
+    <!-- Review Modal -->
+    <div id="leaveReviewModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Leave A Review</h2>
+            <form id="leaveReviewForm" class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
+                <input type="hidden" id="order-id" name="order_id" value="">
+
+                <!-- Rating -->
+                <div>
+                    <label for="rating" class="block text-sm font-medium text-gray-700">Rating:</label>
+                    <select id="rating" name="rating"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Good</option>
+                        <option value="3">3 - Average</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="1">1 - Terrible</option>
+                    </select>
+                    <div id="rating-error" class="error-message"></div>
+                </div>
+
+                <!-- Image -->
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700">Upload Image:</label>
+                    <input type="file" id="image" name="image" accept="image/*"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div id="image-error" class="error-message"></div>
+                </div>
+
+                <!-- Review -->
+                <div>
+                    <label for="review" class="block text-sm font-medium text-gray-700">Review:</label>
+                    <textarea id="review" name="review"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <div id="review-error" class="error-message"></div>
+                </div>
+
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" onclick="closeModal()"
+                        class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Leave Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // Open Modal
         function leaveReview(orderId) {
             console.log(orderId)
-            Swal.fire({
-                title: '<span class="text-2xl font-bold text-gray-800">Leave A Review</span>',
-                html: `
-                    <form id="leaveReviewForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
-                        <input type="hidden" id="swal-order-id" name="order_id" value="${orderId}">
-    
-                        <!-- Rating -->
-                        <div>
-                            <label for="swal-rating" class="block text-sm font-medium text-gray-700">Rating:</label>
-                            <select id="swal-rating" name="rating"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="5">5 - Excellent</option>
-                                <option value="4">4 - Good</option>
-                                <option value="3">3 - Average</option>
-                                <option value="2">2 - Poor</option>
-                                <option value="1">1 - Terrible</option>
-                            </select>
-                            <div id="rating-error" class="error-message"></div>
-                        </div>
-    
-                        <!-- Image -->
-                        <div>
-                            <label for="swal-image" class="block text-sm font-medium text-gray-700">Upload Image:</label>
-                            <input type="file" id="swal-image" name="image" accept="image/*"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="image-error" class="error-message"></div>
-                        </div>
-    
-                        <!-- Review -->
-                        <div>
-                            <label for="swal-review" class="block text-sm font-medium text-gray-700">Review:</label>
-                            <textarea id="swal-review" name="review"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            <div id="review-error" class="error-message"></div>
-                        </div>
-                    </form>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Leave Review',
-                cancelButtonText: 'Cancel',
-                confirmButtonColor: '#3b82f6',
-                cancelButtonColor: '#ef4444',
-
-                preConfirm: () => {
-                    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-
-                    const form = document.getElementById('leaveReviewForm');
-                    const formData = new FormData(form);
-
-                    let hasErrors = false;
-
-                    if (document.getElementById('swal-review').value.trim().length > 1000) {
-                        document.getElementById('review-error').textContent =
-                            'Review max words reached. Please leave a short review.';
-                        hasErrors = true;
-                    }
-
-                    if (hasErrors) {
-                        return false;
-                    }
-
-                    const imageInput = document.getElementById('swal-image');
-                    if (imageInput.files.length > 0) {
-                        formData.append('image', imageInput.files[0]);
-                    }
-
-                    return submitForm(formData);
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '<span class="text-xl font-bold text-gray-800">Success!</span>',
-                        text: 'Review submitted successfully!',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        location.reload();
-                    });
-                }
-            });
+            document.getElementById('order-id').value = orderId; 
+            const modal = document.getElementById('leaveReviewModal');
+            modal.classList.remove('hidden'); 
         }
 
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('leaveReviewModal');
+            modal.classList.add('hidden'); 
+        }
+
+        // Submit review form
+        document.getElementById('leaveReviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            let hasErrors = false;
+
+            if (document.getElementById('review').value.trim().length > 1000) {
+                document.getElementById('review-error').textContent =
+                    'Review max words reached. Please leave a short review.';
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                return;
+            }
+
+            const imageInput = document.getElementById('image');
+            if (imageInput.files.length > 0) {
+                formData.append('image', imageInput.files[0]);
+            }
+
+            submitForm(formData);
+        });
+
+        // Submit the form to the backend
         function submitForm(formData) {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             formData.append("_token", token);
-            console.log("Submitting review to:", "{{ route('reviews.leaveReview') }}");
 
-
-            return fetch("{{ route('reviews.leaveReview') }}", {
+            fetch("{{ route('reviews.leaveReview') }}", {
                     method: "POST",
                     headers: {
                         'X-CSRF-TOKEN': token,
@@ -276,36 +277,64 @@
                     body: formData
                 })
                 .then(response => {
-                    // Log the response status for debugging
-                    console.log("Response status:", response.status);
-
-                    return response.json().then(data => {
-                        if (!response.ok) {
-                            console.error("Error response:", data);
-                            throw new Error(data.message || 'Server Error. Please try again later.');
-                        }
-                        return data;
-                    });
+                    return response.json();
                 })
                 .then(data => {
-                    if (!data.success) {
-                        if (data.errors) {
-                            Object.keys(data.errors).forEach(field => {
-                                const errorElement = document.getElementById(`${field}-error`);
-                                if (errorElement) {
-                                    errorElement.textContent = data.errors[field][0];
-                                }
-                            });
-                            throw new Error('Error in validating. Please try again.');
-                        } else {
-                            throw new Error(data.message || 'Error. Please try again.');
-                        }
+                    if (data.success) {
+                        
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success', 
+                            title: 'Review submitted successfully!',
+                            showConfirmButton: false, 
+                            timer: 3000, 
+                            timerProgressBar: true, 
+                            
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer); 
+                                toast.addEventListener('mouseleave', Swal
+                                .resumeTimer); 
+                            }
+                        });
+
+                        closeModal(); 
+                        // location.reload(); 
+                    } else {
+                       
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'error', // Error icon
+                            title: 'Oops, there was an error!',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            background: '#dc3545', 
+                            color: '#fff',
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
+                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                        });
                     }
-                    return data;
                 })
                 .catch(error => {
-                    Swal.showValidationMessage(error.message);
-                    return false;
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Something went wrong!',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        background: '#dc3545',
+                        color: '#fff',
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
                 });
         }
     </script>
