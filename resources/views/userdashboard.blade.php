@@ -265,19 +265,24 @@
 
         // Submit the form to the backend
         function submitForm(formData) {
-            
+
             const token = document.querySelector('meta[name="csrf-token"]').content;
 
             // Get URL from Laravel route helper, fallback to relative path
+            // let url = "{{ route('reviews.leaveReview') }}";
+
             let url = "{{ route('reviews.leaveReview') }}";
 
-            // If Blade didn't process (e.g., in external JS file), use fallback
-            if (url.includes('reviews.leaveReview')) {
-                url = '/reviews';
+            if (window.location.hostname === 'saascater.site') {
+                url = 'https://saascater.site/reviews';
+            } else {
+                // For local development, use the route or fallback
+                if (url.includes('reviews.leaveReview')) {
+                    url = '/reviews';
+                }
+                // Ensure no trailing slash
+                url = url.replace(/\/$/, '');
             }
-
-            // Ensure no trailing slash
-            url = url.replace(/\/$/, '');
 
             console.log("Submitting review to:", url, "with data:", {
                 orderId: formData.get('order_id'),
@@ -285,8 +290,8 @@
                 hasImage: formData.get('image') ? true : false,
                 reviewLength: formData.get('review')?.length || 0
             });
-            console.log("Final URL being called:", url); 
-
+            console.log("Final URL being called:", url);
+            console.log("CSRF Token:", token);
             fetch(url, {
                     method: "POST",
                     headers: {
@@ -295,72 +300,89 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: formData,
-                    credentials: 'same-origin' 
+                    credentials: 'same-origin',
+                    cache: 'no-cache',
+                    redirect: 'follow'
                 })
                 .then(async response => {
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", Object.fromEntries([...response.headers]));
                     const contentType = response.headers.get('content-type');
                     const isJson = contentType && contentType.includes('application/json');
-                    const data = isJson ? await response.json() : null;
 
-                    if (!response.ok) {
-                        const error = (data && data.message) || response.statusText;
-                        throw new Error(error || 'Request failed');
-                    }
 
-                    return data;
-                })
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: data.message || 'Review submitted successfully!',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
+                    try {
+                        const data = isJson ? await response.json() : null;
+                        console.log("Response data:", data);
 
-                        closeModal();
-                        // setTimeout(() => {
-                        //     window.location.reload();
-                        // }, 1500);
-                    } else {
-                        if (data.errors) {
-                            Object.entries(data.errors).forEach(([field, messages]) => {
-                                const errorElement = document.getElementById(`${field}-error`);
-                                if (errorElement) {
-                                    errorElement.textContent = Array.isArray(messages) ? messages.join(', ') :
-                                        messages;
-                                }
-                            });
-                        } else {
-                            throw new Error(data.message || 'Submission failed');
+                        if (!response.ok) {
+                            const error = (data && data.message) || response.statusText;
+                            throw new Error(error || 'Request failed');
                         }
+
+                        return data;
+                    } catch (err) {
+                        console.error("Error parsing response:", err);
+                        throw new Error('Failed to parse server response');
                     }
                 })
-                .catch(error => {
-                    console.error('Submission error:', error);
+
+                .then(data => {
+                if (data.success) {
                     Swal.fire({
                         toast: true,
                         position: 'top-end',
-                        icon: 'error',
-                        title: error.message || 'Failed to submit review',
+                        icon: 'success',
+                        title: data.message || 'Review submitted successfully!',
                         showConfirmButton: false,
                         timer: 3000,
                         timerProgressBar: true,
-                        background: '#dc3545',
-                        color: '#fff',
                         didOpen: (toast) => {
                             toast.addEventListener('mouseenter', Swal.stopTimer);
                             toast.addEventListener('mouseleave', Swal.resumeTimer);
                         }
                     });
+
+                    closeModal();
+                    // setTimeout(() => {
+                    //     window.location.reload();
+                    // }, 1500);
+                } else {
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([field, messages]) => {
+                            const errorElement = document.getElementById(`${field}-error`);
+                            if (errorElement) {
+                                errorElement.textContent = Array.isArray(messages) ? messages.join(', ') :
+                                    messages;
+                            }
+                        });
+                    } else {
+                        throw new Error(data.message || 'Submission failed');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Submission error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
                 });
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: error.message || 'Failed to submit review',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: '#dc3545',
+                    color: '#fff',
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
+                    }
+                });
+            });
         }
     </script>
 </body>
