@@ -40,7 +40,7 @@
                             <a href="{{ $footer->facebook }}" target="_blank"
                                class="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                                 <i class="fab fa-facebook-f mr-3 text-blue-500"></i>
-                                <span class="text-sm">Facebook Page</span>
+                                <span class="text-sm">Visit Us On</span>
                             </a>
                         </div>
                     </div>

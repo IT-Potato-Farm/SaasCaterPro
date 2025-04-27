@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CheckoutController;
@@ -15,6 +17,16 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class UserController extends Controller
 {
+    public function goregister()
+    {
+        if (Auth::check()) {
+            return redirect()->route('landing');
+        }
+
+        // If not logged in
+        return view('register')->with('message', session('message', ''));
+    }
+
 
     public function gologin()
     {
@@ -101,11 +113,17 @@ class UserController extends Controller
         // Remove leading '+63' or '0'
         if ($request->has('mobile')) {
             $mobile = $request->input('mobile');
+            
+            // Remove any +63 prefix
             if (substr($mobile, 0, 3) === '+63') {
                 $mobile = substr($mobile, 3);
-            } elseif (substr($mobile, 0, 1) === '0') {
-                $mobile = substr($mobile, 1);
             }
+            
+            // Ensure it starts with '0'
+            if (substr($mobile, 0, 1) !== '0') {
+                $mobile = '0' . $mobile;
+            }
+            
             $request->merge(['mobile' => $mobile]);
         }
 
@@ -113,7 +131,7 @@ class UserController extends Controller
             'first_name'    => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
             'last_name'     => ['required', 'string', 'min:2', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
             'email' => ['required', 'email', Rule::unique('users', 'email')],
-            'mobile'        => ['required', 'regex:/^9\d{9}$/', Rule::unique('users', 'mobile')],
+            'mobile'        => ['required', 'regex:/^09\d{9}$/', Rule::unique('users', 'mobile')],
             'password'      => [
                 'required',
                 'string',
@@ -142,7 +160,7 @@ class UserController extends Controller
             'email.unique'                   => 'This email is already registered.',
             'email.regex'                    => 'Please enter a valid email address with a standard domain (e.g., .com, .net, .org).',
             'mobile.required'                => 'The mobile field is required.',
-            'mobile.regex'                   => 'The mobile number must be a valid Philippine number starting with 9 and be 10 digits (use +639xxxxxxx or 9XXXXXXXXX).',
+            'mobile.regex'                   => 'The mobile number must be a valid Philippine number in format 09XXXXXXXXX.',
             'mobile.unique'                  => 'This mobile number is already registered.',
             'password.required'              => 'The password field is required.',
             'password.min'                   => 'The password must be at least 8 characters.',
@@ -164,44 +182,54 @@ class UserController extends Controller
         });
 
         $credentials = $validator->validate();
+        unset($credentials['password_confirmation']);
 
         $credentials['password'] = bcrypt($credentials['password']); // Hash
         $user = User::create($credentials); // Create
-        //send verification email
-        event(new Registered($user));
 
-        auth()->guard('web')->login($user);
+        auth()->guard('web')->login($user); //LOGIN THE USER
+        
+        //send verification email
+        $code = mt_rand(100000, 999999);
+        DB::table('users')->where('id', $user->id)->update([
+            'verification_code' => $code
+        ]);
+
+        Mail::send('emails.verify-code', ['code' => $code], function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Your Email Verification Code');
+        });
 
         // Redirect to the verification notice page
         return redirect()->route('verification.notice');
         // session()->flash('success', 'Account created successfully. Please log in.');
         // return redirect()->route('login');
     }
-    public function verifyNotice()
-    {
-        return view('auth.verify-email');
-    }
-    public function verifyEmail(Request $request, $id, $hash)
-    {
-        $user = User::findOrFail($id);
+    // public function verifyNotice()
+    // {
+    //     return view('auth.verify-email');
+    // }
+    // public function verifyEmail(Request $request, $id, $hash)
+    // {
+    //     $user = User::findOrFail($id);
 
-        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            abort(403, 'Invalid verification link.');
-        }
+    //     if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+    //         abort(403, 'Invalid verification link.');
+    //     }
 
-        if ($user->hasVerifiedEmail()) {
-            return redirect()->route('login')->with('message', 'Email already verified.');
-        }
+    //     if ($user->hasVerifiedEmail()) {
+    //         return redirect()->route('login')->with('message', 'Email already verified.');
+    //     }
 
-        $user->markEmailAsVerified();
-        event(new Verified($user));
+    //     $user->markEmailAsVerified();
+    //     event(new Verified($user));
 
-        return redirect()->route('login')->with('message', 'Email successfully verified! You can now log in.');
-    }
-    public function verifyHandler(Request $request)
-    {
-        $request->user()->sendEmailVerificationNotification();
+    //     return redirect()->route('login')->with('message', 'Email successfully verified! You can now log in.');
+    // }
+    // public function verifyHandler(Request $request)
+    // {
+    //     $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('message', 'Verification link sent!');
-    }
+    //     return back()->with('message', 'Verification link sent!');
+    // }
 }

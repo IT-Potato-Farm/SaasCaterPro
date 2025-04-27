@@ -13,7 +13,7 @@ use App\Models\Cart;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, MustVerifyEmailTrait;
     /**
      * The attributes that are mass assignable.
      *
@@ -26,7 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'mobile',
         'role',
-        'email_verified_at'
+        'email_verified_at',
+        'verification_code'
     ];
     public function isAdmin()
     {

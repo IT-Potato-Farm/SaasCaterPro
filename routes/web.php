@@ -30,6 +30,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\ItemOptionController;
 use App\Http\Controllers\PackageItemController;
+use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\NavbarSettingController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ResetPasswordController;
@@ -66,10 +67,9 @@ Route::get('/privacy-policy', function () {
 })->name('privacy.policy');
 
 Route::get('/loginpage', [UserController::class, 'gologin'])->name('login');
+Route::get('/register', [UserController::class, 'goregister'])->name('register');
 
-Route::get('/register', function () {
-    return view('register');
-});
+
 
 Route::get('/', function () {
     return view('homepage');
@@ -79,12 +79,13 @@ Route::get('/', function () {
 Route::get('/all-menus', function () {
     return view('menupage');
 })->name('all-menu');
+
 // Route::get('/login', function () {
 //     return view('login');
 // });
 
 
-//  User Dashboard ===================
+//  User VERIFIED Dashboard ===================
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('userdashboard');
     Route::get('/user/dashboard/order/{id}', [UserDashboardController::class, 'show'])->name('order.show');
@@ -121,31 +122,30 @@ Route::post('/register/registeracc', [UserController::class, 'register'])->name(
 
 
 // email veirification handler
-Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
+// Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
+
+
 
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
-    // email verification notice
-    Route::get('/email/verify', [UserController::class, 'verifyNotice'])->name('verification.notice');
+    // verification notice page
+    Route::get('/email/verify', [VerifyEmailController::class, 'verifyNotice'])
+        ->name('verification.notice');
+
+    // Process the verification code
+    Route::post('/email/verify', [VerifyEmailController::class, 'verifyEmail'])
+        ->name('verification.verify-code');
+
+    // Resend the verification code
+    Route::post('/email/verify/resend', [VerifyEmailController::class, 'verifyHandler'])
+        ->middleware('throttle:6,1') 
+        ->name('verification.resend-code');
 
 
-    // resend verification email
-
-    Route::post('/email/verification-notification', [UserController::class, 'verifyHandler'])->middleware(['throttle:6,1'])->name('verification.send');
 });
 
-
-
-// Route::post('/register/registerapi', [UserController::class, 'register']);
-// Route::post('/loginapi', [UserController::class,'login']);
-
-
-Route::get('/home', function () {
-
-    return view('home');
-});
 
 
 // DATE ROUTE FUNCTION API FOR GETTING THE DATEEEESSSS   partial, ongoing, paid, completed statuses are blocked.
@@ -191,6 +191,7 @@ Route::get('/get-booked-dates', function () {
 
     return response()->json($formatted);
 });
+
 Route::get('/bookings/occupied-times', [OrderController::class, 'getOccupiedTimes'])->name('bookings.occupied-times');
 Route::get('/bookings/available-slots', [CheckoutController::class, 'getAvailableSlots'])->name('bookings.available-slots');
 //CATEGORY ROUTES
@@ -200,14 +201,6 @@ Route::get('/bookings/available-slots', [CheckoutController::class, 'getAvailabl
 
 
 
-// MENUU ROUTE
-// Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
-// Route::post('/menu/store', [MenuController::class, 'addMenu'])->name('menu.addMenu');
-// Route::put('/menu/{id}/edit', [MenuController::class, 'editMenu'])->name('menu.edit');
-// Route::delete('/menu/{id}', [MenuController::class, 'deleteMenu'])->name('menu.delete');
-
-// Route::get('/menu-details/{id}', [MenuController::class, 'getMenuDetails']);
-// void na yung MENUU
 
 
 
