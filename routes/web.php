@@ -429,6 +429,13 @@ Route::middleware(['auth'])->group(function () {
     // cancel order
     Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
+    Route::get('/test-route', function() {
+        return [
+            'review_route' => route('reviews.leaveReview'),
+            'base_url' => url('/')
+        ];
+    });
+
     Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');

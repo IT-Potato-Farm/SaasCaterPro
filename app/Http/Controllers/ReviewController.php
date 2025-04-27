@@ -38,12 +38,7 @@ class ReviewController extends Controller
                 ], 400);
             }
 
-            // Validate request inputs
-            $request->validate([
-                'rating' => 'required|integer|min:1|max:5',
-                'review' => 'required|string|max:500',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Ensure valid image
-            ]);
+           
 
             // Validate the incoming request (including the image)
             $request->validate([

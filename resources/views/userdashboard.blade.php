@@ -227,15 +227,15 @@
         // Open Modal
         function leaveReview(orderId) {
             console.log(orderId)
-            document.getElementById('order-id').value = orderId; 
+            document.getElementById('order-id').value = orderId;
             const modal = document.getElementById('leaveReviewModal');
-            modal.classList.remove('hidden'); 
+            modal.classList.remove('hidden');
         }
 
         // Close modal
         function closeModal() {
             const modal = document.getElementById('leaveReviewModal');
-            modal.classList.add('hidden'); 
+            modal.classList.add('hidden');
         }
 
         // Submit review form
@@ -268,40 +268,46 @@
         function submitForm(formData) {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             formData.append("_token", token);
-
-            fetch("{{ route('reviews.leaveReview') }}", {
+            console.log("Form data:", Object.fromEntries(formData.entries()));
+            console.log("Route URL:", "{{ route('reviews.leaveReview') }}");
+            console.log("CSRF Token:", token);
+            // fetch("{{ route('reviews.leaveReview') }}", {
+            fetch("/reviews", {
                     method: "POST",
                     headers: {
                         'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
                     },
                     body: formData
                 })
                 .then(response => {
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", [...response.headers.entries()]);
                     return response.json();
                 })
                 .then(data => {
                     if (data.success) {
-                        
+
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
-                            icon: 'success', 
+                            icon: 'success',
                             title: 'Review submitted successfully!',
-                            showConfirmButton: false, 
-                            timer: 3000, 
-                            timerProgressBar: true, 
-                            
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+
                             didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer); 
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
                                 toast.addEventListener('mouseleave', Swal
-                                .resumeTimer); 
+                                    .resumeTimer);
                             }
                         });
 
-                        closeModal(); 
+                        closeModal();
                         // location.reload(); 
                     } else {
-                       
+
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
@@ -310,7 +316,7 @@
                             showConfirmButton: false,
                             timer: 3000,
                             timerProgressBar: true,
-                            background: '#dc3545', 
+                            background: '#dc3545',
                             color: '#fff',
                             didOpen: (toast) => {
                                 toast.addEventListener('mouseenter', Swal.stopTimer);
