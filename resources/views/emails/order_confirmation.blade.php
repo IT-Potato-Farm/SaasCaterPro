@@ -46,6 +46,7 @@
 
                             if ($isPackage) {
                                 $itemPrice = $cartItem->itemable->price_per_person ?? 0;
+                                $computedPrice = $itemPrice * ($order->total_guests ?? 1);
                             } else {
                                 $variant = $cartItem->variant ?? null;
                                 $itemPrice =
@@ -55,6 +56,11 @@
                             }
 
                             $computedPrice = $isPackage ? $itemPrice * ($order->total_guests ?? 1) : $itemPrice;
+                        @endphp
+
+                        @php
+                            // Accumulate subtotal
+                            $subtotal = ($subtotal ?? 0) + $computedPrice;
                         @endphp
                         {{-- PACKAGES --}}
                         <tr style="vertical-align: top;">
@@ -71,8 +77,15 @@
                                     @endif
                                     <div>
                                         <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">
-                                            {{ $itemName }}</div>
-                                        @if (!$isPackage)
+                                            {{ $itemName }}
+                                        </div>
+
+                                        @if ($isPackage)
+                                            <div style="font-size: 14px; color: #64748b; margin-bottom: 4px;">
+                                                ₱{{ number_format($itemPrice, 2) }} per guest ×
+                                                {{ $order->total_guests }} guests 
+                                            </div>
+                                        @else
                                             <div style="font-size: 14px; color: #64748b; margin-bottom: 4px;">
                                                 {{ $cartItem->itemable->description ?? 'No description available.' }}
                                             </div>
@@ -97,51 +110,58 @@
                                     <div style="margin-top: 12px;">
                                         <strong style="color: #4b5563; display: block; margin-bottom: 12px;">Included
                                             Items:</strong>
-                                            <ul class="space-y-4">
-                                                @foreach ($cartItem->itemable->packageItems as $packageItem)
-                                                    @php
-                                                        $itemName = $packageItem->item->name ?? 'Unnamed Item';
-                                                        $hasValidOptions = false;
-                                                        
-                                                        // Process options first to determine if we should show this item
-                                                        $optionsToDisplay = [];
-                                                        
-                                                        if (!empty($cartItem->selected_options) && is_array($cartItem->selected_options)) {
-                                                            $itemId = $packageItem->item->id ?? null;
-                                                            $optionsForItem = $itemId && isset($cartItem->selected_options[$itemId])
+                                        <ul class="space-y-4">
+                                            @foreach ($cartItem->itemable->packageItems as $packageItem)
+                                                @php
+                                                    $itemName = $packageItem->item->name ?? 'Unnamed Item';
+                                                    $hasValidOptions = false;
+
+                                                    // Process options first to determine if we should show this item
+                                                    $optionsToDisplay = [];
+
+                                                    if (
+                                                        !empty($cartItem->selected_options) &&
+                                                        is_array($cartItem->selected_options)
+                                                    ) {
+                                                        $itemId = $packageItem->item->id ?? null;
+                                                        $optionsForItem =
+                                                            $itemId && isset($cartItem->selected_options[$itemId])
                                                                 ? $cartItem->selected_options[$itemId]
                                                                 : [];
-                                                            
-                                                            foreach ($optionsForItem as $option) {
-                                                                if (!empty($option['type'])) {
-                                                                    // Skip options that are just repeating the item name (like "Rice:Rice")
-                                                                    $parts = explode(':', $option['type']);
-                                                                    if ($parts[0] !== end($parts) || $parts[0] !== $itemName) {
-                                                                        $optionsToDisplay[] = $option['type'];
-                                                                    }
+
+                                                        foreach ($optionsForItem as $option) {
+                                                            if (!empty($option['type'])) {
+                                                                // Skip options that are just repeating the item name (like "Rice:Rice")
+                                                                $parts = explode(':', $option['type']);
+                                                                if (
+                                                                    $parts[0] !== end($parts) ||
+                                                                    $parts[0] !== $itemName
+                                                                ) {
+                                                                    $optionsToDisplay[] = $option['type'];
                                                                 }
                                                             }
-                                                            
-                                                            $hasValidOptions = !empty($optionsToDisplay);
                                                         }
-                                                    @endphp
-                    
-                                                    @if ($hasValidOptions)
-                                                        <li>
-                                                            <div class="font-medium text-gray-900">
-                                                                {{ $itemName }} - 
-                                                                <span class="text-gray-600">
-                                                                    {{ implode(', ', $optionsToDisplay) }}
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                    @else
-                                                        <li class="font-medium text-gray-900">
-                                                            {{ $itemName }}
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
+
+                                                        $hasValidOptions = !empty($optionsToDisplay);
+                                                    }
+                                                @endphp
+
+                                                @if ($hasValidOptions)
+                                                    <li>
+                                                        <div class="font-medium text-gray-900">
+                                                            {{ $itemName }} -
+                                                            <span class="text-gray-600">
+                                                                {{ implode(', ', $optionsToDisplay) }}
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                @else
+                                                    <li class="font-medium text-gray-900">
+                                                        {{ $itemName }}
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
                                     </div>
                                     @if (!empty($cartItem->included_utilities))
                                         <div style="margin-top: 16px;">
@@ -191,6 +211,18 @@
                             @else
                                 {{ \Carbon\Carbon::parse($order->event_date_start)->format('F d, Y') }} -
                                 {{ \Carbon\Carbon::parse($order->event_date_end)->format('F d, Y') }}
+                            @endif
+                        </td>
+                    </tr>
+                    {{-- EVENT TIME  --}}
+                    <tr>
+                        <td style="color: #64748b; padding: 10px 0; font-size: 15px;">Event Time</td>
+                        <td style="color: #1e293b; padding: 10px 0; text-align: right; font-size: 15px;">
+                            @if ($order->event_start_time && $order->event_start_end)
+                                {{ \Carbon\Carbon::parse($order->event_start_time)->format('h:i A') }} -
+                                {{ \Carbon\Carbon::parse($order->event_start_end)->format('h:i A') }}
+                            @else
+                                Not specified
                             @endif
                         </td>
                     </tr>
@@ -251,7 +283,7 @@
 
             <!-- Footer -->
             <div style="border-top: 1px solid #e5e7eb; padding-top: 24px; text-align: center;">
-                <p style="color: #6b7280; font-size: 15px; margin-bottom: 16px;">Need help? Contact our support team</p>
+                <p style="color: #6b7280; font-size: 15px; margin-bottom: 16px;">Need help? Contact us at</p>
                 <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px;">
                     <a href="#" style="color: #9ca3af; transition: color 0.2s;">
                         <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">

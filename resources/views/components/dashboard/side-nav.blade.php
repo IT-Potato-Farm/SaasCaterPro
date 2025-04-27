@@ -54,6 +54,8 @@
                     class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">Why Choose Us</a>
                 <a href="{{ route('admin.aboutus.index') }}"
                     class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">About Us</a>
+                <a href="{{ route('admin.review.index') }}"
+                    class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">Reviews</a>
                 <a href="{{ route('admin.footer.index') }}"
                     class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">Footer</a>
                 <a href="{{ route('admin.privacy.index') }}"
@@ -270,7 +272,8 @@
             '/admin/navbar', 
             '/admin/hero', 
             '/admin/whychoose', 
-            '/admin/aboutus', 
+            '/admin/aboutus',
+            '/admin/review',
             '/admin/footer', 
             '/admin/privacy'
         ];

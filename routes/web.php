@@ -34,6 +34,7 @@ use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\NavbarSettingController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\ReviewSectionController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PackageUtilityController;
@@ -42,6 +43,7 @@ use App\Http\Controllers\Admin\FooterSectionController;
 use App\Http\Controllers\Admin\AboutUsSectionController;
 use App\Http\Controllers\Admin\BookingSettingController;
 use App\Http\Controllers\Admin\WhyChooseUsSectionController;
+use App\Http\Controllers\Admin\ReviewSectionSettingController;
 
 // route navigation each page
 
@@ -337,6 +339,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
         // ABOUT US
         Route::get('/adboutus-section', [AboutUsSectionController::class, 'index'])->name('aboutus.index');
         Route::put('/aboutus-section/{id}', [AboutUsSectionController::class, 'update'])->name('aboutus.update');
+
+        // REVIEWS
+        Route::get('/review-section', [ReviewSectionSettingController::class, 'index'])->name('review.index');
+        Route::get('/review-section-settings', [ReviewSectionSettingController::class, 'edit'])->name('review.edit');
+        Route::put('/review-section/{id}', [ReviewSectionSettingController::class, 'update'])->name('review.update');
+
         // FOOTER
         Route::get('/footer-section', [FooterSectionController::class, 'index'])->name('footer.index');
         Route::put('/footer-section/{id}', [FooterSectionController::class, 'update'])->name('footer.update');
