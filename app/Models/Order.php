@@ -12,7 +12,9 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'total',
-        'penalty_fee',
+        'amount_paid',
+        'partial_payment_date',
+        'full_payment_date',
         'status',
         'event_type',
         'event_date_start',
@@ -42,6 +44,12 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function penalties()
+    {
+        return $this->hasMany(Penalty::class);
+    }   
+
     public function getPaidAttribute()
     {
         return $this->status === 'paid';
@@ -53,7 +61,7 @@ class Order extends Model
         });
     }
     public function getEventDaysAttribute()
-{
-    return \Carbon\Carbon::parse($this->event_date_start)->diffInDays(\Carbon\Carbon::parse($this->event_date_end)) + 1;
-}
+    {
+        return \Carbon\Carbon::parse($this->event_date_start)->diffInDays(\Carbon\Carbon::parse($this->event_date_end)) + 1;
+    }
 }

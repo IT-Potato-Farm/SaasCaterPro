@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Penalty;
 use App\Mail\InvoiceMail;
 use Illuminate\Http\Request;
 use App\Models\BookingSetting;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
-    
+
     public function getOccupiedTimes(Request $request)
     {
         $eventDate = $request->query('event_date');
@@ -83,12 +84,19 @@ class OrderController extends Controller
     public function addPenalty(Request $request, Order $order)
     {
         $request->validate([
-            'penalty_fee' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:0',
+            'reason' => 'nullable|string|max:255',
         ]);
 
-        // Store penalty separately & update total
-        $order->penalty_fee += $request->penalty_fee;  // Store penalty separately
-        $order->total += $request->penalty_fee; // Update total amount
+
+        $penalty = Penalty::create([
+            'order_id' => $order->id,
+            'amount' => $request->amount,
+            'reason' => $request->reason,
+        ]);
+
+        // 
+        $order->total += $penalty->amount;
         $order->save();
 
         return redirect()->back()->with('success', 'Penalty added successfully!');
@@ -160,16 +168,31 @@ class OrderController extends Controller
             ->with('success', 'Order marked as ongoing.');
     }
 
-    public function markAsPartial(Order $order)
+    public function markAsPartial(Order $order, Request $request)
     {
+
         if ($order->status === 'cancelled' || $order->status === 'paid') {
             return redirect()->route('admin.bookings')
                 ->with('error', 'This order cannot be marked as partially paid.');
         }
 
-        $order->status = 'partial';
-        $order->save();
+        $partialAmount = $request->input('partial_amount');  
 
+        if ($partialAmount <= 0 || $partialAmount > ($order->total - $order->amount_paid)) {
+            return redirect()->route('admin.bookings')
+                ->with('error', 'Invalid partial payment amount.');
+        }
+
+        $order->amount_paid += $partialAmount;
+        $order->partial_payment_date = now();
+        $order->status = 'partial';
+        
+        if ($order->amount_paid >= $order->total) {
+            $order->status = 'paid'; 
+            $order->full_payment_date = now(); 
+        }
+
+        $order->save();
         return redirect()->route('admin.bookings')
             ->with('success', 'Order marked as partially paid.');
     }

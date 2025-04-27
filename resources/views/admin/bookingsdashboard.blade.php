@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
-    
+
 
 
     <style>
@@ -213,7 +213,7 @@
                             </path>
                         </svg>
                         <h3 class="mt-4 text-xl font-medium text-gray-900">No bookings found</h3>
-                        
+
                         <div class="mt-6">
                             <a href="{{ route('admin.admindashboard') }}"
                                 class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 transition ease-in-out duration-150">
@@ -225,162 +225,144 @@
                     {{-- <div class="bg-white rounded-lg shadow overflow-hidden"> --}}
 
                     <div class=" px-4 sm:px-6 lg:px-8 overflow-x-auto ">
-                        <table id="ordersTable" class="min-w-full divide-y divide-gray-200 ">
-                            <thead class="bg-gray-50 hidden sm:table-header-group">
+                        <table id="ordersTable" class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col"
-                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                                         Order ID
                                     </th>
-                                    <th scope="col"
-                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Customer
                                     </th>
-                                    <th scope="col"
-                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                                         Event Details
                                     </th>
-                                    <th scope="col"
-                                        class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        Amount Paid
+                                    </th>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                                         Total
                                     </th>
-                                    <th scope="col"
-                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        Balance
+                                    </th>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th scope="col"
-                                        class=" px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($orders as $order)
-                                    <tr class="hover:bg-gray-50 transition-colors"
-                                        data-status="{{ strtolower($order->status) }}"
-                                        data-date="{{ \Carbon\Carbon::parse($order->event_date)->format('Y-m-d') }}">
-                                        <!-- Mobile First Column (Order ID + Status) -->
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap sm:whitespace-normal">
-                                            <div class="sm:hidden flex justify-between items-start ">
-                                                <div>
-                                                    <a href="{{ route('order.show', $order->id) }}"
-                                                        class="hover:underline text-sm font-medium text-gray-900">
-                                                        #{{ $order->id }}
-                                                    </a>
-                                                    <div class="text-xs text-gray-500">
-                                                        {{ $order->created_at->format('M d, Y') }}</div>
-                                                </div>
-
-                                            </div>
-                                            <div class="hidden sm:block ">
-                                                <a href="{{ route('order.show', $order->id) }}"
-                                                    class="hover:underline text-sm font-medium text-gray-900">
-                                                    #{{ $order->id }}
-                                                </a>
-                                                <div class="text-xs text-gray-500">
-                                                    {{ $order->created_at->format('M d, Y') }}
-                                                </div>
+                                    <tr class="hover:bg-gray-50 transition-colors" data-status="{{ strtolower($order->status) }}" data-date="{{ \Carbon\Carbon::parse($order->event_date)->format('Y-m-d') }}">
+                                        <!-- Order ID (hidden on mobile) -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                                            <a href="{{ route('order.show', $order->id) }}" class="hover:underline text-sm font-medium text-gray-900">
+                                                #{{ $order->id }}
+                                            </a>
+                                            <div class="text-xs text-gray-500">
+                                                {{ $order->created_at->format('M d, Y') }}
                                             </div>
                                         </td>
-
-                                        <!-- Customer Info -->
-                                        <td class="px-3 sm:px-6 py-4 ">
+                    
+                                        <!-- Customer Info (always visible) -->
+                                        <td class="px-3 sm:px-6 py-4">
                                             <div class="flex items-center gap-3">
                                                 <div>
                                                     <div class="text-sm font-medium text-gray-900">
                                                         {{ $order->user->first_name }}
                                                     </div>
-                                                    <div class="text-xs text-gray-500">{{ $order->user->email }}
-                                                    </div>
+                                                    <div class="text-xs text-gray-500">{{ $order->user->email }}</div>
                                                 </div>
                                             </div>
                                         </td>
-
-                                        <!-- Event Details -->
-                                        <td class="px-3 sm:px-6 py-4">
+                    
+                                        <!-- Event Details (hidden on mobile) -->
+                                        <td class="px-3 sm:px-6 py-4 hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
-                                                {{ $order->event_type }}</div>
+                                                {{ $order->event_type }}
+                                            </div>
                                             <div class="flex items-center text-xs text-gray-500 mt-1">
-                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                    </path>
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
                                                 {{ \Carbon\Carbon::parse($order->event_date_start)->format('M d, Y') }}
-                                                -
-                                                {{ \Carbon\Carbon::parse($order->event_date_end)->format('M d, Y') }}
+                                                @if($order->event_date_start != $order->event_date_end)
+                                                    - {{ \Carbon\Carbon::parse($order->event_date_end)->format('M d, Y') }}
+                                                @endif
                                             </div>
                                         </td>
-
-                                        <!-- Total -->
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right">
+                    
+                                        <!-- Amount Paid (hidden on mobile) -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                ₱{{ number_format($order->amount_paid, 2) }}
+                                            </div>
+                                        </td>
+                    
+                                        <!-- Total (hidden on mobile) -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
                                                 ₱{{ number_format($order->total, 2) }}
                                             </div>
-                                            {{-- @if ($order->deposit_amount)
-                                                    <div class="text-xs text-gray-500">
-                                                        Deposit: ₱{{ number_format($order->deposit_amount, 2) }}
-                                                    </div>
-                                                @endif --}}
-
-                                            {{-- @if ($order->penalty_fee > 0)
-                                                    <div class="text-xs text-red-500">
-                                                        Penalty: +₱{{ number_format($order->penalty_fee, 2) }}
-                                                    </div>
-                                                @endif --}}
                                         </td>
-
-                                        <!-- Status -->
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                                           
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->bgColor }} {{ $order->textColor }}">
-                                                    {{ ucfirst($order->status) }}
-                                                </span>
+                    
+                                        <!-- Remaining Balance (hidden on mobile) -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                ₱{{ number_format($order->total - $order->amount_paid, 2) }}
+                                            </div>
                                         </td>
-
-
-
-                                        <!-- Actions -->
-                                        <td class=" px-3 sm:px-6 py-4 whitespace-nowrap">
+                    
+                                        <!-- Status (always visible) -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->bgColor }} {{ $order->textColor }}">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
+                                            <!-- Mobile financial summary -->
+                                            <div class="sm:hidden mt-2 space-y-1">
+                                                <div class="text-xs text-gray-500 flex justify-between">
+                                                    <span>Paid:</span>
+                                                    <span class="font-medium">₱{{ number_format($order->amount_paid, 2) }}</span>
+                                                </div>
+                                                <div class="text-xs text-gray-500 flex justify-between">
+                                                    <span>Total:</span>
+                                                    <span class="font-medium">₱{{ number_format($order->total, 2) }}</span>
+                                                </div>
+                                                <div class="text-xs text-gray-500 flex justify-between">
+                                                    <span>Balance:</span>
+                                                    <span class="font-medium">₱{{ number_format($order->total - $order->amount_paid, 2) }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                    
+                                        <!-- Actions (always visible) -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
                                             <div class="flex flex-wrap gap-1 sm:gap-2 items-center">
-                                                <!-- Invoice -->
                                                 <x-actions.invoice-button :order="$order" />
-                                                <!-- Ongoing Action -->
                                                 @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
                                                     <x-actions.ongoing-button :order="$order" />
                                                 @endif
-
-                                                <!-- Partially Paid Action -->
-                                                @if ($order->status !== 'partial' && $order->status !== 'cancelled' && $order->status !== 'paid')
-                                                    <x-actions.partial-button :order="$order" />
+                                                
+                                                {{-- @if ($order->status !== 'partial' && $order->status !== 'cancelled' && $order->status !== 'paid') --}}
+                                                @if ( $order->status !== 'cancelled' && $order->status !== 'paid')
+                                                <x-actions.partial-button :order="$order" />
                                                 @endif
-
-                                                <!-- Payment Status Toggle -->
                                                 @if (!$order->paid)
                                                     <x-actions.paid-button :order="$order" />
                                                 @else
                                                     <x-actions.unpaid-button :order="$order" />
                                                 @endif
-
-                                                <!-- Mark Complete -->
                                                 @if ($order->status !== 'completed' && $order->status !== 'cancelled')
                                                     <x-actions.completed-button :order="$order" />
                                                 @endif
-
-                                                <!-- Cancel Booking -->
                                                 @if ($order->status != 'cancelled')
                                                     <x-actions.cancel-button :order="$order" />
                                                 @endif
-
-                                                <!-- Penalty Button -->
                                                 <x-actions.penalty-button :order="$order" />
-
-
-                                                <!-- Delete Button -->
                                                 <x-actions.delete-button :order="$order" />
-
                                             </div>
                                         </td>
                                     </tr>
