@@ -56,7 +56,9 @@ Route::get('/debug-order-email/{orderId}', function ($orderId) {
     }
 });
 
-
+Route::post('/test', function () {
+    return response()->json(['message' => 'Test route works!']);
+});
 // SAMPLE PRINT
 Route::get('/reports/orders/print', [ReportsController::class, 'printOrdersReport'])
     ->name('reports.orders.print')
@@ -291,6 +293,29 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/privacy-policyshow', [PrivacyPolicyController::class, 'show'])->name('privacy-policy.show');
 
 
+
+// CUSTOMER ROUTE IF LOGGED IN
+Route::middleware(['auth'])->group(function () {
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
+    Route::get('/cartdup', [CartController::class, 'index3'])->name('cart.sanagumana');
+    // cancel order
+    Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
+
+    Route::get('/test-route', function() {
+        return [
+            'review_route' => route('reviews.leaveReview'),
+            'base_url' => url('/')
+        ];
+    });
+
+    Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
+});
+
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
 
@@ -420,23 +445,4 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
 });
 
-// CUSTOMER ROUTE IF LOGGED IN
-Route::middleware(['auth'])->group(function () {
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
-    Route::get('/cartdup', [CartController::class, 'index3'])->name('cart.sanagumana');
-    // cancel order
-    Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
-    Route::get('/test-route', function() {
-        return [
-            'review_route' => route('reviews.leaveReview'),
-            'base_url' => url('/')
-        ];
-    });
 
-    Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
-    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
-    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
-});

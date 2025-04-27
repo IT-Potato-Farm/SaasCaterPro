@@ -180,6 +180,7 @@
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Leave A Review</h2>
             <form id="leaveReviewForm" class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
+                @csrf
                 <input type="hidden" id="order-id" name="order_id" value="">
 
                 <!-- Rating -->
@@ -274,7 +275,7 @@
             let url = "{{ route('reviews.leaveReview') }}";
 
             if (window.location.hostname === 'saascater.site') {
-                url = 'https://saascater.site/reviews';
+                url = 'https://saascater.site/reviews/';
             } else {
                 // For local development, use the route or fallback
                 if (url.includes('reviews.leaveReview')) {
