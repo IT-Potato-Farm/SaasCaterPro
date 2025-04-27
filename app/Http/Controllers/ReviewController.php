@@ -16,9 +16,9 @@ class ReviewController extends Controller
         try {
             // Retrieve the order first
             $order = Order::where('id', $request->order_id)
-                    ->where('user_id', Auth::id())
-                    ->where('status', 'completed')
-                    ->first();
+                ->where('user_id', Auth::id())
+                ->where('status', 'completed')
+                ->first();
 
             ///   dd($order);
 
@@ -38,7 +38,7 @@ class ReviewController extends Controller
                 ], 400);
             }
 
-           
+
 
             // Validate the incoming request (including the image)
             $request->validate([
@@ -47,23 +47,13 @@ class ReviewController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',  // Validate image
             ]);
 
-            // Check if there is an image in the request
+            $imageName = null;
             if ($request->hasFile('image')) {
-                // Ensure the 'public/reviews' directory exists
-                $reviewsPath = public_path('reviews');
-                if (!File::exists($reviewsPath)) {
-                    File::makeDirectory($reviewsPath, 0755, true, true);
-                }
-            
-                // Get the file from the request
-                $image = $request->file('image');
-            
-                // Create a unique name for the image
-                $imageName = time() . '-' . $image->getClientOriginalName();
-            
-                // Move the image to the 'public/reviews' directory
-                $image->move($reviewsPath, $imageName);
+                $imageName = $this->handleImageUpload($request->file('image'));
             }
+
+           
+
 
             // Create the review
             Review::create([
@@ -71,20 +61,23 @@ class ReviewController extends Controller
                 'order_id' => $request->order_id,  // Assuming you're getting order_id from the request
                 'rating' => $request->rating,
                 'review' => $request->review,
-                'image' => isset($imageName) ? $imageName : null,  // Store image name if available
+                'image' => $imageName,
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Review submitted successfully!',
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    protected function handleImageUpload($image)
+    {
+        return basename($image->store('reviews', 'public'));
     }
 
     public function edit($id)

@@ -80,7 +80,7 @@
                                         @if ($reviewSettings->show_images ?? true)
                                             <div class="w-full md:w-2/5 h-40 md:h-full">
                                                 @if ($review->image)
-                                                    <img src="{{ asset('reviews/' . $review->image) }}"
+                                                    <img src="{{ asset('storage/reviews/' . $review->image) }}"
                                                         class="w-full h-full object-cover object-center"
                                                         alt="Review Image" loading="lazy">
                                                 @else

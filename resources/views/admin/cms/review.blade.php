@@ -121,7 +121,7 @@
                                 <!-- Review Image -->
                                 <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                                     @if ($review->image)
-                                        <img src="{{ asset('reviews/' . $review->image) }}" alt="Review Image"
+                                        <img src="{{ asset('storage/reviews/' . $review->image) }}" alt="Review Image"
                                             class="w-full h-full object-cover">
                                     @else
                                         <div class="text-gray-400">
