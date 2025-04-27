@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Packages Dashboard</title>
+    <link rel="icon" href="{{ asset('images/saaslogo.png') }}" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
@@ -60,21 +61,11 @@
 
                 <div class="container mx-auto mb-8">
 
-                    <div class="flex space-x-4 mb-6">
-                        <button onclick="scrollToPackageManagement()"
-                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                            Go to Package Management
-                        </button>
-
-                        <button onclick="scrollToItemManagement()"
-                            class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
-                            Go to Item Management
-                        </button>
-                    </div>
+                   
 
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
-                        
+
                         {{-- MENU ITEM BTN ULAM --}}
                         <x-packages.add-package-item-btn />
                         
@@ -316,24 +307,7 @@
     </div>
 
     <script>
-        function scrollToPackageManagement() {
-            const section = document.getElementById('package-management');
-            if (section) {
-                section.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        function scrollToItemManagement() {
-            const section = document.getElementById('item-management');
-            if (section) {
-                section.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        }
-
+        
         function switchTab(tabNumber) {
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => content.classList.add('hidden'));

@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="{{ asset('images/saaslogo.png') }}" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -21,15 +22,15 @@
 
 
     @if (session('success'))
-    <script>
-        showSuccessToast('{{ session('success') }}');
-    </script>
+        <script>
+            showSuccessToast('{{ session('success') }}');
+        </script>
     @endif
 
     @if (session('error'))
-    <script>
-        showErrorToast('{{ session('error') }}');
-    </script>
+        <script>
+            showErrorToast('{{ session('error') }}');
+        </script>
     @endif
     <div class="flex h-screen">
 
@@ -65,7 +66,7 @@
                                         value="{{ old('service_start_time', $setting && $setting->service_start_time ? \Carbon\Carbon::parse($setting->service_start_time)->format('H:i') : '08:00') }}"
                                         required>
                                     @error('service_start_time')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
 
@@ -79,7 +80,7 @@
                                         value="{{ old('service_end_time', $setting && $setting->service_end_time ? \Carbon\Carbon::parse($setting->service_end_time)->format('H:i') : '20:00') }}"
                                         required>
                                     @error('service_end_time')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
@@ -94,7 +95,7 @@
                                     value="{{ old('events_per_day', $setting ? $setting->events_per_day : 2) }}"
                                     required>
                                 @error('events_per_day')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="space-y-2">
@@ -113,20 +114,20 @@
                                 </label>
                                 <div id="blocked-dates-container">
                                     @foreach ($setting->blocked_dates ?? [] as $index => $date)
-                                    <div class="flex items-center mb-2 blocked-date-row">
-                                        <input type="text" name="blocked_dates[]" placeholder="Select a date"
-                                            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 hover:cursor-pointer focus:ring-blue-500 blocked-date-picker"
-                                            value="{{ $date }}">
-                                        <button type="button"
-                                            class="ml-2 text-red-500 remove-date-btn hover:cursor-pointer">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                        <div class="flex items-center mb-2 blocked-date-row">
+                                            <input type="text" name="blocked_dates[]" placeholder="Select a date"
+                                                class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 hover:cursor-pointer focus:ring-blue-500 blocked-date-picker"
+                                                value="{{ $date }}">
+                                            <button type="button"
+                                                class="ml-2 text-red-500 remove-date-btn hover:cursor-pointer">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     @endforeach
                                 </div>
                                 <button type="button" id="add-blocked-date"
@@ -140,10 +141,10 @@
                                     Add Date
                                 </button>
                                 @error('blocked_dates')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                                 @error('blocked_dates.*')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 

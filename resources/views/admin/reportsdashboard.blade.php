@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="{{ asset('images/saaslogo.png') }}" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Package Management Dashboard</title>
@@ -10,13 +11,26 @@
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
     <style>
+        body {
+            background-color: #fff !important;
+            /* White background */
+        }
+
+        main {
+            background-color: #fff !important;
+            /* White background for the main content */
+        }
+
         @media print {
             body * {
                 visibility: hidden;
             }
 
-            #printArea, #printingHeader,
+            #printArea,
+            #printingHeader,
             #printArea * {
                 visibility: visible;
             }
@@ -53,7 +67,7 @@
             .print-h-auto {
                 height: auto !important;
                 min-height: 350px !important;
-                
+
             }
         }
     </style>
@@ -65,7 +79,7 @@
         <!-- SIDENAV -->
         <x-dashboard.side-nav />
         <!-- END SIDENAV -->
-        
+
 
         <div id="printArea" class="flex-1 flex flex-col overflow-hidden">
             <div id="printingHeader" class="hidden print:block text-center ">
@@ -540,7 +554,11 @@
                         quality: 0.98
                     },
                     html2canvas: {
-                        scale: 2
+                        scale: 1.5, // Lower the scale to avoid stretching issues
+                        useCORS: true, // Ensure proper handling of cross-origin images
+                        logging: false, // Disable logging
+                        letterRendering: true, // Improve text rendering
+                        backgroundColor: "#ffffff" // Ensure background is white
                     },
                     jsPDF: {
                         unit: 'in',
