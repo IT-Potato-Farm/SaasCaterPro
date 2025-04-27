@@ -275,60 +275,58 @@
             let url = "{{ route('reviews.leaveReview') }}";
 
             if (window.location.hostname === 'saascater.site') {
-                url = 'https://saascater.site/reviews/';
+                url = 'https://saascater.site/reviews/submit';
             } else {
-                // For local development, use the route or fallback
-                if (url.includes('reviews.leaveReview')) {
-                    url = '/reviews';
-                }
-                // Ensure no trailing slash
-                url = url.replace(/\/$/, '');
+                url = "{{ route('reviews.leaveReview') }}";
             }
+            // Ensure no trailing slash
+            url = url.replace(/\/$/, '');
+        }
 
-            console.log("Submitting review to:", url, "with data:", {
-                orderId: formData.get('order_id'),
-                rating: formData.get('rating'),
-                hasImage: formData.get('image') ? true : false,
-                reviewLength: formData.get('review')?.length || 0
-            });
-            console.log("Final URL being called:", url);
-            console.log("CSRF Token:", token);
-            fetch(url, {
-                    method: "POST",
-                    headers: {
-                        'X-CSRF-TOKEN': token,
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: formData,
-                    credentials: 'same-origin',
-                    cache: 'no-cache',
-                    redirect: 'follow'
-                })
-                .then(async response => {
-                    console.log("Response status:", response.status);
-                    console.log("Response headers:", Object.fromEntries([...response.headers]));
-                    const contentType = response.headers.get('content-type');
-                    const isJson = contentType && contentType.includes('application/json');
+        console.log("Submitting review to:", url, "with data:", {
+            orderId: formData.get('order_id'),
+            rating: formData.get('rating'),
+            hasImage: formData.get('image') ? true : false,
+            reviewLength: formData.get('review')?.length || 0
+        });
+        console.log("Final URL being called:", url);
+        console.log("CSRF Token:", token);
+        fetch(url, {
+                method: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData,
+                credentials: 'same-origin',
+                cache: 'no-cache',
+                redirect: 'follow'
+            })
+            .then(async response => {
+                console.log("Response status:", response.status);
+                console.log("Response headers:", Object.fromEntries([...response.headers]));
+                const contentType = response.headers.get('content-type');
+                const isJson = contentType && contentType.includes('application/json');
 
 
-                    try {
-                        const data = isJson ? await response.json() : null;
-                        console.log("Response data:", data);
+                try {
+                    const data = isJson ? await response.json() : null;
+                    console.log("Response data:", data);
 
-                        if (!response.ok) {
-                            const error = (data && data.message) || response.statusText;
-                            throw new Error(error || 'Request failed');
-                        }
-
-                        return data;
-                    } catch (err) {
-                        console.error("Error parsing response:", err);
-                        throw new Error('Failed to parse server response');
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.statusText;
+                        throw new Error(error || 'Request failed');
                     }
-                })
 
-                .then(data => {
+                    return data;
+                } catch (err) {
+                    console.error("Error parsing response:", err);
+                    throw new Error('Failed to parse server response');
+                }
+            })
+
+            .then(data => {
                 if (data.success) {
                     Swal.fire({
                         toast: true,
