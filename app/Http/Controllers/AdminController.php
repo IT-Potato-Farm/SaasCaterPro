@@ -152,10 +152,62 @@ class AdminController extends Controller
 
 
 
-    public function goBookingsDashboard()
+    public function goBookingsDashboard(Request $request)
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(10);
+            $perPage = $request->input('entries', 10);
+            $perPage = in_array($perPage, [5, 10, 15, 20, 25]) ? $perPage : 10;
+            $requestedSort = $request->input('sort', 'created_at');
+            $sortDirection = $request->input('direction', 'desc');
+
+            // Validate direction
+            $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
+
+            // List of allowed user-friendly sort keys
+            $allowedColumns = ['id', 'status', 'total', 'amount_paid', 'created_at', 'event_date_start', 'user_first_name'];
+
+            $requestedSort = in_array($requestedSort, $allowedColumns) ? $requestedSort : 'created_at';
+
+            $sortMap = [
+                'user_first_name' => 'users.first_name',
+            ];
+
+            // Final sort column to use in query
+            $sortColumn = $sortMap[$requestedSort] ?? $requestedSort;
+
+            // Build the query
+            $query = Order::with('user');
+
+
+            // Search term
+            $search = $request->input('search', '');
+
+            // Apply search if provided
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhere('event_type', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($q) use ($search) {
+                            $q->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            }
+
+            // Join users if sorting by user fields
+            if (str_contains($sortColumn, 'users.')) {
+                $query->join('users', 'orders.user_id', '=', 'users.id')
+                    ->select('orders.*');
+            }
+            // Apply sorting
+            $query->orderBy($sortColumn, $sortDirection);
+
+
+            // Get orders with pagination
+            $orders = $query->paginate($perPage);
+
             $statusStyles = [
                 'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
                 'partially paid' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
@@ -164,14 +216,16 @@ class AdminController extends Controller
                 'completed' => ['bg' => 'bg-green-200', 'text' => 'text-green-800'],
                 'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
             ];
-    
+
             foreach ($orders as $order) {
                 $status = strtolower($order->status);
                 $style = $statusStyles[$status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800'];
                 $order->bgColor = $style['bg'];
                 $order->textColor = $style['text'];
             }
-            return view('admin.bookingsdashboard', compact('orders'));
+
+
+            return view('admin.bookingsdashboard', compact('orders', 'perPage', 'sortColumn', 'sortDirection', 'search'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');

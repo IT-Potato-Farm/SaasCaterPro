@@ -215,7 +215,7 @@
                         <h3 class="mt-4 text-xl font-medium text-gray-900">No bookings found</h3>
 
                         <div class="mt-6">
-                            <a href="{{ route('admin.admindashboard') }}"
+                            <a href="{{ route('admin.bookings') }}"
                                 class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 transition ease-in-out duration-150">
                                 Reset Filters
                             </a>
@@ -224,49 +224,258 @@
                 @else
                     {{-- <div class="bg-white rounded-lg shadow overflow-hidden"> --}}
 
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <!-- Show entries selector -->
+                        <div class="flex items-center space-x-2">
+                            <form id="entriesForm" method="GET" action="{{ request()->url() }}"
+                                class="flex items-center space-x-2">
+                                <label for="entries" class="text-sm text-gray-600">Show:</label>
+                                <select id="entries" name="entries"
+                                    class="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    onchange="this.form.submit()">
+                                    <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5</option>
+                                    <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ $perPage == 15 ? 'selected' : '' }}>15</option>
+                                    <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
+                                    <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
+                                </select>
+                                <span class="text-sm text-gray-600">entries</span>
+
+                                <!-- Preserve any existing query parameters -->
+                                @foreach (request()->except(['entries', 'page']) as $key => $value)
+                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endforeach
+                            </form>
+                        </div>
+
+                        <!-- Search box -->
+                        <div class="w-full sm:w-auto">
+                            <form method="GET" action="{{ request()->url() }}">
+                                <div class="flex">
+                                    <input type="text" name="search" placeholder="Search..."
+                                        value="{{ $search }}"
+                                        class="w-full sm:w-64 text-sm border border-gray-300 rounded-l px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <button type="submit"
+                                        class="bg-blue-500 text-white px-3 py-1 rounded-r hover:bg-blue-600 text-sm">
+                                        Search
+                                    </button>
+                                </div>
+
+                                <!-- Preserve entries parameter -->
+                                <input type="hidden" name="entries" value="{{ $perPage }}">
+
+                                <!-- Preserve sort parameters -->
+                                <input type="hidden" name="sort" value="{{ $sortColumn }}">
+                                <input type="hidden" name="direction" value="{{ $sortDirection }}">
+
+                                <!-- Preserve any other existing query parameters -->
+                                @foreach (request()->except(['search', 'page', 'entries', 'sort', 'direction']) as $key => $value)
+                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endforeach
+                            </form>
+                        </div>
+                    </div>
+
                     <div class=" px-4 sm:px-6 lg:px-8 overflow-x-auto ">
                         <table id="ordersTable" class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                                        Order ID
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'id', 'direction' => $sortColumn == 'id' && $sortDirection == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="flex items-center group">
+                                            Order ID
+                                            @if ($sortColumn == 'id')
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    @if ($sortDirection == 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-50"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Customer
+
+                                    {{-- CUSTOMER COL --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'user_first_name', 'direction' => $sortColumn == 'user_first_name' && $sortDirection == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="flex items-center group">
+                                            Customer
+                                            @if ($sortColumn == 'user_first_name')
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    @if ($sortDirection == 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-50"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                                        Event Details
+
+                                    {{-- EVENT DETAILS --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'event_date_start', 'direction' => $sortColumn == 'event_date_start' && $sortDirection == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="flex items-center group">
+                                            Event Details
+                                            @if ($sortColumn == 'event_date_start')
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    @if ($sortDirection == 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-50"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                                        Amount Paid
+
+                                    {{-- AMOUNT PAID --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'amount_paid', 'direction' => $sortColumn == 'amount_paid' && $sortDirection == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="flex items-center justify-end group">
+                                            Amount Paid
+                                            @if ($sortColumn == 'amount_paid')
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    @if ($sortDirection == 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-50"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                                        Total
+                                    {{-- TOTAL --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'total', 'direction' => $sortColumn == 'total' && $sortDirection == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="flex items-center justify-end group">
+                                            Total
+                                            @if ($sortColumn == 'total')
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    @if ($sortDirection == 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-50"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                    {{-- REMAINING BALANCE --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                                         Balance
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
+                                    {{-- PARTIAL PAYMENT --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Partial Payment Date
                                     </th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{-- status --}}
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'status', 'direction' => $sortColumn == 'status' && $sortDirection == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="flex items-center group">
+                                            Status
+                                            @if ($sortColumn == 'status')
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    @if ($sortDirection == 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-50"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($orders as $order)
-                                    <tr class="hover:bg-gray-50 transition-colors" data-status="{{ strtolower($order->status) }}" data-date="{{ \Carbon\Carbon::parse($order->event_date)->format('Y-m-d') }}">
+                                    <tr class="hover:bg-gray-50 transition-colors"
+                                        data-status="{{ strtolower($order->status) }}"
+                                        data-date="{{ \Carbon\Carbon::parse($order->event_date)->format('Y-m-d') }}">
                                         <!-- Order ID (hidden on mobile) -->
                                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                                            <a href="{{ route('order.show', $order->id) }}" class="hover:underline text-sm font-medium text-gray-900">
+                                            <a href="{{ route('order.show', $order->id) }}"
+                                                class="hover:underline text-sm font-medium text-gray-900">
                                                 #{{ $order->id }}
                                             </a>
                                             <div class="text-xs text-gray-500">
                                                 {{ $order->created_at->format('M d, Y') }}
                                             </div>
                                         </td>
-                    
+
                                         <!-- Customer Info (always visible) -->
                                         <td class="px-3 sm:px-6 py-4">
                                             <div class="flex items-center gap-3">
@@ -278,92 +487,177 @@
                                                 </div>
                                             </div>
                                         </td>
-                    
+
                                         <!-- Event Details (hidden on mobile) -->
                                         <td class="px-3 sm:px-6 py-4 hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ $order->event_type }}
                                             </div>
                                             <div class="flex items-center text-xs text-gray-500 mt-1">
-                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
                                                 </svg>
                                                 {{ \Carbon\Carbon::parse($order->event_date_start)->format('M d, Y') }}
-                                                @if($order->event_date_start != $order->event_date_end)
-                                                    - {{ \Carbon\Carbon::parse($order->event_date_end)->format('M d, Y') }}
+                                                @if ($order->event_date_start != $order->event_date_end)
+                                                    -
+                                                    {{ \Carbon\Carbon::parse($order->event_date_end)->format('M d, Y') }}
                                                 @endif
                                             </div>
                                         </td>
-                    
+
                                         <!-- Amount Paid (hidden on mobile) -->
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
+                                        <td
+                                            class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
                                                 ₱{{ number_format($order->amount_paid, 2) }}
                                             </div>
                                         </td>
-                    
+
                                         <!-- Total (hidden on mobile) -->
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
+                                        <td
+                                            class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
                                                 ₱{{ number_format($order->total, 2) }}
                                             </div>
                                         </td>
-                    
+
                                         <!-- Remaining Balance (hidden on mobile) -->
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
+                                        <td
+                                            class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
                                                 ₱{{ number_format($order->total - $order->amount_paid, 2) }}
                                             </div>
                                         </td>
-                    
+
+                                        <!-- Partial Payment Date -->
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                            @if ($order->partial_payment_date)
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ \Carbon\Carbon::parse($order->partial_payment_date)->format('M d, Y') }}
+                                                </div>
+                                            @else
+                                                <div class="text-sm text-gray-500">N/A</div>
+                                            @endif
+                                        </td>
+
                                         <!-- Status (always visible) -->
                                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->bgColor }} {{ $order->textColor }}">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->bgColor }} {{ $order->textColor }}">
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                             <!-- Mobile financial summary -->
                                             <div class="sm:hidden mt-2 space-y-1">
                                                 <div class="text-xs text-gray-500 flex justify-between">
                                                     <span>Paid:</span>
-                                                    <span class="font-medium">₱{{ number_format($order->amount_paid, 2) }}</span>
+                                                    <span
+                                                        class="font-medium">₱{{ number_format($order->amount_paid, 2) }}</span>
                                                 </div>
                                                 <div class="text-xs text-gray-500 flex justify-between">
                                                     <span>Total:</span>
-                                                    <span class="font-medium">₱{{ number_format($order->total, 2) }}</span>
+                                                    <span
+                                                        class="font-medium">₱{{ number_format($order->total, 2) }}</span>
                                                 </div>
                                                 <div class="text-xs text-gray-500 flex justify-between">
                                                     <span>Balance:</span>
-                                                    <span class="font-medium">₱{{ number_format($order->total - $order->amount_paid, 2) }}</span>
+                                                    <span
+                                                        class="font-medium">₱{{ number_format($order->total - $order->amount_paid, 2) }}</span>
                                                 </div>
                                             </div>
                                         </td>
-                    
+
                                         <!-- Actions (always visible) -->
                                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                            <div class="flex flex-wrap gap-1 sm:gap-2 items-center">
-                                                <x-actions.invoice-button :order="$order" />
+                                            <select class="form-control form-select" id="action-select-{{ $order->id }}" onchange="executeOrderAction(this, {{ $order->id }})">
+                                                <option value="">Actions</option>
+                                                <option value="invoice">Invoice</option>
+                                                
                                                 @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
-                                                    <x-actions.ongoing-button :order="$order" />
+                                                    <option value="ongoing">Set Ongoing</option>
                                                 @endif
                                                 
-                                                {{-- @if ($order->status !== 'partial' && $order->status !== 'cancelled' && $order->status !== 'paid') --}}
-                                                @if ( $order->status !== 'cancelled' && $order->status !== 'paid')
-                                                <x-actions.partial-button :order="$order" />
+                                                @if ($order->status !== 'cancelled' && $order->status !== 'paid')
+                                                    <option value="partial">Partial Payment</option>
                                                 @endif
+                                                
                                                 @if (!$order->paid)
-                                                    <x-actions.paid-button :order="$order" />
+                                                    <option value="paid">Mark Paid</option>
                                                 @else
-                                                    <x-actions.unpaid-button :order="$order" />
+                                                    <option value="unpaid">Mark Unpaid</option>
                                                 @endif
+                                                
                                                 @if ($order->status !== 'completed' && $order->status !== 'cancelled')
-                                                    <x-actions.completed-button :order="$order" />
+                                                    <option value="completed">Mark Completed</option>
                                                 @endif
+                                                
                                                 @if ($order->status != 'cancelled')
-                                                    <x-actions.cancel-button :order="$order" />
+                                                    <option value="cancel">Cancel Order</option>
                                                 @endif
-                                                <x-actions.penalty-button :order="$order" />
-                                                <x-actions.delete-button :order="$order" />
+                                                
+                                                <option value="penalty">Add Penalty</option>
+                                                <option value="delete">Delete</option>
+                                            </select>
+                                            
+                                            <!-- Hidden action buttons -->
+                                            <div class="hidden">
+                                                <span id="invoice-btn-{{ $order->id }}"><x-actions.invoice-button :order="$order" /></span>
+                                                <span id="ongoing-btn-{{ $order->id }}"><x-actions.ongoing-button :order="$order" /></span>
+                                                <span id="partial-btn-{{ $order->id }}"><x-actions.partial-button :order="$order" /></span>
+                                                <span id="paid-btn-{{ $order->id }}"><x-actions.paid-button :order="$order" /></span>
+                                                <span id="unpaid-btn-{{ $order->id }}"><x-actions.unpaid-button :order="$order" /></span>
+                                                <span id="completed-btn-{{ $order->id }}"><x-actions.completed-button :order="$order" /></span>
+                                                <span id="cancel-btn-{{ $order->id }}"><x-actions.cancel-button :order="$order" /></span>
+                                                <span id="penalty-btn-{{ $order->id }}"><x-actions.penalty-button :order="$order" /></span>
+                                                <span id="delete-btn-{{ $order->id }}"><x-actions.delete-button :order="$order" /></span>
                                             </div>
+                                            
+                                            <script>
+                                                function executeOrderAction(selectElement, orderId) {
+                                                    const action = selectElement.value;
+                                                    if (!action) return;
+                                                    
+                                                    // // Special handling for partial payment
+                                                    // if (action === 'partial') {
+                                                    //     const amount = prompt('Enter partial payment amount:');
+                                                    //     if (amount === null) {
+                                                    //         selectElement.selectedIndex = 0;
+                                                    //         return;
+                                                    //     }
+                                                        
+                                                    //     // Find the partial button and add the amount value before clicking
+                                                    //     const partialBtn = document.querySelector(`#partial-btn-${orderId} button`);
+                                                    //     if (partialBtn) {
+                                                    //         // Create a hidden input for the partial amount
+                                                    //         const form = partialBtn.closest('form');
+                                                    //         const input = document.createElement('input');
+                                                    //         input.type = 'hidden';
+                                                    //         input.name = 'partial_amount';
+                                                    //         input.value = amount;
+                                                    //         form.appendChild(input);
+                                                            
+                                                    //         // Click the button to submit the form
+                                                    //         partialBtn.click();
+                                                    //         return;
+                                                    //     }
+                                                    // }
+                                                    
+                                                    // For all other actions, find the respective button and click it
+                                                    const buttonContainer = document.getElementById(`${action}-btn-${orderId}`);
+                                                    if (buttonContainer) {
+                                                        const button = buttonContainer.querySelector('button');
+                                                        if (button) {
+                                                            button.click();
+                                                        }
+                                                    }
+                                                    
+                                                    // Reset the select
+                                                    selectElement.selectedIndex = 0;
+                                                }
+                                            </script>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -383,7 +677,7 @@
                                         class="font-medium">{{ $orders->total() }}</span> results
                                 </div>
                                 <div>
-                                    {{ $orders->onEachSide(1)->links('pagination::tailwind') }}
+                                    {{ $orders->appends(request()->except('page'))->onEachSide(1)->links('pagination::tailwind') }}
                                 </div>
                             </div>
                         </div>
@@ -465,6 +759,8 @@
 
     {{-- BOOKING FILTER --}}
     <script src="{{ asset('js/filter-booking.js') }}"></script>
+
+
 </body>
 
 </html>
