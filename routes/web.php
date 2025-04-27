@@ -292,7 +292,7 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 
 Route::get('/privacy-policyshow', [PrivacyPolicyController::class, 'show'])->name('privacy-policy.show');
 
-
+Route::post('/reviews/submit', [ReviewController::class, 'store'])->name('reviews.leaveReview');
 
 // CUSTOMER ROUTE IF LOGGED IN
 Route::middleware(['auth'])->group(function () {
@@ -302,7 +302,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cartdup', [CartController::class, 'index3'])->name('cart.sanagumana');
     // cancel order
     Route::put('/orders/{order}/cancelOrder', [OrderController::class, 'cancel'])->name('orderUser.cancel');
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
+    // Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.leaveReview');
 
     Route::get('/test-route', function() {
         return [
