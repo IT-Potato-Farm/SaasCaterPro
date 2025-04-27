@@ -1,23 +1,15 @@
 @props(['order'])
 
-<button id="leaveReviewButton-{{ $order->id }}"
-    class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">
-    Leave a Review
-</button>
-
 <script>
-(function() {
-    const button = document.getElementById('leaveReviewButton-{{ $order->id }}');
-    button.addEventListener('click', function() {
-        leaveReview({{ $order->id }});
-    });
-
     function leaveReview(orderId) {
         Swal.fire({
             title: '<span class="text-2xl font-bold text-gray-800">Leave A Review</span>',
             html: `
-                <form id="leaveReviewForm-{{ $order->id }}" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
-                    <input type="hidden" name="order_id" value="${orderId}">
+                <form id="leaveReviewForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
+                    
+                    <input type="hidden" id="swal-order-id" name="order_id" value="${orderId}">
+
+                    <!-- Rating -->
                     <div>
                         <label for="swal-rating" class="block text-sm font-medium text-gray-700">Rating:</label>
                         <select id="swal-rating" name="rating"
@@ -31,6 +23,7 @@
                         <div id="rating-error" class="error-message"></div>
                     </div>
 
+                    <!-- Image -->
                     <div>
                         <label for="swal-image" class="block text-sm font-medium text-gray-700">Upload Image:</label>
                         <input type="file" id="swal-image" name="image" accept="image/*"
@@ -38,6 +31,7 @@
                         <div id="image-error" class="error-message"></div>
                     </div>
 
+                    <!-- Review -->
                     <div>
                         <label for="swal-review" class="block text-sm font-medium text-gray-700">Review:</label>
                         <textarea id="swal-review" name="review"
@@ -55,7 +49,7 @@
             preConfirm: () => {
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
 
-                const form = document.getElementById('leaveReviewForm-{{ $order->id }}');
+                const form = document.getElementById('leaveReviewForm');
                 const formData = new FormData(form);
 
                 let hasErrors = false;
@@ -125,5 +119,9 @@
             return false;
         });
     }
-})();
 </script>
+
+<button onclick="leaveReview(@json($order->id))"
+    class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">
+    Leave a Review
+</button>
