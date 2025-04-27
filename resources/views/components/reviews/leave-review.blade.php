@@ -1,15 +1,23 @@
 @props(['order'])
 
-<script>
-    function leaveReview(orderId) {
-    Swal.fire({
-        title: '<span class="text-2xl font-bold text-gray-800">Leave A Review</span>',
-        html: `
-            <form id="leaveReviewForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
-                
-                <input type="hidden" id="swal-order-id" name="order_id" value="${orderId}">
+<button id="leaveReviewButton-{{ $order->id }}"
+    class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">
+    Leave a Review
+</button>
 
-                    <!-- Rating -->
+<script>
+(function() {
+    const button = document.getElementById('leaveReviewButton-{{ $order->id }}');
+    button.addEventListener('click', function() {
+        leaveReview({{ $order->id }});
+    });
+
+    function leaveReview(orderId) {
+        Swal.fire({
+            title: '<span class="text-2xl font-bold text-gray-800">Leave A Review</span>',
+            html: `
+                <form id="leaveReviewForm-{{ $order->id }}" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
+                    <input type="hidden" name="order_id" value="${orderId}">
                     <div>
                         <label for="swal-rating" class="block text-sm font-medium text-gray-700">Rating:</label>
                         <select id="swal-rating" name="rating"
@@ -23,56 +31,51 @@
                         <div id="rating-error" class="error-message"></div>
                     </div>
 
-                    <!-- Image -->
                     <div>
                         <label for="swal-image" class="block text-sm font-medium text-gray-700">Upload Image:</label>
-                            <input type="file" id="swal-image" name="image" accept="image/*"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="file" id="swal-image" name="image" accept="image/*"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <div id="image-error" class="error-message"></div>
                     </div>
 
-                    <!-- Review -->
                     <div>
                         <label for="swal-review" class="block text-sm font-medium text-gray-700">Review:</label>
                         <textarea id="swal-review" name="review"
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                         <div id="review-error" class="error-message"></div>
                     </div>
+                </form>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Leave Review',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#ef4444',
+            
+            preConfirm: () => {
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
 
-                    
-                
-            </form>`,
-        showCancelButton: true,
-        confirmButtonText: 'Leave Review',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#3b82f6',
-        cancelButtonColor: '#ef4444',
-        
-        preConfirm: () => {
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+                const form = document.getElementById('leaveReviewForm-{{ $order->id }}');
+                const formData = new FormData(form);
 
-            const form = document.getElementById('leaveReviewForm');
-            const formData = new FormData(form);
+                let hasErrors = false;
 
-            let hasErrors = false;
+                if (document.getElementById('swal-review').value.trim().length > 1000) {
+                    document.getElementById('review-error').textContent = 'Review max words reached. Please leave a short review.';
+                    hasErrors = true;
+                }
 
-            if (document.getElementById('swal-review').value.trim().length > 1000) {
-                document.getElementById('review-error').textContent = 'Review max words reached. Please leave a short review.';
-                hasErrors = true;
-            }
+                if (hasErrors) {
+                    return false;
+                }
 
-            if (hasErrors) {
-                return false;
-            }
-
-            const imageInput = document.getElementById('swal-image');
+                const imageInput = document.getElementById('swal-image');
                 if (imageInput.files.length > 0) {
                     formData.append('image', imageInput.files[0]);
                 }
 
-            return submitForm(formData);
-        }
-
+                return submitForm(formData);
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
@@ -122,11 +125,5 @@
             return false;
         });
     }
-
+})();
 </script>
-
-
-<button onclick="leaveReview(@json($order->id))"
-    class="px-2 py-1 bg-cyan-200 rounded mt-2 hover:cursor-pointer">
-    Leave a Review
-</button>

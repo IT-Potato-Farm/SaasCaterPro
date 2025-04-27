@@ -12,6 +12,7 @@
     <!-- Heroicons -->
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 
 <body class="bg-gray-50">

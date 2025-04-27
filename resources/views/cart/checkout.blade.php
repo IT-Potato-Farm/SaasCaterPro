@@ -380,28 +380,33 @@
 
                                                 <!-- Selected Options -->
                                                 @if ($cartItem->selected_options && is_array($cartItem->selected_options))
-                                                    <div class="mt-3 space-y-2">
-                                                        @foreach ($cartItem->selected_options as $itemId => $optionArray)
-                                                            @php
-                                                                $optionItemName = $itemNames[$itemId] ?? 'Option';
-                                                                $types = array_map(
-                                                                    fn($opt) => $opt['type'] ?? 'Unknown',
-                                                                    $optionArray,
-                                                                );
-                                                            @endphp
-
-                                                            <div class="flex">
-                                                                <span class="text-gray-400 mr-2">•</span>
-                                                                <div>
-                                                                    <span
-                                                                        class="text-sm font-medium text-gray-600">{{ $optionItemName }}:</span>
-                                                                    <span
-                                                                        class="text-sm text-gray-500 ml-1">{{ implode(', ', $types) }}</span>
-                                                                </div>
+                                                <div class="mt-3 space-y-1">
+                                                    @foreach ($cartItem->selected_options as $itemId => $optionArray)
+                                                        @php
+                                                            $optionItemName = $itemNames[$itemId] ?? 'Option';
+                                                            $types = array_map(fn($opt) => $opt['type'] ?? null, $optionArray);
+                                                            $types = array_filter($types);
+                                            
+                                                            $showTypes = true;
+                                                            if (count($types) === 1 && $types[0] === $optionItemName) {
+                                                                $showTypes = false;
+                                                            }
+                                                        @endphp
+                                            
+                                                        <div class="flex">
+                                                            <span class="text-gray-400 mr-2">•</span>
+                                                            <div>
+                                                                @if ($showTypes)
+                                                                    <span class="text-sm font-medium text-gray-600">{{ $optionItemName }}:</span>
+                                                                    <span class="text-sm text-gray-500 ml-1">{{ implode(', ', $types) }}</span>
+                                                                @else
+                                                                    <span class="text-sm font-medium text-gray-600">{{ $optionItemName }}</span>
+                                                                @endif
                                                             </div>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
 
                                                 <!-- Utilities -->
                                                 @if ($isPackage && $cartItem->package->utilities->count() > 0)
