@@ -338,9 +338,9 @@
                         });
     
                         closeModal();
-                        // setTimeout(() => {
-                        //     window.location.reload();
-                        // }, 1500);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
                     } else {
                         if (data.errors) {
                             Object.entries(data.errors).forEach(([field, messages]) => {
