@@ -216,7 +216,7 @@
                 <div class="flex justify-end space-x-4 mt-6">
                     <button type="button" onclick="closeModal()"
                         class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md">Cancel</button>
-                    <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Leave Review</button>
+                    <button type="submit" onclick="leaveReview(orderId)" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Leave Review</button>
                 </div>
             </form>
         </div>
