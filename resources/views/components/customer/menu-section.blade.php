@@ -2,7 +2,7 @@
 <script src="{{ asset('js/addPackageToCart.js') }}?v={{ filemtime(public_path('js/addPackageToCart.js')) }}"></script>
 
 <section id="menu" class="menu-section py-10 sm:py-16 px-5 sm:px-6">
-    <h2 class="text-center font-extrabold text-4xl sm:text-5xl md:text-6xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-10 sm:mb-14">
+    <h2 class="text-center pb-5 font-extrabold text-4xl sm:text-5xl md:text-6xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-10 sm:mb-14">
         Packages
     </h2>
 
