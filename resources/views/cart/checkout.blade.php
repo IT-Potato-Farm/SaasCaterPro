@@ -19,29 +19,152 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
-        #event_time_slots input[type="radio"]+label {
-            padding: 0.5rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.25rem;
-            width: 100%;
-            cursor: pointer;
-        }
+    #event_time_slots input[type="radio"]+label {
+        padding: 0.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.25rem;
+        width: 100%;
+        cursor: pointer;
+    }
 
-        #event_time_slots input[type="radio"]:checked+label {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
-        }
+    #event_time_slots input[type="radio"]:checked+label {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+    }
 
-        #time_slot_wrapper,
-        #custom_time_wrapper {
-            display: grid;
-        }
+    #time_slot_wrapper,
+    #custom_time_wrapper {
+        display: grid;
+    }
 
-        #time-slot-error:not(.hidden),
-        #time-error:not(.hidden) {
-            display: block;
+    #time-slot-error:not(.hidden),
+    #time-error:not(.hidden) {
+        display: block;
+    }
+
+    /* Responsive adjustments */
+    .container {
+        width: 100%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
         }
-    </style>
+    }
+
+    @media (min-width: 1024px) {
+        .container {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        
+        .lg\:flex-row {
+            flex-direction: row;
+        }
+        
+        .lg\:w-3\/5 {
+            width: 60%;
+        }
+        
+        .lg\:w-2\/5 {
+            width: 40%;
+        }
+    }
+
+    @media (min-width: 1280px) {
+        .xl\:w-2\/3 {
+            width: 66.666667%;
+        }
+        
+        .xl\:w-1\/3 {
+            width: 33.333333%;
+        }
+        
+        .xl\:gap-12 {
+            gap: 3rem;
+        }
+    }
+
+    /* Form input responsiveness */
+    input, select, textarea {
+        width: 100%;
+    }
+
+    /* Time slots grid adjustment */
+    @media (max-width: 767px) {
+        #event_time_slots {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (min-width: 768px) {
+        #event_time_slots {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+    }
+
+    /* Order summary scrollable area */
+    .max-h-96 {
+        max-height: 24rem;
+    }
+
+    /* Button responsiveness */
+    #checkout_form button[type="submit"] {
+        padding: 1rem 1.5rem;
+    }
+
+    /* Breadcrumb adjustments */
+    nav.breadcrumb ol {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Map container */
+    .h-64 {
+        height: 16rem;
+    }
+
+    /* Select2 responsive */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Event information card padding */
+    @media (max-width: 639px) {
+        .bg-white.rounded-xl.shadow-lg {
+            padding: 1.5rem;
+        }
+    }
+
+    /* Grid adjustments for smaller screens */
+    @media (max-width: 767px) {
+        .grid-cols-1.md\:grid-cols-2 {
+            grid-template-columns: 1fr;
+        }
+        
+        .gap-6 {
+            gap: 1rem;
+        }
+    }
+
+    /* Text size adjustments */
+    @media (max-width: 639px) {
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+        
+        .text-lg {
+            font-size: 1rem;
+            line-height: 1.5rem;
+        }
+    }
+</style>
 </head>
 
 <body class="bg-gray-50">
