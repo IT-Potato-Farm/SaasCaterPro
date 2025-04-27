@@ -230,7 +230,15 @@ class AdminController extends Controller
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
-
+    private function calculateGrowthPercentage($currentOrders, $previousOrders)
+    {
+        if ($previousOrders > 0) {
+            $growthPercentage = (($currentOrders - $previousOrders) / $previousOrders) * 100;
+            return number_format($growthPercentage, 1) >= 0 ? '+' . number_format($growthPercentage, 1) . '%' : number_format($growthPercentage, 1) . '%';
+        } else {
+            return $currentOrders > 0 ? '+100%' : 'New'; // Handle new data cases
+        }
+    }
 
     public function goReportsDashboard()
     {
@@ -249,6 +257,43 @@ class AdminController extends Controller
             }
 
             $totalOrders = Order::count();
+            // Current Week Completed Orders
+
+
+            // Current Week Completed Orders
+            $currentWeekOrders = Order::where('status', 'completed')
+                ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                ->count();
+
+            // Previous Week Completed Orders
+            $previousWeekOrders = Order::where('status', 'completed')
+                ->whereBetween('created_at', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()])
+                ->count();
+
+            // Current Month Completed Orders
+            $currentMonthOrders = Order::where('status', 'completed')
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count();
+
+            // Previous Month Completed Orders
+            $previousMonthOrders = Order::where('status', 'completed')
+                ->whereMonth('created_at', now()->subMonth()->month)
+                ->whereYear('created_at', now()->subMonth()->year)
+                ->count();
+
+            // Weekly Growth Calculation
+            $weeklyGrowthFormatted = $this->calculateGrowthPercentage($currentWeekOrders, $previousWeekOrders);
+
+            // Monthly Growth Calculation
+            $monthlyGrowthFormatted = $this->calculateGrowthPercentage($currentMonthOrders, $previousMonthOrders);
+
+
+
+
+
+
+
             $completedOrders = Order::where('status', 'completed')->count();
             $pendingOrders = Order::where('status', 'pending')->count();
             $ordersToday = Order::whereDate('event_date_start', '<=', now())
@@ -451,7 +496,9 @@ class AdminController extends Controller
                 'topPackages',
                 'lastSixMonthsRevenue',
                 'lastSixMonthsRevenueChart',
-                'lastSixMonthsRevenueLabels'
+                'lastSixMonthsRevenueLabels',
+                'weeklyGrowthFormatted',
+                'monthlyGrowthFormatted'
             ));
         }
 

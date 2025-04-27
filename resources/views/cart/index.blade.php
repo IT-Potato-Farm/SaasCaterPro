@@ -140,162 +140,170 @@
                         <div class="responsive-table">
                             <table class="w-full border-collapse">
                                 <thead>
-                                    <tr class="border-b">
-                                        <th class="py-2 text-left">Product</th>
-                                        <th class="py-2 text-left">Name</th>
-                                        <th class="py-2 text-left">Selected Options</th>
-                                        <th class="py-2 text-center">Quantity</th>
-                                        <th class="py-2 text-left">Price</th>
-                                        <th class="py-2 text-left">Pax</th>
+                                    <tr class="border-b bg-gray-50">
+                                        <th class="py-2 px-3 text-left">Image</th>
+                                        <th class="py-2 px-3 text-left">Item</th>
+                                        <th class="py-2 px-3 text-left">Configuration</th>
+                                        <th class="py-2 px-3 text-center">Quantity</th>
+                                        <th class="py-2 px-3 text-right">Price</th>
+                                        <th class="py-2 px-3 text-left">Serving Size</th>
                                     </tr>
                                 </thead>
                                 <tbody id="cart-items">
                                     @php
                                         $extendedTotal = 0;
                                     @endphp
-
+                            
                                     @foreach ($cart->items as $cartItem)
                                         @php
-                                            if ($cartItem->menu_item_id && $cartItem->menuItem) {
+                                            //  menu item or package
+                                            $isMenuItem = $cartItem->menu_item_id && $cartItem->menuItem;
+                                            $isPackage = $cartItem->package_id && $cartItem->package;
+                                            
+                                            // Set common variables
+                                            $itemName = 'Unknown Item';
+                                            $itemImage = null;
+                                            $displayPrice = 0;
+                                            $lineTotal = 0;
+                                            $servingInfo = '-';
+                                            $configInfo = 'N/A';
+                                            
+                                            if ($isMenuItem) {
+                                                // Menu Item Logic
                                                 $itemName = $cartItem->menuItem->name;
                                                 $itemImage = $cartItem->menuItem->image ?? null;
                                                 $pricingTiers = $cartItem->menuItem->pricing;
-                                                $selectedVariant = isset($cartItem->variant)
-                                                    ? trim($cartItem->variant)
-                                                    : null;
-
+                                                $selectedVariant = isset($cartItem->variant) ? trim($cartItem->variant) : null;
+                            
                                                 if (!empty($selectedVariant) && isset($pricingTiers[$selectedVariant])) {
                                                     $itemPrice = $pricingTiers[$selectedVariant];
+                                                    $servingInfo = $selectedVariant . ' pax';
                                                 } else {
                                                     if ($cartItem->quantity >= 10 && $cartItem->quantity <= 15) {
                                                         $itemPrice = $pricingTiers['10-15'] ?? 0;
+                                                        $servingInfo = '10-15 pax';
                                                     } elseif ($cartItem->quantity > 15 && isset($pricingTiers['15-20'])) {
                                                         $itemPrice = $pricingTiers['15-20'];
+                                                        $servingInfo = '15-20 pax';
                                                     } else {
                                                         $itemPrice = reset($pricingTiers);
+                                                        $servingInfo = key($pricingTiers) . ' pax';
                                                     }
                                                 }
+                                                
                                                 $displayPrice = $itemPrice;
                                                 $lineTotal = $itemPrice * $cartItem->quantity;
-                                                $minPax = '-';
-                                            } elseif ($cartItem->package_id && $cartItem->package) {
+                                                $configInfo = 'Standard Party Tray';
+                                                
+                                            } elseif ($isPackage) {
+                                                // Package Logic
                                                 $itemName = $cartItem->package->name;
                                                 $itemImage = $cartItem->package->image ?? null;
                                                 $itemPrice = $cartItem->package->price_per_person ?? 0;
                                                 $displayPrice = $itemPrice;
                                                 $minPax = $cartItem->package->min_pax ?? 1;
                                                 $lineTotal = $itemPrice * $minPax * $cartItem->quantity;
-
-                                                $itemNames = [];
+                                                $servingInfo = $minPax . ' min. pax';
+                            
+                                                // Build package configuration info from selected options
+                                                $packageItemNames = [];
                                                 if ($cartItem->package && $cartItem->package->packageItems) {
                                                     foreach ($cartItem->package->packageItems as $packageItem) {
-                                                        $itemNames[$packageItem->item->id] =
-                                                            $packageItem->item->name ?? 'Unnamed Item';
+                                                        $packageItemNames[$packageItem->item->id] = $packageItem->item->name ?? 'Unnamed Item';
                                                     }
                                                 }
                                                 
                                                 $selectedOptionsString = '';
-                                                    if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
-                                                        foreach ($cartItem->selected_options as $itemId => $optionArray) {
-                                                            if (isset($itemNames[$itemId])) {
-                                                                $itemName = $itemNames[$itemId];
-                                                                
-                                                                // Check if it's a food item without options (only one option that matches the food name)
-                                                                if (count($optionArray) === 1 && ($optionArray[0]['type'] === $itemName)) {
-                                                                    // Just show the item name once
-                                                                    $selectedOptionsString .= "{$itemName}<br>";
-                                                                } else {
-                                                                    // For items with options, show item name and option types
-                                                                    $types = array_map(function ($option) {
-                                                                        return $option['type'] ?? 'Unknown';
-                                                                    }, $optionArray);
-                                                                    $selectedOptionsString .= "{$itemName}: " . implode(', ', $types) . '<br>';
-                                                                }
+                                                if ($cartItem->selected_options && is_array($cartItem->selected_options)) {
+                                                    foreach ($cartItem->selected_options as $itemId => $optionArray) {
+                                                        if (isset($packageItemNames[$itemId])) {
+                                                            $packageItemName = $packageItemNames[$itemId];
+                                                            
+                                                            // Check if it's a food item without options (only one option that matches the food name)
+                                                            if (count($optionArray) === 1 && ($optionArray[0]['type'] === $packageItemName)) {
+                                                                // Just show the item name once
+                                                                $selectedOptionsString .= "{$packageItemName}<br>";
                                                             } else {
-                                                                $selectedOptionsString .= "No match for item ID: {$itemId}<br>";
+                                                                // For items with options, show item name and option types
+                                                                $types = array_map(function ($option) {
+                                                                    return $option['type'] ?? 'Unknown';
+                                                                }, $optionArray);
+                                                                $selectedOptionsString .= "{$packageItemName}: " . implode(', ', $types) . '<br>';
                                                             }
                                                         }
                                                     }
-                                            } else {
-                                                $itemName = 'Unknown';
-                                                $itemPrice = 0;
-                                                $itemImage = null;
-                                                $displayPrice = 0;
-                                                $lineTotal = 0;
-                                                $minPax = '-';
+                                                }
+                                                $configInfo = $selectedOptionsString ?: 'Default Package Selections';
                                             }
+                                            
                                             $extendedTotal += $lineTotal;
                                         @endphp
-
-                                        <tr class="border-b">
+                            
+                                        <tr class="border-b hover:bg-gray-50">
                                             <!-- Product Image -->
-                                            <td class="py-3">
+                                            <td class="py-3 px-3">
                                                 @if ($itemImage)
-                                                    <img src="{{ asset(isset($cartItem->menu_item_id) ? 'storage/party_traypics/' . $itemImage : 'storage/packagepics/' . $itemImage) }}"
-                                                        alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded" />
+                                                    <img src="{{ asset($isMenuItem ? 'storage/party_traypics/' . $itemImage : 'storage/packagepics/' . $itemImage) }}"
+                                                        alt="{{ $itemName }}" class="w-16 h-16 object-cover rounded shadow-sm" />
                                                 @else
-                                                    <img src="https://via.placeholder.com/64" alt="No Image"
-                                                        class="w-16 h-16 object-cover rounded" />
+                                                    <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                                                        <span class="text-gray-400 text-xs">No Image</span>
+                                                    </div>
                                                 @endif
                                             </td>
-
+                            
                                             <!-- Item Name -->
-                                            <td class="py-3">
-                                                {{ $itemName }}
+                                            <td class="py-3 px-3">
+                                                <div class="font-medium">{{ $itemName }}</div>
+                                                <div class="text-xs text-gray-500">{{ $isMenuItem ? 'Party Tray' : 'Package' }}</div>
                                             </td>
-
-                                            <!-- Selected Options Column -->
-                                            <td class="py-3">
-                                                @if ($cartItem->package_id)
-                                                    {!! $selectedOptionsString ?: 'N/A' !!}
-                                                @else
-                                                    NOT APPLICABLE
-                                                @endif
+                            
+                                            <!-- Configuration Info -->
+                                            <td class="py-3 px-3">
+                                                <div class="text-sm">
+                                                    @if ($isPackage)
+                                                        {!! $configInfo !!}
+                                                    @else
+                                                        <span class="text-gray-500 italic">{{ $configInfo }}</span>
+                                                    @endif
+                                                </div>
                                             </td>
-
-                                            <!-- Edit Quantity -->
-                                            <td class="py-3 text-center align-middle">
+                            
+                                            <!-- Quantity Controls -->
+                                            <td class="py-3 px-3 text-center align-middle">
                                                 <div class="flex flex-col items-center space-y-2">
-                                                    <form action="{{ route('cart.item.update', $cartItem->id) }}"
-                                                        method="POST" class="flex items-center">
+                                                    <form action="{{ route('cart.item.update', $cartItem->id) }}" method="POST" class="flex items-center">
                                                         @csrf
                                                         @method('PATCH')
                                                         <button type="submit" name="action" value="decrement"
-                                                            class="px-2 border border-gray-300 rounded-l">-</button>
-                                                        <input type="text" name="quantity"
-                                                            value="{{ $cartItem->quantity }}"
-                                                            class="w-12 text-center border-t border-b border-gray-300"
-                                                            readonly />
+                                                            class="px-2 border border-gray-300 rounded-l hover:bg-gray-100">-</button>
+                                                        <input type="text" name="quantity" value="{{ $cartItem->quantity }}"
+                                                            class="w-12 text-center border-t border-b border-gray-300" readonly />
                                                         <button type="submit" name="action" value="increment"
-                                                            class="px-2 border border-gray-300 rounded-r">+</button>
+                                                            class="px-2 border border-gray-300 rounded-r hover:bg-gray-100">+</button>
                                                     </form>
-
-                                                    <form action="{{ route('cart.item.destroy', $cartItem->id) }}"
-                                                        method="POST">
+                            
+                                                    <form action="{{ route('cart.item.destroy', $cartItem->id) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit"
-                                                            class="text-red-600 hover:text-red-800 underline">Remove</button>
+                                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs">Remove</button>
                                                     </form>
                                                 </div>
                                             </td>
-
+                            
                                             <!-- Price -->
-                                            <td class="py-3">
-                                                @if ($cartItem->package_id)
-                                                    ₱{{ number_format($displayPrice, 2) }} <small>(per pax)</small>
-                                                @else
-                                                    ₱{{ number_format($displayPrice, 2) }}
+                                            <td class="py-3 px-3 text-right">
+                                                <div class="font-medium">₱{{ number_format($displayPrice, 2) }}</div>
+                                                @if ($isPackage)
+                                                    <div class="text-xs text-gray-500">per person</div>
                                                 @endif
                                             </td>
-
-                                            <!-- Min pax (Only for packages) -->
-                                            <td class="py-3">
-                                                @if ($cartItem->menu_item_id)
-                                                    {{ !empty($selectedVariant) ? $selectedVariant : 'N/A' }} pax
-                                                @else
-                                                    {{ $minPax }} minimum pax
-                                                @endif
+                            
+                                            <!-- Serving Size -->
+                                            <td class="py-3 px-3">
+                                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
+                                                    {{ $servingInfo }}
+                                                </span>
                                             </td>
                                         </tr>
                                     @endforeach

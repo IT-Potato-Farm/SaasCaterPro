@@ -99,10 +99,10 @@
                                 class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
                                 Print
                             </button>
-                            <button onclick="downloadPDF()"
+                            {{-- <button onclick="downloadPDF()"
                                 class="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">
                                 Export as PDF
-                            </button>
+                            </button> --}}
                         </div>
                     </div>
 
@@ -111,6 +111,9 @@
                         <!-- Orders Card -->
                         <div
                             class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all hover:shadow-md">
+
+
+                            <!--WEEKLY Growth -->
                             <div class="flex justify-between items-center mb-4">
                                 <span class="p-2 rounded-lg bg-blue-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
@@ -120,11 +123,16 @@
                                     </svg>
                                 </span>
                                 <span
-                                    class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">+4.6%</span>
+                                    class="text-xs font-medium {{ $weeklyGrowthFormatted === 'New' ? 'text-yellow-600 bg-yellow-50' : ($weeklyGrowthFormatted > 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50') }} px-2 py-1 rounded-full">
+                                    {{ $weeklyGrowthFormatted }}
+                                </span>
                             </div>
+
+                            <!-- Total Orders -->
                             <h2 class="text-3xl font-bold text-gray-900">{{ $totalOrders }}</h2>
                             <p class="text-gray-500 text-sm mt-1">Total Orders</p>
                         </div>
+
 
                         <div
                             class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all hover:shadow-md">
