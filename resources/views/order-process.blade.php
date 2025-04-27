@@ -286,29 +286,34 @@
                                                                 <h4 class="text-xs font-medium text-gray-700 mb-1">Included Foods:</h4>
                                                                 <ul class="space-y-1 pl-2">
                                                                     @foreach ($item->itemable->packageItems as $packageItem)
+                                                                        @php
+                                                                            $itemName = $packageItem->item->name ?? 'Unnamed Item';
+                                                                            $optionsToDisplay = [];
+                                                                
+                                                                            if (!empty($item->selected_options) && is_array($item->selected_options)) {
+                                                                                $itemId = $packageItem->item->id ?? null;
+                                                                                $optionsForItem = $itemId && isset($item->selected_options[$itemId])
+                                                                                    ? $item->selected_options[$itemId]
+                                                                                    : [];
+                                                                
+                                                                                foreach ($optionsForItem as $option) {
+                                                                                    if (!empty($option['type'])) {
+                                                                                        $parts = explode(':', $option['type']);
+                                                                                        if ($parts[0] !== end($parts) || $parts[0] !== $itemName) {
+                                                                                            $optionsToDisplay[] = $option['type'];
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                
                                                                         <li class="text-xs text-gray-600">
                                                                             <div class="flex items-start">
                                                                                 <span class="inline-block w-1 h-1 mt-1.5 mr-1.5 bg-gray-400 rounded-full"></span>
                                                                                 <div>
-                                                                                    <span class="font-medium">{{ $packageItem->item->name ?? 'Unnamed Item' }}</span>
-                                                                                    @php
-                                                                                        $itemId = $packageItem->item->id ?? null;
-                                                                                        $optionsForItem = $itemId && isset($item->selected_options[$itemId])
-                                                                                            ? $item->selected_options[$itemId]
-                                                                                            : [];
-                                                                                    @endphp
-                                                                                    @if (!empty($optionsForItem))
-                                                                                        <ul class="mt-1 ml-2 space-y-1">
-                                                                                            @foreach ($optionsForItem as $option)
-                                                                                                @php
-                                                                                                    $optionModel = \App\Models\ItemOption::find($option['id']);
-                                                                                                @endphp
-                                                                                                <li class="flex items-start text-xs text-gray-500">
-                                                                                                    <span class="inline-block w-1 h-1 mt-1.5 mr-1.5 bg-gray-300 rounded-full"></span>
-                                                                                                    {{ $optionModel->type ?? 'Unknown Option' }}
-                                                                                                </li>
-                                                                                            @endforeach
-                                                                                        </ul>
+                                                                                    <span class="font-medium">{{ $itemName }}</span>
+                                                                                    @if (!empty($optionsToDisplay))
+                                                                                        <span class="text-gray-500"> - {{ implode(', ', $optionsToDisplay) }}</span>
                                                                                     @endif
                                                                                 </div>
                                                                             </div>
@@ -372,7 +377,7 @@
                                             <div class="flex items-center">
                                                 @php
                                                     $imagePath = $isPackage 
-                                                        ? 'storage/packagePics/' . ($item->itemable->image ?? '') 
+                                                        ? 'storage/packagepics/' . ($item->itemable->image ?? '') 
                                                         : 'storage/party_traypics/' . ($item->itemable->image ?? '');
                                                 @endphp
                                 
@@ -423,31 +428,38 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                         <div>
                                                             <h4 class="text-sm font-medium text-gray-700 mb-2 pb-1 border-b border-gray-100">Included Foods</h4>
-                                                            <ul class="space-y-2">
+                                                            <ul class="space-y-1 pl-2">
                                                                 @foreach ($item->itemable->packageItems as $packageItem)
-                                                                    <li class="text-sm text-gray-600">
+                                                                    @php
+                                                                        $itemName = $packageItem->item->name ?? 'Unnamed Item';
+                                                                        $optionsToDisplay = [];
+                                                            
+                                                                        // Process options if there are any selected for the item
+                                                                        if (!empty($item->selected_options) && is_array($item->selected_options)) {
+                                                                            $itemId = $packageItem->item->id ?? null;
+                                                                            $optionsForItem = $itemId && isset($item->selected_options[$itemId])
+                                                                                ? $item->selected_options[$itemId]
+                                                                                : [];
+                                                            
+                                                                            foreach ($optionsForItem as $option) {
+                                                                                if (!empty($option['type'])) {
+                                                                                    // Skip options that are just repeating the item name (like "Rice: Rice")
+                                                                                    $parts = explode(':', $option['type']);
+                                                                                    if ($parts[0] !== end($parts) || $parts[0] !== $itemName) {
+                                                                                        $optionsToDisplay[] = $option['type'];
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    @endphp
+                                                            
+                                                                    <li class="text-xs text-gray-600">
                                                                         <div class="flex items-start">
-                                                                            <span class="inline-block w-1 h-1 mt-2 mr-2 bg-gray-400 rounded-full"></span>
+                                                                            <span class="inline-block w-1 h-1 mt-1.5 mr-1.5 bg-gray-400 rounded-full"></span>
                                                                             <div>
-                                                                                <span class="font-medium text-gray-700">{{ $packageItem->item->name ?? 'Unnamed Item' }}</span>
-                                                                                @php
-                                                                                    $itemId = $packageItem->item->id ?? null;
-                                                                                    $optionsForItem = $itemId && isset($item->selected_options[$itemId])
-                                                                                        ? $item->selected_options[$itemId]
-                                                                                        : [];
-                                                                                @endphp
-                                                                                @if (!empty($optionsForItem))
-                                                                                    <ul class="mt-1 ml-2 space-y-1">
-                                                                                        @foreach ($optionsForItem as $option)
-                                                                                            @php
-                                                                                                $optionModel = \App\Models\ItemOption::find($option['id']);
-                                                                                            @endphp
-                                                                                            <li class="flex items-start text-xs text-gray-500">
-                                                                                                <span class="inline-block w-1 h-1 mt-1.5 mr-1.5 bg-gray-300 rounded-full"></span>
-                                                                                                {{ $optionModel->type ?? 'Unknown Option' }}
-                                                                                            </li>
-                                                                                        @endforeach
-                                                                                    </ul>
+                                                                                <span class="font-medium">{{ $itemName }}</span>
+                                                                                @if (!empty($optionsToDisplay))
+                                                                                    <span class="text-gray-500"> - {{ implode(', ', $optionsToDisplay) }}</span>
                                                                                 @endif
                                                                             </div>
                                                                         </div>

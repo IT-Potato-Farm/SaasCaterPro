@@ -56,7 +56,7 @@
 
                             $computedPrice = $isPackage ? $itemPrice * ($order->total_guests ?? 1) : $itemPrice;
                         @endphp
-
+                        {{-- PACKAGES --}}
                         <tr style="vertical-align: top;">
                             <td style="color: #1e293b; padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
                                 <div style="display: flex; gap: 16px;">
@@ -83,11 +83,13 @@
                                     </div>
                                 </div>
                             </td>
+
                             <td
                                 style="color: #1e293b; padding: 16px 0; text-align: right; font-weight: 600; border-bottom: 1px solid #f1f5f9; font-size: 16px; vertical-align: middle;">
                                 ₱{{ number_format($computedPrice, 2) }}
                             </td>
                         </tr>
+
                         @if ($isPackage && method_exists($cartItem->itemable, 'packageItems'))
                             <tr>
                                 <td colspan="2"
@@ -95,66 +97,51 @@
                                     <div style="margin-top: 12px;">
                                         <strong style="color: #4b5563; display: block; margin-bottom: 12px;">Included
                                             Items:</strong>
-                                        <ul style="margin: 0; padding-left: 0; list-style: none;">
-                                            @foreach ($cartItem->itemable->packageItems as $packageItem)
-                                                <li style="margin-bottom: 20px;">
-                                                    <div style="font-weight: 500; margin-bottom: 12px; color: #1e293b;">
-                                                        {{ $packageItem->item->name ?? 'Unnamed Item' }}</div>
-
-                                                    {{-- Show Selected Options for this Item --}}
-                                                    @if (!empty($cartItem->selected_options) && is_array($cartItem->selected_options))
-                                                        @php
+                                            <ul class="space-y-4">
+                                                @foreach ($cartItem->itemable->packageItems as $packageItem)
+                                                    @php
+                                                        $itemName = $packageItem->item->name ?? 'Unnamed Item';
+                                                        $hasValidOptions = false;
+                                                        
+                                                        // Process options first to determine if we should show this item
+                                                        $optionsToDisplay = [];
+                                                        
+                                                        if (!empty($cartItem->selected_options) && is_array($cartItem->selected_options)) {
                                                             $itemId = $packageItem->item->id ?? null;
-                                                            $optionsForItem =
-                                                                $itemId && isset($cartItem->selected_options[$itemId])
-                                                                    ? $cartItem->selected_options[$itemId]
-                                                                    : [];
-                                                        @endphp
-
-                                                        @if (!empty($optionsForItem))
-                                                            <div
-                                                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
-                                                                @foreach ($optionsForItem as $option)
-                                                                    @php
-                                                                        $optionModel = \App\Models\ItemOption::find(
-                                                                            $option['id'],
-                                                                        );
-                                                                    @endphp
-                                                                    <div
-                                                                        style="display: flex; align-items: center; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                                                                        @if ($optionModel && $optionModel->image)
-                                                                            <img src="{{ asset('storage/' . $optionModel->image) }}"
-                                                                                alt="{{ $optionModel->type }}"
-                                                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; margin-right: 12px; border: 1px solid #e5e7eb;">
-                                                                        @else
-                                                                            <div
-                                                                                style="width: 48px; height: 48px; background-color: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-right: 12px; border: 1px solid #e5e7eb;">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                    style="width: 24px; height: 24px; color: #9ca3af;"
-                                                                                    viewBox="0 0 24 24"
-                                                                                    fill="currentColor">
-                                                                                    <circle cx="12"
-                                                                                        cy="12" r="10"
-                                                                                        fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2" />
-                                                                                    <path d="M12 2v20M2 12h20"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2" />
-                                                                                </svg>
-                                                                            </div>
-                                                                        @endif
-                                                                        <div
-                                                                            style="font-weight: 500; color: #1e293b; font-size: 15px;">
-                                                                            {{ $option['type'] ?? 'Unknown' }}</div>
-                                                                    </div>
-                                                                @endforeach
+                                                            $optionsForItem = $itemId && isset($cartItem->selected_options[$itemId])
+                                                                ? $cartItem->selected_options[$itemId]
+                                                                : [];
+                                                            
+                                                            foreach ($optionsForItem as $option) {
+                                                                if (!empty($option['type'])) {
+                                                                    // Skip options that are just repeating the item name (like "Rice:Rice")
+                                                                    $parts = explode(':', $option['type']);
+                                                                    if ($parts[0] !== end($parts) || $parts[0] !== $itemName) {
+                                                                        $optionsToDisplay[] = $option['type'];
+                                                                    }
+                                                                }
+                                                            }
+                                                            
+                                                            $hasValidOptions = !empty($optionsToDisplay);
+                                                        }
+                                                    @endphp
+                    
+                                                    @if ($hasValidOptions)
+                                                        <li>
+                                                            <div class="font-medium text-gray-900">
+                                                                {{ $itemName }} - 
+                                                                <span class="text-gray-600">
+                                                                    {{ implode(', ', $optionsToDisplay) }}
+                                                                </span>
                                                             </div>
-                                                        @endif
+                                                        </li>
+                                                    @else
+                                                        <li class="font-medium text-gray-900">
+                                                            {{ $itemName }}
+                                                        </li>
                                                     @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                                @endforeach
+                                            </ul>
                                     </div>
                                     @if (!empty($cartItem->included_utilities))
                                         <div style="margin-top: 16px;">

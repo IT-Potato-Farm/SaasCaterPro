@@ -124,8 +124,17 @@
                                                         Review</a>
                                                 @else
                                                     <button onclick="leaveReview({{ $order->id }})"
-                                                        class="text-indigo-600 hover:text-indigo-800">
-                                                        Leave a Review
+                                                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-sm hover:shadow-md">
+                                                        <div class="flex items-center space-x-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                                fill="none" viewBox="0 0 24 24"
+                                                                stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                            </svg>
+                                                            <span>Leave a Review</span>
+                                                        </div>
                                                     </button>
                                                 @endif
                                             @else
@@ -210,7 +219,7 @@
                     <label for="review" class="block text-sm font-medium text-gray-700">Review:</label>
                     <textarea id="review" name="review"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                    <div id="review-error" class="error-message"></div>
+                    <div id="review-error" class="error-message text-red-600 text-sm mt-2"></div>
                 </div>
 
                 <div class="flex justify-end space-x-4 mt-6">
@@ -228,24 +237,24 @@
             console.log('Opening review modal for order:', orderId);
             document.getElementById('order-id').value = orderId;
             document.getElementById('leaveReviewModal').classList.remove('hidden');
-            
+
             // Reset form values and errors
             document.getElementById('leaveReviewForm').reset();
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
         }
-    
+
         // Close modal
         function closeModal() {
             document.getElementById('leaveReviewModal').classList.add('hidden');
         }
-    
+
         document.getElementById('leaveReviewForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
-    
+
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-    
+
             // Validate review length
             const reviewText = document.getElementById('review').value.trim();
             if (reviewText.length > 1000) {
@@ -253,41 +262,41 @@
                     'Review is too long. Maximum 1000 characters allowed.';
                 return;
             }
-    
+
             if (reviewText.length === 0) {
                 document.getElementById('review-error').textContent =
                     'Please enter your review.';
                 return;
             }
-    
+
             submitForm(formData);
         });
-    
+
         // Submit the form to the backend
         function submitForm(formData) {
             const token = document.querySelector('meta[name="csrf-token"]').content;
-    
+
             // Get URL from Laravel route helper, fallback to relative path
             let url = "{{ route('reviews.leaveReview') }}";
-    
+
             if (window.location.hostname === 'saascater.site') {
                 url = 'https://saascater.site/reviews/submit';
             } else {
                 url = "{{ route('reviews.leaveReview') }}";
             }
-    
+
             // Ensure no trailing slash
             url = url.replace(/\/$/, '');
-    
+
             console.log("Submitting review to:", url, "with data:", {
                 orderId: formData.get('order_id'),
                 rating: formData.get('rating'),
                 hasImage: formData.get('image') ? true : false,
                 reviewLength: formData.get('review')?.length || 0
             });
-            console.log("Final URL being called:", url);
-            console.log("CSRF Token:", token);
-    
+            // console.log("Final URL being called:", url);
+            // console.log("CSRF Token:", token);
+
             fetch(url, {
                     method: "POST",
                     headers: {
@@ -301,20 +310,20 @@
                     redirect: 'follow'
                 })
                 .then(async response => {
-                    console.log("Response status:", response.status);
-                    console.log("Response headers:", Object.fromEntries([...response.headers]));
+                    // console.log("Response status:", response.status);
+                    // console.log("Response headers:", Object.fromEntries([...response.headers]));
                     const contentType = response.headers.get('content-type');
                     const isJson = contentType && contentType.includes('application/json');
-    
+
                     try {
                         const data = isJson ? await response.json() : null;
                         console.log("Response data:", data);
-    
+
                         if (!response.ok) {
                             const error = (data && data.message) || response.statusText;
                             throw new Error(error || 'Request failed');
                         }
-    
+
                         return data;
                     } catch (err) {
                         console.error("Error parsing response:", err);
@@ -336,7 +345,7 @@
                                 toast.addEventListener('mouseleave', Swal.resumeTimer);
                             }
                         });
-    
+
                         closeModal();
                         setTimeout(() => {
                             window.location.reload();
@@ -379,7 +388,7 @@
                 });
         }
     </script>
-    
+
 </body>
 
 </html>
