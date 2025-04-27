@@ -3,7 +3,6 @@
 
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <link rel="icon" href="{{ asset('images/saaslogo.png') }}" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -124,7 +123,6 @@
                                                     <a href="#" class="text-blue-600 hover:text-blue-800">Show
                                                         Review</a>
                                                 @else
-                                                    {{-- <x-reviews.leave-review :order="$order" /> --}}
                                                     <button onclick="leaveReview({{ $order->id }})"
                                                         class="text-indigo-600 hover:text-indigo-800">
                                                         Leave a Review
@@ -224,41 +222,42 @@
     </div>
 
     <script>
-        // Open Modal
         function leaveReview(orderId) {
-            console.log(orderId)
+            console.log('Opening review modal for order:', orderId);
             document.getElementById('order-id').value = orderId;
-            const modal = document.getElementById('leaveReviewModal');
-            modal.classList.remove('hidden');
+            document.getElementById('leaveReviewModal').classList.remove('hidden');
+
+
+            document.getElementById('leaveReviewForm').reset();
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
         }
 
         // Close modal
         function closeModal() {
-            const modal = document.getElementById('leaveReviewModal');
-            modal.classList.add('hidden');
+            document.getElementById('leaveReviewModal').classList.add('hidden');
         }
 
-        // Submit review form
+
         document.getElementById('leaveReviewForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
 
-            let hasErrors = false;
 
-            if (document.getElementById('review').value.trim().length > 1000) {
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+            // Validate review length
+            const reviewText = document.getElementById('review').value.trim();
+            if (reviewText.length > 1000) {
                 document.getElementById('review-error').textContent =
-                    'Review max words reached. Please leave a short review.';
-                hasErrors = true;
-            }
-
-            if (hasErrors) {
+                    'Review is too long. Maximum 1000 characters allowed.';
                 return;
             }
 
-            const imageInput = document.getElementById('image');
-            if (imageInput.files.length > 0) {
-                formData.append('image', imageInput.files[0]);
+            if (reviewText.length === 0) {
+                document.getElementById('review-error').textContent =
+                    'Please enter your review.';
+                return;
             }
 
             submitForm(formData);
@@ -266,71 +265,91 @@
 
         // Submit the form to the backend
         function submitForm(formData) {
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            formData.append("_token", token);
-            console.log("Form data:", Object.fromEntries(formData.entries()));
-            console.log("Route URL:", "{{ route('reviews.leaveReview') }}");
-            console.log("CSRF Token:", token);
-            // fetch("{{ route('reviews.leaveReview') }}", {
-            fetch("/reviews", {
+            
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+
+            // Get URL from Laravel route helper, fallback to relative path
+            let url = "{{ route('reviews.leaveReview') }}";
+
+            // If Blade didn't process (e.g., in external JS file), use fallback
+            if (url.includes('reviews.leaveReview')) {
+                url = '/reviews';
+            }
+
+            // Ensure no trailing slash
+            url = url.replace(/\/$/, '');
+
+            console.log("Submitting review to:", url, "with data:", {
+                orderId: formData.get('order_id'),
+                rating: formData.get('rating'),
+                hasImage: formData.get('image') ? true : false,
+                reviewLength: formData.get('review')?.length || 0
+            });
+            console.log("Final URL being called:", url); 
+
+            fetch(url, {
                     method: "POST",
                     headers: {
                         'X-CSRF-TOKEN': token,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: formData
+                    body: formData,
+                    credentials: 'same-origin' 
                 })
-                .then(response => {
-                    console.log("Response status:", response.status);
-                    console.log("Response headers:", [...response.headers.entries()]);
-                    return response.json();
+                .then(async response => {
+                    const contentType = response.headers.get('content-type');
+                    const isJson = contentType && contentType.includes('application/json');
+                    const data = isJson ? await response.json() : null;
+
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.statusText;
+                        throw new Error(error || 'Request failed');
+                    }
+
+                    return data;
                 })
                 .then(data => {
                     if (data.success) {
-
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Review submitted successfully!',
+                            title: data.message || 'Review submitted successfully!',
                             showConfirmButton: false,
                             timer: 3000,
                             timerProgressBar: true,
-
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal
-                                    .resumeTimer);
-                            }
-                        });
-
-                        closeModal();
-                        // location.reload(); 
-                    } else {
-
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'error', // Error icon
-                            title: 'Oops, there was an error!',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            background: '#dc3545',
-                            color: '#fff',
                             didOpen: (toast) => {
                                 toast.addEventListener('mouseenter', Swal.stopTimer);
                                 toast.addEventListener('mouseleave', Swal.resumeTimer);
                             }
                         });
+
+                        closeModal();
+                        // setTimeout(() => {
+                        //     window.location.reload();
+                        // }, 1500);
+                    } else {
+                        if (data.errors) {
+                            Object.entries(data.errors).forEach(([field, messages]) => {
+                                const errorElement = document.getElementById(`${field}-error`);
+                                if (errorElement) {
+                                    errorElement.textContent = Array.isArray(messages) ? messages.join(', ') :
+                                        messages;
+                                }
+                            });
+                        } else {
+                            throw new Error(data.message || 'Submission failed');
+                        }
                     }
                 })
                 .catch(error => {
+                    console.error('Submission error:', error);
                     Swal.fire({
                         toast: true,
                         position: 'top-end',
                         icon: 'error',
-                        title: 'Something went wrong!',
+                        title: error.message || 'Failed to submit review',
                         showConfirmButton: false,
                         timer: 3000,
                         timerProgressBar: true,
@@ -344,7 +363,6 @@
                 });
         }
     </script>
-
 </body>
 
 </html>
