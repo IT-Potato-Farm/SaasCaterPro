@@ -16,34 +16,84 @@
 
 
     <style>
+        
         .fc-toolbar-title {
-            @apply text-xl font-bold text-gray-800 font-serif;
+            font-size: 1.75rem;
         }
 
-        .fc-button-primary {
-            @apply bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm font-medium rounded-lg transition-colors;
+        @media (max-width: 768px) { 
+            .fc-toolbar-title {
+                font-size: 1.3rem;
+            }
         }
 
-        .fc-button-active {
-            @apply bg-blue-100 text-blue-600 border-blue-200;
+        @media (max-width: 480px) { 
+            .fc-toolbar-title {
+                font-size: 1.1rem;
+            }
         }
 
+        
+        .fc-button {
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+            margin: 0 0.2rem; 
+        }
+
+        @media (max-width: 768px) {
+            .fc-button {
+                font-size: 0.875rem;
+                padding: 0.35rem 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fc-button {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.6rem;
+            }
+        }
+
+        
+        .fc-header-toolbar {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        
         .fc-daygrid-day-number {
-            @apply text-gray-600 font-medium;
+            font-size: 1rem;
         }
 
-        .fc-daygrid-day {
-            @apply hover:bg-gray-50 transition-colors;
+        @media (max-width: 768px) {
+            .fc-daygrid-day-number {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fc-daygrid-day-number {
+                font-size: 0.75rem;
+            }
         }
 
         .fc-event {
-            @apply rounded-lg border-none shadow-sm;
+            font-size: 0.875rem;
         }
 
-        .fc-today {
-            @apply bg-blue-50;
+        @media (max-width: 768px) {
+            .fc-event {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fc-event {
+                font-size: 0.625rem;
+            }
         }
     </style>
+
     <script>
         function confirmDelete(form) {
             event.preventDefault();
