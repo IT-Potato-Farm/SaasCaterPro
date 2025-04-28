@@ -58,27 +58,28 @@ class OrderController extends Controller
     }
 
     public function index(Request $request)
-    {
-        $query = Order::query();
+{
+    $query = Order::query();
 
-        // Filter by status if provided and not empty
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
-
-        // Filter by event_date range if provided
-        if ($request->filled('date_from')) {
-            $query->whereDate('event_date_start', '>=', $request->input('date_from'));
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('event_date_end', '<=', $request->input('date_to'));
-        }
-
-        // Order the results and paginate
-        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        return redirect()->route('admin.bookings');
+    // Filter by status if provided and not empty
+    if ($request->filled('status')) {
+        $query->where('status', $request->input('status'));
     }
+
+    // Filter by event_date range if provided
+    if ($request->filled('date_from')) {
+        $query->whereDate('event_date_start', '>=', $request->input('date_from'));
+    }
+    if ($request->filled('date_to')) {
+        $query->whereDate('event_date_end', '<=', $request->input('date_to'));
+    }
+
+    // Order the results and paginate
+    $orders = $query->orderBy('created_at', 'desc')->paginate(10);
+
+    // Return view and pass the orders to it
+    return view('admin.bookingsdashboard', compact('orders'));
+}
 
     // penalty function
     public function addPenalty(Request $request, Order $order)

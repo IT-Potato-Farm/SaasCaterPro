@@ -17,7 +17,6 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                <x-dashboard.header />
                 <div class="container mx-auto p-6">
                     <h1 class="text-3xl font-semibold mb-6">Customer Report</h1>
                 

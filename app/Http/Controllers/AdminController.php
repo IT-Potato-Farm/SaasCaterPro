@@ -177,7 +177,22 @@ class AdminController extends Controller
 
             // Build the query
             $query = Order::with('user');
+            if ($request->filled('status')) {
+                $query->where('status', $request->input('status'));
+            }
 
+            if ($request->filled('status')) {
+                $query->where('status', $request->input('status'));
+            }
+    
+            if ($request->filled('date_from')) {
+                $query->whereDate('event_date_start', '>=', $request->input('date_from'));
+            }
+    
+            if ($request->filled('date_to')) {
+                $query->whereDate('event_date_end', '<=', $request->input('date_to'));
+            }
+            
 
             // Search term
             $search = $request->input('search', '');
@@ -223,9 +238,9 @@ class AdminController extends Controller
                 $order->bgColor = $style['bg'];
                 $order->textColor = $style['text'];
             }
+            $statusFilter = $request->input('status', null);
 
-
-            return view('admin.bookingsdashboard', compact('orders', 'perPage', 'sortColumn', 'sortDirection', 'search'));
+            return view('admin.bookingsdashboard', compact('orders', 'statusFilter', 'perPage', 'sortColumn', 'sortDirection', 'search', 'statusStyles'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');

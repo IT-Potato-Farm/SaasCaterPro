@@ -162,7 +162,7 @@
                     </li>
                     @if (Auth::user()->role === 'admin')
                         <li>
-                            <a href="{{ route('admin.finaldashboard') }}" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
+                            <a href="{{ route('admin.reports') }}" class="block py-2 px-3 text-white rounded hover:bg-gray-700 transition-colors">
                                 Dashboard
                             </a>
                         </li>

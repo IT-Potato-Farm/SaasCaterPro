@@ -156,51 +156,81 @@
 
 
                 <!-- Filter Section -->
-                <div class="mb-6 bg-white rounded-lg shadow-sm p-4 ">
-                    <form id="filterForm" action="{{ route('orders.filter') }}" method="GET"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="col-span-1">
-                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+
+                <!-- Filter Section -->
+                <div class="flex items-center space-x-4 mb-4">
+                    <!-- Status Filter -->
+                    <div class="flex items-center space-x-2">
+                        <label for="status" class="text-sm text-gray-600">Status:</label>
+                        <form id="statusForm" method="GET" action="{{ request()->url() }}"
+                            class="flex items-center space-x-2">
                             <select id="status" name="status"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                <option value="">All Statuses</option>
+                                class="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="this.form.submit()">
+                                <option value="">All</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
                                 </option>
                                 <option value="partial" {{ request('status') == 'partial' ? 'selected' : '' }}>Partially
-                                    Paid
-                                </option>
+                                    Paid</option>
                                 <option value="ongoing" {{ request('status') == 'ongoing' ? 'selected' : '' }}>Ongoing
                                 </option>
                                 <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>
-                                    Completed
-                                </option>
+                                    Completed</option>
                                 <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                                    Cancelled
-                                </option>
+                                    Cancelled</option>
                             </select>
-                        </div>
+                        </form>
+                    </div>
 
+                    <!-- Entries Per Page -->
+                    <div class="flex items-center space-x-2">
+                        <form id="entriesForm" method="GET" action="{{ request()->url() }}"
+                            class="flex items-center space-x-2">
+                            <label for="entries" class="text-sm text-gray-600">Show:</label>
+                            <select id="entries" name="entries"
+                                class="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="this.form.submit()">
+                                <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5</option>
+                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                                <option value="15" {{ $perPage == 15 ? 'selected' : '' }}>15</option>
+                                <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
+                                <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
+                            </select>
+                            <span class="text-sm text-gray-600">entries</span>
 
-                        <div class="col-span-1">
-                            <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">Date
-                                From</label>
-                            <input type="date" id="date_from" name="date_from" value="{{ request('date_from') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        </div>
+                            <!-- Preserve any existing query parameters -->
+                            @foreach (request()->except(['entries', 'page']) as $key => $value)
+                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                            @endforeach
+                        </form>
+                    </div>
 
-                        <div class="col-span-1">
-                            <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
-                            <input type="date" id="date_to" name="date_to" value="{{ request('date_to') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        </div>
+                    <!-- Search Box -->
+                    <div class="w-full sm:w-auto">
+                        <form method="GET" action="{{ request()->url() }}">
+                            <div class="flex">
+                                <input type="text" name="search" placeholder="Search..."
+                                    value="{{ $search }}"
+                                    class="w-full sm:w-64 text-sm border border-gray-300 rounded-l px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <button type="submit"
+                                    class="bg-blue-500 text-white px-3 py-1 rounded-r hover:bg-blue-600 text-sm">
+                                    Search
+                                </button>
+                            </div>
 
-                        <div class="col-span-1 flex items-end">
-                            <button type="submit"
-                                class="inline-flex justify-center w-full px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 hover:cursor-pointer active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 transition ease-in-out duration-150">
-                                Filter Results
-                            </button>
-                        </div>
-                    </form>
+                            <!-- Preserve entries parameter -->
+                            <input type="hidden" name="entries" value="{{ $perPage }}">
+
+                            <!-- Preserve sort parameters -->
+                            <input type="hidden" name="sort" value="{{ $sortColumn }}">
+                            <input type="hidden" name="direction" value="{{ $sortDirection }}">
+
+                            <!-- Preserve any other existing query parameters -->
+                            @foreach (request()->except(['search', 'page', 'entries', 'sort', 'direction']) as $key => $value)
+                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                            @endforeach
+                        </form>
+                    </div>
                 </div>
 
                 @if ($orders->isEmpty())
@@ -224,57 +254,8 @@
                 @else
                     {{-- <div class="bg-white rounded-lg shadow overflow-hidden"> --}}
 
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                        <!-- Show entries selector -->
-                        <div class="flex items-center space-x-2">
-                            <form id="entriesForm" method="GET" action="{{ request()->url() }}"
-                                class="flex items-center space-x-2">
-                                <label for="entries" class="text-sm text-gray-600">Show:</label>
-                                <select id="entries" name="entries"
-                                    class="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    onchange="this.form.submit()">
-                                    <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5</option>
-                                    <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                                    <option value="15" {{ $perPage == 15 ? 'selected' : '' }}>15</option>
-                                    <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
-                                    <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
-                                </select>
-                                <span class="text-sm text-gray-600">entries</span>
 
-                                <!-- Preserve any existing query parameters -->
-                                @foreach (request()->except(['entries', 'page']) as $key => $value)
-                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                @endforeach
-                            </form>
-                        </div>
 
-                        <!-- Search box -->
-                        <div class="w-full sm:w-auto">
-                            <form method="GET" action="{{ request()->url() }}">
-                                <div class="flex">
-                                    <input type="text" name="search" placeholder="Search..."
-                                        value="{{ $search }}"
-                                        class="w-full sm:w-64 text-sm border border-gray-300 rounded-l px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <button type="submit"
-                                        class="bg-blue-500 text-white px-3 py-1 rounded-r hover:bg-blue-600 text-sm">
-                                        Search
-                                    </button>
-                                </div>
-
-                                <!-- Preserve entries parameter -->
-                                <input type="hidden" name="entries" value="{{ $perPage }}">
-
-                                <!-- Preserve sort parameters -->
-                                <input type="hidden" name="sort" value="{{ $sortColumn }}">
-                                <input type="hidden" name="direction" value="{{ $sortDirection }}">
-
-                                <!-- Preserve any other existing query parameters -->
-                                @foreach (request()->except(['search', 'page', 'entries', 'sort', 'direction']) as $key => $value)
-                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                @endforeach
-                            </form>
-                        </div>
-                    </div>
 
                     <div class=" px-4 sm:px-6 lg:px-8 overflow-x-auto ">
                         <table id="ordersTable" class="min-w-full divide-y divide-gray-200">
@@ -420,7 +401,7 @@
                                     {{-- REMAINING BALANCE --}}
                                     <th scope="col"
                                         class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                                        Balance
+                                        Remaining Balance
                                     </th>
                                     {{-- PARTIAL PAYMENT --}}
                                     <th scope="col"
@@ -563,7 +544,7 @@
                                                         class="font-medium">₱{{ number_format($order->total, 2) }}</span>
                                                 </div>
                                                 <div class="text-xs text-gray-500 flex justify-between">
-                                                    <span>Balance:</span>
+                                                    <span>Remaining Balance:</span>
                                                     <span
                                                         class="font-medium">₱{{ number_format($order->total - $order->amount_paid, 2) }}</span>
                                                 </div>
@@ -572,79 +553,68 @@
 
                                         <!-- Actions (always visible) -->
                                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                            <select class="form-control form-select" id="action-select-{{ $order->id }}" onchange="executeOrderAction(this, {{ $order->id }})">
+                                            <select class="form-control form-select"
+                                                id="action-select-{{ $order->id }}"
+                                                onchange="executeOrderAction(this, {{ $order->id }})">
                                                 <option value="">Actions</option>
                                                 <option value="invoice">Invoice</option>
-                                                
+
                                                 @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
                                                     <option value="ongoing">Set Ongoing</option>
                                                 @endif
-                                                
+
                                                 @if ($order->status !== 'cancelled' && $order->status !== 'paid')
                                                     <option value="partial">Partial Payment</option>
                                                 @endif
-                                                
+
                                                 @if (!$order->paid)
                                                     <option value="paid">Mark Paid</option>
                                                 @else
                                                     <option value="unpaid">Mark Unpaid</option>
                                                 @endif
-                                                
+
                                                 @if ($order->status !== 'completed' && $order->status !== 'cancelled')
                                                     <option value="completed">Mark Completed</option>
                                                 @endif
-                                                
+
                                                 @if ($order->status != 'cancelled')
                                                     <option value="cancel">Cancel Order</option>
                                                 @endif
-                                                
+
                                                 <option value="penalty">Add Penalty</option>
                                                 <option value="delete">Delete</option>
                                             </select>
-                                            
+
                                             <!-- Hidden action buttons -->
                                             <div class="hidden">
-                                                <span id="invoice-btn-{{ $order->id }}"><x-actions.invoice-button :order="$order" /></span>
-                                                <span id="ongoing-btn-{{ $order->id }}"><x-actions.ongoing-button :order="$order" /></span>
-                                                <span id="partial-btn-{{ $order->id }}"><x-actions.partial-button :order="$order" /></span>
-                                                <span id="paid-btn-{{ $order->id }}"><x-actions.paid-button :order="$order" /></span>
-                                                <span id="unpaid-btn-{{ $order->id }}"><x-actions.unpaid-button :order="$order" /></span>
-                                                <span id="completed-btn-{{ $order->id }}"><x-actions.completed-button :order="$order" /></span>
-                                                <span id="cancel-btn-{{ $order->id }}"><x-actions.cancel-button :order="$order" /></span>
-                                                <span id="penalty-btn-{{ $order->id }}"><x-actions.penalty-button :order="$order" /></span>
-                                                <span id="delete-btn-{{ $order->id }}"><x-actions.delete-button :order="$order" /></span>
+                                                <span id="invoice-btn-{{ $order->id }}"><x-actions.invoice-button
+                                                        :order="$order" /></span>
+                                                <span id="ongoing-btn-{{ $order->id }}"><x-actions.ongoing-button
+                                                        :order="$order" /></span>
+                                                <span id="partial-btn-{{ $order->id }}"><x-actions.partial-button
+                                                        :order="$order" /></span>
+                                                <span id="paid-btn-{{ $order->id }}"><x-actions.paid-button
+                                                        :order="$order" /></span>
+                                                <span id="unpaid-btn-{{ $order->id }}"><x-actions.unpaid-button
+                                                        :order="$order" /></span>
+                                                <span
+                                                    id="completed-btn-{{ $order->id }}"><x-actions.completed-button
+                                                        :order="$order" /></span>
+                                                <span id="cancel-btn-{{ $order->id }}"><x-actions.cancel-button
+                                                        :order="$order" /></span>
+                                                <span id="penalty-btn-{{ $order->id }}"><x-actions.penalty-button
+                                                        :order="$order" /></span>
+                                                <span id="delete-btn-{{ $order->id }}"><x-actions.delete-button
+                                                        :order="$order" /></span>
                                             </div>
-                                            
+
                                             <script>
                                                 function executeOrderAction(selectElement, orderId) {
                                                     const action = selectElement.value;
                                                     if (!action) return;
-                                                    
-                                                    // // Special handling for partial payment
-                                                    // if (action === 'partial') {
-                                                    //     const amount = prompt('Enter partial payment amount:');
-                                                    //     if (amount === null) {
-                                                    //         selectElement.selectedIndex = 0;
-                                                    //         return;
-                                                    //     }
-                                                        
-                                                    //     // Find the partial button and add the amount value before clicking
-                                                    //     const partialBtn = document.querySelector(`#partial-btn-${orderId} button`);
-                                                    //     if (partialBtn) {
-                                                    //         // Create a hidden input for the partial amount
-                                                    //         const form = partialBtn.closest('form');
-                                                    //         const input = document.createElement('input');
-                                                    //         input.type = 'hidden';
-                                                    //         input.name = 'partial_amount';
-                                                    //         input.value = amount;
-                                                    //         form.appendChild(input);
-                                                            
-                                                    //         // Click the button to submit the form
-                                                    //         partialBtn.click();
-                                                    //         return;
-                                                    //     }
-                                                    // }
-                                                    
+
+
+
                                                     // For all other actions, find the respective button and click it
                                                     const buttonContainer = document.getElementById(`${action}-btn-${orderId}`);
                                                     if (buttonContainer) {
@@ -653,7 +623,7 @@
                                                             button.click();
                                                         }
                                                     }
-                                                    
+
                                                     // Reset the select
                                                     selectElement.selectedIndex = 0;
                                                 }
@@ -667,21 +637,27 @@
 
                     </div>
 
+                    
                     <!-- Pagination -->
                     @if ($orders->hasPages())
                         <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
-                            <div class="flex flex-col sm:flex-row items-center justify-between">
-                                <div class="mb-4 sm:mb-0 text-sm text-gray-700">
+                            <div class="flex items-end gap-5 justify-end">
+                                <!-- Showing results text on the left -->
+                                {{-- <div class="text-sm text-gray-700">
                                     Showing <span class="font-medium">{{ $orders->firstItem() }}</span> to <span
                                         class="font-medium">{{ $orders->lastItem() }}</span> of <span
                                         class="font-medium">{{ $orders->total() }}</span> results
-                                </div>
+                                </div> --}}
+
+                                <!-- Pagination links on the right -->
                                 <div>
                                     {{ $orders->appends(request()->except('page'))->onEachSide(1)->links('pagination::tailwind') }}
                                 </div>
                             </div>
                         </div>
                     @endif
+                    
+                    
                     {{-- </div> --}}
                 @endif
 
@@ -758,7 +734,7 @@
     <script src="{{ asset('js/calendar-event-booking.js') }}"></script>
 
     {{-- BOOKING FILTER --}}
-    <script src="{{ asset('js/filter-booking.js') }}"></script>
+    {{-- <script src="{{ asset('js/filter-booking.js') }}"></script> --}}
 
 
 </body>
