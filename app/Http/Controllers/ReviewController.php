@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
+    public function index()
+    {
+        $reviews = Review::with(['user', 'order'])
+            ->latest() 
+            ->paginate(10); 
+
+        $averageRating = Review::avg('rating') ?? 0;
+        return view('allreview', compact('reviews', 'averageRating'));
+    }
+
     public function store(Request $request)
     {
         try {
@@ -52,7 +62,7 @@ class ReviewController extends Controller
                 $imageName = $this->handleImageUpload($request->file('image'));
             }
 
-           
+
 
 
             // Create the review
@@ -116,11 +126,7 @@ class ReviewController extends Controller
         return back()->with('success', 'Review deleted successfully!');
     }
 
-    public function index()
-    {
-        $reviews = Review::with('user', 'order')->latest()->get();
-        return view('home', compact('reviews'));
-    }
+
 
     public function adminIndex()
     {

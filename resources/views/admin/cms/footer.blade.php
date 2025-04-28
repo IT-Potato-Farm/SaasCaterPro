@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-cyan-300">
+<body class="bg-gradient-to-b from-gray-50 to-gray-100">
 
     <div class="flex h-screen">
 
@@ -21,120 +21,182 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6">
-
-                <div class="mt-4">
-                    <div class="bg-white shadow-md rounded-lg mb-4 md:mb-6 p-4">
-                        <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold text-center text-gray-800">
-                            FOOTER SECTION
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6">
+                
+                <div class="max-w-6xl mx-auto">
+                    <!-- Page Header -->
+                    <div class="bg-white rounded-xl shadow-sm mb-6 p-6 text-center border border-gray-200/50 bg-gradient-to-r from-white to-indigo-50">
+                        <div class="inline-flex items-center justify-center w-14 h-14 bg-indigo-100 rounded-full mb-3">
+                            <i class="fas fa-building text-indigo-600 text-xl"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-gray-800">
+                            About Us Editor
                         </h1>
+                        <p class="text-indigo-500 mt-1 text-sm">Tell your company's story with pride</p>
                     </div>
 
-                    @if ($footerSection)
-                        <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
-                            <form id="editFooterForm" action="{{ route('admin.footer.update', $footerSection->id) }}" method="POST" class="space-y-4 md:space-y-6" enctype="multipart/form-data">
+                    @if ($aboutUs)
+                        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200/50">
+                            <form id="editAboutForm" action="{{ route('admin.aboutus.update', $aboutUs->id) }}" method="POST" class="space-y-6" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
 
-                                <div id="footer-success-message" class="hidden mt-4 p-3 md:p-4 bg-green-100 text-green-700 rounded-md text-sm md:text-base">
-                                    Changes saved successfully!
+                                <div id="success-message" class="hidden p-3 bg-green-50/90 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    About Us updated successfully!
                                 </div>
 
-                                <!-- Company Name -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="company_name" class="block text-sm md:text-base font-medium text-gray-700">Company Name</label>
-                                    <div class="flex items-center">
-                                        <input type="text" id="company_name" name="company_name" value="{{ $footerSection->company_name }}" class="block w-full px-3 py-2 text-xl md:text-2xl lg:text-3xl font-semibold text-gray-800 border-b border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors" required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Description -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="description" class="block text-sm md:text-base font-medium text-gray-700">Description</label>
-                                    <div class="flex items-start">
-                                        <textarea id="description" name="description" rows="4" class="block w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base" required>{{ $footerSection->description }}</textarea>
-                                        <i class="fas fa-edit text-blue-500 text-sm mt-2 ml-2"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Phone -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="phone" class="block text-sm md:text-base font-medium text-gray-700">Phone</label>
-                                    <div class="flex items-center">
-                                        <input type="text" id="phone" name="phone" value="{{ $footerSection->phone }}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base" required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Facebook -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="facebook" class="block text-sm md:text-base font-medium text-gray-700">Facebook</label>
-                                    <div class="flex items-center">
-                                        <input type="url" id="facebook" name="facebook" value="{{ $footerSection->facebook }}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base" required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Address -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="address" class="block text-sm md:text-base font-medium text-gray-700">Address</label>
-                                    <div class="flex items-start">
-                                        <textarea id="address" name="address" rows="2" class="block w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base" required>{{ $footerSection->address }}</textarea>
-                                        <i class="fas fa-edit text-blue-500 text-sm mt-2 ml-2"></i>
-                                    </div>
-                                </div>
-
-                                
-
-                                <!-- Logo Upload -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="logo" class="block text-sm md:text-base font-medium text-gray-700">Logo</label>
-                                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-                                        @if ($footerSection->logo)
-                                            <div class="relative group">
-                                                <img src="{{ asset($footerSection->logo) }}" class="rounded-md shadow-lg w-full max-w-xs" alt="Logo Image">
-                                                <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-md">
-                                                    <i class="fas fa-camera text-white text-2xl"></i>
+                                <!-- Two Column Layout -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <!-- Left Column - Content -->
+                                    <div class="space-y-6">
+                                        <!-- Title -->
+                                        <div>
+                                            <label for="title" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Section Title</label>
+                                            <div class="relative">
+                                                <input type="text" id="title" name="title" value="{{ $aboutUs->title }}" 
+                                                    class="block w-full px-4 py-3 text-xl font-bold text-gray-800 border-b-2 border-gray-200 focus:border-indigo-500 focus:outline-none transition-colors"
+                                                    placeholder="Our Company Story"
+                                                    required>
+                                                <div class="absolute right-3 top-3 text-indigo-400">
+                                                    <i class="fas fa-heading"></i>
                                                 </div>
                                             </div>
-                                        @else
-                                            <div class="w-32 h-32 bg-gray-200 rounded-md flex items-center justify-center">
-                                                <i class="fas fa-image text-gray-400 text-3xl"></i>
-                                            </div>
-                                        @endif
+                                        </div>
 
-                                        <div class="w-full md:w-auto">
-                                            <label class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm md:text-base font-medium rounded-md hover:bg-blue-600 transition">
-                                                <i class="fas fa-upload mr-2"></i> Upload New Logo
-                                                <input type="file" id="logo" name="logo" class="hidden" accept="image/*">
-                                            </label>
-                                            <p class="text-xs md:text-sm text-gray-500 mt-2" id="logo-file-name">No file selected</p>
+                                        <!-- Subtitle -->
+                                        <div>
+                                            <label for="subtitle" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Subtitle</label>
+                                            <div class="relative">
+                                                <input type="text" id="subtitle" name="subtitle" value="{{ $aboutUs->subtitle }}" 
+                                                    class="block w-full px-4 py-2 text-gray-600 border-b-2 border-gray-200 focus:border-indigo-500 focus:outline-none transition-colors"
+                                                    placeholder="What makes us special"
+                                                    required>
+                                                <div class="absolute right-3 top-3 text-indigo-400">
+                                                    <i class="fas fa-subscript"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div>
+                                            <label for="description" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Our Story</label>
+                                            <div class="relative">
+                                                <textarea id="description" name="description" rows="6" 
+                                                    class="block w-full px-4 py-3 text-gray-700 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 focus:outline-none transition-all text-sm"
+                                                    placeholder="Tell your company's history, mission, and values..."
+                                                    required>{{ $aboutUs->description }}</textarea>
+                                                <div class="absolute right-3 top-3 text-indigo-400">
+                                                    <i class="fas fa-align-left"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column - Media -->
+                                    <div class="space-y-6">
+                                        <!-- Featured Image -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Featured Image</label>
+                                            <div class="relative group rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-indigo-300 transition-colors">
+                                                @if ($aboutUs->featured_image)
+                                                    <img src="{{ asset($aboutUs->featured_image) }}" 
+                                                        class="w-full h-64 object-cover" 
+                                                        alt="Current Featured Image">
+                                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span class="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">Current Image</span>
+                                                    </div>
+                                                @else
+                                                    <div class="w-full h-64 bg-gray-100 flex flex-col items-center justify-center">
+                                                        <i class="fas fa-image text-gray-400 text-4xl mb-3"></i>
+                                                        <p class="text-gray-500 text-sm">No featured image selected</p>
+                                                    </div>
+                                                @endif
+                                                <input type="file" id="featured_image" name="featured_image" 
+                                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                                                    accept="image/*">
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-2 text-center">Recommended size: 1200×800px</p>
+                                        </div>
+
+                                        <!-- Team Photo -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Team Photo (Optional)</label>
+                                            <div class="relative group rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-indigo-300 transition-colors">
+                                                @if ($aboutUs->team_photo)
+                                                    <img src="{{ asset($aboutUs->team_photo) }}" 
+                                                        class="w-full h-48 object-cover" 
+                                                        alt="Current Team Photo">
+                                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span class="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">Current Photo</span>
+                                                    </div>
+                                                @else
+                                                    <div class="w-full h-48 bg-gray-100 flex flex-col items-center justify-center">
+                                                        <i class="fas fa-users text-gray-400 text-3xl mb-3"></i>
+                                                        <p class="text-gray-500 text-sm">Upload team photo</p>
+                                                    </div>
+                                                @endif
+                                                <input type="file" id="team_photo" name="team_photo" 
+                                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                                                    accept="image/*">
+                                            </div>
+                                        </div>
+
+                                        <!-- Milestones -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Key Milestones</label>
+                                            <div class="space-y-3">
+                                                <div class="flex items-start space-x-3">
+                                                    <div class="flex-shrink-0 mt-1">
+                                                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                            <i class="fas fa-star text-indigo-500 text-xs"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" name="milestone1" value="{{ $aboutUs->milestone1 }}" 
+                                                        class="flex-1 px-3 py-2 text-sm text-gray-700 border-b border-gray-200 focus:border-indigo-500 focus:outline-none"
+                                                        placeholder="E.g., Founded in 2010">
+                                                </div>
+                                                <div class="flex items-start space-x-3">
+                                                    <div class="flex-shrink-0 mt-1">
+                                                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                            <i class="fas fa-star text-indigo-500 text-xs"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" name="milestone2" value="{{ $aboutUs->milestone2 }}" 
+                                                        class="flex-1 px-3 py-2 text-sm text-gray-700 border-b border-gray-200 focus:border-indigo-500 focus:outline-none"
+                                                        placeholder="E.g., 1000+ happy customers">
+                                                </div>
+                                                <div class="flex items-start space-x-3">
+                                                    <div class="flex-shrink-0 mt-1">
+                                                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                            <i class="fas fa-star text-indigo-500 text-xs"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" name="milestone3" value="{{ $aboutUs->milestone3 }}" 
+                                                        class="flex-1 px-3 py-2 text-sm text-gray-700 border-b border-gray-200 focus:border-indigo-500 focus:outline-none"
+                                                        placeholder="E.g., Award winning service">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Copyright -->
-                                <div class="space-y-1 md:space-y-2">
-                                    <label for="copyright" class="block text-sm md:text-base font-medium text-gray-700">Copyright</label>
-                                    <div class="flex items-center">
-                                        <input type="text" id="copyright" name="copyright" value="{{ $footerSection->copyright }}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base" required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Submit -->
-                                <div class="flex justify-end pt-3 md:pt-4">
-                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm md:text-base font-medium rounded-md hover:bg-blue-700 transition">
-                                        <i class="fas fa-save mr-2"></i> Save Changes
+                                <!-- Submit Button -->
+                                <div class="flex justify-end pt-4">
+                                    <button type="submit" 
+                                        class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-medium rounded-lg shadow-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400">
+                                        <i class="fas fa-save mr-2"></i> Update About Us
                                     </button>
                                 </div>
-
                             </form>
                         </div>
                     @else
-                        <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
-                            <p class="text-gray-700 text-sm md:text-base">No Footer section content available.</p>
+                        <div class="bg-white rounded-xl shadow-sm p-6 text-center border border-gray-200/50">
+                            <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-info-circle text-gray-400 text-xl"></i>
+                            </div>
+                            <h3 class="text-base font-medium text-gray-700 mb-1">No About Us Content</h3>
+                            <p class="text-gray-500 text-sm">Create content to showcase your company story</p>
                         </div>
                     @endif
                 </div>

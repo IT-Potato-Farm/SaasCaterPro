@@ -70,11 +70,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 
 
+Route::get('/', function () {
+    return view('homepage');
+})->name('landing');
+
+
+Route::get('/all-reviews', [ReviewController::class, 'index'])->name('all.reviews');
+
 Route::middleware([PreventAdminAccess::class])->group(function () {
     
-    Route::get('/', function () {
-        return view('homepage');
-    })->name('landing');
     
     
     Route::get('/all-menus', function () {
@@ -494,7 +498,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // PENALTY
     Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
-    
+
     Route::post('/store', [PenaltyController::class, 'store'])->name('api.penalties.store');
     Route::post('/create', [PenaltyController::class, 'create'])->name('api.penalties.create');
     Route::get('/{penalty}', [PenaltyController::class, 'show'])->name('api.penalties.show'); 

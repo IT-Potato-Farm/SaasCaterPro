@@ -241,32 +241,32 @@
                 Swal.fire({
                     title: 'Add New User',
                     html: `
-                            <div class="text-left">
-                                <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-500">First Name</label>
-                                    <input type="text" id="firstName" class="swal2-input" placeholder="First Name">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-500">Last Name</label>
-                                    <input type="text" id="lastName" class="swal2-input" placeholder="Last Name">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-500">Email</label>
-                                    <input type="email" id="email" class="swal2-input" placeholder="Email">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-500">Mobile</label>
-                                    <input type="text" id="mobile" class="swal2-input" placeholder="Mobile">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-500">Role</label>
-                                    <select id="role" class="swal2-input">
-                                        <option value="admin">Admin</option>
-                                        <option value="customer">Customer</option>
-                                    </select>
-                                </div>
+                        <div class="text-left w-full">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                <input type="text" id="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="First Name">
                             </div>
-                        `,
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                <input type="text" id="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Last Name">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Email">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mobile</label>
+                                <input type="text" id="mobile" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Mobile">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                <select id="role" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="admin">Admin</option>
+                                    <option value="customer">Customer</option>
+                                </select>
+                            </div>
+                        </div>
+                    `,
                     confirmButtonText: 'Add User',
                     showCancelButton: true,
                     cancelButtonText: 'Cancel',
@@ -329,7 +329,7 @@
                                 if (data.success) {
                                     Swal.fire('Success!', 'User added successfully.',
                                         'success');
-                                    
+
                                 } else {
                                     Swal.fire('Error!', data.message || 'Failed to add user.',
                                         'error');
@@ -735,7 +735,7 @@
             //     });
             // });
 
-            
+
         });
     </script>
 </body>

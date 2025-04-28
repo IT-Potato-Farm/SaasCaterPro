@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-cyan-300">
+<body class="bg-gray-50">
 
     <div class="flex h-screen">
 
@@ -21,119 +21,177 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6">
-                {{-- <x-dashboard.header /> --}}
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6">
 
-                <div class="mt-4 ">
+                <div class="mt-4">
                     <!-- Page Header -->
-                    
-                    <div class="bg-white shadow-md rounded-lg mb-4 md:mb-6 p-4">
-                        <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold text-center text-gray-800">
-                            HERO SECTION PAGE
+                    <div class="bg-white rounded-xl shadow-sm mb-6 p-6 text-center border border-gray-100">
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+                            HERO SECTION
                         </h1>
+                        <p class="text-gray-500 mt-2">Customize your website's hero banner</p>
                     </div>
 
                     @if ($heroSection)
-                        <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
                             <form id="editForm" action="{{ route('admin.hero.update', $heroSection->id) }}"
-                                method="POST" class="space-y-4 md:space-y-6" enctype="multipart/form-data">
+                                method="POST" class="space-y-6" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
 
                                 <div id="success-message"
-                                    class="hidden mt-4 p-3 md:p-4 bg-green-100 text-green-700 rounded-md text-sm md:text-base">
+                                    class="hidden p-4 bg-green-50 text-green-700 rounded-lg text-sm border border-green-100 flex items-center">
+                                    <i class="fas fa-check-circle mr-2 text-lg"></i>
                                     Changes saved successfully!
                                 </div>
 
                                 <!-- Title Field -->
-                                <div class="space-y-1 md:space-y-2">
+                                <div>
                                     <label for="title"
-                                        class="block text-sm md:text-base font-medium text-gray-700">Title</label>
-                                    <div class="flex items-center">
+                                        class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                                    <div class="relative">
                                         <input type="text" id="title" name="title"
                                             value="{{ $heroSection->title }}"
-                                            class="block w-full px-3 py-2 text-xl md:text-2xl lg:text-3xl font-semibold text-gray-800 border-b border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors"
-                                            required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
+                                            class="block w-full px-4 py-3 text-xl font-semibold text-gray-800 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                            placeholder="Your hero headline" required>
+                                        <div class="absolute right-3 top-3 text-blue-500">
+                                            <i class="fas fa-heading"></i>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Subtitle Field -->
-                                <div class="space-y-1 md:space-y-2">
+                                <div>
                                     <label for="subtitle"
-                                        class="block text-sm md:text-base font-medium text-gray-700">Subtitle</label>
-                                    <div class="flex items-center">
+                                        class="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
+                                    <div class="relative">
                                         <input type="text" id="subtitle" name="subtitle"
                                             value="{{ $heroSection->subtitle }}"
-                                            class="block w-full px-3 py-2 text-lg md:text-xl text-gray-600 border-b border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors"
-                                            required>
-                                        <i class="fas fa-edit text-blue-500 text-sm ml-2"></i>
+                                            class="block w-full px-4 py-3 text-lg text-gray-600 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                            placeholder="Supporting headline text" required>
+                                        <div class="absolute right-3 top-3 text-blue-500">
+                                            <i class="fas fa-text-width"></i>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Description Field -->
-                                <div class="space-y-1 md:space-y-2">
+                                <div>
                                     <label for="description"
-                                        class="block text-sm md:text-base font-medium text-gray-700">Description</label>
-                                    <div class="flex items-start">
+                                        class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <div class="relative">
                                         <textarea id="description" name="description" rows="4"
-                                            class="block w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none transition-colors text-sm md:text-base"
-                                            required>{{ $heroSection->description }}</textarea>
-                                        <i class="fas fa-edit text-blue-500 text-sm mt-2 ml-2"></i>
+                                            class="block w-full px-4 py-3 text-gray-700 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                            placeholder="Detailed description of your hero section" required>{{ $heroSection->description }}</textarea>
+                                        <div class="absolute right-3 top-3 text-blue-500">
+                                            <i class="fas fa-align-left"></i>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Background Image Field -->
-                                <div class="space-y-1 md:space-y-2">
+                                <!-- Background Image Field -->
+                                <div>
                                     <label for="background_image"
-                                        class="block text-sm md:text-base font-medium text-gray-700">Background
-                                        Image</label>
-                                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                                        class="block text-sm font-medium text-gray-700 mb-3">Background Image</label>
+
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        <!-- Current Image Preview -->
                                         @if ($heroSection->background_image)
-                                            <div class="relative group">
-                                                <img src="{{ asset($heroSection->background_image) }}"
-                                                    class="rounded-md shadow-lg w-full max-w-xs" alt="Background Image">
+                                            <div class="w-full md:w-1/3">
                                                 <div
-                                                    class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-md">
-                                                    <i class="fas fa-camera text-white text-2xl"></i>
+                                                    class="relative group rounded-xl overflow-hidden shadow-lg border-2 border-gray-200">
+                                                    <img src="{{ asset($heroSection->background_image) }}"
+                                                        class="w-full h-48 md:h-64 object-cover"
+                                                        alt="Current Background" id="current-image">
+                                                    <div
+                                                        class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity p-4">
+                                                        <span class="text-white font-medium text-sm mb-1">Current
+                                                            Image</span>
+                                                        <span class="text-white/90 text-xs text-center">Click new image
+                                                            to replace</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @else
-                                            <div
-                                                class="w-32 h-32 bg-gray-200 rounded-md flex items-center justify-center">
-                                                <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                                <p class="text-xs text-gray-500 mt-2 text-center">Current image</p>
                                             </div>
                                         @endif
 
-                                        <div class="w-full md:w-auto">
-                                            <label
-                                                class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm md:text-base font-medium rounded-md hover:bg-blue-600 transition">
-                                                <i class="fas fa-upload mr-2"></i> Upload New Image
-                                                <input type="file" id="background_image" name="background_image"
-                                                    class="hidden" accept="image/*">
-                                            </label>
-                                            <p class="text-xs md:text-sm text-gray-500 mt-2" id="file-name">No file
-                                                selected</p>
-                                            <p id="image-error" class="text-sm text-red-600 mt-1"></p>
-                                            <img id="preview-image"
-                                                class="mt-4 w-full max-w-xs rounded-md shadow-md hidden" />
+                                        <!-- Upload Area -->
+                                        <div class="flex-1">
+                                            <div class="flex flex-col items-center justify-center w-full">
+                                                <label
+                                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200">
+                                                    <div
+                                                        class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                                                        <svg class="w-10 h-10 mb-3 text-gray-400 group-hover:text-blue-400 transition-colors"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                                            </path>
+                                                        </svg>
+                                                        <p
+                                                            class="mb-2 text-sm text-gray-500 group-hover:text-blue-500 transition-colors">
+                                                            <span class="font-semibold">Click to upload</span> or drag
+                                                            and drop</p>
+                                                        <p
+                                                            class="text-xs text-gray-400 group-hover:text-blue-400 transition-colors">
+                                                            PNG, JPG, JPEG (MAX. 5MB)</p>
+                                                    </div>
+                                                    <input id="background_image" name="background_image" type="file"
+                                                        class="hidden" accept="image/*">
+                                                </label>
+                                            </div>
 
+                                            <!-- File Info -->
+                                            <div class="mt-3 flex items-center justify-between">
+                                                <p class="text-sm text-gray-500" id="file-name">No file selected</p>
+                                                <p id="image-error" class="text-sm text-red-500"></p>
+                                            </div>
+
+                                            <!-- New Image Preview -->
+                                            <div class="mt-4 hidden" id="preview-container">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <p class="text-sm font-medium text-gray-700">New Image Preview</p>
+                                                    <button type="button" onclick="clearImageSelection()"
+                                                        class="text-xs text-red-500 hover:text-red-700 flex items-center">
+                                                        <i class="fas fa-times mr-1"></i> Remove
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="relative rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                                                    <img id="preview-image"
+                                                        class="w-full h-auto max-h-64 object-contain" />
+                                                    <div
+                                                        class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end p-3">
+                                                        <span class="text-white text-xs">Preview</span>
+                                                    </div>
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-1 text-right">Image will be cropped
+                                                    to fit</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Submit Button -->
-                                <div class="flex justify-end pt-3 md:pt-4">
+                                <div class="flex justify-end pt-2">
                                     <button type="submit"
-                                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm md:text-base font-medium rounded-md hover:bg-blue-700 transition">
+                                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium rounded-lg shadow-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                         <i class="fas fa-save mr-2"></i> Save Changes
                                     </button>
                                 </div>
                             </form>
                         </div>
                     @else
-                        <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
-                            <p class="text-gray-700 text-sm md:text-base">No Hero section content available.</p>
+                        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100 text-center">
+                            <div
+                                class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-exclamation-circle text-gray-400 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-800 mb-2">No hero section content available</h3>
+                            <p class="text-gray-500">Please create hero section content to get started.</p>
                         </div>
                     @endif
                 </div>
@@ -146,6 +204,7 @@
         const fileNameDisplay = document.getElementById('file-name');
         const previewImage = document.getElementById('preview-image');
         const imageError = document.getElementById('image-error');
+        const previewContainer = document.getElementById('preview-container');
 
         fileInput?.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -155,11 +214,12 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     previewImage.src = event.target.result;
-                    previewImage.classList.remove('hidden');
+                    // previewImage.classList.remove('hidden');
+                    previewContainer.classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
             } else {
-                previewImage.classList.add('hidden');
+                // previewImage.classList.add('hidden');
             }
 
             imageError.textContent = ''; // Reset error if any
