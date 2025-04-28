@@ -321,11 +321,14 @@ class AdminController extends Controller
             $todayRevenue = Order::where('status', 'completed')
                 ->whereDate('created_at', Carbon::today())
                 ->sum('total');
+                
             // THIS WEEK 
-            $thisWeekRevenue = Order::whereBetween('created_at', [
-                Carbon::now()->startOfWeek(),
-                Carbon::now()->endOfWeek()
-            ])->sum('total');
+            $thisWeekRevenue = Order::where('status', 'completed')
+                ->whereBetween('created_at', [
+                    Carbon::now()->startOfWeek(),
+                    Carbon::now()->endOfWeek()
+                ])
+                ->sum('total');
 
             // THIS CURRENT YR
             $yearRevenue = Order::where('status', 'completed')
@@ -523,7 +526,7 @@ class AdminController extends Controller
     public function goUserDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            $users=User::paginate(10);
+            $users = User::paginate(10);
             return view('admin.allusersdashboard', compact('users'));
         }
 
