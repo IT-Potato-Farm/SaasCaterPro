@@ -117,12 +117,15 @@ class ReviewController extends Controller
 
     public function destroy(Review $review)
     {
-        if ($review->user_id != Auth::id()) {
-            return back()->with('error', 'Unauthorized action.');
+        // if ($review->user_id != Auth::id()) {
+        //     return back()->with('error', 'Unauthorized action.');
+        // }
+        if ($review->image && Storage::disk('public')->exists('reviews/' . $review->image)) {
+            Storage::disk('public')->delete('reviews/' . $review->image);
         }
-
+    
         $review->delete();
-
+    
         return back()->with('success', 'Review deleted successfully!');
     }
 

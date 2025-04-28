@@ -32,6 +32,24 @@
             display: none !important;
         }
     </style>
+    <script>
+         function confirmDelete(button) {
+        Swal.fire({
+            title: 'Are you sure you want to delete this party tray?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+    </script>
 </head>
 
 <body class="bg-gray-50 flex h-screen">
@@ -115,6 +133,8 @@
                             <div class="review-card bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer 
                                     {{ in_array($review->id, old('featured_reviews', $reviewSettings->featured_reviews ?? [])) ? 'selected' : '' }}"
                                 onclick="toggleSelection(this, '{{ $review->id }}')">
+
+                                
                                 <input type="checkbox" name="featured_reviews[]" value="{{ $review->id }}"
                                     class="hidden" @checked(in_array($review->id, old('featured_reviews', $reviewSettings->featured_reviews ?? [])))>
 
@@ -171,6 +191,18 @@
                                         </span>
                                     </div>
                                 </div>
+
+                                <div class="p-4 border-t border-gray-200 flex justify-end"> 
+                                    <button type="button" onclick="deleteReview(event, '{{ $review->id }}')" 
+                                        class="text-red-600 hover:text-red-800 flex items-center text-sm transition-colors"> 
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"  
+                                            viewBox="0 0 24 24" stroke="currentColor"> 
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"  
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /> 
+                                        </svg> 
+                                        Delete Review 
+                                    </button> 
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -188,9 +220,51 @@
                     </button>
                 </div>
             </form>
+            <form id="delete-review-form" method="POST" class="hidden">
+                @csrf
+                @method('DELETE')
+            </form>
         </div>
     </div>
+    <script>
+        function deleteReview(event, reviewId) {
+            event.stopPropagation(); 
+            event.preventDefault();  
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to undo this action!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route('reviews.destroy', ':review') }}'.replace(':review', reviewId);
 
+        
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+        
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'DELETE';
+                    form.appendChild(methodField);
+        
+                    // Append form to body and submit it
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+        </script>
     <script>
         function toggleSelection(card, reviewId) {
             const checkbox = card.querySelector('input[type="checkbox"]');

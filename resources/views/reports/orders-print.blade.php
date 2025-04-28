@@ -133,7 +133,6 @@
                             <th class="border border-black px-2 py-1 text-center">Guests</th>
                             <th class="border border-black px-2 py-1 text-center">Event Dates</th>
                             <th class="border border-black px-2 py-1 text-center">Status</th>
-                            <th class="border border-black px-2 py-1 text-right">Penalty (₱)</th>
                             <th class="border border-black px-2 py-1 text-right">Total (₱)</th>
                         </tr>
                     </thead>
@@ -159,8 +158,6 @@
                                         {{ $order->status }}
                                     </span>
                                 </td>
-                                <td class="border border-black px-2 py-1 text-right">
-                                    {{ number_format($order->penalty_fee, 2) }}</td>
                                 <td class="border border-black px-2 py-1 text-right font-medium">
                                     {{ number_format($order->total, 2) }}</td>
                             </tr>
@@ -175,8 +172,7 @@
                         <tr>
                             <td colspan="6" class="border border-black px-3 py-2 text-right font-semibold">Totals:
                             </td>
-                            <td class="border border-black px-3 py-2 text-right font-semibold">
-                                {{ number_format($orders->sum('penalty_fee'), 2) }}</td>
+                           
                             <td class="border border-black px-3 py-2 text-right font-semibold">
                                 {{ number_format($orders->sum('total'), 2) }}</td>
                         </tr>
@@ -193,7 +189,6 @@
                     <p><strong>Average Order Value:</strong>
                         ₱{{ count($orders) > 0 ? number_format($orders->sum('total') / count($orders), 2) : '0.00' }}
                     </p>
-                    <p><strong>Total Penalties:</strong> ₱{{ number_format($orders->sum('penalty_fee'), 2) }}</p>
                 </div>
             </div>
         </div>

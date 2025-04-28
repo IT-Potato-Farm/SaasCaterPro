@@ -351,9 +351,9 @@ Route::middleware(['auth', 'verified', PreventAdminAccess::class])->group(functi
 
     Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.editReview');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.updateReview');
-    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
 });
 
+Route::delete('/reviews/{review}/delete', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
 
 
