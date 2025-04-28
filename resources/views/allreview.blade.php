@@ -224,9 +224,8 @@
                                 </button>
                             </div>
                             <div class="mt-2">
-                                <img id="modal-image"
-                                    src="{{ $review->image ? asset('storage/reviews/' . $review->image) : 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Unlink_icon.svg/1024px-Unlink_icon.svg.png' }}"
-                                    alt="Review Image" class="w-full h-auto max-h-[70vh] object-contain">
+                                <img id="modal-image" src="" alt="Full size review image" class="w-full h-auto max-h-[70vh] object-contain">
+
                             </div>
                         </div>
                     </div>
