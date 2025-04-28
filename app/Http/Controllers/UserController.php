@@ -232,4 +232,35 @@ class UserController extends Controller
 
     //     return back()->with('message', 'Verification link sent!');
     // }
+    public function update(Request $request, User $user)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed', // Password is optional
+            'role' => 'required|string|in:admin,customer',
+        ]);
+
+        // Update user details
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => $request->password ? bcrypt($request->password) : $user->password, // Keep old password if not changed
+            'role' => $request->role,
+        ]);
+
+        // Redirect to users index with success message
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    }
+    public function destroy(User $user)
+    {
+        // Delete the user
+        $user->delete();
+
+        // Redirect to users index with success message
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    }
 }

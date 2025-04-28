@@ -184,15 +184,15 @@ class AdminController extends Controller
             if ($request->filled('status')) {
                 $query->where('status', $request->input('status'));
             }
-    
+
             if ($request->filled('date_from')) {
                 $query->whereDate('event_date_start', '>=', $request->input('date_from'));
             }
-    
+
             if ($request->filled('date_to')) {
                 $query->whereDate('event_date_end', '<=', $request->input('date_to'));
             }
-            
+
 
             // Search term
             $search = $request->input('search', '');
@@ -523,27 +523,62 @@ class AdminController extends Controller
     public function goUserDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            return view('admin.allusersdashboard');
+            $users=User::paginate(10);
+            return view('admin.allusersdashboard', compact('users'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
     }
 
-    public function goCustomerReport()
+    public function goCustomerReport(Request $request)
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
 
-            $customers = User::where('role', 'customer')
-                ->with(['orders' => function ($query) {
-                    $query->with('orderItems');
-                }])
-                ->get();
+            $query = User::where('role', 'customer')
+                ->whereHas('orders');
 
+            if ($request->has('date_range') && $request->date_range) {
+                $dates = explode(' - ', $request->date_range);
+                if (count($dates) == 2) {
+                    $startDate = Carbon::parse($dates[0]);
+                    $endDate = Carbon::parse($dates[1]);
+                    $query->whereHas('orders', function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('event_date_start', [$startDate, $endDate]);
+                    });
+                }
+            }
+
+            if ($request->has('customer_type') && $request->customer_type) {
+                $customerType = $request->customer_type;
+                if ($customerType === 'new') {
+                    $query->whereDoesntHave('orders', function ($q) {
+                        $q->whereDate('created_at', '<', Carbon::now()->subMonths(6));
+                    });
+                } elseif ($customerType === 'returning') {
+                    $query->whereHas('orders', function ($q) {
+                        $q->whereDate('created_at', '>=', Carbon::now()->subMonths(6));
+                    });
+                }
+            }
+
+            // 1. First get all matching customers
+            $customers = $query->with(['orders.penalties', 'orders.orderItems'])->get();
+
+            // 2. Then filter manually for min_spend
+            if ($request->has('min_spend') && $request->min_spend) {
+                $minSpend = $request->min_spend;
+
+                $customers = $customers->filter(function ($customer) use ($minSpend) {
+                    $totalSpend = $customer->orders->sum(function ($order) {
+                        $penaltyTotal = $order->penalties->sum('amount');
+                        return $order->total + $penaltyTotal;
+                    });
+                    return $totalSpend >= $minSpend;
+                });
+            }
 
             $reportData = $customers->map(function ($customer) {
-                $totalAmountSpent = $customer->orders->sum(function ($order) {
-                    return $order->total + $order->penalty_fee; // Sum of total and penalty fee for each order
-                });
+                $totalAmountSpent = $customer->orders->sum('total');
 
                 $numberOfBookings = $customer->orders->count();
 
@@ -567,10 +602,12 @@ class AdminController extends Controller
                 return [
                     'customer_name' => $customer->first_name . ' ' . $customer->last_name,
                     'contact_information' => $customer->email . ' # ' . $customer->mobile,
+                    'mobile' => $customer->mobile,
                     'total_amount_spent' => $totalAmountSpent,
                     'number_of_bookings' => $numberOfBookings,
                     'most_popular_packages' => $popularPackages,
                     'frequency_of_bookings' => $frequencyOfBookings,
+                    'latest_event_date' => $customer->orders->max('event_date_start'),
                 ];
             });
             return view('reports.customerreport', compact('reportData'));

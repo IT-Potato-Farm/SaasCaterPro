@@ -23,6 +23,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
@@ -318,9 +319,20 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroyReview');
 });
 
+
+
+
+//USERS
+Route::post('/api/users/create', [UserApiController::class, 'store'])->name('api.users.store');
+Route::get('/api/users/{id}', [UserApiController::class, 'show'])->name('api.users.show');
+Route::put('/api/users/{id}', [UserApiController::class, 'update'])->name('api.users.update');
+Route::delete('/api/users/{id}', [UserApiController::class, 'destroy'])->name('api.users.destroy');
+Route::put('/api/users/{id}/role', [UserApiController::class, 'updateRole'])->name('api.users.role');
+
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    Route::resource('users', UserController::class);
     // CMS MANAGEMENT admin.hero.index
     Route::prefix('admin')->name('admin.')->group(function () {
 
