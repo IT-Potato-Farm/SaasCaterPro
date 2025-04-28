@@ -77,13 +77,14 @@ Route::get('/', function () {
 
 Route::get('/all-reviews', [ReviewController::class, 'index'])->name('all.reviews');
 
+Route::get('/all-menus', function () {
+    return view('menupage');
+})->name('all-menu');
+// PREVENT ADMIN ACCESSING CUSTOMER SIDE
 Route::middleware([PreventAdminAccess::class])->group(function () {
     
     
     
-    Route::get('/all-menus', function () {
-        return view('menupage');
-    })->name('all-menu');
 
     
     

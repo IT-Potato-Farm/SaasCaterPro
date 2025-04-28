@@ -1,18 +1,5 @@
 <script src="{{ asset('js/addPackageToCart.js') }}"></script>
-{{-- <script>
-    function debugAddToCart(itemId) {
-        // Check if a variant dropdown exists for the menu item
-        let variantSelect = document.getElementById('variant-' + itemId);
-        let selectedVariant = variantSelect ? variantSelect.value : null;
 
-        // Debug log to console
-        console.log("DEBUG: Selected variant for menu item", itemId, "is", selectedVariant);
-
-        // Call the existing addToCart function
-        // If you need to pass the type, it defaults to 'menu_item'
-        addToCart(itemId, 'menu_item');
-    }
-</script> --}}
 
 <nav class="holder">
     <div class="items flex justify-center gap-20 py-4 my-2 bg-red-100 text-sm font-normal">
