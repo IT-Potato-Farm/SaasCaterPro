@@ -18,62 +18,59 @@
     <style>
         
         .fc-toolbar-title {
-            font-size: 1.75rem;
+            font-size: 1.6rem !important; 
         }
 
         @media (max-width: 768px) { 
             .fc-toolbar-title {
-                font-size: 1.3rem;
+                font-size: 1.4rem !important; 
             }
         }
 
         @media (max-width: 480px) { 
             .fc-toolbar-title {
-                font-size: 1.1rem;
+                font-size: 1.2rem !important;
             }
         }
 
-        
         .fc-button {
             font-size: 1rem;
             padding: 0.4rem 0.8rem;
-            margin: 0 0.2rem; 
+            margin: 0 0.2rem;
         }
 
         @media (max-width: 768px) {
             .fc-button {
-                font-size: 0.875rem;
+                font-size: 0.95rem; 
                 padding: 0.35rem 0.7rem;
             }
         }
 
         @media (max-width: 480px) {
             .fc-button {
-                font-size: 0.75rem;
+                font-size: 0.85rem; 
                 padding: 0.25rem 0.6rem;
             }
         }
 
-        
         .fc-header-toolbar {
             flex-wrap: wrap;
             gap: 0.5rem;
         }
 
-        
         .fc-daygrid-day-number {
             font-size: 1rem;
         }
 
         @media (max-width: 768px) {
             .fc-daygrid-day-number {
-                font-size: 0.875rem;
+                font-size: 0.95rem; 
             }
         }
 
         @media (max-width: 480px) {
             .fc-daygrid-day-number {
-                font-size: 0.75rem;
+                font-size: 0.85rem; 
             }
         }
 
@@ -83,13 +80,13 @@
 
         @media (max-width: 768px) {
             .fc-event {
-                font-size: 0.75rem;
+                font-size: 0.8rem; 
             }
         }
 
         @media (max-width: 480px) {
             .fc-event {
-                font-size: 0.625rem;
+                font-size: 0.75rem; 
             }
         }
     </style>
