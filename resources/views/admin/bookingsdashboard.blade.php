@@ -14,9 +14,115 @@
     <script src="{{ asset('js/toprightalert.js') }}"></script>
 
 
-
+    
+    
+    
     <style>
         
+        /* Print-specific styles */
+         /* Print-specific styles */
+         @media print {
+        /* Overall page layout */
+        @page {
+            size: portrait;
+            margin: 0.5cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.3;
+            background-color: white;
+            color: black;
+        }
+        
+        /* Container adjustments */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Show the print header when printing */
+        .print-header {
+            display: block !important;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        .print-header h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .print-header p {
+            font-size: 10pt;
+            margin: 2px 0;
+        }
+        
+        /* Ensure the orders table is visible and properly formatted */
+        #ordersTable {
+            display: table !important;
+            width: 100% !important;
+            border-collapse: collapse;
+            font-size: 10pt;
+            margin-top: 10px;
+            page-break-inside: auto;
+        }
+        
+        /* Hide elements not needed in print */
+        .no-print, 
+        button, 
+        .navigation, 
+        .pagination, 
+        footer, 
+        .search-filters {
+            display: none !important;
+        }
+        
+        /* Better page breaks */
+        thead {
+            display: table-header-group;
+        }
+        
+        tr {
+            page-break-inside: avoid;
+        }
+        
+        /* Table styling for better print appearance */
+        th {
+            background-color: #f2f2f2 !important;
+            color: black !important;
+            font-weight: bold;
+            text-align: left;
+            padding: 8px !important;
+            border-bottom: 1.5px solid #333;
+        }
+        
+        td {
+            padding: 6px 8px !important;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        /* Zebra striping for better readability */
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        /* Status formatting */
+        .status-badge {
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-weight: normal;
+            display: inline-block;
+        }
+    }
         .fc-toolbar-title {
             font-size: 1.6rem !important; 
         }
@@ -90,6 +196,20 @@
             }
         }
     </style>
+<script>
+    // Function to trigger printing
+    function printOrdersReport() {
+        window.print();
+    }
+    
+    // Button to print the report
+    document.addEventListener('DOMContentLoaded', function() {
+        const printButton = document.getElementById('printReportBtn');
+        if (printButton) {
+            printButton.addEventListener('click', printOrdersReport);
+        }
+    });
+</script>
 
     <script>
         function confirmDelete(form) {
@@ -162,7 +282,7 @@
 
 
             <div class="container mx-auto px-4 py-8 ">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 ">
+                <div class="flex print:hidden flex-col sm:flex-row justify-between items-start sm:items-center mb-8 ">
                     <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0 ">All Bookings</h1>
                     <div class="flex space-x-3">
                         <!-- Refresh -->
@@ -188,7 +308,7 @@
                         </button> --}}
 
                         <!-- Export -->
-                        <button
+                        {{-- <button id="printReportBtn" 
                             class="hover:cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs hover:bg-gray-200 text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -197,7 +317,7 @@
                                 </path>
                             </svg>
                             PRINT
-                        </button>
+                        </button> --}}
                     </div>
                 </div>
 
@@ -205,7 +325,7 @@
                 <!-- Filter Section -->
 
                 <!-- Filter Section -->
-                <div class="flex items-center space-x-4 mb-4">
+                <div class="flex items-center print:hidden space-x-4 mb-4">
                     <!-- Status Filter -->
                     <div class="flex items-center space-x-2">
                         <label for="status" class="text-sm text-gray-600">Status:</label>
@@ -301,7 +421,20 @@
                 @else
                     {{-- <div class="bg-white rounded-lg shadow overflow-hidden"> --}}
 
-
+                        <div id="print-header" class="print-header hidden text-center p-4  ">
+                            <h1 class="text-xl font-bold uppercase">SAAS Food & Catering Services</h1>
+                            <p class="mt-1 text-xs">Orders Report -
+                                {{ request('status') != 'all' ? ucfirst(request('status')) : 'All Statuses' }}</p>
+                            <p class="mt-1 text-xs">
+                                @if (request('start_date') && request('end_date'))
+                                    {{ \Carbon\Carbon::parse(request('start_date'))->format('M d, Y') }} to
+                                    {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
+                                @else
+                                    All Dates
+                                @endif
+                            </p>
+                            <p class="mt-1 text-xs">Generated: {{ now()->format('M d, Y h:i A') }}</p>
+                        </div>
 
 
                     <div class=" px-4 sm:px-6 lg:px-8 overflow-x-auto ">
@@ -684,7 +817,9 @@
 
                     </div>
 
-                    
+                    <section class="print:hidden">
+
+                   
                     <!-- Pagination -->
                     @if ($orders->hasPages())
                         <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
@@ -772,7 +907,7 @@
 
 
         </main>
-
+    </section>
     </div>
     {{-- BOOKING CALENDAR JS --}}
     <script>
