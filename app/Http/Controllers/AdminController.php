@@ -321,7 +321,7 @@ class AdminController extends Controller
             $todayRevenue = Order::where('status', 'completed')
                 ->whereDate('created_at', Carbon::today())
                 ->sum('total');
-                
+
             // THIS WEEK 
             $thisWeekRevenue = Order::where('status', 'completed')
                 ->whereBetween('created_at', [
@@ -633,4 +633,5 @@ class AdminController extends Controller
     //         })->toArray();
     //     return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
     // }
+    
 }

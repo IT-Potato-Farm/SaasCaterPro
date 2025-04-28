@@ -1,5 +1,5 @@
 <!-- x-dashboard.side-nav component -->
-<div class="bg-white h-screen border-r border-gray-200 w-64 flex flex-col fixed inset-y-0 left-0 transform transition duration-200 ease-in-out z-30 md:relative md:translate-x-0"
+<div class="bg-white h-screen border-r border-gray-200 w-64 flex flex-col fixed inset-y-0 left-0 transform transition duration-200 ease-in-out z-30 md:relative md:translate-x-0 print:hidden"
     id="sidebar">
     <!-- Mobile close button -->
     <div class="flex items-center justify-between px-4 py-2 md:hidden">
@@ -144,7 +144,7 @@
                     class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">Orders Report</a>
                 <a href="{{ route('admin.reports.customer', ['type' => 'customers']) }}"
                     class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">Customer Report</a>
-                <a href="{{ route('admin.reports', ['type' => 'penalties']) }}"
+                <a href="{{ route('admin.reports.penalties', ['type' => 'penalties']) }}"
                     class="block py-2 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">Penalties Report</a>
             </div>
         </div>

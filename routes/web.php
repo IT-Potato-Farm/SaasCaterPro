@@ -22,9 +22,11 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\UtilityController;
+use App\Http\Middleware\PreventAdminAccess;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
@@ -47,6 +49,42 @@ use App\Http\Controllers\Admin\WhyChooseUsSectionController;
 use App\Http\Controllers\Admin\ReviewSectionSettingController;
 
 // route navigation each page
+Route::middleware(['auth', 'admin'])->group(function () {
+    // Redirect admin from customer pages to admin dashboard
+    Route::get('/', function () {
+        return redirect()->route('admin.reports');
+    });
+    Route::get('/all-menus', function () {
+        return redirect()->route('admin.reports');
+    });
+    Route::get('/cart', function () {
+        return redirect()->route('admin.reports');
+    });
+    Route::get('/checkout', function () {
+        return redirect()->route('admin.reports');
+    });
+    Route::get('/user/dashboard', function () {
+        return redirect()->route('admin.reports');
+    });
+});
+
+
+
+Route::middleware([PreventAdminAccess::class])->group(function () {
+    
+    Route::get('/', function () {
+        return view('homepage');
+    })->name('landing');
+    
+    
+    Route::get('/all-menus', function () {
+        return view('menupage');
+    })->name('all-menu');
+
+    
+    
+});
+
 
 // DEBUG EMAIL
 Route::get('/debug-order-email/{orderId}', function ($orderId) {
@@ -76,14 +114,7 @@ Route::get('/register', [UserController::class, 'goregister'])->name('register')
 
 
 
-Route::get('/', function () {
-    return view('homepage');
-})->name('landing');
 
-
-Route::get('/all-menus', function () {
-    return view('menupage');
-})->name('all-menu');
 
 // Route::get('/login', function () {
 //     return view('login');
@@ -197,6 +228,7 @@ Route::get('/get-booked-dates', function () {
     return response()->json($formatted);
 });
 
+
 Route::get('/bookings/occupied-times', [OrderController::class, 'getOccupiedTimes'])->name('bookings.occupied-times');
 Route::get('/bookings/available-slots', [CheckoutController::class, 'getAvailableSlots'])->name('bookings.available-slots');
 //CATEGORY ROUTES
@@ -251,8 +283,6 @@ Route::get('/check-name-availability', [MenuItemController::class, 'checkNameAva
 Route::middleware(['auth', 'verified'])->group(function () {
     // ------------------------------------------------
 
-
-
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     // Route::put('/cart/edit/{id}', [CartController::class, 'update'])->name('cart.update');
 
@@ -298,7 +328,7 @@ Route::get('/privacy-policyshow', [PrivacyPolicyController::class, 'show'])->nam
 Route::post('/reviews/submit', [ReviewController::class, 'store'])->name('reviews.leaveReview');
 
 // CUSTOMER ROUTE IF LOGGED IN
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified', PreventAdminAccess::class])->group(function () {
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
@@ -392,6 +422,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/finaldashboard/bookings', [AdminController::class, 'goBookingsDashboard'])->name('admin.bookings');
     Route::get('/admin/finaldashboard/users', [AdminController::class, 'goUserDashboard'])->name('admin.allusers');
     Route::get('/admin/finaldashboard/reports/customer', [AdminController::class, 'goCustomerReport'])->name('admin.reports.customer');
+    Route::get('/admin/finaldashboard/reports/penalties', [PenaltyController::class, 'index'])->name('admin.reports.penalties');
+
     // Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->middleware('verified')->name('admin.admindashboard');
     Route::get('/admin/admindashboard', [AdminController::class, 'dashboard'])->name('admin.admindashboard');
 
@@ -438,7 +470,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // categiry
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    // add
     Route::post('/categories/store', [CategoryController::class, 'addCategory'])->name('categories.addCategory');
     Route::put('/categories/{id}/edit', [CategoryController::class, 'editCategory'])->name('categories.edit');
     Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('categories.delete');
@@ -463,6 +494,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // PENALTY
     Route::post('/orders/{order}/add-penalty', [OrderController::class, 'addPenalty'])->name('orders.add-penalty');
+    
+    Route::post('/store', [PenaltyController::class, 'store'])->name('api.penalties.store');
+    Route::post('/create', [PenaltyController::class, 'create'])->name('api.penalties.create');
+    Route::get('/{penalty}', [PenaltyController::class, 'show'])->name('api.penalties.show'); 
+    Route::put('/{penalty}', [PenaltyController::class, 'update'])->name('api.penalties.update');
+    Route::delete('/{penalty}', [PenaltyController::class, 'destroy'])->name('api.penalties.destroy');
 });
 
 
