@@ -168,11 +168,9 @@
                             <!-- Options Column (hidden on mobile and tablet) -->
                             <td class="px-6 py-4 hidden lg:table-cell">
                                 @if ($item->itemOptions->isNotEmpty())
-                                    <ul class="list-disc pl-5 space-y-1 text-sm text-gray-600">
-                                        @foreach ($item->itemOptions as $option)
-                                            <li>{{ $option->type }}</li>
-                                        @endforeach
-                                    </ul>
+                                    <p class="text-sm text-gray-600">
+                                        {{ $item->itemOptions->pluck('type')->join(', ') }}
+                                    </p>
                                 @else
                                     <p class="text-sm text-gray-500">No options available</p>
                                 @endif

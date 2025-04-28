@@ -64,7 +64,7 @@
             {{-- category formm --}}
             {{-- <x-category-form /> --}}
 
-            <x-category.category-list /> {{-- andto rin yung edit category sa popup modal --}}
+         
 
             <header class="flex items-center justify-center">
                 <div>

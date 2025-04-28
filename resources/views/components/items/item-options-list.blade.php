@@ -142,7 +142,7 @@
                             
                             <!-- Type Column -->
                             <td class="px-6 py-4">
-                                <div class="text-lg font-semibold text-blue-600">{{ $itemOption->type }}</div>
+                                <div class="text-lg font-semibold text-gray-900">{{ $itemOption->type }}</div>
                                 <!-- Mobile-only description preview -->
                                 <div class="md:hidden mt-1 text-sm text-gray-700 line-clamp-2">
                                     {{ $itemOption->description }}

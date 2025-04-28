@@ -78,6 +78,7 @@ php artisan db:seed --class=FooterSectionSeeder
 php artisan db:seed --class=PrivacyPolicySeeder
 php artisan db:seed --class=PrivacyPolicySeeder
 php artisan db:seed --class=NavbarSettingSeeder
+php artisan db:seed --class=ReviewSectionSettingSeeder
 
 GUIDE IN DEPLOYMENT
 
