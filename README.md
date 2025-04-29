@@ -5,6 +5,10 @@ if permission errors,
 
 composer install --no-scripts
 
+rm -rf vendor
+rm composer.lock
+composer install
+
 
 VENDOR EXIST
 rmdir /s /q vendor

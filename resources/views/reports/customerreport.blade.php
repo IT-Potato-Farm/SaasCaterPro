@@ -167,7 +167,7 @@
 
 
                     <!-- Filters Card -->
-                    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    {{-- <div class="bg-white rounded-xl shadow-md p-6 mb-8">
                         <h2 class="text-lg font-semibold text-gray-800 mb-4">Filter Options</h2>
                         <form action="{{ request()->url() }}" method="GET"
                             class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -209,7 +209,7 @@
                                 </button>
                             </div>
                         </form>
-                    </div>
+                    </div> --}}
 
                     <!-- Summary Cards -->
                     <div id="printContent">
@@ -770,14 +770,14 @@
                 }
             });
 
-           
 
 
 
 
 
 
-            
+
+
 
 
         });
