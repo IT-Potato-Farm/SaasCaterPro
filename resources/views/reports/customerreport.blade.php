@@ -345,10 +345,10 @@
                                                 data-column="frequency_of_bookings">
                                                 Frequency <i class="fas fa-sort ml-1"></i>
                                             </th>
-                                            <th
+                                            {{-- <th
                                                 class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Actions
-                                            </th>
+                                            </th> --}}
                                         </tr>
                                     </thead>
                                     <tbody id="customerTableBody" class="bg-white divide-y divide-gray-200">
@@ -382,12 +382,12 @@
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                                                     {{ $customer['frequency_of_bookings'] }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                {{-- <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <button class="text-indigo-600 hover:text-indigo-900"
                                                         onclick="openModal('{{ $customer['customer_name'] }}')">
                                                         View Profile
                                                     </button>
-                                                </td>
+                                                </td> --}}
                                             </tr>
                                         @endforeach
                                     </tbody>
