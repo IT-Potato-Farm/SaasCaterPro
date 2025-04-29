@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Models\HeroSection;
 use Illuminate\Http\Request;
 use App\Models\NavbarSetting;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class HeroSectionController extends Controller
@@ -20,6 +22,7 @@ class HeroSectionController extends Controller
         return view('admin.cms.hero', compact('heroSection'));
     }
 
+    
 
     /**
      * Show the form for creating a new resource.
@@ -52,13 +55,21 @@ class HeroSectionController extends Controller
 
             // Handle image upload if a new one is provided
             if ($request->hasFile('background_image')) {
-                if ($hero->background_image && file_exists(public_path($hero->background_image))) {
-                    unlink(public_path($hero->background_image));
-                }
 
-                $path = $request->file('background_image')->store('uploads/hero-sections', 'public');
-                $data['background_image'] = $path;
+                // Delete old background image from storage
+                if ($hero->background_image) {
+                    Storage::disk('public')->delete('hero-sections/' . basename($hero->background_image));
+                }
+    
+                // Upload new image
+                $image = $request->file('background_image');
+                $imageName = $this->handleImageUpload($image);
+    
+                // Save the path (with 'storage/hero-sections/')
+                $data['background_image'] = 'storage/hero-sections/' . $imageName;
             }
+
+
 
             // Update the record
             $hero->update($data);
@@ -82,4 +93,8 @@ class HeroSectionController extends Controller
             ], 500);
         }
     }
+    protected function handleImageUpload($image)
+{
+    return basename($image->store('hero-sections', 'public'));
+}
 }

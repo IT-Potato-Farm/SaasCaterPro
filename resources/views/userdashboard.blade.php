@@ -119,10 +119,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
                                             @if ($order->status == 'completed')
-                                                @if ($order->review)
-                                                    <a href="#" class="text-blue-600 hover:text-blue-800">Show
-                                                        Review</a>
-                                                @else
+                                                @if (!$order->review)
                                                     <button onclick="leaveReview({{ $order->id }})"
                                                         class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-sm hover:shadow-md">
                                                         <div class="flex items-center space-x-2">

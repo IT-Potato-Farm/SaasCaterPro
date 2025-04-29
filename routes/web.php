@@ -70,18 +70,18 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 
 
-Route::get('/', function () {
-    return view('homepage');
-})->name('landing');
 
 
 Route::get('/all-reviews', [ReviewController::class, 'index'])->name('all.reviews');
 
-Route::get('/all-menus', function () {
-    return view('menupage');
-})->name('all-menu');
+Route::get('/', function () {
+    return view('homepage');
+})->name('landing');
 // PREVENT ADMIN ACCESSING CUSTOMER SIDE
 Route::middleware([PreventAdminAccess::class])->group(function () {
+    Route::get('/all-menus', function () {
+        return view('menupage');
+    })->name('all-menu');
     
     
     
