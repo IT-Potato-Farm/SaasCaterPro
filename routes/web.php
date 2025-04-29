@@ -74,20 +74,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::get('/all-reviews', [ReviewController::class, 'index'])->name('all.reviews');
 
-Route::get('/', function () {
-    return view('homepage');
-})->name('landing');
 // PREVENT ADMIN ACCESSING CUSTOMER SIDE
 Route::middleware([PreventAdminAccess::class])->group(function () {
     Route::get('/all-menus', function () {
         return view('menupage');
     })->name('all-menu');
-    
-    
-    
+    Route::get('/', function () {
+        return view('homepage');
+    })->name('landing');
 
-    
-    
+
+
+
+
+
 });
 
 
@@ -181,7 +181,7 @@ Route::middleware('auth')->group(function () {
 
     // Resend the verification code
     Route::post('/email/verify/resend', [VerifyEmailController::class, 'verifyHandler'])
-        ->middleware('throttle:6,1') 
+        ->middleware('throttle:6,1')
         ->name('verification.resend-code');
 
 
@@ -502,7 +502,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/store', [PenaltyController::class, 'store'])->name('api.penalties.store');
     Route::post('/create', [PenaltyController::class, 'create'])->name('api.penalties.create');
-    Route::get('/{penalty}', [PenaltyController::class, 'show'])->name('api.penalties.show'); 
+    Route::get('/{penalty}', [PenaltyController::class, 'show'])->name('api.penalties.show');
     Route::put('/{penalty}', [PenaltyController::class, 'update'])->name('api.penalties.update');
     Route::delete('/{penalty}', [PenaltyController::class, 'destroy'])->name('api.penalties.destroy');
 });
