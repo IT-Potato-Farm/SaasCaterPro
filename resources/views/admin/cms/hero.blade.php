@@ -134,7 +134,8 @@
                                                         <p
                                                             class="mb-2 text-sm text-gray-500 group-hover:text-blue-500 transition-colors">
                                                             <span class="font-semibold">Click to upload</span> or drag
-                                                            and drop</p>
+                                                            and drop
+                                                        </p>
                                                         <p
                                                             class="text-xs text-gray-400 group-hover:text-blue-400 transition-colors">
                                                             PNG, JPG, JPEG (MAX. 5MB)</p>
@@ -224,6 +225,16 @@
 
             imageError.textContent = ''; // Reset error if any
         });
+        // CLEAR IMAGE FUNCTION
+        function clearImageSelection() {
+            fileInput.value = '';
+            previewImage.src = '';
+            previewContainer.classList.add('hidden');
+            fileNameDisplay.textContent = 'No file selected';
+            if (imageError) {
+                imageError.textContent = '';
+            }
+        }
 
         // Handle form submission
         document.getElementById('editForm')?.addEventListener('submit', function(e) {
@@ -247,7 +258,12 @@
                 .then(data => {
                     const successMessage = document.getElementById('success-message');
                     successMessage.classList.remove('hidden');
-                    setTimeout(() => successMessage.classList.add('hidden'), 3000);
+
+                    
+                    setTimeout(() => {
+                        successMessage.classList.add('hidden');
+                        location.reload(); 
+                    }, 1000); 
 
                     successMessage.scrollIntoView({
                         behavior: 'smooth',
