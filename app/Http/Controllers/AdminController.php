@@ -96,7 +96,7 @@ class AdminController extends Controller
             // $items = Item::with('itemOptions')->get();
             $items = Item::with('itemOptions')->paginate(10);
             // $itemOptions = ItemOption::all();
-            $itemOptions = ItemOption::paginate(10);  
+            $itemOptions = ItemOption::paginate(10);
 
             $packages = Package::all();
             $packageItems = PackageItem::all();
@@ -261,7 +261,7 @@ class AdminController extends Controller
     public function goReportsDashboard()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            // SALES PERFORMANCE 
+            // SALES PERFORMANCE
             $weeklySales = collect([]);
             for ($i = 4; $i >= 0; $i--) {
                 $weekStart = now()->subWeeks($i)->startOfWeek();
@@ -325,7 +325,7 @@ class AdminController extends Controller
                 ->whereDate('created_at', Carbon::today())
                 ->sum('total');
 
-            // THIS WEEK 
+            // THIS WEEK
             $thisWeekRevenue = Order::where('status', 'completed')
                 ->whereBetween('created_at', [
                     Carbon::now()->startOfWeek(),
@@ -584,7 +584,9 @@ class AdminController extends Controller
             }
 
             $reportData = $customers->map(function ($customer) {
-                $totalAmountSpent = $customer->orders->sum('total');
+                $totalAmountSpent = $customer->orders
+                ->where('status', 'completed') 
+                ->sum('total');
 
                 $numberOfBookings = $customer->orders->count();
 
@@ -636,5 +638,5 @@ class AdminController extends Controller
     //         })->toArray();
     //     return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
     // }
-    
+
 }
