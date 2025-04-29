@@ -198,6 +198,10 @@
                     @endforeach
                 </tbody>
             </table>
+            {{-- PAGINATE --}}
+            <div class="mt-4">
+                {{ $itemOptions->links() }}
+            </div>
         </div>
     @endif
 </div>
