@@ -13,5 +13,8 @@ class Category extends Model
 
     protected $fillable = ['name', 'description'] ;
 
-    
+    public function itemOptions()
+    {
+        return $this->hasMany(ItemOption::class);
+    }
 }

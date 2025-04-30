@@ -72,6 +72,25 @@
     .swal2-popup {
         max-width: 600px !important;
     }
+    .options-container .flex-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .options-container label {
+        transition: all 0.2s;
+    }
+    
+    .options-container label:hover {
+        background-color: #e9f0fd;
+        border-color: #c3d9fa;
+    }
+    
+    .options-container input:checked + span {
+        color: #2563eb;
+        font-weight: 500;
+    }
 </style>
 
 <script>
@@ -152,13 +171,15 @@
 
                                     @if ($item->itemOptions->count())
                                         <div id="item-options-{{ $item->id }}" class="options-container hidden mt-2">
-                                            @foreach ($item->itemOptions as $option)
-                                                <label class="flex items-center space-x-2 mt-1">
-                                                    <input type="checkbox" name="item_options[{{ $item->id }}][]" value="{{ $option->id }}"
-                                                        class="form-checkbox h-4 w-4 text-blue-600">
-                                                    <span class="text-sm text-gray-700">{{ $option->type }}</span>
-                                                </label>
-                                            @endforeach
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach ($item->itemOptions as $option)
+                                                    <label class="inline-flex items-center px-2 py-1 bg-gray-50 rounded-md border border-gray-200">
+                                                        <input type="checkbox" name="item_options[{{ $item->id }}][]" value="{{ $option->id }}"
+                                                            class="form-checkbox h-4 w-4 text-blue-600 mr-1">
+                                                        <span class="text-sm text-gray-700">{{ $option->type }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     @endif
                                 </div>
@@ -292,7 +313,6 @@
         });
     };
 
-    /* Rest of your existing functions remain exactly the same */
     async function validatePackageName() {
         const nameInput = document.getElementById('swal-name');
         const errorElement = document.getElementById('name-error');

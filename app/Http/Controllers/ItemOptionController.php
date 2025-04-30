@@ -48,16 +48,21 @@ class ItemOptionController extends Controller
     // LINK ITEMS SA PACKAGE
     public function getOptions(Request $request)
     {
-        $category = $request->query('category');
+        $categoryId = $request->query('category');
 
         $query = ItemOption::query();
 
         // Apply category filter if provided
-        if ($category) {
-            $query->where('category', $category);
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);  // Use 'category_id' instead of 'category'
         }
+        $options = $query->with('category')  // Assuming you have a category relationship
+        ->get(['id', 'type', 'category_id']);
 
-        $options = $query->get(['id', 'type', 'category']);
+        $options->transform(function($option) {
+        $option->category_name = $option->category->name ?? 'No category';  // Safely access category name
+        return $option;
+    });
 
         return response()->json($options);
     }
@@ -73,10 +78,13 @@ class ItemOptionController extends Controller
         $data = $request->validate([
             'type' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'category_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-
+        if ($request->has('category_id') && $request->input('category_id') === '') {
+            $data['category_id'] = null;
+        }
 
 
         $itemOption = ItemOption::findOrFail($itemOptionId);
@@ -94,6 +102,12 @@ class ItemOptionController extends Controller
         }
 
         $itemOption->update($data);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true, 
+                'message' => 'Item Option updated successfully!'
+            ]);
+        }
         return redirect()->back()->with('success', 'Item Option updated successfully!');
     }
 

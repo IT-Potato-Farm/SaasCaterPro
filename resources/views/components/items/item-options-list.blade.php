@@ -1,10 +1,9 @@
-@props(['itemOptions'])
-
+@props(['itemOptions', 'categories'])
 
 <script>
-    // Check if the data is being passed to JavaScript
+    function openEditItemOption(id, type, description, image, categoryId) {
+        console.log("Editing item:", id);
 
-    function openEditItemOption(id, type, description, image) {
         let editUrl = "{{ route('itemOption.edit', ':id') }}".replace(':id', id);
         if (description === null || description === 'null') {
             description = '';
@@ -28,13 +27,23 @@
                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                                required>
                     </div>
-
+                    
                     <!-- Description -->
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
                         <textarea name="description" 
                                   class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
                                   >${description}</textarea>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Category</label>
+                        <select name="category_id" id="categoryDropdown-${id}" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none">
+                            <option value="">Not Set</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" ${categoryId == {{ $category->id }} ? 'selected' : ''}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <!-- Image -->
@@ -60,11 +69,80 @@
                 confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
                 cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
             },
+            didOpen: () => {
+                // Set the category dropdown value
+                const dropdown = document.getElementById(`categoryDropdown-${id}`);
+                if (dropdown) {
+                    // If categoryId is null or undefined, select the "Not Set" option
+                    if (categoryId === null || categoryId === undefined) {
+                        dropdown.value = '';
+                    } else {
+                        dropdown.value = categoryId;
+                    }
+                }
+                
+                // Initialize preview image if available
+                const imagePreview = document.getElementById('imagePreview');
+                if (imagePreview && image) {
+                    imagePreview.src = image;
+                }
+            },
             preConfirm: () => {
                 const form = document.getElementById(`editForm-${id}`);
+                
+                // For debugging: check the form data before submission
+                console.log("Form data before submission:");
+                console.log("Category ID:", document.getElementById(`categoryDropdown-${id}`).value);
+
                 if (form.reportValidity()) {
-                    form.submit();
+                    const formData = new FormData(form);
+
+                    return fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            // Handle validation errors
+                            return response.json().then(errorData => {
+                                if (errorData.errors) {
+                                    // Format validation errors for display
+                                    const errorMessages = Object.entries(errorData.errors)
+                                        .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                                        .join('<br>');
+                                    
+                                    throw new Error(errorMessages);
+                                } else if (errorData.message) {
+                                    throw new Error(errorData.message);
+                                } else {
+                                    throw new Error('An error occurred while processing your request.');
+                                }
+                            });
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error.message}`);
+                    });
                 }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Item option updated successfully',
+                    customClass: {
+                        confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all'
+                    }
+                }).then(() => {
+                    // Reload the page to see the changes
+                    window.location.reload();
+                });
             }
         });
     }
@@ -101,10 +179,8 @@
     }
 </script>
 
-
-
-<div class=" mx-auto p-4 ">
-    <h1 class="text-2xl font-semibold  text-center">MANAGE ITEM OPTIONS</h1>
+<div class="mx-auto p-4">
+    <h1 class="text-2xl font-semibold text-center">MANAGE ITEM OPTIONS</h1>
 
     @if ($itemOptions->isEmpty())
         <div class="text-center py-12 bg-gray-50 rounded-lg">
@@ -112,11 +188,12 @@
         </div>
     @else
         <div class="overflow-x-auto">
-            <table class="min-w-full  bg-white rounded-lg overflow-hidden shadow-md">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Description</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -148,6 +225,12 @@
                                     {{ $itemOption->description }}
                                 </div>
                             </td>
+                            {{-- category --}}
+                            <td class="px-6 py-4">
+                                <div class="text-lg font-semibold text-gray-900">
+                                    {{ $itemOption->category ? $itemOption->category->name : 'No category' }}
+                                </div>
+                            </td>
                             
                             <!-- Description Column (hidden on mobile) -->
                             <td class="px-6 py-4 hidden md:table-cell">
@@ -156,7 +239,7 @@
                                 </div>
                             </td>
                             
-                            <!-- Actions Column -->
+                            <!-- Actions Column  -->
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
                                     <button
@@ -164,7 +247,8 @@
                                             {{ $itemOption->id }},
                                             {{ json_encode($itemOption->type) }},
                                             {{ json_encode($itemOption->description) }},
-                                            '{{ asset('storage/' . $itemOption->image) }}'
+                                            '{{ asset('storage/' . $itemOption->image) }}',
+                                            {{ $itemOption->category_id ?? 'null' }}
                                         )"
                                         class="flex items-center px-3 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 cursor-pointer transition-colors"
                                         title="Edit"

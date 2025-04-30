@@ -69,7 +69,6 @@
             <header class="flex items-center justify-center">
                 <div>
                     <h1 class="text-5xl font-bold text-center">Package Items</h1>
-                    <x-packages.add-packagebtn />
                     <x-packages.add-package-item-btn />
                     <x-packages.add-package-option-btn />
                     <x-packages.add-package-utility />

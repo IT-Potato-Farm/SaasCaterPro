@@ -233,7 +233,8 @@
                         'disabled', true);
                 } else {
                     data.forEach(option => {
-                        const newOption = new Option(option.type, option.id, false, false);
+                        const optionText = `${option.type} (${option.category_name})`;  
+                        const newOption = new Option(optionText, option.id, false, false);
                         $(optionsSelect).append(newOption);
                     });
                 }

@@ -101,11 +101,11 @@
                                     id="options-tab">
                                     Item Options
                                 </button>
-                                <button
+                                {{-- <button
                                     class="cursor-pointer px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300"
                                     id="optionsparty-tab">
                                     Link Options to Ulam
-                                </button>
+                                </button> --}}
                             </nav>
                         </div>
 
@@ -115,135 +115,11 @@
                         </div>
 
                         <div class="p-6 hidden" id="options-content">
-                            <x-items.item-options-list :itemOptions="$itemOptions" />
+                            <x-items.item-options-list :itemOptions="$itemOptions" :categories="$categories"/>
                         </div>
 
-                        <div class="p-6 hidden" id="optionsparty-content">
-                            <!-- Link Options to Items Section -->
-                            <div
-                                class="max-w-2xl mx-auto bg-white shadow-sm rounded-xl p-6 border border-gray-100 hover:shadow-md transition-all">
-                                <header class="space-y-3 border-b border-gray-100 pb-5 mb-6">
-                                    <h2 class="text-xl font-bold text-gray-900">
-                                        Link Options to Menu Items
-                                    </h2>
-                                    <p class="text-gray-500 text-sm">Associate customization options with your menu
-                                        items</p>
-                                </header>
+                        
 
-                                {{-- LINK OPTIONS FORM --}}
-                                <form action="{{ route('items.linkItemOption') }}" method="POST" class="space-y-5">
-                                    @csrf
-
-                                    <!-- Item Dropdown -->
-                                    <div class="space-y-2">
-                                        <label for="itemSelect" class="block text-sm font-medium text-gray-700">
-                                            Select Food Item
-                                        </label>
-                                        <select name="item_id" id="itemSelectLinker" required
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
-                                focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                            <option value="" class="text-gray-400">-- Choose an Item --</option>
-                                            @if ($items->isEmpty())
-                                                <option value="" disabled class="text-gray-400">No items
-                                                    available
-                                                </option>
-                                            @else
-                                                @foreach ($items as $item)
-                                                    <option value="{{ $item->id }}" class="text-gray-700">
-                                                        {{ $item->name }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                    </div>
-
-                                    <!-- Item Option Dropdown -->
-                                    <div class="space-y-2">
-                                        <label for="itemOptionsSelect" class="block text-sm font-medium text-gray-700">
-                                            Select Options to Add
-                                        </label>
-                                        <select name="item_option_ids[]" id="itemOptionsSelectLinker" multiple required
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
-                                focus:ring-blue-500 focus:border-blue-500 sm:text-sm h-32">
-                                            @if ($itemOptions->isEmpty())
-                                                <option value="" disabled class="text-gray-400">No options
-                                                    available
-                                                </option>
-                                            @else
-                                                @foreach ($itemOptions as $option)
-                                                    <option value="{{ $option->id }}" class="text-gray-700">
-                                                        {{ $option->type }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                        <p class="text-xs text-gray-400 mt-1 flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Hold Ctrl/Cmd to select multiple options
-                                        </p>
-                                    </div>
-
-                                    <button type="submit"
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg 
-                            shadow-sm hover:shadow transition-all">
-                                        Link Selected Options
-                                    </button>
-                                </form>
-
-                                {{-- LINKED OPTIONS DISPLAY --}}
-                                @if ($items->isNotEmpty())
-                                    <div class="mt-8 space-y-4">
-                                        <h3 class="text-lg font-medium text-gray-900 mb-3">Current Linked Options</h3>
-
-                                        @foreach ($items as $item)
-                                            @if ($item->itemOptions->isNotEmpty())
-                                                <div class="bg-gray-50 border border-gray-100 rounded-lg p-4">
-                                                    <div class="flex items-center justify-between mb-3">
-                                                        <h4 class="text-sm font-semibold text-gray-800">
-                                                            {{ $item->name }}
-                                                        </h4>
-                                                        <span
-                                                            class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">
-                                                            {{ $item->itemOptions->count() }} options
-                                                        </span>
-                                                    </div>
-
-                                                    <ul class="space-y-2">
-                                                        @foreach ($item->itemOptions as $option)
-                                                            <li
-                                                                class="flex justify-between items-center bg-white border border-gray-100 rounded-md px-3 py-2 text-sm">
-                                                                <span class="text-gray-700">{{ $option->type }}</span>
-                                                                <form action="{{ route('items.unlinkItemOption') }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <input type="hidden" name="item_id"
-                                                                        value="{{ $item->id }}">
-                                                                    <input type="hidden" name="item_option_id"
-                                                                        value="{{ $option->id }}">
-                                                                    <button type="submit"
-                                                                        class="text-red-500 hover:text-red-700 flex items-center">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            class="h-4 w-4" viewBox="0 0 20 20"
-                                                                            fill="currentColor">
-                                                                            <path fill-rule="evenodd"
-                                                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                                                clip-rule="evenodd" />
-                                                                        </svg>
-                                                                    </button>
-                                                                </form>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Package Management Section -->
@@ -331,10 +207,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const itemsTab = document.getElementById('items-tab');
             const optionsTab = document.getElementById('options-tab');
-            const optionspartyTab = document.getElementById('optionsparty-tab');
             const itemsContent = document.getElementById('items-content');
             const optionsContent = document.getElementById('options-content');
-            const optionspartyContent = document.getElementById('optionsparty-content');
 
             const itemSelectLinker = document.getElementById('itemSelectLinker');
             // TAB FUNCTIONS
@@ -343,12 +217,9 @@
                 itemsTab.classList.remove('text-gray-500', 'border-transparent');
                 optionsTab.classList.add('text-gray-500', 'border-transparent');
                 optionsTab.classList.remove('text-blue-600', 'border-blue-600');
-                optionspartyTab.classList.add('text-gray-500', 'border-transparent');
-                optionspartyTab.classList.remove('text-blue-600', 'border-blue-600');
 
                 itemsContent.classList.remove('hidden');
                 optionsContent.classList.add('hidden');
-                optionspartyContent.classList.add('hidden');
             });
 
             optionsTab.addEventListener('click', function() {
@@ -356,28 +227,12 @@
                 optionsTab.classList.remove('text-gray-500', 'border-transparent');
                 itemsTab.classList.add('text-gray-500', 'border-transparent');
                 itemsTab.classList.remove('text-blue-600', 'border-blue-600');
-                optionspartyTab.classList.add('text-gray-500', 'border-transparent');
-                optionspartyTab.classList.remove('text-blue-600', 'border-blue-600');
 
                 optionsContent.classList.remove('hidden');
                 itemsContent.classList.add('hidden');
-                optionspartyContent.classList.add('hidden');
             });
 
-            optionspartyTab.addEventListener('click', function() {
-                optionspartyTab.classList.add('text-blue-600', 'border-blue-600');
-                optionspartyTab.classList.remove('text-gray-500', 'border-transparent');
-
-                optionsTab.classList.add('text-gray-500', 'border-transparent');
-                optionsTab.classList.remove('text-blue-600', 'border-blue-600');
-
-                itemsTab.classList.add('text-gray-500', 'border-transparent');
-                itemsTab.classList.remove('text-blue-600', 'border-blue-600');
-
-                optionspartyContent.classList.remove('hidden');
-                itemsContent.classList.add('hidden');
-                optionsContent.classList.add('hidden');
-            });
+          
 
             if (itemSelectLinker) {
                 itemSelectLinker.addEventListener('change', function() {

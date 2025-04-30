@@ -13,9 +13,11 @@ class itemOptionsList extends Component
      * Create a new component instance.
      */
     public $itemOptions;
-    public function __construct($itemOptions)
+    public $categories;
+    public function __construct($itemOptions, $categories)
     {
         $this->itemOptions = $itemOptions;
+        $this->categories = $categories;
     }
 
     /**
