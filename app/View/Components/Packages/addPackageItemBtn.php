@@ -14,9 +14,13 @@ class addPackageItemBtn extends Component
      */
     // public $packages;
     public $itemOptions;
-    public function __construct($itemOptions)
+    public $categories;
+    public $items;
+    public function __construct($itemOptions, $categories, $items)
     {
         $this->itemOptions = $itemOptions;
+        $this->categories = $categories;
+        $this->items = $items;
     }
 
     /**

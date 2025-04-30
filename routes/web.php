@@ -249,6 +249,11 @@ Route::get('/bookings/available-slots', [CheckoutController::class, 'getAvailabl
 
 
 
+Route::get('/items/select2', [ItemController::class, 'select2Items'])->name('items.select2');
+// Route::get('/get-allcategories', [CategoryController::class, 'getAll'])->name('categories.get');
+
+Route::get('/api/item-options', [ItemOptionController::class, 'getOptions']);
+Route::get('/item-categories', [ItemOptionController::class, 'getCategories']);
 
 // package route
 Route::post('/package/store', [PackageController::class, 'store'])->name('package.store');
@@ -263,6 +268,7 @@ Route::get('/check-option-type', [PackageController::class, 'checkOptionType']);
 
 Route::get('/package/details/{id}', [PackageController::class, 'showDetails'])
     ->name('package.details');
+
 
 // package item route
 Route::resource('package_items', PackageItemController::class);

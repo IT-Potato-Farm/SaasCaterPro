@@ -196,6 +196,7 @@
                         </div>
                     @endif
                 </div>
+                <x-customer.hero />
             </main>
         </div>
     </div>

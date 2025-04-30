@@ -10,7 +10,7 @@ class ItemOption extends Model
     /** @use HasFactory<\Database\Factories\ItemOptionFactory> */
     use HasFactory;
 
-    protected $fillable = [ 'type', 'image', 'description'];
+    protected $fillable = [ 'type', 'image', 'description', 'category'];
 
     // pivot into item_item_option
     public function items()

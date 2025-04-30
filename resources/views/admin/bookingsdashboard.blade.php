@@ -899,14 +899,6 @@
                             Event Calendar
                         </h1>
 
-
-
-                        <!-- Calendar Container -->
-                        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 mb-6">
-                            <div id="calendar"
-                                class="p-3 sm:p-4 md:p-6 min-h-[480px] sm:min-h-[600px] md:min-h-[680px]"></div>
-                        </div>
-
                         <!-- Legend -->
                         <div class="flex flex-wrap gap-4 justify-center mt-6">
                             <div class="flex items-center space-x-2">
@@ -934,6 +926,14 @@
                                 <span class="text-sm text-gray-800">Cancelled</span>
                             </div>
                         </div>
+
+                        <!-- Calendar Container -->
+                        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 mb-6">
+                            <div id="calendar"
+                                class="p-3 sm:p-4 md:p-6 min-h-[480px] sm:min-h-[600px] md:min-h-[680px]"></div>
+                        </div>
+
+                        
 
                     </div>
                 </div>

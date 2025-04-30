@@ -1,97 +1,202 @@
-{{-- ADD PACKAGE BUTTON SA ADMIN DASHBOARD  --}}
-@props(['categories'])
+{{-- ADD PACKAGE BUTTON FOR ADMIN DASHBOARD --}}
+@props(['categories', 'items', 'utilities'])
 <style>
+    .image-preview-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
     .image-preview {
-        display: none;
         width: 100%;
-        height: auto;
-        max-height: 300px;
-        object-fit: cover;
+        height: 200px;
+        object-fit: contain;
         border-radius: 0.5rem;
-        border: 2px dashed #ccc;
-        padding: 0.5rem;
+        border: 2px dashed #e2e8f0;
+        background-color: #f8fafc;
+        display: none;
+    }
+
+    .upload-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        border: 2px dashed #e2e8f0;
+        border-radius: 0.5rem;
+        background-color: #f8fafc;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .upload-placeholder:hover {
+        border-color: #cbd5e1;
+        background-color: #f1f5f9;
     }
 
     .error-message {
         color: #ef4444;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         margin-top: 0.25rem;
+    }
+
+    .selection-panel {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        background-color: white;
+    }
+
+    .item-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        background-color: #f8fafc;
+    }
+
+    .options-container {
+        margin-top: 0.5rem;
+        padding-left: 1.5rem;
+        border-left: 2px solid #e2e8f0;
+    }
+
+    .utility-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .swal2-popup {
+        max-width: 600px !important;
     }
 </style>
 
 <script>
     function addPackage() {
         Swal.fire({
-            title: '<span class="text-xl font-semibold text-gray-800">Add Package</span>',
+            title: '<span class="text-xl font-semibold text-gray-800">Create New Package</span>',
             html: `
-            <form id="addPackageForm" class="space-y-5" enctype="multipart/form-data">
-                <!-- Image Upload Section -->
-                <div class="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <img id="image-preview" src="#" alt="Preview" 
-                        class="w-full max-w-xs h-40 object-contain mb-4 rounded-lg bg-white border-2 border-dashed border-gray-300">
-                    
-                    <label class="w-full">
-                        <div class="flex flex-col items-center justify-center py-3 px-4 border border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-100 transition">
-                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <div class="package-creation-form">
+                <form id="addPackageForm" class="space-y-4" enctype="multipart/form-data">
+                    <!-- Image Upload Section -->
+                    <div class="image-preview-container">
+                        <img id="image-preview" class="image-preview" alt="Package preview">
+                        <label class="upload-placeholder">
+                            <svg class="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span class="text-sm text-gray-600 mt-1">Click to upload image</span>
-                        </div>
-                        <input type="file" id="swal-image" name="image" accept="image/*" class="hidden" onchange="previewPackageImage(event)">
-                    </label>
-                    <div id="image-error" class="mt-2 text-xs text-red-500"></div>
-                </div>
-
-                <!-- Form Fields -->
-                <div class="space-y-4">
-                    <!-- Package Name -->
-                    <div>
-                        <label for="swal-name" class="block text-sm font-medium text-gray-700 mb-1">Package Name</label>
-                        <input type="text" id="swal-name" name="name" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                        <div id="name-error" class="mt-1 text-xs text-red-500"></div>
+                            <span class="text-sm font-medium text-gray-600">Upload Package Image</span>
+                            <span class="text-xs text-gray-500 mt-1">JPEG, PNG (Max 10MB)</span>
+                            <input type="file" id="swal-image" name="image" accept="image/*" class="hidden" onchange="previewPackageImage(event)">
+                        </label>
+                        <div id="image-error" class="error-message"></div>
                     </div>
 
-                    <!-- Description -->
-                    <div>
-                        <label for="swal-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea id="swal-description" name="description" rows="3"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        <div id="description-error" class="mt-1 text-xs text-red-500"></div>
-                    </div>
-
-                    <!-- Pricing Section -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Basic Information Section -->
+                    <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <label for="swal-price" class="block text-sm font-medium text-gray-700 mb-1">Price per person</label>
+                            <label for="swal-name" class="block text-sm font-medium text-gray-700 mb-1">Package Name*</label>
+                            <input type="text" id="swal-name" name="name" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
+                            <div id="name-error" class="error-message"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="swal-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="swal-description" name="description" rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"></textarea>
+                            <div id="description-error" class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="swal-price" class="block text-sm font-medium text-gray-700 mb-1">Price per person*</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="text-gray-500">₱</span>
                                 </div>
                                 <input type="number" step="0.01" id="swal-price" name="price_per_person" required min="0.01"
-                                    class="block w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                    class="block w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
                             </div>
-                            <div id="price_per_person-error" class="mt-1 text-xs text-red-500"></div>
+                            <div id="price_per_person-error" class="error-message"></div>
                         </div>
 
                         <div>
-                            <label for="swal-minimum" class="block text-sm font-medium text-gray-700 mb-1">Minimum pax</label>
+                            <label for="swal-minimum" class="block text-sm font-medium text-gray-700 mb-1">Minimum pax*</label>
                             <input type="number" id="swal-minimum" name="min_pax" required min="1"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                            <div id="min_pax-error" class="mt-1 text-xs text-red-500"></div>
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
+                            <div id="min_pax-error" class="error-message"></div>
                         </div>
                     </div>
-                </div>
-            </form>
+
+                    <!-- Items Selection (Collapsible) -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Select Items & Options*</label>
+                            <button type="button" onclick="toggleAllItems()" class="text-xs text-blue-600 hover:text-blue-800">Toggle All</button>
+                        </div>
+                        <div class="selection-panel">
+                            @foreach ($items as $item)
+                                <div class="item-card">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="item_ids[]" value="{{ $item->id }}"
+                                            class="form-checkbox h-4 w-4 text-green-600 item-checkbox"
+                                            onchange="toggleItemOptions(this, {{ $item->id }})">
+                                        <span class="text-sm font-medium text-gray-800">{{ $item->name }}</span>
+                                    </label>
+
+                                    @if ($item->itemOptions->count())
+                                        <div id="item-options-{{ $item->id }}" class="options-container hidden mt-2">
+                                            @foreach ($item->itemOptions as $option)
+                                                <label class="flex items-center space-x-2 mt-1">
+                                                    <input type="checkbox" name="item_options[{{ $item->id }}][]" value="{{ $option->id }}"
+                                                        class="form-checkbox h-4 w-4 text-blue-600">
+                                                    <span class="text-sm text-gray-700">{{ $option->type }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                        <div id="items-error" class="error-message"></div>
+                    </div>
+
+                    <!-- Utilities Selection -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Select Utilities</label>
+                            <button type="button" onclick="toggleAllUtilities()" class="text-xs text-blue-600 hover:text-blue-800">Toggle All</button>
+                        </div>
+                        <div class="selection-panel">
+                            <div class="utility-grid">
+                                @foreach ($utilities as $utility)
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" name="utility_ids[]" value="{{ $utility->id }}" 
+                                            class="form-checkbox h-4 w-4 text-green-600">
+                                        <span class="text-sm text-gray-800">{{ $utility->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div id="utilities-error" class="error-message"></div>
+                    </div>
+                </form>
+            </div>
         `,
             showCancelButton: true,
-            confirmButtonText: 'Add Package',
+            confirmButtonText: 'Create Package',
             cancelButtonText: 'Cancel',
             focusConfirm: false,
             customClass: {
-                popup: 'rounded-lg max-w-md mx-4 bg-white',
-                confirmButton: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm',
-                cancelButton: 'px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-md shadow-sm'
+                popup: 'rounded-lg bg-white',
+                confirmButton: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors',
+                cancelButton: 'px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-md shadow-sm transition-colors'
             },
             width: 'auto',
             backdrop: 'rgba(0, 0, 0, 0.4)',
@@ -102,20 +207,22 @@
                 const priceInput = document.getElementById('swal-price');
                 const minPaxInput = document.getElementById('swal-minimum');
 
-                // img preview
-                imageInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
+                // Img preview function
+                window.previewPackageImage = function(event) {
+                    const file = event.target.files[0];
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = function(e) {
                             imagePreview.src = e.target.result;
                             imagePreview.style.display = 'block';
+                            document.querySelector('.upload-placeholder').style.display = 'none';
                         };
                         reader.readAsDataURL(file);
                     } else {
                         imagePreview.style.display = 'none';
+                        document.querySelector('.upload-placeholder').style.display = 'flex';
                     }
-                });
+                };
 
                 // Real-time validations
                 nameInput.addEventListener('blur', validatePackageName);
@@ -123,15 +230,24 @@
                 minPaxInput.addEventListener('input', () => validateField(minPaxInput, 'min_pax'));
             },
             preConfirm: async () => {
-
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 const formData = new FormData(document.getElementById('addPackageForm'));
                 let hasErrors = false;
 
-                // Validate non-name fields
+                // Validate fields
                 hasErrors |= validateField(document.getElementById('swal-price'), 'price_per_person');
                 hasErrors |= validateField(document.getElementById('swal-minimum'), 'min_pax');
                 hasErrors |= validateImage(document.getElementById('swal-image'));
+
+                // (at least one item required)
+                const itemCheckboxes = document.querySelectorAll('input[name="item_ids[]"]:checked');
+                if (itemCheckboxes.length === 0) {
+                    document.getElementById('items-error').textContent = 'Please select at least one item';
+                    hasErrors = true;
+                } else {
+                    hasErrors |= validateItemOptions();
+                }
+
 
                 // Asynchronously validate the package name for uniqueness
                 hasErrors |= await validatePackageName();
@@ -151,6 +267,32 @@
         }).then(handleSweetAlertResult);
     }
 
+    // Toggle all items
+    window.toggleAllItems = function() {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+            const itemId = checkbox.value;
+            const optionsContainer = document.getElementById(`item-options-${itemId}`);
+            if (optionsContainer) {
+                optionsContainer.classList.toggle('hidden', !checkbox.checked);
+            }
+        });
+    };
+
+    // Toggle all utilities
+    window.toggleAllUtilities = function() {
+        const checkboxes = document.querySelectorAll('input[name="utility_ids[]"]');
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+        });
+    };
+
+    /* Rest of your existing functions remain exactly the same */
     async function validatePackageName() {
         const nameInput = document.getElementById('swal-name');
         const errorElement = document.getElementById('name-error');
@@ -160,6 +302,7 @@
             errorElement.textContent = 'Package name is required';
             return true;
         }
+
         try {
             const response = await fetch("{{ route('package.checkName') }}?name=" + encodeURIComponent(name));
             const data = await response.json();
@@ -181,7 +324,7 @@
         const errorElement = document.getElementById(`${fieldName}-error`);
 
         if (!value) {
-            errorElement.textContent = `${fieldName.replace('_', ' ')} is required`;
+            errorElement.textContent = `${fieldName.replace(/_/g, ' ')} is required`;
             return true;
         }
 
@@ -221,6 +364,34 @@
 
         errorElement.textContent = '';
         return false;
+    }
+
+    function validateItemOptions() {
+        const itemCheckboxes = document.querySelectorAll('input[name="item_ids[]"]:checked');
+        let hasErrors = false;
+        let errorMessage = '';
+
+        // Check each selected item
+        itemCheckboxes.forEach(checkbox => {
+            const itemId = checkbox.value;
+            const optionsContainer = document.getElementById(`item-options-${itemId}`);
+
+            if (optionsContainer && optionsContainer.querySelectorAll('input[type="checkbox"]').length > 0) {
+                const selectedOptions = optionsContainer.querySelectorAll('input[type="checkbox"]:checked');
+                if (selectedOptions.length === 0) {
+                    hasErrors = true;
+                    const itemName = checkbox.nextElementSibling.textContent.trim();
+                    errorMessage += `Please select at least one option for "${itemName}". `;
+                }
+            }
+        });
+
+        // Display error if any
+        if (hasErrors) {
+            document.getElementById('items-error').textContent = errorMessage;
+        }
+
+        return hasErrors;
     }
 
     async function handleResponse(response) {
@@ -264,10 +435,21 @@
             }).then(() => location.reload());
         }
     }
+
+    // Toggle item options visibility
+    window.toggleItemOptions = function(checkbox, itemId) {
+        const container = document.getElementById(`item-options-${itemId}`);
+        if (checkbox.checked) {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+            container.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+    };
 </script>
 
 <button onclick="addPackage()"
-    class="cursor-pointer  group bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all flex items-center gap-4 hover:border-green-200 hover:bg-green-50">
+    class="cursor-pointer group bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all flex items-center gap-4 hover:border-green-200 hover:bg-green-50">
     <div
         class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-200 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -277,6 +459,6 @@
     </div>
     <div class="text-left">
         <h3 class="font-medium text-gray-800 group-hover:text-green-700">Add Package</h3>
-        <p class="text-xs text-gray-500">Create a packages</p>
+        <p class="text-xs text-gray-500">Create a new package</p>
     </div>
 </button>

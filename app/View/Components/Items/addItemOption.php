@@ -12,11 +12,11 @@ class addItemOption extends Component
     /**
      * Create a new component instance.
      */
-    public $item;
+    public $items;
     
-    public function __construct(Item $item)
+    public function __construct()
     {
-        $this->item = $item;
+        $this->items = Item::all();
     }
 
     /**
@@ -24,6 +24,6 @@ class addItemOption extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.items.add-item-option', ['item' => $this->item]);
+        return view('components.items.add-item-option');
     }
 }

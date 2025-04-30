@@ -29,36 +29,57 @@ class PackageController extends Controller
     public function store(Request $request)
     {
         try {
-            $packageitemFields = $request->validate([
-                'category_id' => 'nullable|exists:categories,id',
+            $validatedData = $request->validate([
                 'name' => 'required|string|unique:packages,name|max:255',
                 'description' => 'nullable|string',
-                'price_per_person' => 'required|numeric|min:0',
+                'price_per_person' => 'required|numeric|min:0.01',
                 'min_pax' => 'required|integer|min:1',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+                'item_ids' => 'required|array|min:1',
+                'item_ids.*' => 'exists:items,id',
+                'utility_ids' => 'nullable|array',
+                'utility_ids.*' => 'exists:utilities,id',
+                'item_options' => 'nullable|array',
+                'item_options.*' => 'array',
             ]);
-
-           
-
+    
+            // Handle image upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                // Call the helper function to handle image upload
-                $packageitemFields['image'] = $this->handleImageUpload($image);
+                $validatedData['image'] = $this->handleImageUpload($image);
             }
-
-
-
-            $package = Package::create($packageitemFields);
-
+    
+            // Create the Package
+            $package = Package::create([
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'] ?? null,
+                'price_per_person' => $validatedData['price_per_person'],
+                'min_pax' => $validatedData['min_pax'],
+                'image' => $validatedData['image'] ?? null,
+            ]);
+    
+            // Link Items & Options using existing logic
+            foreach ($validatedData['item_ids'] as $itemId) {
+                $optionIds = $validatedData['item_options'][$itemId] ?? [];
+                $this->linkItemToPackage($package->id, $itemId, $optionIds);
+            }
+    
+            // Link Utilities using existing logic
+            if (!empty($validatedData['utility_ids'])) {
+                $request->merge(['package_id' => $package->id]);
+                $this->addUtilToPackage($request);
+            }
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Package added successfully!',
                 'package' => $package
             ]);
         } catch (Exception $e) {
+            Log::error('Package creation error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'An error occurred while creating the package: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -295,22 +316,22 @@ class PackageController extends Controller
     }
     // KUNIN NYA MGA NKA LINK NA UTILS AS PACKAGE
     public function getUtilitiesForPackage(Request $request)
-{
-    $packageId = $request->input('package_id');
+    {
+        $packageId = $request->input('package_id');
 
-    $package = Package::findOrFail($packageId);
+        $package = Package::findOrFail($packageId);
 
-    $utilities = Utility::all();
+        $utilities = Utility::all();
 
-    // utils associated sa package
-    $linkedUtilities = $package->utilities->pluck('id')->toArray();
+        // utils associated sa package
+        $linkedUtilities = $package->utilities->pluck('id')->toArray();
 
-    
-    return response()->json([
-        'utilities' => $utilities,
-        'linked_utilities' => $linkedUtilities,
-    ]);
-}
+
+        return response()->json([
+            'utilities' => $utilities,
+            'linked_utilities' => $linkedUtilities,
+        ]);
+    }
 
 
 
@@ -330,7 +351,7 @@ class PackageController extends Controller
                 'status' => 'required|in:available,unavailable',
             ]);
 
-            
+
             $package = Package::findOrFail($id);
 
             if ($request->hasFile('image')) {

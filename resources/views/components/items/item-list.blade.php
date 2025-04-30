@@ -6,7 +6,6 @@
         // Store all available options in a separate variable
         window.allItemOptions_{{ $item->id }} = @json(\App\Models\ItemOption::all()->toArray());
     @endforeach
-
 </script>
 
 <script>
@@ -73,14 +72,16 @@
                 const form = document.getElementById(`editForm-${id}`);
                 if (form.reportValidity()) {
 
-                    
+
                     const selectedOptions = [];
-                    form.querySelectorAll('input[name="item_options[]"]:checked').forEach(function(checkbox) {
+                    form.querySelectorAll('input[name="item_options[]"]:checked').forEach(function(
+                    checkbox) {
                         selectedOptions.push(checkbox.value);
                     });
 
-                    
-                    form.querySelectorAll('input[name="selected_options[]"]').forEach(input => input.remove());
+
+                    form.querySelectorAll('input[name="selected_options[]"]').forEach(input => input
+                    .remove());
                     selectedOptions.forEach(optionId => {
                         let hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
@@ -89,7 +90,7 @@
                         form.appendChild(hiddenInput);
                     });
 
-                    form.submit();  
+                    form.submit();
                 }
             }
         });
@@ -117,7 +118,7 @@
 </script>
 
 <div class="container mx-auto px-4  ">
-    
+
 
     @if ($items->isEmpty())
         <div class="text-center py-12 bg-gray-50 rounded-lg">
@@ -128,10 +129,16 @@
             <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Options</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                            Description</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                            Options</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -147,24 +154,27 @@
                                 <!-- Mobile-only options preview -->
                                 <div class="md:hidden mt-1">
                                     @if ($item->itemOptions->isNotEmpty())
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             {{ $item->itemOptions->count() }} options
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                             No options
                                         </span>
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Description Column (hidden on mobile) -->
                             <td class="px-6 py-4 hidden md:table-cell">
-                                <div class="text-sm text-gray-600 line-clamp-3 hover:line-clamp-none transition-all cursor-default">
+                                <div
+                                    class="text-sm text-gray-600 line-clamp-3 hover:line-clamp-none transition-all cursor-default">
                                     {{ $item->description ?? 'No description available' }}
                                 </div>
                             </td>
-                            
+
                             <!-- Options Column (hidden on mobile and tablet) -->
                             <td class="px-6 py-4 hidden lg:table-cell">
                                 @if ($item->itemOptions->isNotEmpty())
@@ -175,7 +185,7 @@
                                     <p class="text-sm text-gray-500">No options available</p>
                                 @endif
                             </td>
-                            
+
                             <!-- Actions Column (always visible) -->
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
@@ -188,24 +198,25 @@
                                             window.allItemOptions_{{ $item->id }}
                                         )"
                                         class="p-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 cursor-pointer transition-colors"
-                                        title="Edit"
-                                    >
+                                        title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
                                     </button>
+                                    
 
-                                    <form action="{{ route('item.delete', $item->id) }}" method="POST" class="delete-form">
+
+
+                                    <form action="{{ route('item.delete', $item->id) }}" method="POST"
+                                        class="delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button 
-                                            type="button" 
-                                            onclick="confirmDeleteUlam(this)"
+                                        <button type="button" onclick="confirmDeleteUlam(this)"
                                             class="p-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 cursor-pointer transition-colors"
-                                            title="Delete"
-                                        >
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            title="Delete">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>

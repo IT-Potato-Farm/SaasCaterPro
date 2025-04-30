@@ -24,4 +24,5 @@ class Item extends Model
     {
         return $this->hasMany(PackageItem::class);
     }
+    
 }

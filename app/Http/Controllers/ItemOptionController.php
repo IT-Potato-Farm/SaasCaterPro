@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Package;
+use App\Models\Category;
 use App\Models\ItemOption;
 use App\Models\PackageItem;
 use Illuminate\Http\Request;
@@ -18,15 +19,24 @@ class ItemOptionController extends Controller
             'type' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'items' => 'nullable|array',
+            'items.*' => 'exists:items,id'
         ]);
 
-         
-        
         if ($request->hasFile('image')) {
             $data['image'] = $this->handleImageUpload($request->file('image'));
         }
 
-        $itemOption = ItemOption::create($data);
+        $itemOption = ItemOption::create([
+            'type' => $data['type'],
+            'description' => $data['description'] ?? null,
+            'image' => $data['image'] ?? null,
+        ]);
+
+        if (!empty($data['items'])) {
+            $itemOption->items()->attach($data['items']);
+        }
+
 
         return response()->json([
             'success' => true,
@@ -36,7 +46,25 @@ class ItemOptionController extends Controller
     }
 
     // LINK ITEMS SA PACKAGE
+    public function getOptions(Request $request)
+    {
+        $category = $request->query('category');
 
+        $query = ItemOption::query();
+
+        // Apply category filter if provided
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        $options = $query->get(['id', 'type', 'category']);
+
+        return response()->json($options);
+    }
+    public function getCategories(Request $request)
+    {
+        return response()->json(Category::all());
+    }
 
 
 
@@ -48,8 +76,8 @@ class ItemOptionController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-          
-        
+
+
 
         $itemOption = ItemOption::findOrFail($itemOptionId);
 

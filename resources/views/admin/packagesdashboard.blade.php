@@ -10,10 +10,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
+    
+    
+   
     <script>
         let packageItemsMapping = @json($packageItemsGroupedByPackage);
         console.log(packageItemsMapping);
@@ -70,12 +73,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
 
                         {{-- MENU ITEM BTN ULAM --}}
-                        <x-packages.add-package-item-btn :itemOptions="$itemOptions" />
+                        <x-packages.add-package-item-btn :items="$items" :itemOptions="$itemOptions" :categories="$categories" />
                         {{-- ITEM OPTION BTN --}}
-                        <x-items.add-item-option />
+                        <x-items.add-item-option  />
 
                         {{-- PACKAGE BTN --}}
-                        <x-packages.add-btn :categories="$categories" />
+                        <x-packages.add-btn :categories="$categories" :items="$items" :utilities="$utilities" />
 
                         {{-- PARTY TRAY BTN --}}
                         <x-items.item-button :categories="$categories" />
@@ -241,7 +244,6 @@
                                 @endif
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Package Management Section -->

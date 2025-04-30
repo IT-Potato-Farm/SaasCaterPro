@@ -97,13 +97,13 @@ class AdminController extends Controller
             $items = Item::with('itemOptions')->paginate(10);
             // $itemOptions = ItemOption::all();
             $itemOptions = ItemOption::paginate(10);
-                
+            
             $packages = Package::all();
             $packageItems = PackageItem::all();
             $menuItems = MenuItem::all();
             $utilities = Utility::with('packages')->get();
             $package_utilities = PackageUtility::all();
-            return view('admin.packagesdashboard', compact('packageItemsGroupedByPackage', 'items', 'categories', 'itemOptions', 'packages', 'packageItems', 'menuItems', 'utilities', 'package_utilities'));
+            return view('admin.packagesdashboard', compact('packageItemsGroupedByPackage',  'items', 'categories', 'itemOptions', 'packages', 'packageItems', 'menuItems', 'utilities', 'package_utilities'));
         }
 
         return redirect('/')->with('error', 'Access denied! Only admins can access this page.');
@@ -324,6 +324,34 @@ class AdminController extends Controller
             $todayRevenue = Order::where('status', 'completed')
                 ->whereDate('created_at', Carbon::today())
                 ->sum('total');
+
+            // yesterday
+            $yesterdayStart = Carbon::yesterday()->startOfDay();
+            $yesterdayEnd = Carbon::yesterday()->endOfDay();
+
+            $yesterdayRevenue = Order::where('status', 'completed')
+                ->whereBetween('event_date_start', [$yesterdayStart, $yesterdayEnd])
+                ->sum('total');
+
+
+                $yesterdayData = Order::selectRaw('HOUR(event_date_start) as hour, SUM(total) as total')
+                ->where('status', 'completed')
+                ->whereBetween('event_date_start', [$yesterdayStart, $yesterdayEnd])
+                ->groupBy('hour')
+                ->pluck('total', 'hour')
+                ->toArray();
+            
+            // Ensure all 24 hours are present
+            $hours = range(0, 23);
+            $yesterdayRevenueChart = [];
+            $yesterdayRevenueLabels = [];
+            
+            foreach ($hours as $hour) {
+                $label = sprintf('%02d:00', $hour); // 00:00, 01:00, ...
+                $yesterdayRevenueLabels[] = $label;
+                $yesterdayRevenueChart[] = $yesterdayData[$hour] ?? 0;
+            }
+
 
             // THIS WEEK
             $thisWeekRevenue = Order::where('status', 'completed')
@@ -585,8 +613,8 @@ class AdminController extends Controller
 
             $reportData = $customers->map(function ($customer) {
                 $totalAmountSpent = $customer->orders
-                ->where('status', 'completed') 
-                ->sum('total');
+                    ->where('status', 'completed')
+                    ->sum('total');
 
                 $numberOfBookings = $customer->orders->count();
 

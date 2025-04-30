@@ -13,9 +13,13 @@ class AddBtn extends Component
      * Create a new component instance.
      */
     public $categories;
-    public function __construct($categories)
+    public $utilities;
+    public $items;
+    public function __construct($categories, $utilities, $items)
     {
         $this->categories = $categories;
+        $this->items = $items;
+        $this->utilities = $utilities;
     }
 
     /**

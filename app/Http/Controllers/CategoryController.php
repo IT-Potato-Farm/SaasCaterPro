@@ -12,6 +12,11 @@ class CategoryController extends Controller
         $categories = Category::orderBy("created_at", "desc")->get();
         return view('testindex', ['categories' => $categories]);
     }
+    public function getAll()
+    {
+        $categories = Category::all();
+        return response()->json($categories);
+    }
 
     public function addCategory(Request $request)
     {

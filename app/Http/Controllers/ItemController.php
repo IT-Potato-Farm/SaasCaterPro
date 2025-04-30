@@ -63,8 +63,8 @@ class ItemController extends Controller
                     })
                 ],
                 'description' => 'nullable|string',
-                'options' => 'nullable|array', 
-                'options.*' => 'exists:item_options,id', 
+                'options' => 'nullable|array',
+                'options.*' => 'exists:item_options,id',
             ]);
 
             $item = Item::create($fields);
