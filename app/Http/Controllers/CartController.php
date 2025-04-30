@@ -157,16 +157,15 @@ class CartController extends Controller
     {
         $messages = ['success' => [], 'errors' => []];
         $totalPackageCount = $cartItems->whereNotNull('package_id')->sum('quantity');
-
+    
         if ($totalPackageCount >= 2) {
             $messages['errors'][] = 'You can only add up to 2 package sets per event.';
         } else {
             $available = 2 - $totalPackageCount;
             $quantityToAdd = min($validated['quantity'], $available);
-
+    
             $package = Package::findOrFail($validated['package_id']);
             
-
             // Get the utilities associated with this package
             $utilities = $package->utilities->map(function ($utility) {
                 return [
@@ -176,35 +175,50 @@ class CartController extends Controller
                     'quantity' => $utility->quantity,  // Include quantity if needed
                 ];
             })->toArray();
-
-
-            // MAKADD PARIN SA CART IF EXAMPLE SOTANGHON, TPOS WLA SYANG OPTIONS  
-            // KAHT SOTANGHON LANG AT WLANG SELECTED OPTION, MAKA ADD PARIN
-            $selectedOptions = $validated['selected_options'] ?? [];
+    
+            // Process the selected options properly
+            $rawOptions = $validated['selected_options'] ?? [];
             $includedItems = $validated['included_utilities'] ?? [];
+            
+            // This is the corrected part - maintain the object structure from the frontend
+            $selectedOptions = [];
+            
+            // Process the selected options maintaining the structure
+            // The frontend sends data like: {"5": [{"id": "1", "type": "Fried"}]}
+            foreach ($rawOptions as $foodId => $options) {
+                if (is_array($options) && !empty($options)) {
+                    $selectedOptions[$foodId] = $options;
+                }
+            }
+            
             if (isset($cart->user_id)) {
                 $existingPackageItem = $cartItems->where('package_id', $validated['package_id'])->first();
                 if ($existingPackageItem) {
-                    $existingPackageItem->update(['quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2),
-                    'selected_utilities' => $utilities,
-                    'selected_options' => $selectedOptions,
-                ]);
+                    $existingPackageItem->update([
+                        'quantity' => min($existingPackageItem->quantity + $quantityToAdd, 2),
+                        'selected_utilities' => $utilities,
+                        'selected_options' => $selectedOptions,
+                    ]);
                     $messages['success'][] = 'Package updated in cart.';
-
                 } else {
-                    $cart->items()->create(array_merge($validated, ['quantity' => $quantityToAdd,
-                    'selected_utilities' => $utilities,
-                    'selected_options' => $selectedOptions, 
-                ]));
+                    $cart->items()->create(array_merge($validated, [
+                        'quantity' => $quantityToAdd,
+                        'selected_utilities' => $utilities,
+                        'selected_options' => $selectedOptions, 
+                    ]));
                     $messages['success'][] = 'Package added to cart.';
                 }
             } else {
-                $cart['items'][] = array_merge($validated, ['quantity' => $quantityToAdd]);
+                $cart['items'][] = array_merge($validated, [
+                    'quantity' => $quantityToAdd,
+                    'selected_utilities' => $utilities,
+                    'selected_options' => $selectedOptions,
+                ]);
                 session()->put('cart', $cart);
                 $messages['success'][] = 'Package added to cart (guest mode).';
             }
         }
-
+    
         return $messages;
     }
 

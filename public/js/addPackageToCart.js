@@ -6,10 +6,8 @@ window.openItem = async function (packageId) {
             foods,
             utilities,
         } = await fetchPackageData(packageId);
-
         const htmlContent = `
                 <div class="max-h-[80vh] overflow-y-auto px-4 md:px-6 py-4">
-                <div id="modal-message" class="hidden mb-5 p-3 rounded text-sm"></div>
                     <!-- Header Section -->
                     <div class="mb-5 md:mb-7">
                         <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">${
@@ -19,7 +17,6 @@ window.openItem = async function (packageId) {
                             pkg.description
                         }</p>
                     </div>
-
                     <div class="grid grid-cols-1 gap-5 md:gap-7 mb-7 md:mb-9">
                         <!-- Image Section -->
                         <div class="relative group">
@@ -44,12 +41,12 @@ window.openItem = async function (packageId) {
                         <!-- Foods Section -->
                         <div class="bg-gray-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-gray-200">
                             <h3 class="text-base md:text-lg font-semibold mb-4 md:mb-5">Included Foods</h3>
+                                <div id="modal-message" class="hidden mb-4 p-3 rounded text-sm"></div>
                             <form id="packageSelectionForm" class="space-y-4">
                                 ${renderFoods(foods)}
                             </form>
                         </div>
                     </div>
-
                     <!-- Utilities Section -->
                     <div class="border-t border-gray-200 pt-5 md:pt-7">
                         <h3 class="text-base md:text-lg font-semibold mb-4 md:mb-5">Utilities</h3>
@@ -67,7 +64,6 @@ window.openItem = async function (packageId) {
                     </div>
                 </div>
             `;
-
         Swal.fire({
             html: htmlContent,
             width: window.innerWidth < 768 ? "90%" : 800,
@@ -93,85 +89,78 @@ window.addSelectedPackageToCart = async function (packageId) {
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
     const form = document.getElementById("packageSelectionForm");
-    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const optionInputs = form.querySelectorAll('input[type="radio"], input[type="checkbox"]');
     const foodItemElements = form.querySelectorAll("[data-food-id]");
-
-    // Keep track of all food items and which ones have options
+    
     const allFoodItems = new Map();
     const foodItemsWithOptions = new Set();
-    const groups = {};
-
+    
     foodItemElements.forEach((element) => {
         const foodId = element.getAttribute("data-food-id");
         const foodName = element.querySelector(".font-semibold").textContent;
         if (foodId) {
             allFoodItems.set(foodId, foodName);
-        }
-    });
-    // Group checkboxes by food item id.
-    checkboxes.forEach((checkbox) => {
-        const name = checkbox.name; // e.g., "food_item_5[]"
-        const match = name.match(/food_item_(\d+)\[\]/);
-        if (match) {
-            const foodId = match[1];
-            foodItemsWithOptions.add(foodId);
-            if (!groups[foodId]) {
-                groups[foodId] = [];
+            
+            // Check if this food has radio buttons/options
+            const hasOptions = element.querySelectorAll('input[type="radio"]').length > 0;
+            if (hasOptions) {
+                foodItemsWithOptions.add(foodId);
             }
-            groups[foodId].push(checkbox);
         }
     });
 
-    // Validate that each food item with options has at least one option checked
-    let validationFailed = false;
-    for (const foodId in groups) {
-        const groupCheckboxes = groups[foodId];
-        const checked = Array.from(groupCheckboxes).filter((cb) => cb.checked);
-        if (checked.length === 0) {
-            showModalMessage(
-                "error",
-                "Please select at least one option for every food item with choices."
-            );
-            validationFailed = true;
-            break;
-        }
+    if (allFoodItems.size === 0) {
+        showModalMessage("error", "This package does not contain any food items.");
+        return;
     }
-
-    if (validationFailed) return;
-
-    // Collect selected options with objects
-    const selectedOptions = {};
-
-    // First, add food items with options
-    checkboxes.forEach((checkbox) => {
-        if (checkbox.checked) {
-            const foodIdMatch = checkbox.name.match(/food_item_(\d+)/);
-            if (foodIdMatch) {
-                const foodId = foodIdMatch[1];
-                if (!selectedOptions[foodId]) {
-                    selectedOptions[foodId] = [];
-                }
-                selectedOptions[foodId].push({
-                    id: checkbox.value,
-                    type: checkbox.getAttribute("data-type"),
-                });
-            }
+    
+    // Validate 
+    let validationFailed = false;
+    
+    foodItemsWithOptions.forEach((foodId) => {
+        const selected = form.querySelector(`input[name="food_item_${foodId}"]:checked`);
+        if (!selected) {
+            showModalMessage("error", `Please select an option for "${allFoodItems.get(foodId)}".`);
+            validationFailed = true;
         }
     });
-
-    // Then, add food items without options (with an empty options array)
+    
+    if (validationFailed) return;
+    
+   
+    const selectedOptions = {};
+    
+    // add food items with options
+    optionInputs.forEach((input) => {
+        const foodIdMatch = input.name.match(/food_item_(\d+)/);
+        if (input.checked && foodIdMatch) {
+            const foodId = foodIdMatch[1];
+            if (!selectedOptions[foodId]) {
+                selectedOptions[foodId] = [];
+            }
+            selectedOptions[foodId].push({
+                id: input.value,
+                type: input.getAttribute("data-type"),
+            });
+        }
+    });
+    
+    // OR add food items without options
     allFoodItems.forEach((foodName, foodId) => {
         if (!foodItemsWithOptions.has(foodId) && !selectedOptions[foodId]) {
-            // This is a food item without options, add it with name
+            
             selectedOptions[foodId] = [
                 {
                     id: foodId,
-                    type: foodName.trim(), // Use the food item name
+                    type: foodName.trim(), 
                 },
             ];
         }
     });
-
+    
+    // Debug 
+    console.log("Selected options to send:", JSON.stringify(selectedOptions, null, 2));
+    
     try {
         const data = await fetchPackageData(packageId);
         const response = await fetch("/cart/add", {
@@ -184,12 +173,11 @@ window.addSelectedPackageToCart = async function (packageId) {
             body: JSON.stringify({
                 package_id: packageId,
                 quantity: 1,
-                selected_options: selectedOptions, // e.g., { "5": [ { "id": "1", "type": "Fried" } ] }
+                selected_options: selectedOptions, //  { "5": [{ "id": "1", "type": "Fried" }] }
                 included_utilities: data.utilities,
             }),
         });
-        console.log(selectedOptions);
-
+        
         if (response.status === 401) {
             Swal.fire({
                 icon: "info",
@@ -203,14 +191,13 @@ window.addSelectedPackageToCart = async function (packageId) {
             });
             return;
         }
-
+        
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || "Something went wrong.");
         }
-
+        
         const responseData = await response.json();
-
         Swal.fire({
             position: "top-end",
             icon: "success",
@@ -232,36 +219,29 @@ window.addSelectedPackageToCart = async function (packageId) {
     }
 };
 
-const packageCache = new Map();
 
+const packageCache = new Map();
 // FUNCTION PARA MAKUHA UNG PACKAGE DETAILS
 async function fetchPackageData(packageId) {
     if (packageCache.has(packageId)) {
         return packageCache.get(packageId);
     }
-
     try {
         const response = await fetch(`/package/details/${packageId}`);
-
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Server error: ${errorText.slice(0, 100)}`);
         }
-
         const data = await response.json();
-
         if (!data.success) throw new Error(data.message);
-
         // Return only relevant data for the frontend
         const packageData = {
             package: data.package,
             foods: data.foods,
             utilities: data.utilities,
         };
-
         // Cache the data
         packageCache.set(packageId, packageData);
-
         return packageData;
     } catch (error) {
         console.error("Fetch error:", error);
@@ -274,31 +254,28 @@ function renderFoods(foods) {
     if (!foods || foods.length === 0) {
         return '<p class="text-gray-500 py-2">No food items available.</p>';
     }
-
     return foods
         .map((packageItem) => {
             const item = packageItem.item;
             const hasOptions =
                 packageItem.options && packageItem.options.length > 0;
-
             const optionsHtml = (packageItem.options || [])
                 .map(
                     (option) => `
             <label class="inline-flex items-center space-x-3 mb-3 mr-5">
                 <input 
-                    type="checkbox" 
-                    name="food_item_${item.id}[]" 
+                    type="radio" 
+                    name="food_item_${item.id}" 
                     value="${option.id}" 
                     data-type="${option.type}" 
-                    class="form-checkbox h-4 w-4 md:h-5 md:w-5 text-blue-600">
+                    class="form-radio h-4 w-4 md:h-5 md:w-5 text-green-600 focus:ring-green-500">
                 <span class="text-sm md:text-base">${option.type}</span>
             </label>
         `
                 )
                 .join("");
-
             return `
-            <div class="mb-6"  data-food-id="${item.id}">
+            <div class="mb-6" data-food-id="${item.id}">
                 <div class="font-semibold text-gray-700 mb-3 text-base md:text-lg">${item.name}</div>
                 <div class="flex flex-wrap">
                     ${optionsHtml}
@@ -335,7 +312,6 @@ function renderUtilities(utilities) {
 function showModalMessage(type, message) {
     const msgBox = document.getElementById("modal-message");
     if (!msgBox) return;
-
     msgBox.textContent = message;
     msgBox.classList.remove(
         "hidden",
@@ -344,7 +320,6 @@ function showModalMessage(type, message) {
         "text-red-700",
         "text-green-700"
     );
-
     if (type === "error") {
         msgBox.classList.add("bg-red-100", "text-red-700");
     } else if (type === "success") {
