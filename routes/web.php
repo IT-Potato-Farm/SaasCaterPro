@@ -5,11 +5,13 @@ use App\Models\Order;
 use App\Mail\TestEmail;
 use App\Models\Package;
 use App\Models\CartItem;
+use App\Mail\InvoiceMail;
 use App\Models\PrivacyPolicy;
 use App\Models\WhyChooseUsSection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Mail\RemainingBalanceReminder;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\MenuController;
@@ -50,7 +52,17 @@ use App\Http\Controllers\Admin\ReviewSectionSettingController;
 
 
 
+// Route::get('/preview-email', function () {
+//     $order = Order::latest()->first(); 
+//     $remainingBalance = $order->total - $order->amount_paid;
 
+//     return (new RemainingBalanceReminder($order, $remainingBalance))->render();
+// });
+
+// Route::get('/debug/invoice/{order}', function (Order $order) {
+//     $invoiceMail = new InvoiceMail($order);
+//     return $invoiceMail->render(); 
+// });
 
 
 Route::get('/all-reviews', [ReviewController::class, 'index'])->name('all.reviews');

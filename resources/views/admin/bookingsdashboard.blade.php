@@ -743,7 +743,7 @@
                                                 id="action-select-{{ $order->id }}"
                                                 onchange="executeOrderAction(this, {{ $order->id }})">
                                                 <option value="">Actions</option>
-                                                <option value="invoice">Invoice</option>
+                                                {{-- <option value="invoice">Resend Invoice</option> --}}
 
                                                 @if ($status === 'pending')
                                                     <option value="partial">Partial Payment</option>

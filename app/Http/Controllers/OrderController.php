@@ -9,6 +9,7 @@ use App\Mail\InvoiceMail;
 use Illuminate\Http\Request;
 use App\Models\BookingSetting;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\RemainingBalanceReminder;
 
 class OrderController extends Controller
 {
@@ -195,9 +196,14 @@ class OrderController extends Controller
         }
 
         $order->save();
-        return redirect()->route('admin.bookings')
-            ->with('success', 'Order marked as partially paid.');
+        if ($order->status === 'partial') {
+            $remainingBalance = $order->total - $order->amount_paid;
+            Mail::to($order->user->email)->send(new RemainingBalanceReminder($order, $remainingBalance));
+        }
+    
+        return redirect()->route('admin.bookings') ->with('success', 'Order marked as partially paid. Customer has been notified of remaining balance.');
     }
+
     public function cancelOrder(Order $order)
     {
         if ($order->status === 'cancelled') {

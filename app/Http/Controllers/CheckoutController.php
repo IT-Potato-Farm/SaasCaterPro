@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Mail\InvoiceMail;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Models\BookingSetting;
@@ -505,6 +506,7 @@ class CheckoutController extends Controller
         $cart->items()->delete();
         // Send email notification to the user
         Mail::to($user->email)->send(new OrderConfirmationMail($order));
+        Mail::to($order->user->email)->send(new InvoiceMail($order));
 
         // order confirmation page.
         return redirect()->route('order.confirmation', $order->id)

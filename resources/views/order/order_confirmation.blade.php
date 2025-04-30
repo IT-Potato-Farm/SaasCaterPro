@@ -44,6 +44,8 @@
             <p class="text-gray-600">Thank you for your order, {{ $order->user->first_name }}! We are currently
                 processing your request and will send you a confirmation email soon.</p>
             <p class="text-gray-600">A confirmation email has been sent to {{ $order->user->email }}</p>
+            <p class="text-gray-600">An invoice for your order has also been generated and included in the email.</p>
+
         </div>
 
         <!-- ORDER DETAILS  -->
