@@ -196,6 +196,7 @@
                                 <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
                                     class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                     <option value="today" selected>Today</option>
+                                    <option value="yesterday" >Yesterday</option>
                                     <option value="thisWeek">This Week</option>
                                     <option value="month">This Month</option>
                                     <option value="sixMonths">Last 6 Months</option>
@@ -337,6 +338,7 @@
     <script>
         const totalRevenues = {
             today: {{ $todayRevenue ?? 0 }},
+            yesterday: {{ $yesterdayRevenue ?? 0 }},
             month: {{ $monthRevenue ?? 0 }},
             thisWeek: {{ $thisWeekRevenue ?? 0 }},
             sixMonths: {{ $lastSixMonthsRevenue ?? 0 }},
@@ -346,6 +348,7 @@
 
         const chartDataSets = {
             today: @json($todayRevenueChart),
+            yesterday: @json($yesterdayRevenueChart),
             month: @json($thisMonthRevenueChart),
             thisWeek: @json($thisWeekRevenueChart),
             sixMonths: @json($lastSixMonthsRevenueChart),
@@ -355,6 +358,7 @@
 
         const chartLabels = {
             today: @json($todayRevenueLabels),
+            yesterday: @json($yesterdayRevenueLabels),
             month: @json($thisMonthRevenueLabels),
             thisWeek: @json($thisWeekRevenueLabels),
             sixMonths: @json($lastSixMonthsRevenueLabels),
@@ -392,6 +396,7 @@
                     datasets: [{
                         label: {
                             today: "Today",
+                            yesterday: "Yesterday",
                             month: "This Month",
                             thisWeek: "This Week",
                             sixMonths: "Last 6 Months",

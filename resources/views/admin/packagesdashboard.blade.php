@@ -75,7 +75,7 @@
                         {{-- MENU ITEM BTN ULAM --}}
                         <x-packages.add-package-item-btn :items="$items" :itemOptions="$itemOptions" :categories="$categories" />
                         {{-- ITEM OPTION BTN --}}
-                        <x-items.add-item-option  />
+                        {{-- <x-items.add-item-option  /> --}}
 
                         {{-- PACKAGE BTN --}}
                         <x-packages.add-btn :categories="$categories" :items="$items" :utilities="$utilities" />
