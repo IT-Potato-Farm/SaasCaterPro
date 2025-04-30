@@ -47,6 +47,8 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    //  ITEM STORE LIKE CHICKEN BEEF
     public function store(Request $request)
     {
         try {
@@ -61,14 +63,18 @@ class ItemController extends Controller
                     })
                 ],
                 'description' => 'nullable|string',
+                'options' => 'nullable|array', 
+                'options.*' => 'exists:item_options,id', 
             ]);
 
-            
-
             $item = Item::create($fields);
+            if (!empty($request->options)) {
+                $item->itemOptions()->attach($request->options);
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Item created successfully!',
+                'message' => 'Item created and linked to options successfully!',
                 'item'    => $item
             ]);
         } catch (\Exception $e) {
@@ -102,21 +108,21 @@ class ItemController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            
+
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'selected_options' => 'nullable|array',
                 'selected_options.*' => 'exists:item_options,id',
             ]);
-            
 
-            
+
+
 
             $item = Item::findOrFail($id);
 
             $item->update($data);
-            
+
             if ($request->has('selected_options') && is_array($request->selected_options)) {
                 // Clear previous options in the pivot table and insert the selected ones
                 $item->itemOptions()->sync($request->input('selected_options'));
@@ -126,7 +132,7 @@ class ItemController extends Controller
             return redirect()->back()->with('success', 'Item updated successfully!');
         } catch (\Exception $e) {
             Log::error("Error updating item: " . $e->getMessage());
-            
+
             return redirect()->back()->with('error', 'Error updating item: ' . $e->getMessage());
         }
     }

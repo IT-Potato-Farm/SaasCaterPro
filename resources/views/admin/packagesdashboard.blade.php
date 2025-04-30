@@ -10,6 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/toprightalert.js') }}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
     <script>
         let packageItemsMapping = @json($packageItemsGroupedByPackage);
@@ -61,20 +64,19 @@
 
                 <div class="container mx-auto mb-8">
 
-                   
 
-                    
+
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
 
                         {{-- MENU ITEM BTN ULAM --}}
-                        <x-packages.add-package-item-btn />
-                        
+                        <x-packages.add-package-item-btn :itemOptions="$itemOptions" />
                         {{-- ITEM OPTION BTN --}}
                         <x-items.add-item-option />
 
                         {{-- PACKAGE BTN --}}
                         <x-packages.add-btn :categories="$categories" />
-                        
+
                         {{-- PARTY TRAY BTN --}}
                         <x-items.item-button :categories="$categories" />
 
@@ -307,7 +309,6 @@
     </div>
 
     <script>
-        
         function switchTab(tabNumber) {
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => content.classList.add('hidden'));

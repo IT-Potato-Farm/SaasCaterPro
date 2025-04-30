@@ -97,7 +97,7 @@ class AdminController extends Controller
             $items = Item::with('itemOptions')->paginate(10);
             // $itemOptions = ItemOption::all();
             $itemOptions = ItemOption::paginate(10);
-
+                
             $packages = Package::all();
             $packageItems = PackageItem::all();
             $menuItems = MenuItem::all();

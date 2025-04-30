@@ -185,7 +185,7 @@
         </svg>
     </div>
     <div class="text-left">
-        <h3 class="font-medium text-gray-800 group-hover:text-purple-700">Add Item Option</h3>
+        <h3 class="font-medium text-gray-800 group-hover:text-purple-700">Add Package Option</h3>
         <p class="text-xs text-gray-500">Create ulam options fried, curry, and etc</p>
     </div>
 </button>

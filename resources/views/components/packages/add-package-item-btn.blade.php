@@ -27,6 +27,17 @@
                         class="w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
                     <div id="description-error" class="mt-1 text-xs text-red-500"></div>
                 </div>
+
+                 <!-- Options -->
+                <div>
+                    <label for="swal-options" class="block text-sm font-medium text-gray-700 mb-1">Select Options <span class="text-gray-400 font-normal">(Optional)</span></label>
+                    <select id="swal-options" name="options[]" multiple class="w-full">
+                        @foreach ($itemOptions as $option)
+                            <option value="{{ $option->id }}">{{ $option->type }}</option>
+                        @endforeach
+                    </select>
+                    <div id="options-error" class="error-message"></div>
+                </div>
             </form>
         `,
             showCancelButton: true,
@@ -41,6 +52,10 @@
             width: 'auto', // Auto width for better responsiveness
             backdrop: 'rgba(0, 0, 0, 0.4)',
             didOpen: () => {
+                $('#swal-options').select2({
+                    dropdownParent: $('.swal2-popup'),
+                    width: '100%'
+                });
                 const nameInput = document.getElementById('swal-name');
                 const nameError = document.getElementById('name-error');
 
