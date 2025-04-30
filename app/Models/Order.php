@@ -30,6 +30,10 @@ class Order extends Model
         return $query->where('user_id', $userId)
             ->where('status', 'pending');
     }
+    public function getRemainingBalanceAttribute()
+    {
+        return $this->total - $this->amount_paid;
+    }
 
     public function orderItems()
     {

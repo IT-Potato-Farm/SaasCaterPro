@@ -135,6 +135,7 @@ class OrderController extends Controller
         }
 
         $order->status = 'paid';
+        $order->amount_paid = $order->total;
         $order->save();
 
         return redirect()->route('admin.bookings')

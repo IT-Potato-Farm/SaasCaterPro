@@ -1,6 +1,11 @@
 @props(['order'])
+
+@php
+    $partialAmount = number_format($order->total / 2, 2, '.', '');
+@endphp
+
 <button type="button"
-    onclick="openPartialPaymentModal({{ $order->id }})"
+    onclick="openPartialPaymentModal({{ $order->id }}, '{{ $partialAmount }}')"
     class="text-orange-600 hover:text-orange-900 p-1 sm:p-1.5 rounded-md hover:bg-orange-50 hover:cursor-pointer transition-colors"
     title="Mark as Partially Paid">
     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none"
@@ -13,34 +18,26 @@
         </path>
     </svg>
 </button>
+
 <script>
-    function openPartialPaymentModal(orderId) {
+    function openPartialPaymentModal(orderId, partialAmount) {
+        let formattedAmount = parseFloat(partialAmount).toLocaleString(); 
         Swal.fire({
-            title: 'Enter Partial Payment Amount',
+            title: 'Confirm Partial Payment',
             html: `
+                <p class="mb-4 text-gray-700">You're about to apply a partial payment of <strong>₱${formattedAmount}</strong> to this order (50% of total).</p>
                 <form id="partialPaymentForm-${orderId}" action="/orders/${orderId}/mark-partial" method="POST">
                     @csrf
                     @method('PUT')
-                    <div class="mb-4">
-                        <label for="partial_amount-${orderId}" class="block text-sm font-medium text-gray-700">Partial Payment Amount (₱)</label>
-                        <input type="number" name="partial_amount" id="partial_amount-${orderId}" step="0.01" min="0"
-                            placeholder="Enter partial payment amount" class="swal2-input" required>
-                    </div>
+                    <input type="hidden" name="partial_amount" value="${partialAmount}">
                 </form>
             `,
             focusConfirm: false,
             showCancelButton: true,
-            confirmButtonText: 'Mark as Partially Paid',
+            confirmButtonText: 'Confirm Partial Payment',
             cancelButtonText: 'Cancel',
             preConfirm: () => {
                 const form = document.getElementById(`partialPaymentForm-${orderId}`);
-                const partialAmount = form.querySelector('input[name="partial_amount"]').value;
-
-                if (!partialAmount || partialAmount <= 0) {
-                    Swal.showValidationMessage('Please enter a valid partial payment amount.');
-                    return false;
-                }
-
                 form.submit();
             }
         });

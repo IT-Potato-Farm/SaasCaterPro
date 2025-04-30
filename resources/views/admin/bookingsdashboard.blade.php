@@ -14,126 +14,127 @@
     <script src="{{ asset('js/toprightalert.js') }}"></script>
 
 
-    
-    
-    
-    <style>
-        
-        /* Print-specific styles */
-         /* Print-specific styles */
-         @media print {
-        /* Overall page layout */
-        @page {
-            size: portrait;
-            margin: 0.5cm;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12pt;
-            line-height: 1.3;
-            background-color: white;
-            color: black;
-        }
-        
-        /* Container adjustments */
-        .container {
-            width: 100%;
-            max-width: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        
-        /* Show the print header when printing */
-        .print-header {
-            display: block !important;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-        
-        .print-header h1 {
-            font-size: 18pt;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        
-        .print-header p {
-            font-size: 10pt;
-            margin: 2px 0;
-        }
-        
-        /* Ensure the orders table is visible and properly formatted */
-        #ordersTable {
-            display: table !important;
-            width: 100% !important;
-            border-collapse: collapse;
-            font-size: 10pt;
-            margin-top: 10px;
-            page-break-inside: auto;
-        }
-        
-        /* Hide elements not needed in print */
-        .no-print, 
-        button, 
-        .navigation, 
-        .pagination, 
-        footer, 
-        .search-filters {
-            display: none !important;
-        }
-        
-        /* Better page breaks */
-        thead {
-            display: table-header-group;
-        }
-        
-        tr {
-            page-break-inside: avoid;
-        }
-        
-        /* Table styling for better print appearance */
-        th {
-            background-color: #f2f2f2 !important;
-            color: black !important;
-            font-weight: bold;
-            text-align: left;
-            padding: 8px !important;
-            border-bottom: 1.5px solid #333;
-        }
-        
-        td {
-            padding: 6px 8px !important;
-            border-bottom: 1px solid #ddd;
-            vertical-align: top;
-        }
-        
-        /* Zebra striping for better readability */
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-        
-        /* Status formatting */
-        .status-badge {
-            padding: 3px 6px;
-            border-radius: 3px;
-            font-weight: normal;
-            display: inline-block;
-        }
-    }
-        .fc-toolbar-title {
-            font-size: 1.6rem !important; 
-        }
 
-        @media (max-width: 768px) { 
-            .fc-toolbar-title {
-                font-size: 1.4rem !important; 
+
+
+    <style>
+        /* Print-specific styles */
+        /* Print-specific styles */
+        @media print {
+
+            /* Overall page layout */
+            @page {
+                size: portrait;
+                margin: 0.5cm;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 12pt;
+                line-height: 1.3;
+                background-color: white;
+                color: black;
+            }
+
+            /* Container adjustments */
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* Show the print header when printing */
+            .print-header {
+                display: block !important;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #333;
+                padding-bottom: 10px;
+            }
+
+            .print-header h1 {
+                font-size: 18pt;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+
+            .print-header p {
+                font-size: 10pt;
+                margin: 2px 0;
+            }
+
+            /* Ensure the orders table is visible and properly formatted */
+            #ordersTable {
+                display: table !important;
+                width: 100% !important;
+                border-collapse: collapse;
+                font-size: 10pt;
+                margin-top: 10px;
+                page-break-inside: auto;
+            }
+
+            /* Hide elements not needed in print */
+            .no-print,
+            button,
+            .navigation,
+            .pagination,
+            footer,
+            .search-filters {
+                display: none !important;
+            }
+
+            /* Better page breaks */
+            thead {
+                display: table-header-group;
+            }
+
+            tr {
+                page-break-inside: avoid;
+            }
+
+            /* Table styling for better print appearance */
+            th {
+                background-color: #f2f2f2 !important;
+                color: black !important;
+                font-weight: bold;
+                text-align: left;
+                padding: 8px !important;
+                border-bottom: 1.5px solid #333;
+            }
+
+            td {
+                padding: 6px 8px !important;
+                border-bottom: 1px solid #ddd;
+                vertical-align: top;
+            }
+
+            /* Zebra striping for better readability */
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* Status formatting */
+            .status-badge {
+                padding: 3px 6px;
+                border-radius: 3px;
+                font-weight: normal;
+                display: inline-block;
             }
         }
 
-        @media (max-width: 480px) { 
+        .fc-toolbar-title {
+            font-size: 1.6rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .fc-toolbar-title {
+                font-size: 1.4rem !important;
+            }
+        }
+
+        @media (max-width: 480px) {
             .fc-toolbar-title {
                 font-size: 1.2rem !important;
             }
@@ -147,14 +148,14 @@
 
         @media (max-width: 768px) {
             .fc-button {
-                font-size: 0.95rem; 
+                font-size: 0.95rem;
                 padding: 0.35rem 0.7rem;
             }
         }
 
         @media (max-width: 480px) {
             .fc-button {
-                font-size: 0.85rem; 
+                font-size: 0.85rem;
                 padding: 0.25rem 0.6rem;
             }
         }
@@ -170,13 +171,13 @@
 
         @media (max-width: 768px) {
             .fc-daygrid-day-number {
-                font-size: 0.95rem; 
+                font-size: 0.95rem;
             }
         }
 
         @media (max-width: 480px) {
             .fc-daygrid-day-number {
-                font-size: 0.85rem; 
+                font-size: 0.85rem;
             }
         }
 
@@ -186,30 +187,30 @@
 
         @media (max-width: 768px) {
             .fc-event {
-                font-size: 0.8rem; 
+                font-size: 0.8rem;
             }
         }
 
         @media (max-width: 480px) {
             .fc-event {
-                font-size: 0.75rem; 
+                font-size: 0.75rem;
             }
         }
     </style>
-<script>
-    // Function to trigger printing
-    function printOrdersReport() {
-        window.print();
-    }
-    
-    // Button to print the report
-    document.addEventListener('DOMContentLoaded', function() {
-        const printButton = document.getElementById('printReportBtn');
-        if (printButton) {
-            printButton.addEventListener('click', printOrdersReport);
+    <script>
+        // Function to trigger printing
+        function printOrdersReport() {
+            window.print();
         }
-    });
-</script>
+
+        // Button to print the report
+        document.addEventListener('DOMContentLoaded', function() {
+            const printButton = document.getElementById('printReportBtn');
+            if (printButton) {
+                printButton.addEventListener('click', printOrdersReport);
+            }
+        });
+    </script>
 
     <script>
         function confirmDelete(form) {
@@ -322,7 +323,6 @@
                 </div>
 
 
-                <!-- Filter Section -->
 
                 <!-- Filter Section -->
                 <div class="flex items-center print:hidden space-x-4 mb-4">
@@ -340,6 +340,8 @@
                                 <option value="partial" {{ request('status') == 'partial' ? 'selected' : '' }}>Partially
                                     Paid</option>
                                 <option value="ongoing" {{ request('status') == 'ongoing' ? 'selected' : '' }}>Ongoing
+                                </option>
+                                <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Paid
                                 </option>
                                 <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>
                                     Completed</option>
@@ -421,20 +423,20 @@
                 @else
                     {{-- <div class="bg-white rounded-lg shadow overflow-hidden"> --}}
 
-                        <div id="print-header" class="print-header hidden text-center p-4  ">
-                            <h1 class="text-xl font-bold uppercase">SAAS Food & Catering Services</h1>
-                            <p class="mt-1 text-xs">Orders Report -
-                                {{ request('status') != 'all' ? ucfirst(request('status')) : 'All Statuses' }}</p>
-                            <p class="mt-1 text-xs">
-                                @if (request('start_date') && request('end_date'))
-                                    {{ \Carbon\Carbon::parse(request('start_date'))->format('M d, Y') }} to
-                                    {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
-                                @else
-                                    All Dates
-                                @endif
-                            </p>
-                            <p class="mt-1 text-xs">Generated: {{ now()->format('M d, Y h:i A') }}</p>
-                        </div>
+                    <div id="print-header" class="print-header hidden text-center p-4  ">
+                        <h1 class="text-xl font-bold uppercase">SAAS Food & Catering Services</h1>
+                        <p class="mt-1 text-xs">Orders Report -
+                            {{ request('status') != 'all' ? ucfirst(request('status')) : 'All Statuses' }}</p>
+                        <p class="mt-1 text-xs">
+                            @if (request('start_date') && request('end_date'))
+                                {{ \Carbon\Carbon::parse(request('start_date'))->format('M d, Y') }} to
+                                {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
+                            @else
+                                All Dates
+                            @endif
+                        </p>
+                        <p class="mt-1 text-xs">Generated: {{ now()->format('M d, Y h:i A') }}</p>
+                    </div>
 
 
                     <div class=" px-4 sm:px-6 lg:px-8 overflow-x-auto ">
@@ -690,7 +692,7 @@
                                         <td
                                             class="px-3 sm:px-6 py-4 whitespace-nowrap text-right hidden sm:table-cell">
                                             <div class="text-sm font-medium text-gray-900">
-                                                ₱{{ number_format($order->total - $order->amount_paid, 2) }}
+                                                ₱{{ number_format($order->remaining_balance, 2) }}
                                             </div>
                                         </td>
 
@@ -733,36 +735,38 @@
 
                                         <!-- Actions (always visible) -->
                                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                            @php
+                                                $status = strtolower($order->status);
+                                                $isPaid = (bool) $order->paid;
+                                            @endphp
                                             <select class="form-control form-select"
                                                 id="action-select-{{ $order->id }}"
                                                 onchange="executeOrderAction(this, {{ $order->id }})">
                                                 <option value="">Actions</option>
                                                 <option value="invoice">Invoice</option>
 
-                                                @if ($order->status !== 'ongoing' && $order->status !== 'cancelled' && $order->status !== 'paid')
-                                                    <option value="ongoing">Set Ongoing</option>
-                                                @endif
-
-                                                @if ($order->status !== 'cancelled' && $order->status !== 'paid')
+                                                @if ($status === 'pending')
                                                     <option value="partial">Partial Payment</option>
-                                                @endif
-
-                                                @if (!$order->paid)
-                                                    <option value="paid">Mark Paid</option>
-                                                @else
-                                                    <option value="unpaid">Mark Unpaid</option>
-                                                @endif
-
-                                                @if ($order->status !== 'completed' && $order->status !== 'cancelled')
-                                                    <option value="completed">Mark Completed</option>
-                                                @endif
-
-                                                @if ($order->status != 'cancelled')
                                                     <option value="cancel">Cancel Order</option>
+
+                                                @elseif ($status === 'partial')
+                                                    <option value="ongoing">Ongoing</option>
+                                                @elseif ($status === 'ongoing')
+                                                    <option value="paid">Mark Paid</option>
+                                                @elseif ($status === 'paid')
+                                                    <option value="completed">Mark Completed</option>
+                                                    {{-- <option value="unpaid">Mark Unpaid</option> --}}
+                                                @elseif ($status === 'completed')
+                                                    {{-- <option value="unpaid">Mark Unpaid</option> --}}
+                                                    <option value="delete">Delete Order</option>
+                                                @elseif ($status === 'cancelled')
+                                                    
+                                                    <option value="delete">Delete Order</option>
                                                 @endif
 
-                                                <option value="penalty">Add Penalty</option>
-                                                <option value="delete">Delete</option>
+                                                @if ($status !== 'pending' && $status !=='partial' && $status !== 'completed' && $status !== 'cancelled')
+                                                    <option value="penalty">Add Penalty</option>
+                                                @endif
                                             </select>
 
                                             <!-- Hidden action buttons -->
@@ -819,28 +823,28 @@
 
                     <section class="print:hidden">
 
-                   
-                    <!-- Pagination -->
-                    @if ($orders->hasPages())
-                        <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
-                            <div class="flex items-end gap-5 justify-end">
-                                <!-- Showing results text on the left -->
-                                {{-- <div class="text-sm text-gray-700">
+
+                        <!-- Pagination -->
+                        @if ($orders->hasPages())
+                            <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
+                                <div class="flex items-end gap-5 justify-end">
+                                    <!-- Showing results text on the left -->
+                                    {{-- <div class="text-sm text-gray-700">
                                     Showing <span class="font-medium">{{ $orders->firstItem() }}</span> to <span
                                         class="font-medium">{{ $orders->lastItem() }}</span> of <span
                                         class="font-medium">{{ $orders->total() }}</span> results
                                 </div> --}}
 
-                                <!-- Pagination links on the right -->
-                                <div>
-                                    {{ $orders->appends(request()->except('page'))->onEachSide(1)->links('pagination::tailwind') }}
+                                    <!-- Pagination links on the right -->
+                                    <div>
+                                        {{ $orders->appends(request()->except('page'))->onEachSide(1)->links('pagination::tailwind') }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
-                    
-                    
-                    {{-- </div> --}}
+                        @endif
+
+
+                        {{-- </div> --}}
                 @endif
 
                 {{-- CALENDAR EVENTS --}}
@@ -858,17 +862,17 @@
                             // Set default color to blue
                             $color = '#3b82f6';
                             if ($status === 'pending') {
-                                $color = '#FBBF24'; // Amber
-                            } elseif ($status === 'partially paid') {
-                                $color = '#F59E0B'; // Orange
+                                $color = '#FBBF24'; // yellow-400
+                            } elseif ($status === 'partial') {
+                                $color = '#F59E0B'; // orange-500
                             } elseif ($status === 'ongoing') {
-                                $color = '#60A5FA'; // Light blue
+                                $color = '#60A5FA'; // blue-400
                             } elseif ($status === 'paid') {
-                                $color = '#10B981'; // Green
+                                $color = '#10B981'; // green-500
                             } elseif ($status === 'completed') {
-                                $color = '#34D399'; // Light green
+                                $color = '#34D399'; // green-400
                             } elseif ($status === 'cancelled') {
-                                $color = '#EF4444'; // Red
+                                $color = '#EF4444'; // red-500
                             }
                             // Parse start date and time properly
                             return [
@@ -889,25 +893,57 @@
 
 
                 {{-- CALENDAR BOOKINGS --}}
-                <div class="container mx-auto px-4 py-6 sm:py-8 ">
+                <div class="container mx-auto px-4 py-6 sm:py-8">
                     <div class="max-w-6xl mx-auto">
                         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center font-serif">
                             Event Calendar
                         </h1>
 
+
+
                         <!-- Calendar Container -->
-                        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 mb-6">
                             <div id="calendar"
                                 class="p-3 sm:p-4 md:p-6 min-h-[480px] sm:min-h-[600px] md:min-h-[680px]"></div>
                         </div>
+
+                        <!-- Legend -->
+                        <div class="flex flex-wrap gap-4 justify-center mt-6">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-4 h-4 rounded bg-yellow-400"></span>
+                                <span class="text-sm text-gray-800">Pending</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-4 h-4 rounded bg-orange-500"></span>
+                                <span class="text-sm text-gray-800">Partial</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-4 h-4 rounded bg-blue-400"></span>
+                                <span class="text-sm text-gray-800">Ongoing</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-4 h-4 rounded bg-green-500"></span>
+                                <span class="text-sm text-gray-800">Paid</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-4 h-4 rounded bg-green-400"></span>
+                                <span class="text-sm text-gray-800">Completed</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-4 h-4 rounded bg-red-500"></span>
+                                <span class="text-sm text-gray-800">Cancelled</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
 
             </div>
 
 
         </main>
-    </section>
+        </section>
     </div>
     {{-- BOOKING CALENDAR JS --}}
     <script>

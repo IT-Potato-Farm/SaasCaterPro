@@ -48,31 +48,23 @@ use App\Http\Controllers\Admin\BookingSettingController;
 use App\Http\Controllers\Admin\WhyChooseUsSectionController;
 use App\Http\Controllers\Admin\ReviewSectionSettingController;
 
-// route navigation each page
-Route::middleware(['auth', 'admin'])->group(function () {
-    // Redirect admin from customer pages to admin dashboard
-    Route::get('/', function () {
-        return redirect()->route('admin.reports');
-    });
-    Route::get('/all-menus', function () {
-        return redirect()->route('admin.reports');
-    });
-    Route::get('/cart', function () {
-        return redirect()->route('admin.reports');
-    });
-    Route::get('/checkout', function () {
-        return redirect()->route('admin.reports');
-    });
-    Route::get('/user/dashboard', function () {
-        return redirect()->route('admin.reports');
-    });
-});
 
 
 
 
 
 Route::get('/all-reviews', [ReviewController::class, 'index'])->name('all.reviews');
+
+
+
+
+
+
+Route::get('/user/dashboard', function () {
+    return redirect()->route('admin.reports');
+});
+
+
 
 // PREVENT ADMIN ACCESSING CUSTOMER SIDE
 Route::middleware([PreventAdminAccess::class])->group(function () {
@@ -334,8 +326,8 @@ Route::post('/reviews/submit', [ReviewController::class, 'store'])->name('review
 
 // CUSTOMER ROUTE IF LOGGED IN
 Route::middleware(['auth', 'verified', PreventAdminAccess::class])->group(function () {
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cartver2', [CartController::class, 'index2'])->name('cart.index2');
     Route::get('/cartdup', [CartController::class, 'index3'])->name('cart.sanagumana');
     // cancel order
