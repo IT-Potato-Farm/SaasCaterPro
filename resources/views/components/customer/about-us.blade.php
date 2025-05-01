@@ -8,7 +8,7 @@
             <div class="w-full lg:w-1/2 flex justify-center lg:justify-end">
                 @if ($about->background_image)
                     <div class="relative w-full max-w-lg">
-                        <img src="{{ asset('storage/' . $about->background_image) }}" alt="About Background"
+                        <img src="{{ asset( $about->background_image) }}" alt="About Background"
                             class="w-full h-auto rounded-2xl shadow-xl object-cover transition-all duration-500 hover:shadow-2xl"
                             loading="lazy">
                         <div class="absolute -inset-4 -z-10 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl opacity-70"></div>
