@@ -374,6 +374,7 @@ Route::put('/api/users/{id}', [UserApiController::class, 'update'])->name('api.u
 Route::delete('/api/users/{id}', [UserApiController::class, 'destroy'])->name('api.users.destroy');
 Route::put('/api/users/{id}/role', [UserApiController::class, 'updateRole'])->name('api.users.role');
 
+Route::get('/api/orders/{id}/details', [OrderController::class, 'getOrderDetails']);
 // route for admin
 Route::middleware(['auth', 'admin'])->group(function () {
 

@@ -97,7 +97,7 @@ class AdminController extends Controller
             $items = Item::with('itemOptions')->paginate(10);
             // $itemOptions = ItemOption::all();
             $itemOptions = ItemOption::with('category')->paginate(10);
-            
+
             $packages = Package::all();
             $packageItems = PackageItem::all();
             $menuItems = MenuItem::all();
@@ -334,18 +334,18 @@ class AdminController extends Controller
                 ->sum('total');
 
 
-                $yesterdayData = Order::selectRaw('HOUR(event_date_start) as hour, SUM(total) as total')
+            $yesterdayData = Order::selectRaw('HOUR(event_date_start) as hour, SUM(total) as total')
                 ->where('status', 'completed')
                 ->whereBetween('event_date_start', [$yesterdayStart, $yesterdayEnd])
                 ->groupBy('hour')
                 ->pluck('total', 'hour')
                 ->toArray();
-            
+
             // Ensure all 24 hours are present
             $hours = range(0, 23);
             $yesterdayRevenueChart = [];
             $yesterdayRevenueLabels = [];
-            
+
             foreach ($hours as $hour) {
                 $label = sprintf('%02d:00', $hour); // 00:00, 01:00, ...
                 $yesterdayRevenueLabels[] = $label;
@@ -521,10 +521,15 @@ class AdminController extends Controller
                 ];
             });
 
+            $upcomingOrders = Order::whereDate('event_date_start', Carbon::tomorrow())
+                ->orderBy('event_date_start', 'asc')
+                ->get();
+
             return view('admin.reportsdashboard', compact(
                 'weeklySales',
                 'totalOrders',
                 'completedOrders',
+                'upcomingOrders',
                 'pendingOrders',
                 'ordersToday',
                 'totalRevenue',

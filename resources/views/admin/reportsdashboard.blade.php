@@ -187,6 +187,122 @@
                         </div>
                     </div>
 
+                    {{-- upcoming events --}}
+                    <!-- Upcoming Events Component -->
+                    <div class="bg-white rounded-lg shadow-sm p-5 max-w-md print:hidden">
+                        <h2 class="text-lg font-medium text-gray-800 mb-1">Upcoming events</h2>
+                        <p class="text-sm text-gray-500 mb-4">Don't miss scheduled events</p>
+
+                        <!-- Event List -->
+                        @forelse($upcomingOrders as $order)
+                            <div class="mb-4 bg-white rounded-lg border border-gray-100 hover:shadow transition-shadow cursor-pointer"
+                                onclick="showOrderDetails({{ $order->id }})">
+                                <div class="p-4">
+                                    <!-- Time with Color Indicator -->
+                                    <div class="flex items-center mb-2">
+                                        <div
+                                            class="w-2 h-2 rounded-full 
+                                            @if ($order->event_type == 'Wedding') bg-blue-500
+                                            @elseif($order->event_type == 'Birthday') bg-pink-500 
+                                            @elseif($order->event_type == 'Anniversary') bg-green-500
+                                            @elseif($order->event_type == 'Corporate') bg-indigo-500
+                                            @elseif($order->event_type == 'Simple Celebration') bg-yellow-500
+                                            @else bg-gray-500 @endif mr-2">
+                                        </div>
+                                        <span
+                                            class="text-sm text-gray-500">{{ date('g:i A', strtotime($order->event_start_time)) }}-{{ date('g:i A', strtotime($order->event_start_end)) }}</span>
+                                        <div class="ml-auto">
+                                            <!-- Status Badge -->
+                                            <span
+                                                class="px-2 py-1 text-xs rounded-full
+                                                @if ($order->status == 'confirmed') bg-green-100 text-green-800
+                                                @elseif($order->status == 'pending') bg-yellow-100 text-yellow-800
+                                                @else bg-gray-100 text-gray-800 @endif">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event Title (Modified based on the event type options) -->
+                                    <h3 class="font-medium text-gray-800">
+                                        @if ($order->event_type == 'Wedding')
+                                            Wedding
+                                        @elseif ($order->event_type == 'Birthday')
+                                            Birthday Celebration
+                                        @elseif ($order->event_type == 'Anniversary')
+                                            Anniversary Celebration
+                                        @elseif ($order->event_type == 'Corporate')
+                                            Corporate Event
+                                        @elseif ($order->event_type == 'Simple Celebration')
+                                            Simple Celebration
+                                        @else
+                                            {{ $order->event_type }}
+                                        @endif
+                                    </h3>
+
+                                    <!-- Event Description -->
+                                    <p class="text-sm text-gray-500">{{ $order->user->first_name }}</p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center text-gray-500 py-4">
+                                No upcoming events
+                            </div>
+                        @endforelse
+                    </div>
+
+
+
+                    <!-- Order Details Modal -->
+                    <div id="orderDetailsModal"
+                        class="fixed inset-0  bg-opacity-50 hidden z-50 flex items-center justify-center">
+
+                        <!-- Modal Content -->
+                        <div
+                            class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                            <div class="p-6">
+                                <!-- Modal Header -->
+                                <div class="flex justify-between items-center border-b pb-3">
+                                    <h3 class="text-xl font-semibold text-gray-800" id="modalTitle">Order Details</h3>
+                                    <button type="button" onclick="closeOrderModal()"
+                                        class="text-gray-400 hover:text-gray-600">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="mt-4" id="orderDetailsContent">
+                                    <div class="flex justify-center">
+                                        <svg class="animate-spin h-8 w-8 text-blue-500"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4" />
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="mt-6 border-t pt-3 flex justify-end">
+                                    <button type="button" onclick="closeOrderModal()"
+                                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
                     <!-- Charts Row -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         <!-- Sales Overview Chart -->
@@ -196,7 +312,7 @@
                                 <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
                                     class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                     <option value="today" selected>Today</option>
-                                    <option value="yesterday" >Yesterday</option>
+                                    <option value="yesterday">Yesterday</option>
                                     <option value="thisWeek">This Week</option>
                                     <option value="month">This Month</option>
                                     <option value="sixMonths">Last 6 Months</option>
@@ -263,7 +379,6 @@
                         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                             <div class="flex justify-between items-center mb-6">
                                 <h2 class="text-lg font-semibold text-gray-800">Top Packages</h2>
-                                <a href="#" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
                             </div>
 
                             <div class="overflow-x-auto">
@@ -296,7 +411,7 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                                                         </svg>
-                                                        3.2%
+
                                                     </span>
                                                 </td>
                                             </tr>
@@ -319,6 +434,11 @@
                                 </table>
                             </div>
                         </div>
+
+
+
+
+
                     </div>
                 </div>
             </main>
@@ -334,6 +454,123 @@
         <script src="{{ asset('js/eventTypeRevenue-chart.js') }}"></script>
     @endif
 
+    <script>
+        function showOrderDetails(orderId) {
+            const modal = document.getElementById('orderDetailsModal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden'); // Prevent background scroll
+
+            document.getElementById('orderDetailsContent').innerHTML = `
+        <div class="flex justify-center">
+            <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+    `;
+
+            // Fetch order details via AJAX
+            fetch(`/api/orders/${orderId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    populateOrderDetails(data);
+                })
+                .catch(error => {
+                    document.getElementById('orderDetailsContent').innerHTML = `
+                    <div class="text-red-500 text-center py-4">
+                        Error loading order details. Please try again.
+                    </div>
+                `;
+                    console.error('Error fetching order details:', error);
+                });
+        }
+
+        function populateOrderDetails(order) {
+            const eventStartDate = new Date(order.event_date_start).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const eventEndDate = new Date(order.event_date_end).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let statusClass = 'bg-gray-100 text-gray-800';
+            if (order.status === 'confirmed') statusClass = 'bg-green-100 text-green-800';
+            if (order.status === 'pending') statusClass = 'bg-yellow-100 text-yellow-800';
+            if (order.status === 'paid') statusClass = 'bg-blue-100 text-blue-800';
+
+            document.getElementById('modalTitle').textContent = `${order.event_type} Details`;
+
+            let content = `
+        <div class="space-y-4">
+            <div class="flex justify-between">
+                <div>
+                    <span class="text-sm text-gray-500">Customer</span>
+                    <div class="font-medium text-gray-800">${order.user.first_name} ${order.user.last_name}</div>
+                </div>
+                <div>
+                    <span class="px-3 py-1 rounded-full ${statusClass} text-sm font-medium">
+                        ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </span>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h4 class="font-medium text-gray-800 mb-2">Event</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500">Type</span>
+                        <div class="font-medium text-gray-800">${order.event_type}</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Guests</span>
+                        <div class="font-medium text-gray-800">${order.total_guests}</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Start</span>
+                        <div class="font-medium text-gray-800">${eventStartDate}</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">End</span>
+                        <div class="font-medium text-gray-800">${eventEndDate}</div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="text-gray-500">Location</span>
+                    <div class="font-medium text-gray-800">${order.event_address}</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h4 class="font-medium text-gray-800 mb-2">Payment</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500">Total</span>
+                        <div class="font-medium text-gray-800">₱${parseFloat(order.total).toLocaleString()}</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Paid</span>
+                        <div class="font-medium text-gray-800">₱${parseFloat(order.amount_paid).toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+    `;
+            content += `</div>`;
+            document.getElementById('orderDetailsContent').innerHTML = content;
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderDetailsModal').classList.add('hidden');
+        }
+    </script>
+
+    </script>
     {{-- CHART TOTAL SALES OVERVIEW EARNING JS DE TO GUMAGANA IF NASA IBANG FILES YAWA --}}
     <script>
         const totalRevenues = {

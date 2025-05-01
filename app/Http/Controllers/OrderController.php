@@ -59,28 +59,28 @@ class OrderController extends Controller
     }
 
     public function index(Request $request)
-{
-    $query = Order::query();
+    {
+        $query = Order::query();
 
-    // Filter by status if provided and not empty
-    if ($request->filled('status')) {
-        $query->where('status', $request->input('status'));
+        // Filter by status if provided and not empty
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Filter by event_date range if provided
+        if ($request->filled('date_from')) {
+            $query->whereDate('event_date_start', '>=', $request->input('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('event_date_end', '<=', $request->input('date_to'));
+        }
+
+        // Order the results and paginate
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        // Return view and pass the orders to it
+        return view('admin.bookingsdashboard', compact('orders'));
     }
-
-    // Filter by event_date range if provided
-    if ($request->filled('date_from')) {
-        $query->whereDate('event_date_start', '>=', $request->input('date_from'));
-    }
-    if ($request->filled('date_to')) {
-        $query->whereDate('event_date_end', '<=', $request->input('date_to'));
-    }
-
-    // Order the results and paginate
-    $orders = $query->orderBy('created_at', 'desc')->paginate(10);
-
-    // Return view and pass the orders to it
-    return view('admin.bookingsdashboard', compact('orders'));
-}
 
     // penalty function
     public function addPenalty(Request $request, Order $order)
@@ -179,7 +179,7 @@ class OrderController extends Controller
                 ->with('error', 'This order cannot be marked as partially paid.');
         }
 
-        $partialAmount = $request->input('partial_amount');  
+        $partialAmount = $request->input('partial_amount');
 
         if ($partialAmount <= 0 || $partialAmount > ($order->total - $order->amount_paid)) {
             return redirect()->route('admin.bookings')
@@ -189,10 +189,10 @@ class OrderController extends Controller
         $order->amount_paid += $partialAmount;
         $order->partial_payment_date = now();
         $order->status = 'partial';
-        
+
         if ($order->amount_paid >= $order->total) {
-            $order->status = 'paid'; 
-            $order->full_payment_date = now(); 
+            $order->status = 'paid';
+            $order->full_payment_date = now();
         }
 
         $order->save();
@@ -200,8 +200,8 @@ class OrderController extends Controller
             $remainingBalance = $order->total - $order->amount_paid;
             Mail::to($order->user->email)->send(new RemainingBalanceReminder($order, $remainingBalance));
         }
-    
-        return redirect()->route('admin.bookings') ->with('success', 'Order marked as partially paid. Customer has been notified of remaining balance.');
+
+        return redirect()->route('admin.bookings')->with('success', 'Order marked as partially paid. Customer has been notified of remaining balance.');
     }
 
     public function cancelOrder(Order $order)
@@ -240,5 +240,48 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete the order.');
         }
+    }
+
+    public function getUpcomingEvents()
+    {
+        $upcomingEvents = Order::where('event_date', '>=', now())
+            ->where('event_date', '<=', now()->addDays(7)) // next 7 days
+            ->orderBy('event_date', 'asc')
+            ->get();
+
+        return response()->json($upcomingEvents);
+    }
+
+    public function getOrderDetails($id)
+    {
+        $order = Order::with([
+            'user',
+            'orderItems.itemable',
+            'penalties',
+            'review'
+        ])->findOrFail($id);
+    
+        return response()->json([
+            'id' => $order->id,
+            'user' => $order->user,
+            'event_type' => $order->event_type,
+            'event_date_start' => $order->event_date_start,
+            'event_date_end' => $order->event_date_end,
+            'event_days' => $order->event_days,
+            'event_start_time' => $order->event_start_time,
+            'event_start_end' => $order->event_start_end,
+            'event_address' => $order->event_address,
+            'status' => $order->status,
+            'total_guests' => $order->total_guests,
+            'total' => $order->total,
+            'amount_paid' => $order->amount_paid,
+            'remainingBalance' => $order->remaining_balance,
+            'partial_payment_date' => $order->partial_payment_date,
+            'full_payment_date' => $order->full_payment_date,
+            'concerns' => $order->concerns,
+            'orderItems' => $order->orderItems,
+            'penalties' => $order->penalties,
+            'review' => $order->review,
+        ]);
     }
 }
