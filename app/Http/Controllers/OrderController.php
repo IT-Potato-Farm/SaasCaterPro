@@ -13,6 +13,24 @@ use App\Mail\RemainingBalanceReminder;
 
 class OrderController extends Controller
 {
+    public function getPenalties($id)
+    {
+        $order = Order::with(['penalties'])->find($id);
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found.'
+            ], 404);
+        }
+
+        $order->customer_name = $order->user->first_name . ' ' . $order->user->last_name ?? 'N/A';
+
+        return response()->json([
+            'success' => true,
+            'data' => $order
+        ]);
+    }
 
     public function getOccupiedTimes(Request $request)
     {

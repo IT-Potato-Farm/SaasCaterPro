@@ -104,11 +104,11 @@
                         <h2 class="text-lg font-medium text-gray-700 mb-4">Filters</h2>
                         <form action=" {{ request()->url() }}" method="GET"
                             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div class="flex flex-col">
+                            {{-- <div class="flex flex-col">
                                 <label for="order_id" class="text-sm font-medium text-gray-700 mb-1">Order ID</label>
                                 <input type="text" name="order_id" id="order_id" value="{{ request('order_id') }}"
                                     class="border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                            </div>
+                            </div> --}}
                             <div class="flex flex-col">
                                 <label for="min_amount" class="text-sm font-medium text-gray-700 mb-1">Min
                                     Amount</label>
@@ -637,7 +637,7 @@
          * @param {string} orderId - Order ID
          */
         function viewOrder(orderId) {
-            fetch(`{{ url('api/orders') }}/${orderId}`, {
+            fetch(`{{ url('/api/orders') }}/${orderId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -662,7 +662,7 @@
                         </div>
                         <div class="mb-4">
                             <span class="block text-gray-700 text-sm font-bold mb-1">Total Amount:</span>
-                            <span class="block text-gray-600">₱${parseFloat(order.total_amount).toFixed(2)}</span>
+                            <span class="block text-gray-600">₱${parseFloat(order.total).toFixed(2)}</span>
                         </div>
                         <div class="mb-4">
                             <span class="block text-gray-700 text-sm font-bold mb-1">Status:</span>
@@ -697,7 +697,7 @@
                             <tr>
                                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${penalty.id}</td>
                                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">₱${parseFloat(penalty.amount).toFixed(2)}</td>
-                                <td class="px-4 py-2 text-sm text-gray-500">${penalty.reason}</td>
+                                <td class="px-4 py-2 text-sm text-gray-500">${penalty.reason ? penalty.reason : 'No reason provided'}</td>
                             </tr>
                         `;
                             });

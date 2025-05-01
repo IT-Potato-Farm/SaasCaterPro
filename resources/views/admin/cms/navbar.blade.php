@@ -40,19 +40,81 @@
                                 <h2 class="text-xl font-semibold text-gray-800">Navbar Preview</h2>
                                 <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Live Preview</span>
                             </div>
-                            <nav class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg shadow" id="navbar-preview">
-                                <div class="flex items-center space-x-4">
-                                    <img src="{{ asset('storage/' . $navbar->logo) }}" id="logo-preview" class="h-10 rounded-lg" alt="Navbar Logo">
-                                    <span class="text-white text-xl font-semibold" id="title-preview">{{ $navbar->title }}</span>
-                                </div>
-                                <button class="lg:hidden text-white">
-                                    <i class="fas fa-bars"></i>
-                                </button>
-                            </nav>
+                            
+                            <!-- Enhanced Preview - closer to actual navbar -->
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <!-- Navbar Preview -->
+                                <nav class="bg-gray-900 border-gray-200">
+                                    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+                                        <!-- Logo and Brand -->
+                                        <a href="#" class="flex items-center space-x-3">
+                                            <img src="{{ asset('storage/' . $navbar->logo) }}" id="logo-preview" class="h-8 sm:h-10" alt="Logo" />
+                                            <span id="title-preview" class="text-xl sm:text-2xl font-semibold whitespace-nowrap text-white">{{ $navbar->title }}</span>
+                                        </a>
+                                        
+                                        <!-- Desktop Search Placeholder -->
+                                        <div class="hidden md:flex flex-1 justify-center px-4">
+                                            <div class="w-full max-w-md">
+                                                <div class="relative flex opacity-75">
+                                                    <input type="text" disabled placeholder="Search meals..." 
+                                                        class="flex-grow py-2 px-3 rounded-l-lg text-sm focus:outline-none cursor-not-allowed">
+                                                    <button disabled class="bg-amber-400 rounded-r-lg p-2 cursor-not-allowed">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Desktop Cart and User -->
+                                        {{-- <div class="hidden md:flex items-center space-x-4">
+                                            <!-- Cart -->
+                                            <a href="#" class="relative flex items-center space-x-1 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
+                                                <span>Cart</span>
+                                                <svg class="w-5 h-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                                                    <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
+                                                </svg>
+                                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                                                    0
+                                                </span>
+                                            </a>
+
+                                            <!-- User Button -->
+                                            <button class="flex items-center space-x-1 text-black bg-white hover:bg-amber-300 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
+                                                <span>Hello, User</span>
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </button>
+                                        </div> --}}
+
+                                        <!-- Mobile Cart Icon and Hamburger -->
+                                        <div class="md:hidden flex items-center space-x-4">
+                                            <a href="#" class="relative flex items-center text-white hover:text-amber-300">
+                                                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                                                    <path d="M351.9 329.506H206.81l-3.072-12.56H368.16l26.63-116.019-217.23-26.04-9.952-58.09h-50.4v21.946h31.894l35.233 191.246a32.927 32.927 0 1 0 36.363 21.462h100.244a32.825 32.825 0 1 0 30.957-21.945zM181.427 197.45l186.51 22.358-17.258 75.195H198.917z"/>
+                                                </svg>
+                                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                                                    0
+                                                </span>
+                                            </a>
+                                            
+                                            <button type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg focus:outline-none text-gray-400 hover:bg-gray-700">
+                                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </nav>
+                            </div>
+
                             <div class="mt-4 text-sm text-gray-500">
                                 <p>This is how your navbar will appear to visitors.</p>
                             </div>
                         </div>
+
     
                         <!-- Form Section -->
                         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">

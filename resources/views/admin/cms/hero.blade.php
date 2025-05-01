@@ -33,6 +33,44 @@
                     </div>
 
                     @if ($heroSection)
+                        <!-- Live Preview Section -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-eye mr-2 text-blue-500"></i>
+                                Live Preview
+                                <span class="ml-2 text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Updates in real-time</span>
+                            </h2>
+                            
+                            <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                                <!-- Hero Preview -->
+                                <section 
+                                    id="preview-hero"
+                                    class="relative bg-cover bg-center bg-no-repeat flex items-center"
+                                    style="background-image: url('{{ asset($heroSection->background_image ?? 'images/sectionhero.jpg') }}'); height: 400px;"
+                                    aria-label="Hero section preview">
+                                    
+                                    {{-- Dark overlay --}}
+                                    <div class="absolute bg-black bg-opacity-50 inset-0"></div>
+                                    
+                                    {{-- Content container --}}
+                                    <div class="relative z-10 w-full px-4 mx-auto max-w-screen-xl text-center py-12">
+                                        <h1 id="preview-title" class="mb-2 text-5xl font-bold tracking-tight text-white animate-fade-in">
+                                            {{ $heroSection->title }}
+                                        </h1>
+                                        
+                                        <p id="preview-subtitle" class="mb-4 text-xl font-medium text-white animate-fade-in-delayed">
+                                            {{ $heroSection->subtitle }}
+                                        </p>
+                                        
+                                        <p id="preview-description" class="mb-6 text-lg font-normal text-white/90 max-w-3xl mx-auto animate-fade-in-delayed-more">
+                                            {{ $heroSection->description }}
+                                        </p>
+                                    </div>
+                                </section>
+                            </div>
+                            <p class="text-xs text-gray-400 text-right mt-2">This is a scaled-down preview. Actual appearance may vary based on your site's layout.</p>
+                        </div>
+
                         <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
                             <form id="editForm" action="{{ route('admin.hero.update', $heroSection->id) }}"
                                 method="POST" class="space-y-6" enctype="multipart/form-data">
@@ -89,7 +127,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Background Image Field -->
                                 <!-- Background Image Field -->
                                 <div>
                                     <label for="background_image"
@@ -196,44 +233,133 @@
                         </div>
                     @endif
                 </div>
-                <x-customer.hero />
             </main>
         </div>
     </div>
 
     <script>
-        const fileInput = document.getElementById('background_image');
-        const fileNameDisplay = document.getElementById('file-name');
-        const previewImage = document.getElementById('preview-image');
-        const imageError = document.getElementById('image-error');
-        const previewContainer = document.getElementById('preview-container');
-
-        fileInput?.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            fileNameDisplay.textContent = file?.name || 'No file selected';
-
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    previewImage.src = event.target.result;
-                    // previewImage.classList.remove('hidden');
-                    previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                // previewImage.classList.add('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form Fields
+            const titleInput = document.getElementById('title');
+            const subtitleInput = document.getElementById('subtitle');
+            const descriptionInput = document.getElementById('description');
+            const fileInput = document.getElementById('background_image');
+            
+            // Preview Elements
+            const previewTitle = document.getElementById('preview-title');
+            const previewSubtitle = document.getElementById('preview-subtitle');
+            const previewDescription = document.getElementById('preview-description');
+            const previewHero = document.getElementById('preview-hero');
+            
+            // File Preview Elements
+            const fileNameDisplay = document.getElementById('file-name');
+            const previewImage = document.getElementById('preview-image');
+            const imageError = document.getElementById('image-error');
+            const previewContainer = document.getElementById('preview-container');
+            
+            // Live Preview Updates
+            if (titleInput) {
+                titleInput.addEventListener('input', function() {
+                    previewTitle.textContent = this.value || 'SAAS';
+                    // Apply a quick highlight effect
+                    previewTitle.classList.add('bg-white/10');
+                    setTimeout(() => {
+                        previewTitle.classList.remove('bg-white/10');
+                    }, 300);
+                });
             }
-
-            imageError.textContent = ''; // Reset error if any
+            
+            if (subtitleInput) {
+                subtitleInput.addEventListener('input', function() {
+                    previewSubtitle.textContent = this.value || 'CATERING AND FOOD SERVICES';
+                    // Apply a quick highlight effect
+                    previewSubtitle.classList.add('bg-white/10');
+                    setTimeout(() => {
+                        previewSubtitle.classList.remove('bg-white/10');
+                    }, 300);
+                });
+            }
+            
+            if (descriptionInput) {
+                descriptionInput.addEventListener('input', function() {
+                    previewDescription.textContent = this.value || 'Offers an exquisite goodness taste of Halal Cuisine';
+                    // Apply a quick highlight effect
+                    previewDescription.classList.add('bg-white/10');
+                    setTimeout(() => {
+                        previewDescription.classList.remove('bg-white/10');
+                    }, 300);
+                });
+            }
+            
+            // File Input Handling
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    fileNameDisplay.textContent = file?.name || 'No file selected';
+                    
+                    // Reset error if any
+                    imageError.textContent = ''; 
+                    
+                    if (file) {
+                        // Validate file type
+                        if (!file.type.startsWith('image/')) {
+                            imageError.textContent = 'Please select a valid image file (PNG, JPG, JPEG)';
+                            clearImageSelection();
+                            return;
+                        }
+                        
+                        // Validate file size (max 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            imageError.textContent = 'Image size must be less than 5MB';
+                            clearImageSelection();
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            // Update the individual preview
+                            previewImage.src = event.target.result;
+                            previewContainer.classList.remove('hidden');
+                            
+                            // Update the hero preview background
+                            previewHero.style.backgroundImage = `url('${event.target.result}')`;
+                            
+                            // Add a visual feedback that preview has been updated
+                            previewHero.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-50');
+                            setTimeout(() => {
+                                previewHero.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-50');
+                            }, 600);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        clearImageSelection();
+                    }
+                });
+            }
         });
+
         // CLEAR IMAGE FUNCTION
         function clearImageSelection() {
+            const fileInput = document.getElementById('background_image');
+            const previewImage = document.getElementById('preview-image');
+            const previewContainer = document.getElementById('preview-container');
+            const fileNameDisplay = document.getElementById('file-name');
+            const imageError = document.getElementById('image-error');
+            const previewHero = document.getElementById('preview-hero');
+            const currentImage = document.getElementById('current-image');
+            
             fileInput.value = '';
             previewImage.src = '';
             previewContainer.classList.add('hidden');
             fileNameDisplay.textContent = 'No file selected';
+            
             if (imageError) {
                 imageError.textContent = '';
+            }
+            
+            // Reset hero preview to current image
+            if (currentImage) {
+                previewHero.style.backgroundImage = `url('${currentImage.src}')`;
             }
         }
 
@@ -241,48 +367,47 @@
         document.getElementById('editForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-
+            
             fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(async response => {
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw errorData;
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const successMessage = document.getElementById('success-message');
-                    successMessage.classList.remove('hidden');
-
-                    
-                    setTimeout(() => {
-                        successMessage.classList.add('hidden');
-                        location.reload(); 
-                    }, 1000); 
-
-                    successMessage.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'nearest'
-                    });
-                })
-                .catch(errorData => {
-                    if (errorData.errors && errorData.errors.background_image) {
-                        imageError.textContent = errorData.errors.background_image[0];
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'An error occurred while saving changes.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw errorData;
+                }
+                return response.json();
+            })
+            .then(data => {
+                const successMessage = document.getElementById('success-message');
+                successMessage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    successMessage.classList.add('hidden');
+                    location.reload(); 
+                }, 1000); 
+                
+                successMessage.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
                 });
+            })
+            .catch(errorData => {
+                if (errorData.errors && errorData.errors.background_image) {
+                    imageError.textContent = errorData.errors.background_image[0];
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while saving changes.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
         });
     </script>
 
