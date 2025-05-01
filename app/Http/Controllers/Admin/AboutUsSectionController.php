@@ -37,7 +37,8 @@ class AboutUsSectionController extends Controller
 
                 // Store in a specific folder: storage/app/public/uploads/about-sections
                 $path = $request->file('background_image')->store('uploads/about-sections', 'public');
-                $data['background_image'] = $path;
+                $data['background_image'] = 'storage/' . $path;
+
             }
 
             $about->update($data);
