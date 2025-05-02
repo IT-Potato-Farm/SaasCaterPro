@@ -1,4 +1,3 @@
-@props(['items'])
 <script>
     // Define item options as global window variables for easier access
     @foreach ($items as $item)
@@ -21,10 +20,10 @@
             let isChecked = selectedOptions.some(itemOption => itemOption.id === option.id) ? 'checked' : '';
 
             optionsHtml += `
-                <label class="inline-flex items-center space-x-2">
-                    <input type="checkbox" name="item_options[]" value="${option.id}" class="mr-2 form-checkbox text-blue-500 mr-2" ${isChecked}>
-                    <span>${option.type}</span>
-                </label><br>
+                <label class="inline-flex items-center space-x-2 mr-4 mb-2"> {{-- Added margin --}}
+                    <input type="checkbox" name="item_options[]" value="${option.id}" class="form-checkbox h-4 w-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500" ${isChecked}> {{-- Tailwind checkbox styling --}}
+                    <span class="ml-2 text-sm text-gray-700">${option.type}</span>
+                </label>
             `;
         });
 
@@ -33,27 +32,27 @@
                         <span class="text-cyan-600 font-semibold text-2xl">Edit Item ulam</span>
                     </div>`,
             html: `
-                <form id="editForm-${id}" action="${editUrl}" method="POST" class="text-left">
+                <form id="editForm-${id}" action="${editUrl}" method="POST" class="text-left mt-4 space-y-4"> {{-- Added margin and spacing --}}
                     @csrf
                     @method('PUT')
                     <!-- Item Name -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Item Name</label>
-                        <input type="text" name="name" value="${name}"
-                            class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                    <div>
+                        <label for="edit-name-${id}" class="block text-sm font-medium text-gray-600 mb-1">Item Name</label>
+                        <input id="edit-name-${id}" type="text" name="name" value="${name}"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                             required>
                     </div>
                     <!-- Description -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
-                        <textarea name="description"
-                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
+                    <div>
+                        <label for="edit-description-${id}" class="block text-sm font-medium text-gray-600 mb-1">Description</label>
+                        <textarea id="edit-description-${id}" name="description"
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32 resize-none" {{-- Added resize-none --}}
                                 >${description}</textarea>
                     </div>
                     <!-- ulam items fried, buttered, etc -->
-                    <div class="mb-2">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Dagdag ng type of ulam</label>
-                        <div class="flex flex-wrap gap-x-1">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Options</label> {{-- Simplified label --}}
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 border border-gray-200 p-3 rounded-md max-h-40 overflow-y-auto"> {{-- Added border, padding, scroll --}}
                             ${optionsHtml}
                         </div>
                     </div>
@@ -64,40 +63,58 @@
             cancelButtonText: 'Cancel',
             focusConfirm: false,
             customClass: {
-                popup: 'rounded-xl shadow-2xl',
+                popup: 'rounded-xl shadow-2xl w-full max-w-lg', // Responsive width
                 confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
-                cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
+                cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all mr-2' // Added margin
             },
+            width: 'auto', // Let customClass handle width
             preConfirm: () => {
                 const form = document.getElementById(`editForm-${id}`);
-                if (form.reportValidity()) {
-
-
-                    const selectedOptions = [];
-                    form.querySelectorAll('input[name="item_options[]"]:checked').forEach(function(
-                    checkbox) {
-                        selectedOptions.push(checkbox.value);
-                    });
-
-
-                    form.querySelectorAll('input[name="selected_options[]"]').forEach(input => input
-                    .remove());
-                    selectedOptions.forEach(optionId => {
-                        let hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'selected_options[]';
-                        hiddenInput.value = optionId;
-                        form.appendChild(hiddenInput);
-                    });
-
-                    
-
-                    form.submit();
+                // Basic HTML5 validation check
+                if (!form.checkValidity()) {
+                    form.reportValidity(); // Trigger browser validation messages
+                    return false; // Prevent submission
                 }
+
+                // Find current page from pagination controls
+                const paginationControls = document.getElementById("pagination-controls");
+                let currentPageToSave = 1; // Default to 1 if controls not found or no active button
+                if (paginationControls) {
+                    const activeButton = paginationControls.querySelector('button.bg-blue-500'); // Find the active button by its class
+                    if (activeButton) {
+                        currentPageToSave = parseInt(activeButton.textContent, 10);
+                    }
+                }
+
+                // *** Store the current page number before submitting ***
+                sessionStorage.setItem('itemListPage', currentPageToSave);
+                console.log('Saving page:', currentPageToSave); // For debugging
+
+                // Process selected options for form submission
+                const selectedOptionsValues = [];
+                form.querySelectorAll('input[name="item_options[]"]:checked').forEach(function(checkbox) {
+                    selectedOptionsValues.push(checkbox.value);
+                });
+
+                // Remove any previously added hidden inputs for selected_options to avoid duplication
+                form.querySelectorAll('input[name="selected_options[]"]').forEach(input => input.remove());
+
+                // Add hidden inputs for the currently selected options
+                selectedOptionsValues.forEach(optionId => {
+                    let hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'selected_options[]'; // Match controller expectation
+                    hiddenInput.value = optionId;
+                    form.appendChild(hiddenInput);
+                });
+
+                // Submit the form programmatically
+                 return form.submit(); // Return the submission to allow Swal to close, etc.
             }
         });
     }
-    //  Confirm delete
+
+    // Confirm delete (no changes needed here for pagination)
     function confirmDeleteUlam(button) {
         Swal.fire({
             title: 'Are you sure?',
@@ -109,16 +126,29 @@
             focusConfirm: false,
             customClass: {
                 confirmButton: 'bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all',
-                cancelButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all'
+                cancelButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-medium border border-gray-300 shadow-sm transition-all mr-2'
             }
         }).then((result) => {
             if (result.isConfirmed) {
+                // *** Store the current page number before submitting delete form ***
+                 const paginationControls = document.getElementById("pagination-controls");
+                let currentPageToSave = 1;
+                if (paginationControls) {
+                    const activeButton = paginationControls.querySelector('button.bg-blue-500');
+                    if (activeButton) {
+                        currentPageToSave = parseInt(activeButton.textContent, 10);
+                    }
+                }
+                sessionStorage.setItem('itemListPage', currentPageToSave);
+                console.log('Saving page before delete:', currentPageToSave);
+
                 button.closest('form').submit();
             }
         });
     }
 </script>
 
+<!-- Rest of your HTML (Table, etc.) -->
 <div class="container mx-auto px-4  ">
 
 
@@ -127,155 +157,193 @@
             <p class="text-gray-500">No items available yet.</p>
         </div>
     @else
-        <div class="overflow-x-auto">
-            <h1 class="text-2xl text-center">ULAM MANAGEMENT</h1>
-            <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
-                        </th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                            Description</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-                            Options</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="item-table-body" class="divide-y divide-gray-200">
-                    @foreach ($items as $item)
-                        <tr class="item-row hover:bg-gray-50 transition-colors duration-150">
-                            <!-- Name Column (always visible) -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-semibold text-gray-900">{{ $item->name }}</div>
-                                <!-- Mobile-only description preview -->
-                                <div class="md:hidden mt-1 text-sm text-gray-500 line-clamp-2">
-                                    {{ $item->description ?? 'No description available' }}
-                                </div>
-                                <!-- Mobile-only options preview -->
-                                <div class="md:hidden mt-1">
-                                    @if ($item->itemOptions->isNotEmpty())
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            {{ $item->itemOptions->count() }} options
-                                        </span>
-                                    @else
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            No options
-                                        </span>
-                                    @endif
-                                </div>
-                            </td>
-
-                            <!-- Description Column (hidden on mobile) -->
-                            <td class="px-6 py-4 hidden md:table-cell">
-                                <div
-                                    class="text-sm text-gray-600 line-clamp-3 hover:line-clamp-none transition-all cursor-default">
-                                    {{ $item->description ?? 'No description available' }}
-                                </div>
-                            </td>
-
-                            <!-- Options Column (hidden on mobile and tablet) -->
-                            <td class="px-6 py-4 hidden lg:table-cell">
-                                @if ($item->itemOptions->isNotEmpty())
-                                    <p class="text-sm text-gray-600">
-                                        {{ $item->itemOptions->pluck('type')->join(', ') }}
-                                    </p>
-                                @else
-                                    <p class="text-sm text-gray-500">No options available</p>
-                                @endif
-                            </td>
-
-                            <!-- Actions Column (always visible) -->
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex justify-end space-x-2">
-                                    <button
-                                        onclick="openEditItem(
-                                            {{ $item->id }},
-                                            {{ json_encode($item->name) }},
-                                            {{ json_encode($item->description) }},
-                                            window.itemOptions_{{ $item->id }},
-                                            window.allItemOptions_{{ $item->id }}
-                                        )"
-                                        class="p-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 cursor-pointer transition-colors"
-                                        title="Edit">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                        </svg>
-                                    </button>
-
-
-
-
-                                    <form action="{{ route('item.delete', $item->id) }}" method="POST"
-                                        class="delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" onclick="confirmDeleteUlam(this)"
-                                            class="p-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 cursor-pointer transition-colors"
-                                            title="Delete">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md p-4 md:p-6"> {{-- Added padding --}}
+            <h1 class="text-2xl text-center font-semibold text-gray-700 mb-6">ULAM MANAGEMENT</h1> {{-- Adjusted styling --}}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200"> {{-- Removed extra bg/rounded --}}
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Description</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Options</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <div id="pagination-controls" class="flex justify-center mt-4 gap-2"></div>
+                    </thead>
+                    <tbody id="item-table-body" class="bg-white divide-y divide-gray-200">
+                        @foreach ($items as $item)
+                            <tr class="item-row hover:bg-gray-50 transition-colors duration-150">
+                                <!-- Name Column -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-semibold text-gray-900">{{ $item->name }}</div>
+                                    <div class="md:hidden mt-1 text-sm text-gray-500 line-clamp-2">
+                                        {{ $item->description ?? 'No description' }}
+                                    </div>
+                                    <div class="md:hidden mt-1">
+                                        @if ($item->itemOptions->isNotEmpty())
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{ $item->itemOptions->count() }} {{ Str::plural('option', $item->itemOptions->count()) }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                No options
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <!-- Description Column -->
+                                <td class="px-6 py-4 hidden md:table-cell">
+                                    <div class="text-sm text-gray-600 line-clamp-3 hover:line-clamp-none transition-all cursor-default max-w-xs"> {{-- Added max-width --}}
+                                        {{ $item->description ?? 'N/A' }}
+                                    </div>
+                                </td>
+                                <!-- Options Column -->
+                                <td class="px-6 py-4 hidden lg:table-cell">
+                                    @if ($item->itemOptions->isNotEmpty())
+                                        <p class="text-sm text-gray-600 max-w-xs truncate"> {{-- Added max-width & truncate --}}
+                                            {{ $item->itemOptions->pluck('type')->join(', ') }}
+                                        </p>
+                                    @else
+                                        <p class="text-sm text-gray-500">N/A</p>
+                                    @endif
+                                </td>
+                                <!-- Actions Column -->
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end items-center space-x-2">
+                                        <button
+                                            type="button" {{-- Explicitly set type --}}
+                                            onclick="openEditItem(
+                                                {{ $item->id }},
+                                                {{ json_encode($item->name) }},
+                                                {{ json_encode($item->description) }},
+                                                window.itemOptions_{{ $item->id }},
+                                                window.allItemOptions_{{ $item->id }}
+                                            )"
+                                            class="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-md transition-colors"
+                                            title="Edit">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                                        </button>
 
+                                        <form action="{{ route('item.delete', $item->id) }}" method="POST" class="delete-form inline-block"> {{-- Added inline-block --}}
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" onclick="confirmDeleteUlam(this)"
+                                                class="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-md transition-colors"
+                                                title="Delete">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+             {{-- Pagination Controls Container --}}
+            <div id="pagination-controls" class="flex justify-center mt-6 gap-2"></div>
         </div>
     @endif
 </div>
 
+
 {{-- PAGINATION FOR ITEM TABLES --}}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll(".item-row");
+        const rows = document.querySelectorAll("#item-table-body .item-row"); // More specific selector
         const rowsPerPage = 5;
-        let currentPage = 1;
         const tableBody = document.getElementById("item-table-body");
         const paginationControls = document.getElementById("pagination-controls");
+
+        // *** Default starting page ***
+        let currentPage = 1;
+
+        // *** Retrieve and set the page from sessionStorage if available ***
+        const savedPage = sessionStorage.getItem('itemListPage');
+        if (savedPage) {
+            const potentialPage = parseInt(savedPage, 10);
+            const maxPage = Math.ceil(rows.length / rowsPerPage);
+             // Ensure saved page is valid and within bounds
+            if (!isNaN(potentialPage) && potentialPage > 0 && potentialPage <= maxPage) {
+                currentPage = potentialPage;
+                console.log('Restored page:', currentPage); // For debugging
+            } else {
+                 console.log('Saved page invalid or out of bounds, defaulting to 1.');
+            }
+            // *** IMPORTANT: Remove the item after reading it ***
+            sessionStorage.removeItem('itemListPage');
+        }
 
         function displayRows(page) {
             const start = (page - 1) * rowsPerPage;
             const end = start + rowsPerPage;
 
-            rows.forEach((row, index) => {
-                row.style.display = index >= start && index < end ? "" : "none";
-            });
+             if (!tableBody) return; // Guard clause
+
+             // Hide all rows first
+             rows.forEach(row => row.style.display = 'none');
+
+             // Display rows for the current page
+            const rowsToShow = Array.from(rows).slice(start, end);
+            rowsToShow.forEach(row => row.style.display = ''); // Default display (usually 'table-row')
+
+             // Optional: Handle case where table might look empty temporarily
+             // if (rowsToShow.length === 0 && rows.length > 0) {
+             //    // Maybe display a 'no results on this page' message temporarily
+             // }
         }
 
         function setupPagination() {
-            paginationControls.innerHTML = "";
+             if (!paginationControls || rows.length <= rowsPerPage) {
+                 if(paginationControls) paginationControls.innerHTML = ""; // Clear controls if not needed
+                 return; // No pagination needed
+             };
+
+            paginationControls.innerHTML = ""; // Clear existing buttons
             const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+            // Basic Previous Button (Optional)
+            // const prevButton = document.createElement('button');
+            // ... add logic ...
+            // paginationControls.appendChild(prevButton);
+
 
             for (let i = 1; i <= pageCount; i++) {
                 const button = document.createElement("button");
                 button.textContent = i;
-                button.className = `px-3 py-1 border rounded ${
-                    i === currentPage ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                // Apply Tailwind classes for styling
+                button.className = `px-3 py-1 border rounded transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400 ${
+                    i === currentPage
+                        ? "bg-blue-500 text-white border-blue-500 cursor-default" // Active page style
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100" // Inactive page style
                 }`;
 
+
                 button.addEventListener("click", function () {
+                    if (i === currentPage) return; // Don't re-render if clicking the active page
+
                     currentPage = i;
                     displayRows(currentPage);
-                    setupPagination(); // re-render buttons with correct active
+                    // Update button styles immediately without full re-render
+                    const currentActive = paginationControls.querySelector('button.bg-blue-500');
+                    if (currentActive) {
+                        currentActive.classList.remove('bg-blue-500', 'text-white', 'border-blue-500', 'cursor-default');
+                        currentActive.classList.add('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-100');
+                    }
+                    button.classList.add('bg-blue-500', 'text-white', 'border-blue-500', 'cursor-default');
+                    button.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-100');
+
                 });
 
                 paginationControls.appendChild(button);
             }
+
+             // Basic Next Button (Optional)
+            // const nextButton = document.createElement('button');
+            // ... add logic ...
+            // paginationControls.appendChild(nextButton);
         }
 
+        // Initial display based on potentially restored currentPage
         displayRows(currentPage);
         setupPagination();
     });
