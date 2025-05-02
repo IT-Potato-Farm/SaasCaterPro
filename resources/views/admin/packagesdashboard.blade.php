@@ -84,7 +84,7 @@
                         <x-items.item-button :categories="$categories" />
 
                         {{-- UTIL BTN --}}
-                        <x-packages.add-package-utility />
+                        <x-packages.add-package-utility  :packages="$packages" :utilities="$utilities" :package-utilities="$package_utilities"/>
                     </div>
 
                     <!-- Item Management Sections in tabs -->

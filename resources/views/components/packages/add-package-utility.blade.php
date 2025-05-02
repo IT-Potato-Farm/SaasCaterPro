@@ -1,3 +1,4 @@
+@props(['utilities', 'packages', 'packageUtilities'])
 <style>
     .error-message {
         color: #ef4444;
@@ -8,6 +9,20 @@
 
 
 <script>
+    let packages = @json($packages);
+    let selectedPackageIds = [];
+    let packageCheckboxes = packages.map(pkg => {
+        let checked = selectedPackageIds.includes(pkg.id) ? 'checked' : '';
+        return `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="package_ids[]" value="${pkg.id}" id="package_${pkg.id}" ${checked}>
+                        <label class="form-check-label" for="package_${pkg.id}">
+                            ${pkg.name}
+                        </label>
+                    </div>
+                `;
+    }).join('');
+
     function addPackageUtility() {
         Swal.fire({
             title: '<span class="text-xl font-semibold text-gray-800">Add Package Utility</span>',
@@ -53,6 +68,11 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                         <div id="quantity-error" class="mt-1 text-xs text-red-500"></div>
                     </div>
+
+                     <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Link to Packages</label>
+                        ${packageCheckboxes}
+                    </div>
                 </form>
             `,
             showCancelButton: true,
@@ -83,6 +103,9 @@
                         imagePreview.classList.add('hidden');
                     }
                 });
+
+
+
             },
             preConfirm: () => {
                 // Clear previous error messages.
@@ -106,6 +129,39 @@
                     document.getElementById('quantity-error').textContent = 'Quantity must be at least 1.';
                     hasErrors = true;
                 }
+
+                // Get selected package IDs
+                const checkedPackageIds = packages.filter(pkg => form.querySelector(`#package_${pkg.id}`)
+                        .checked)
+                    .map(pkg => pkg.id);
+
+                // Find all unchecked checkboxes and collect their package IDs
+                const uncheckedPackageIds = packages.filter(pkg => !form.querySelector(`#package_${pkg.id}`)
+                        .checked)
+                    .map(pkg => pkg.id);
+
+                console.log("Selected Package IDs:", packages.filter(pkg => form.querySelector(
+                    `#package_${pkg.id}`).checked).map(pkg => pkg.id));
+                // Clear any existing hidden inputs related to package_ids
+                form.querySelectorAll('input[name="package_ids[]"]').forEach(input => input.remove());
+
+                checkedPackageIds.forEach(pkgId => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'package_ids[]';
+                    hiddenInput.value = pkgId;
+                    form.appendChild(hiddenInput);
+                });
+
+                uncheckedPackageIds.forEach(pkgId => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'removed_package_ids[]';
+                    hiddenInput.value = pkgId;
+                    form.appendChild(hiddenInput);
+                });
+
+
 
                 if (hasErrors) return false;
 

@@ -56,7 +56,7 @@
                 required>
         </div>
         <div class="mb-5">
-            <label class="block text-sm font-medium text-gray-600 mb-2">Link to Package</label>
+            <label class="block text-sm font-medium text-gray-600 mb-2">Link to Packages</label>
             ${packageCheckboxes}
         </div>
         <div class="mb-5">

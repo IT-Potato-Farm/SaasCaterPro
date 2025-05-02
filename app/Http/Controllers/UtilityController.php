@@ -27,6 +27,8 @@ class UtilityController extends Controller
                 'description' => 'nullable|string',
                 'quantity'    => 'required|integer|min:1',
                 'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+                'package_ids' => 'nullable|array', 
+                'package_ids.*' => 'exists:packages,id', 
             ]);
 
             
@@ -36,7 +38,13 @@ class UtilityController extends Controller
             }
 
             $utility = Utility::create($fields);
-
+            if ($request->has('package_ids') && is_array($request->package_ids)) {
+                $utility->packages()->sync($request->package_ids);
+            } else {
+                // IF WALA, REMOVE NYAA
+                $utility->packages()->detach();
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Utility added successfully!',

@@ -13,9 +13,13 @@ class addPackageUtility extends Component
      * Create a new component instance.
      */
     public $packages;
-    public function __construct()
+    public $utilities;
+    public $package_utilities;
+    public function __construct($packages, $utilities, $packageUtilities)
     {
-        $this->packages = Package::all();
+        $this->packages = $packages;
+        $this->utilities = $utilities;
+        $this->package_utilities = $packageUtilities;
     }
 
     /**

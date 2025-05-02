@@ -229,8 +229,11 @@
 
                 // Add the options
                 if (data.length === 0) {
-                    $(optionsSelect).append(new Option('No options available for this category', '')).prop(
-                        'disabled', true);
+                    const noOptions = new Option('No options available for this category', '', false, false);
+                    noOptions.disabled = true;
+
+                    $(optionsSelect).append(noOptions);
+
                 } else {
                     data.forEach(option => {
                         const optionText = `${option.type} (${option.category_name})`;  
