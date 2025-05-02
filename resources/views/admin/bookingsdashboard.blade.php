@@ -912,11 +912,11 @@
                          <div class="flex flex-wrap gap-4 justify-center mt-6">
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-yellow-400"></span>
-                                <span class="text-sm text-gray-800">Pending</span>
+                                <span class="text-sm text-gray-800">Pending Order</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-orange-500"></span>
-                                <span class="text-sm text-gray-800">Partial</span>
+                                <span class="text-sm text-gray-800">Partial Partial</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-blue-400"></span>
@@ -928,7 +928,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-green-400"></span>
-                                <span class="text-sm text-gray-800">Completed</span>
+                                <span class="text-sm text-gray-800">Completed Booking</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-red-500"></span>
