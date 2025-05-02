@@ -21,8 +21,8 @@
             let isChecked = selectedOptions.some(itemOption => itemOption.id === option.id) ? 'checked' : '';
 
             optionsHtml += `
-                <label class="flex items-center space-x-2">
-                    <input type="checkbox" name="item_options[]" value="${option.id}" class="mr-2 form-checkbox text-blue-500" ${isChecked}>
+                <label class="inline-flex items-center space-x-2">
+                    <input type="checkbox" name="item_options[]" value="${option.id}" class="mr-2 form-checkbox text-blue-500 mr-2" ${isChecked}>
                     <span>${option.type}</span>
                 </label><br>
             `;
@@ -53,7 +53,7 @@
                     <!-- ulam items fried, buttered, etc -->
                     <div class="mb-2">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Dagdag ng type of ulam</label>
-                        <div class="space-y-1">
+                        <div class="flex flex-wrap gap-x-1">
                             ${optionsHtml}
                         </div>
                     </div>
