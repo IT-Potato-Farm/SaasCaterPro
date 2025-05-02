@@ -347,7 +347,7 @@ class AdminController extends Controller
             $yesterdayRevenueLabels = [];
 
             foreach ($hours as $hour) {
-                $label = sprintf('%02d:00', $hour); // 00:00, 01:00, ...
+                $label = Carbon::createFromTime($hour)->format('g A'); // 1 AM, 2 AM, 12 PM
                 $yesterdayRevenueLabels[] = $label;
                 $yesterdayRevenueChart[] = $yesterdayData[$hour] ?? 0;
             }
