@@ -294,16 +294,7 @@
                 <div id="description-error" class="mt-1 text-xs text-red-500"></div>
             </div>
             <!-- Link Items -->
-                <div>
-                    <label for="swal-items" class="block text-sm font-medium text-gray-700 mb-1">Link to Items (optional)</label>
-                    <select id="swal-items" name="items[]" multiple
-                        class="w-full item-select px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                        @foreach ($items as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                    <div id="items-error" class="mt-1 text-xs text-red-500"></div>
-                </div>
+              
                 
         </form>
     `,
