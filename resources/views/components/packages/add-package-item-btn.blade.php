@@ -109,7 +109,7 @@
                     .catch(error => console.error('Error loading categories:', error));
 
 
-                
+
 
                 const nameInput = document.getElementById('swal-name');
                 const nameError = document.getElementById('name-error');
@@ -150,10 +150,14 @@
                 nameInput.addEventListener('input', validateName);
             },
             preConfirm: async () => {
+
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
                 const form = document.getElementById('addItemForm');
                 const formData = new FormData(form);
                 let hasErrors = false;
+
+                const categorySelect = document.getElementById('swal-category');
+                const optionsSelect = document.getElementById('swal-options');
 
                 const nameInput = document.getElementById('swal-name');
                 if (!nameInput.value.trim()) {
@@ -164,6 +168,19 @@
                 // Ensure the name is valid before submitting
                 if (nameInput.dataset.valid === "false") {
                     document.getElementById('name-error').textContent = 'This item name is already taken.';
+                    hasErrors = true;
+                }
+
+                const categorySelected = categorySelect.value !== '';
+                const optionsAvailable = optionsSelect.options.length > 0;
+
+                const selectedOptions = Array.from(optionsSelect.selectedOptions).map(opt => opt.value);
+                const hasSelectedOptions = selectedOptions.length > 0;
+                    // Check if at least one option is selected
+
+                if (categorySelected && optionsAvailable && !hasSelectedOptions) {
+                    document.getElementById('options-error').textContent =
+                        'Please select at least one option.';
                     hasErrors = true;
                 }
 
@@ -236,7 +253,7 @@
 
                 } else {
                     data.forEach(option => {
-                        const optionText = `${option.type} (${option.category_name})`;  
+                        const optionText = `${option.type} (${option.category_name})`;
                         const newOption = new Option(optionText, option.id, false, false);
                         $(optionsSelect).append(newOption);
                     });
@@ -254,7 +271,7 @@
             });
     }
 
-    
+
     function addItemOption() {
         Swal.fire({
             title: '<span class="text-xl font-semibold text-gray-800">Add Item Option</span>',
@@ -348,7 +365,7 @@
 
                 typeInput.addEventListener('input', validateType);
 
-                
+
             },
             preConfirm: async () => {
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
@@ -426,7 +443,6 @@
             previewContainer.classList.add('hidden');
         }
     }
-
 </script>
 
 <button onclick="addItem()"
