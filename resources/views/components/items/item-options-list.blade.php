@@ -140,8 +140,7 @@
                         confirmButton: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-all'
                     }
                 }).then(() => {
-                    // Reload the page to see the changes
-                    window.location.reload();
+                    location.reload(); // Refresh page after success alert
                 });
             }
         });
@@ -179,7 +178,7 @@
     }
 </script>
 
-<div class="mx-auto p-4">
+<div class="mx-auto p-4 mb-4">
     <h1 class="text-2xl font-semibold text-center">MANAGE ITEM OPTIONS</h1>
 
     @if ($itemOptions->isEmpty())
@@ -198,9 +197,9 @@
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="itemoption-table-body divide-y divide-gray-200">
                     @foreach ($itemOptions as $itemOption)
-                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <tr class="itemoption-row hover:bg-gray-50 transition-colors duration-150">
                             <!-- Image Column -->
                             <td class="px-6 py-4">
                                 <div class="flex-shrink-0 h-16 w-16">
@@ -282,10 +281,53 @@
                     @endforeach
                 </tbody>
             </table>
-            {{-- PAGINATE --}}
-            {{-- <div class="mt-4">
-                {{ $itemOptions->links() }}
-            </div> --}}
+            <div id="optionspagination-controls" class="flex justify-center mt-4 gap-2"></div>
         </div>
     @endif
 </div>
+
+
+
+{{-- PAGINATION FOR ITEM  options TABLES --}}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".itemoption-row");
+        const rowsPerPage = 5;
+        let currentPage = 1;
+        const tableBody = document.getElementById("itemoption-table-body");
+        const paginationControls = document.getElementById("optionspagination-controls");
+
+        function displayRows(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach((row, index) => {
+                row.style.display = index >= start && index < end ? "" : "none";
+            });
+        }
+
+        function setupPagination() {
+            paginationControls.innerHTML = "";
+            const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+            for (let i = 1; i <= pageCount; i++) {
+                const button = document.createElement("button");
+                button.textContent = i;
+                button.className = `px-3 py-1 border rounded ${
+                    i === currentPage ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                }`;
+
+                button.addEventListener("click", function () {
+                    currentPage = i;
+                    displayRows(currentPage);
+                    setupPagination(); // re-render buttons with correct active
+                });
+
+                paginationControls.appendChild(button);
+            }
+        }
+
+        displayRows(currentPage);
+        setupPagination();
+    });
+</script>

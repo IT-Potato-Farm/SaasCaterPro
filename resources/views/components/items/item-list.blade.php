@@ -90,6 +90,8 @@
                         form.appendChild(hiddenInput);
                     });
 
+                    
+
                     form.submit();
                 }
             }
@@ -126,6 +128,7 @@
         </div>
     @else
         <div class="overflow-x-auto">
+            <h1 class="text-2xl text-center">ULAM MANAGEMENT</h1>
             <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
                 <thead class="bg-gray-50">
                     <tr>
@@ -141,9 +144,9 @@
                             Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody id="item-table-body" class="divide-y divide-gray-200">
                     @foreach ($items as $item)
-                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <tr class="item-row hover:bg-gray-50 transition-colors duration-150">
                             <!-- Name Column (always visible) -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-semibold text-gray-900">{{ $item->name }}</div>
@@ -228,9 +231,52 @@
                     @endforeach
                 </tbody>
             </table>
-            {{-- <div class="mt-4">
-                {{ $items->links() }}
-            </div> --}}
+            <div id="pagination-controls" class="flex justify-center mt-4 gap-2"></div>
+
         </div>
     @endif
 </div>
+
+{{-- PAGINATION FOR ITEM TABLES --}}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".item-row");
+        const rowsPerPage = 5;
+        let currentPage = 1;
+        const tableBody = document.getElementById("item-table-body");
+        const paginationControls = document.getElementById("pagination-controls");
+
+        function displayRows(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach((row, index) => {
+                row.style.display = index >= start && index < end ? "" : "none";
+            });
+        }
+
+        function setupPagination() {
+            paginationControls.innerHTML = "";
+            const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+            for (let i = 1; i <= pageCount; i++) {
+                const button = document.createElement("button");
+                button.textContent = i;
+                button.className = `px-3 py-1 border rounded ${
+                    i === currentPage ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                }`;
+
+                button.addEventListener("click", function () {
+                    currentPage = i;
+                    displayRows(currentPage);
+                    setupPagination(); // re-render buttons with correct active
+                });
+
+                paginationControls.appendChild(button);
+            }
+        }
+
+        displayRows(currentPage);
+        setupPagination();
+    });
+</script>

@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Packages Dashboard</title>
@@ -87,8 +88,18 @@
                         <x-packages.add-package-utility  :packages="$packages" :utilities="$utilities" :package-utilities="$package_utilities"/>
                     </div>
 
+                    <div class="mb-5">
+                        <x-items.item-list :items="$items" />
+
+                    </div>
+                    <div class="mt-5">
+                        <x-items.item-options-list :itemOptions="$itemOptions" :categories="$categories"/>
+
+                    </div>
+
+
                     <!-- Item Management Sections in tabs -->
-                    <div id="item-management" class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+                    {{-- <div id="item-management" class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
                         <div class="border-b border-gray-100">
                             <nav class="flex" aria-label="Tabs">
                                 <button
@@ -101,13 +112,10 @@
                                     id="options-tab">
                                     Item Options
                                 </button>
-                                {{-- <button
-                                    class="cursor-pointer px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300"
-                                    id="optionsparty-tab">
-                                    Link Options to Ulam
-                                </button> --}}
+
                             </nav>
                         </div>
+
 
                         <div class="p-6" id="items-content">
                             <h2 class="text-lg font-semibold text-gray-800">Ulam Management</h2>
@@ -120,7 +128,7 @@
 
 
 
-                    </div>
+                    </div> --}}
 
                     <!-- Package Management Section -->
                     <div id="package-management" class=" bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
@@ -192,6 +200,7 @@
 
         switchTab(1);
 
+        //ITEMS AND OPTIONS
         document.addEventListener('DOMContentLoaded', function() {
             const itemsTab = document.getElementById('items-tab');
             const optionsTab = document.getElementById('options-tab');

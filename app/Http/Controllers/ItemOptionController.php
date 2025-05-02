@@ -104,10 +104,12 @@ class ItemOptionController extends Controller
         $itemOption->update($data);
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Item Option updated successfully!'
             ]);
         }
+
+
         return redirect()->back()->with('success', 'Item Option updated successfully!');
     }
 
