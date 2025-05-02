@@ -80,7 +80,8 @@
                 const paginationControls = document.getElementById("pagination-controls");
                 let currentPageToSave = 1; // Default to 1 if controls not found or no active button
                 if (paginationControls) {
-                    const activeButton = paginationControls.querySelector('button.bg-blue-500'); // Find the active button by its class
+                    const activeButton = paginationControls.querySelector(
+                    'button.bg-blue-500'); // Find the active button by its class
                     if (activeButton) {
                         currentPageToSave = parseInt(activeButton.textContent, 10);
                     }
@@ -109,7 +110,7 @@
                 });
 
                 // Submit the form programmatically
-                 return form.submit(); // Return the submission to allow Swal to close, etc.
+                return form.submit(); // Return the submission to allow Swal to close, etc.
             }
         });
     }
@@ -131,7 +132,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // *** Store the current page number before submitting delete form ***
-                 const paginationControls = document.getElementById("pagination-controls");
+                const paginationControls = document.getElementById("pagination-controls");
                 let currentPageToSave = 1;
                 if (paginationControls) {
                     const activeButton = paginationControls.querySelector('button.bg-blue-500');
@@ -157,16 +158,24 @@
             <p class="text-gray-500">No items available yet.</p>
         </div>
     @else
-        <div class="overflow-x-auto bg-white rounded-lg shadow-md p-4 md:p-6"> 
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md p-4 md:p-6">
             {{-- <h1 class="text-2xl text-center font-semibold text-gray-700 mb-6">ULAM MANAGEMENT</h1>  --}}
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200"> 
+                <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Description</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Options</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                Description</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                Options</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody id="item-table-body" class="bg-white divide-y divide-gray-200">
@@ -180,11 +189,14 @@
                                     </div>
                                     <div class="md:hidden mt-1">
                                         @if ($item->itemOptions->isNotEmpty())
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                {{ $item->itemOptions->count() }} {{ Str::plural('option', $item->itemOptions->count()) }}
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{ $item->itemOptions->count() }}
+                                                {{ Str::plural('option', $item->itemOptions->count()) }}
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
                                                 No options
                                             </span>
                                         @endif
@@ -192,7 +204,9 @@
                                 </td>
                                 <!-- Description Column -->
                                 <td class="px-6 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-600 line-clamp-3 hover:line-clamp-none transition-all cursor-default max-w-xs"> {{-- Added max-width --}}
+                                    <div
+                                        class="text-sm text-gray-600 line-clamp-3 hover:line-clamp-none transition-all cursor-default max-w-xs">
+                                        {{-- Added max-width --}}
                                         {{ $item->description ?? 'N/A' }}
                                     </div>
                                 </td>
@@ -209,8 +223,7 @@
                                 <!-- Actions Column -->
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end items-center space-x-2 ">
-                                        <button
-                                            type="button" {{-- Explicitly set type --}}
+                                        <button type="button" {{-- Explicitly set type --}}
                                             onclick="openEditItem(
                                                 {{ $item->id }},
                                                 {{ json_encode($item->name) }},
@@ -220,16 +233,28 @@
                                             )"
                                             class="p-1.5 cursor-pointer text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-md transition-colors"
                                             title="Edit">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                                </path>
+                                                <path fill-rule="evenodd"
+                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
                                         </button>
 
-                                        <form action="{{ route('item.delete', $item->id) }}" method="POST" class="delete-form inline-block"> {{-- Added inline-block --}}
+                                        <form action="{{ route('item.delete', $item->id) }}" method="POST"
+                                            class="delete-form inline-block"> {{-- Added inline-block --}}
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" onclick="confirmDeleteUlam(this)"
                                                 class="p-1.5 cursor-pointer text-red-600 hover:text-red-800 hover:bg-red-100 rounded-md transition-colors"
                                                 title="Delete">
-                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
                                             </button>
                                         </form>
                                     </div>
@@ -239,8 +264,11 @@
                     </tbody>
                 </table>
             </div>
-             {{-- Pagination Controls Container --}}
+            {{-- Pagination Controls Container --}}
             <div id="pagination-controls" class="flex justify-center mt-6 gap-2"></div>
+            <footer class="mb-2">
+                <p id="items-count" class="text-gray-500 mt-2 text-center"></p>
+            </footer>
         </div>
     @endif
 </div>
@@ -248,7 +276,7 @@
 
 {{-- PAGINATION FOR ITEM TABLES --}}
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         const rowsPerPage = 5;
         const tableBody = document.getElementById("item-table-body");
         const paginationControls = document.getElementById("pagination-controls");
@@ -280,12 +308,16 @@
 
             rows.forEach(row => row.style.display = 'none');
             Array.from(rows).slice(start, end).forEach(row => row.style.display = '');
+            updateItemCountDisplay(); // Update count when rows are displayed
+
         }
 
         function setupPagination() {
             const rows = getRows();
             if (!paginationControls || rows.length <= rowsPerPage) {
                 if (paginationControls) paginationControls.innerHTML = "";
+                updateItemCountDisplay(); // Update count when no pagination is needed
+
                 return;
             }
 
@@ -301,26 +333,42 @@
                         : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                 }`;
 
-                button.addEventListener("click", function () {
+                button.addEventListener("click", function() {
                     if (i === currentPage) return;
                     currentPage = i;
                     displayRows(currentPage);
 
                     const currentActive = paginationControls.querySelector('button.bg-blue-500');
                     if (currentActive) {
-                        currentActive.classList.remove('bg-blue-500', 'text-white', 'border-blue-500', 'cursor-default');
-                        currentActive.classList.add('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-100');
+                        currentActive.classList.remove('bg-blue-500', 'text-white', 'border-blue-500',
+                            'cursor-default');
+                        currentActive.classList.add('bg-white', 'text-gray-700', 'border-gray-300',
+                            'hover:bg-gray-100');
                     }
-                    button.classList.add('bg-blue-500', 'text-white', 'border-blue-500', 'cursor-default');
-                    button.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-100');
+                    button.classList.add('bg-blue-500', 'text-white', 'border-blue-500',
+                        'cursor-default');
+                    button.classList.remove('bg-white', 'text-gray-700', 'border-gray-300',
+                        'hover:bg-gray-100');
                 });
 
                 paginationControls.appendChild(button);
             }
+            updateItemCountDisplay(); // Update count after pagination setup
+
+        }
+
+        function updateItemCountDisplay() {
+            const rows = getRows();
+            const totalItems = rows.length;
+            const start = (currentPage - 1) * rowsPerPage + 1;
+            const end = Math.min(currentPage * rowsPerPage, totalItems);
+
+            const countText = `Showing ${start}–${end} of ${totalItems} items`;
+            document.getElementById('items-count').textContent = countText;
         }
 
         // Global refresh function to call after adding items dynamically
-        window.refreshItemPagination = function () {
+        window.refreshItemPagination = function() {
             const rows = getRows();
             const maxPage = Math.ceil(rows.length / rowsPerPage);
             if (currentPage > maxPage) currentPage = maxPage;

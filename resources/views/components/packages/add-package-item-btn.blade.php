@@ -444,7 +444,7 @@ function addItemOption() {
 
 
     Swal.fire({
-        title: '<span class="text-xl font-semibold text-gray-800">Add Item Option 2</span>',
+        title: '<span class="text-xl font-semibold text-gray-800">Add Item Option </span>',
         html: `
         <form id="addItemOptionForm" class="space-y-4 p-4">
             <!-- Image Upload & Preview -->
@@ -541,7 +541,7 @@ function addItemOption() {
              }
 
             if (hasErrors) {
-                Swal.showValidationMessage(`Please fix the errors above.`);
+                Swal.showValidationMessage(`Validation error`);
                 return false;
              }
 

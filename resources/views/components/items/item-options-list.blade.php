@@ -348,6 +348,9 @@
                 </tbody>
             </table>
             <div id="optionspagination-controls" class="flex justify-center mt-4 gap-2"></div>
+            <footer class="mb-2">
+                <p id="itemsoption-count" class="text-gray-500 mt-2 text-center"></p>
+            </footer>
         </div>
     @endif
 </div>
@@ -401,11 +404,16 @@
                 // Set display based on index range
                 row.style.display = (index >= start && index < end) ? "" : "none";
             });
+
+            updateItemOptionCountDisplay(); // Update item count whenever rows are displayed
+
         }
 
         function setupPagination() {
              if (rows.length <= rowsPerPage) {
                  paginationControls.innerHTML = ""; // No pagination needed if fits on one page
+                 updateItemOptionCountDisplay(); // Update count when no pagination is needed
+
                  return;
              };
 
@@ -438,7 +446,17 @@
 
                 paginationControls.appendChild(button);
             }
+            updateItemOptionCountDisplay();
         }
+        function updateItemOptionCountDisplay() {
+        const totalItems = rows.length;
+        const start = (currentPage - 1) * rowsPerPage + 1;
+        const end = Math.min(currentPage * rowsPerPage, totalItems);
+
+        const countText = `Showing ${start}–${end} of ${totalItems} items`;
+        document.getElementById('itemsoption-count').textContent = countText;
+    }
+        
 
         // Initial display and pagination setup
         displayRows(currentPage);
