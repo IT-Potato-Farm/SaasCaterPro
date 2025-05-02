@@ -85,21 +85,21 @@
                         <x-items.item-button :categories="$categories" />
 
                         {{-- UTIL BTN --}}
-                        <x-packages.add-package-utility  :packages="$packages" :utilities="$utilities" :package-utilities="$package_utilities"/>
+                        <x-packages.add-package-utility :packages="$packages" :utilities="$utilities" :package-utilities="$package_utilities" />
                     </div>
 
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <x-items.item-list :items="$items" />
 
                     </div>
                     <div class="mt-5">
                         <x-items.item-options-list :itemOptions="$itemOptions" :categories="$categories"/>
 
-                    </div>
+                    </div> --}}
 
 
                     <!-- Item Management Sections in tabs -->
-                    {{-- <div id="item-management" class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+                    <div id="item-management" class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
                         <div class="border-b border-gray-100">
                             <nav class="flex" aria-label="Tabs">
                                 <button
@@ -121,61 +121,50 @@
                             <h2 class="text-lg font-semibold text-gray-800">Ulam Management</h2>
                             <x-items.item-list :items="$items" />
                         </div>
-
+                        
                         <div class="p-6 hidden" id="options-content">
-                            <x-items.item-options-list :itemOptions="$itemOptions" :categories="$categories"/>
+                            <h2 class="text-lg font-semibold text-gray-800">Manage Item options</h2>
+
+                            <x-items.item-options-list :itemOptions="$itemOptions" :categories="$categories" />
                         </div>
-
-
-
-                    </div> --}}
+                    </div>
 
                     <!-- Package Management Section -->
-                    <div id="package-management" class=" bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
-
-
+                    <div id="package-management" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
                         <!-- Tab Navigation -->
                         <div class="mb-4">
                             <ul class="flex space-x-4 border-b-2">
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500" id="tab1-button"
-                                    onclick="switchTab(1)">Package</li>
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
-                                    id="tab2-button" onclick="switchTab(2)">Utility</li>
-                                <li class="cursor-pointer text-gray-600 py-2 px-4 hover:text-blue-500"
-                                    id="tab3-button" onclick="switchTab(3)">Party Tray</li>
+                                <li class="cursor-pointer py-2 px-4 text-sm font-medium border-b-2" id="package-tab"
+                                    onclick="switchPackageTab('package')">Package</li>
+                                <li class="cursor-pointer py-2 px-4 text-sm font-medium border-b-2" id="utility-tab"
+                                    onclick="switchPackageTab('utility')">Utility</li>
+                                <li class="cursor-pointer py-2 px-4 text-sm font-medium border-b-2" id="party-tab"
+                                    onclick="switchPackageTab('party')">Party Tray</li>
                             </ul>
                         </div>
 
-                        <!-- Tab Content -->
-                        <div class="tab-content hidden" id="tab1-content">
-                            <!-- Package Management Content for Tab 1 -->
+                        <!-- Tab Contents -->
+                        <div class="tab-content hidden" id="package-content">
                             <h2 class="text-lg font-semibold text-gray-800 text-center">Package Management</h2>
-                            {{-- <x-packages.add-btn :categories="$categories" /> --}}
                             <div class="flex justify-center items-center mb-6">
-
-
                                 <x-dashboard.packages />
                             </div>
                             <div class="space-x-2">
                                 <x-packages.link-item-package :packages="$packages" :items="$items" />
                             </div>
                         </div>
-                        {{-- UTILITY MANAGEMENT --}}
-                        <div class="tab-content hidden " id="tab2-content">
+
+                        <div class="tab-content hidden" id="utility-content">
                             <h2 class="text-lg font-semibold text-gray-800">Utility Management</h2>
-                            {{-- <x-packages.add-package-utility /> --}}
                             <x-utility.utilitylist :packages="$packages" :utilities="$utilities" :package-utilities="$package_utilities" />
-                            {{-- <x-packages.link-util-package :packages="$packages" /> --}}
-                        </div>
-                        {{-- PARTY TRAY --}}
-                        <div class="tab-content hidden" id="tab3-content">
-                            <h2 class="text-lg font-semibold text-gray-800">Party Tray Management</h2>
-                            {{-- <x-items.item-button :categories="$categories" /> --}}
-                            {{-- PARTY TRAY LIST --}}
-                            <x-dashboard.products :categories="$categories" :menuItems="$menuItems" />
                         </div>
 
+                        <div class="tab-content hidden" id="party-content">
+                            <h2 class="text-lg font-semibold text-gray-800">Party Tray Management</h2>
+                            <x-dashboard.products :categories="$categories" :menuItems="$menuItems" />
+                        </div>
                     </div>
+
                 </div>
             </main>
         </div>
@@ -183,95 +172,177 @@
     </div>
 
     <script>
-        function switchTab(tabNumber) {
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => content.classList.add('hidden'));
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tab system
+            initItemOptionTabs();
+            initPackageTabs();
+        });
 
-            const tabButtons = document.querySelectorAll('ul li');
-            tabButtons.forEach(button => button.classList.remove('text-blue-500', 'border-b-2', 'border-blue-500'));
+        function initItemOptionTabs() {
+            // Retrieve previously active tab from localStorage
+            const activeTab = localStorage.getItem('activeItemOptionTab') || 'items';
 
+            // Set up click listeners
+            document.getElementById('items-tab').addEventListener('click', () => switchItemOptionTab('items'));
+            document.getElementById('options-tab').addEventListener('click', () => switchItemOptionTab('options'));
 
-            document.getElementById(`tab${tabNumber}-content`).classList.remove('hidden');
-
-            const tabButton = document.getElementById(`tab${tabNumber}-button`);
-            tabButton.classList.add('text-blue-500', 'border-b-2', 'border-blue-500');
+            // Initialize with correct tab
+            switchItemOptionTab(activeTab);
         }
 
 
-        switchTab(1);
+        function switchItemOptionTab(tabId) {
+            localStorage.setItem('activeItemOptionTab', tabId);
+
+            const tabs = {
+                items: document.getElementById('items-tab'),
+                options: document.getElementById('options-tab')
+            };
+
+            const contents = {
+                items: document.getElementById('items-content'),
+                options: document.getElementById('options-content')
+            };
+
+            // Toggle visibility of content
+            for (const key in contents) {
+                contents[key].classList.toggle('hidden', key !== tabId);
+            }
+
+            // Toggle tab styles
+            for (const key in tabs) {
+                tabs[key].classList.toggle('text-blue-600', key === tabId);
+                tabs[key].classList.toggle('border-blue-600', key === tabId);
+                tabs[key].classList.toggle('text-gray-500', key !== tabId);
+                tabs[key].classList.toggle('hover:text-gray-700', key !== tabId);
+                tabs[key].classList.toggle('border-transparent', key !== tabId);
+                tabs[key].classList.toggle('hover:border-gray-300', key !== tabId);
+            }
+        }
+
+        // PACKAGE TAB LOGIC (new)
+        function initPackageTabs() {
+            const activePkgTab = localStorage.getItem('activePackageTab') || 'package';
+            document.getElementById('package-tab').addEventListener('click', () => switchPackageTab('package'));
+            document.getElementById('utility-tab').addEventListener('click', () => switchPackageTab('utility'));
+            document.getElementById('party-tab').addEventListener('click', () => switchPackageTab('party'));
+            switchPackageTab(activePkgTab);
+        }
+
+        function switchPackageTab(tabId) {
+            localStorage.setItem('activePackageTab', tabId);
+            const tabs = {
+                package: document.getElementById('package-tab'),
+                utility: document.getElementById('utility-tab'),
+                party: document.getElementById('party-tab')
+            };
+            const contents = {
+                package: document.getElementById('package-content'),
+                utility: document.getElementById('utility-content'),
+                party: document.getElementById('party-content')
+            };
+            for (const key in contents) {
+                contents[key].classList.toggle('hidden', key !== tabId);
+            }
+            for (const key in tabs) {
+                tabs[key].classList.toggle('text-blue-600', key === tabId);
+                tabs[key].classList.toggle('border-blue-600', key === tabId);
+                tabs[key].classList.toggle('text-gray-600', key !== tabId);
+                tabs[key].classList.toggle('hover:text-blue-500', key !== tabId);
+                tabs[key].classList.toggle('border-transparent', key !== tabId);
+            }
+        }
+
+
+        // function switchTab(tabNumber) {
+        //     const tabContents = document.querySelectorAll('.tab-content');
+        //     tabContents.forEach(content => content.classList.add('hidden'));
+
+        //     const tabButtons = document.querySelectorAll('ul li');
+        //     tabButtons.forEach(button => button.classList.remove('text-blue-500', 'border-b-2', 'border-blue-500'));
+
+
+        //     document.getElementById(`tab${tabNumber}-content`).classList.remove('hidden');
+
+        //     const tabButton = document.getElementById(`tab${tabNumber}-button`);
+        //     tabButton.classList.add('text-blue-500', 'border-b-2', 'border-blue-500');
+        // }
+
+
+        // switchTab(1);
 
         //ITEMS AND OPTIONS
-        document.addEventListener('DOMContentLoaded', function() {
-            const itemsTab = document.getElementById('items-tab');
-            const optionsTab = document.getElementById('options-tab');
-            const itemsContent = document.getElementById('items-content');
-            const optionsContent = document.getElementById('options-content');
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const itemsTab = document.getElementById('items-tab');
+        //     const optionsTab = document.getElementById('options-tab');
+        //     const itemsContent = document.getElementById('items-content');
+        //     const optionsContent = document.getElementById('options-content');
 
-            const itemSelectLinker = document.getElementById('itemSelectLinker');
-            // TAB FUNCTIONS
-            itemsTab.addEventListener('click', function() {
-                itemsTab.classList.add('text-blue-600', 'border-blue-600');
-                itemsTab.classList.remove('text-gray-500', 'border-transparent');
-                optionsTab.classList.add('text-gray-500', 'border-transparent');
-                optionsTab.classList.remove('text-blue-600', 'border-blue-600');
+        //     const itemSelectLinker = document.getElementById('itemSelectLinker');
+        //     // TAB FUNCTIONS
+        //     itemsTab.addEventListener('click', function() {
+        //         itemsTab.classList.add('text-blue-600', 'border-blue-600');
+        //         itemsTab.classList.remove('text-gray-500', 'border-transparent');
+        //         optionsTab.classList.add('text-gray-500', 'border-transparent');
+        //         optionsTab.classList.remove('text-blue-600', 'border-blue-600');
 
-                itemsContent.classList.remove('hidden');
-                optionsContent.classList.add('hidden');
-            });
+        //         itemsContent.classList.remove('hidden');
+        //         optionsContent.classList.add('hidden');
+        //     });
 
-            optionsTab.addEventListener('click', function() {
-                optionsTab.classList.add('text-blue-600', 'border-blue-600');
-                optionsTab.classList.remove('text-gray-500', 'border-transparent');
-                itemsTab.classList.add('text-gray-500', 'border-transparent');
-                itemsTab.classList.remove('text-blue-600', 'border-blue-600');
+        //     optionsTab.addEventListener('click', function() {
+        //         optionsTab.classList.add('text-blue-600', 'border-blue-600');
+        //         optionsTab.classList.remove('text-gray-500', 'border-transparent');
+        //         itemsTab.classList.add('text-gray-500', 'border-transparent');
+        //         itemsTab.classList.remove('text-blue-600', 'border-blue-600');
 
-                optionsContent.classList.remove('hidden');
-                itemsContent.classList.add('hidden');
-            });
+        //         optionsContent.classList.remove('hidden');
+        //         itemsContent.classList.add('hidden');
+        //     });
 
 
 
-            if (itemSelectLinker) {
-                itemSelectLinker.addEventListener('change', function() {
-                    const selectedItemIdLinker = this.value;
-                    const itemOptionsSelectLinker = document.getElementById('itemOptionsSelectLinker');
+        // if (itemSelectLinker) {
+        //     itemSelectLinker.addEventListener('change', function() {
+        //         const selectedItemIdLinker = this.value;
+        //         const itemOptionsSelectLinker = document.getElementById('itemOptionsSelectLinker');
 
-                    // Clear previous disables and reset option text
-                    Array.from(itemOptionsSelectLinker.options).forEach(option => {
-                        option.disabled = false;
-                        option.textContent = option.textContent.replace(" (Already in this Item)",
-                            "");
-                    });
+        //         // Clear previous disables and reset option text
+        //         Array.from(itemOptionsSelectLinker.options).forEach(option => {
+        //             option.disabled = false;
+        //             option.textContent = option.textContent.replace(" (Already in this Item)",
+        //                 "");
+        //         });
 
-                    if (selectedItemIdLinker) {
-                        // Fetch existing item options for the selected item
-                        fetch(`/items/${selectedItemIdLinker}/existing-options`)
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                return response.json();
-                            })
-                            .then(existingOptionsLinker => {
-                                console.log('Existing options:', existingOptionsLinker);
+        //         if (selectedItemIdLinker) {
+        //             // Fetch existing item options for the selected item
+        //             fetch(`/items/${selectedItemIdLinker}/existing-options`)
+        //                 .then(response => {
+        //                     if (!response.ok) {
+        //                         throw new Error('Network response was not ok');
+        //                     }
+        //                     return response.json();
+        //                 })
+        //                 .then(existingOptionsLinker => {
+        //                     console.log('Existing options:', existingOptionsLinker);
 
-                                Array.from(itemOptionsSelectLinker.options).forEach(option => {
-                                    if (existingOptionsLinker.includes(parseInt(option
-                                            .value))) {
-                                        option.disabled = true;
-                                        option.textContent += " (Already in this Item)";
-                                    }
-                                });
-                            })
-                            .catch(error => {
-                                console.error('Error fetching item options:', error);
-                            });
-                    }
-                });
-            } else {
-                console.error('Item select element not found');
-            }
-        });
+        //                     Array.from(itemOptionsSelectLinker.options).forEach(option => {
+        //                         if (existingOptionsLinker.includes(parseInt(option
+        //                                 .value))) {
+        //                             option.disabled = true;
+        //                             option.textContent += " (Already in this Item)";
+        //                         }
+        //                     });
+        //                 })
+        //                 .catch(error => {
+        //                     console.error('Error fetching item options:', error);
+        //                 });
+        //         }
+        //     });
+        // } else {
+        //     console.error('Item select element not found');
+        // }
+        // });
     </script>
 
 

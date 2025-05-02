@@ -245,15 +245,15 @@
         </script>
 
 <div class="mx-auto p-4 mb-4">
-    <h1 class="text-2xl font-semibold text-center">MANAGE ITEM OPTIONS</h1>
-
+    
     @if ($itemOptions->isEmpty())
-        <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <p class="text-gray-500">No item options available at the moment.</p>
-        </div>
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <p class="text-gray-500">No item options available at the moment.</p>
+    </div>
     @else
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
+    {{-- <h1 class="text-2xl font-semibold text-center">MANAGE ITEM OPTIONS</h1> --}}
+    <div class="overflow-x-auto bg-white rounded-lg shadow-md p-4 md:p-6">
+        <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>

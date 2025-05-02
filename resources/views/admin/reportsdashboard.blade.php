@@ -309,16 +309,22 @@
                         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                             <div class="flex justify-between items-center mb-6">
                                 <h2 class="text-lg font-semibold text-gray-800">Sales Overview</h2>
-                                <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
-                                    class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="today" selected>Today</option>
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="thisWeek">This Week</option>
-                                    <option value="month">This Month</option>
-                                    <option value="sixMonths">Last 6 Months</option>
-                                    <option value="year">This Year</option>
-                                    <option value="lastYear">Last Year</option>
-                                </select>
+                                <div class="flex flex-col lg:flex-row gap-2 items-start lg:items-center">
+                                    <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
+                                        class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="today" selected>Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="thisWeek">This Week</option>
+                                        <option value="month">This Month</option>
+                                        <option value="sixMonths">Last 6 Months</option>
+                                        <option value="year">This Year</option>
+                                        <option value="lastYear">Last Year</option>
+                                    </select>
+                    
+                                    <!-- ✅ Start and End Date Inputs -->
+                                    <input type="date" id="startDate" class="px-3 py-2 rounded-lg border text-sm bg-gray-50 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="date" id="endDate" class="px-3 py-2 rounded-lg border text-sm bg-gray-50 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
                             </div>
 
                             <div id="totalRevenueLabel" class="mb-4 text-sm font-medium text-gray-500">
@@ -455,6 +461,7 @@
     @endif
 
     <script>
+   
         function showOrderDetails(orderId) {
             const modal = document.getElementById('orderDetailsModal');
             modal.classList.remove('hidden');
@@ -726,7 +733,7 @@
                 }).format(total);
             }
         });
-
+        
         function filterChartSales(range) {
             if (!window.salesOverviewChart) {
                 console.error("Chart is not initialized yet.");
