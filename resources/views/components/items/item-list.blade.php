@@ -249,81 +249,63 @@
 {{-- PAGINATION FOR ITEM TABLES --}}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll("#item-table-body .item-row"); // More specific selector
         const rowsPerPage = 5;
         const tableBody = document.getElementById("item-table-body");
         const paginationControls = document.getElementById("pagination-controls");
-
-        // *** Default starting page ***
         let currentPage = 1;
 
-        // *** Retrieve and set the page from sessionStorage if available ***
+        function getRows() {
+            return document.querySelectorAll("#item-table-body .item-row");
+        }
+
         const savedPage = sessionStorage.getItem('itemListPage');
         if (savedPage) {
             const potentialPage = parseInt(savedPage, 10);
-            const maxPage = Math.ceil(rows.length / rowsPerPage);
-             // Ensure saved page is valid and within bounds
+            const maxPage = Math.ceil(getRows().length / rowsPerPage);
             if (!isNaN(potentialPage) && potentialPage > 0 && potentialPage <= maxPage) {
                 currentPage = potentialPage;
-                console.log('Restored page:', currentPage); // For debugging
+                console.log('Restored page:', currentPage);
             } else {
-                 console.log('Saved page invalid or out of bounds, defaulting to 1.');
+                console.log('Saved page invalid or out of bounds, defaulting to 1.');
             }
-            // *** IMPORTANT: Remove the item after reading it ***
             sessionStorage.removeItem('itemListPage');
         }
 
         function displayRows(page) {
+            const rows = getRows();
             const start = (page - 1) * rowsPerPage;
             const end = start + rowsPerPage;
 
-             if (!tableBody) return; // Guard clause
+            if (!tableBody) return;
 
-             // Hide all rows first
-             rows.forEach(row => row.style.display = 'none');
-
-             // Display rows for the current page
-            const rowsToShow = Array.from(rows).slice(start, end);
-            rowsToShow.forEach(row => row.style.display = ''); // Default display (usually 'table-row')
-
-             // Optional: Handle case where table might look empty temporarily
-             // if (rowsToShow.length === 0 && rows.length > 0) {
-             //    // Maybe display a 'no results on this page' message temporarily
-             // }
+            rows.forEach(row => row.style.display = 'none');
+            Array.from(rows).slice(start, end).forEach(row => row.style.display = '');
         }
 
         function setupPagination() {
-             if (!paginationControls || rows.length <= rowsPerPage) {
-                 if(paginationControls) paginationControls.innerHTML = ""; // Clear controls if not needed
-                 return; // No pagination needed
-             };
+            const rows = getRows();
+            if (!paginationControls || rows.length <= rowsPerPage) {
+                if (paginationControls) paginationControls.innerHTML = "";
+                return;
+            }
 
-            paginationControls.innerHTML = ""; // Clear existing buttons
+            paginationControls.innerHTML = "";
             const pageCount = Math.ceil(rows.length / rowsPerPage);
-
-            // Basic Previous Button (Optional)
-            // const prevButton = document.createElement('button');
-            // ... add logic ...
-            // paginationControls.appendChild(prevButton);
-
 
             for (let i = 1; i <= pageCount; i++) {
                 const button = document.createElement("button");
                 button.textContent = i;
-                // Apply Tailwind classes for styling
                 button.className = `px-3 py-1 border rounded transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400 ${
                     i === currentPage
-                        ? "bg-blue-500 text-white border-blue-500 cursor-default" // Active page style
-                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100" // Inactive page style
+                        ? "bg-blue-500 text-white border-blue-500 cursor-default"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                 }`;
 
-
                 button.addEventListener("click", function () {
-                    if (i === currentPage) return; // Don't re-render if clicking the active page
-
+                    if (i === currentPage) return;
                     currentPage = i;
                     displayRows(currentPage);
-                    // Update button styles immediately without full re-render
+
                     const currentActive = paginationControls.querySelector('button.bg-blue-500');
                     if (currentActive) {
                         currentActive.classList.remove('bg-blue-500', 'text-white', 'border-blue-500', 'cursor-default');
@@ -331,20 +313,24 @@
                     }
                     button.classList.add('bg-blue-500', 'text-white', 'border-blue-500', 'cursor-default');
                     button.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-100');
-
                 });
 
                 paginationControls.appendChild(button);
             }
-
-             // Basic Next Button (Optional)
-            // const nextButton = document.createElement('button');
-            // ... add logic ...
-            // paginationControls.appendChild(nextButton);
         }
 
-        // Initial display based on potentially restored currentPage
-        displayRows(currentPage);
+        // Global refresh function to call after adding items dynamically
+        window.refreshItemPagination = function () {
+            const rows = getRows();
+            const maxPage = Math.ceil(rows.length / rowsPerPage);
+            if (currentPage > maxPage) currentPage = maxPage;
+
+            setupPagination();
+            displayRows(currentPage);
+        };
+
+        // Initial render
         setupPagination();
+        displayRows(currentPage);
     });
 </script>

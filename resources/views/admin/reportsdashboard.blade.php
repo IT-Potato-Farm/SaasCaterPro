@@ -311,6 +311,12 @@
                             <div class="flex justify-between items-center mb-6">
                                 <h2 class="text-lg font-semibold text-gray-800">Sales Overview</h2>
                                 <div class="flex flex-col lg:flex-row gap-2 items-start lg:items-center">
+
+                                    <button onclick="toggleCustomDateFilter()"
+                                        class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-300">
+                                        Use Custom Date Range
+                                    </button>
+
                                     <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
                                         class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                         <option value="today" selected>Today</option>
@@ -321,14 +327,18 @@
                                         <option value="year">This Year</option>
                                         <option value="lastYear">Last Year</option>
                                     </select>
-                                    <input type="date" id="startDate"
-                                        class="px-2 py-1 border rounded-md text-sm" />
-                                    <input type="date" id="endDate"
-                                        class="px-2 py-1 border rounded-md text-sm" />
-                                    <button onclick="filterCustomDateRange()"
-                                        class="bg-blue-500 text-white text-sm px-3 py-1 rounded-md">
-                                        Filter
-                                    </button>
+
+                                    <!-- Custom Date Range (Initially Hidden) -->
+                                    <div id="customDateRange" class="hidden flex gap-2 items-center">
+                                        <input type="date" id="startDate"
+                                            class="px-2 py-1 border rounded-md text-sm" />
+                                        <input type="date" id="endDate"
+                                            class="px-2 py-1 border rounded-md text-sm" />
+                                        <button onclick="filterCustomDateRange()"
+                                            class="bg-blue-500 text-white text-sm px-3 py-1 rounded-md">
+                                            Filter
+                                        </button>
+                                    </div>
 
                                 </div>
                             </div>
@@ -579,6 +589,21 @@
 
         function closeOrderModal() {
             document.getElementById('orderDetailsModal').classList.add('hidden');
+        }
+
+        function toggleCustomDateFilter() {
+            const dateRangeDiv = document.getElementById('customDateRange');
+            const selectRange = document.getElementById('salesRangeSelect');
+
+            if (dateRangeDiv.classList.contains('hidden')) {
+                // Show date range, hide select
+                dateRangeDiv.classList.remove('hidden');
+                selectRange.classList.add('hidden');
+            } else {
+                // Hide date range, show select
+                dateRangeDiv.classList.add('hidden');
+                selectRange.classList.remove('hidden');
+            }
         }
     </script>
 

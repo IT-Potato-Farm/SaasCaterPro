@@ -20,7 +20,8 @@ class ItemOptionController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'items' => 'nullable|array',
-            'items.*' => 'exists:items,id'
+            'items.*' => 'exists:items,id',
+            'category_id' => 'nullable|exists:categories,id', 
         ]);
 
         if ($request->hasFile('image')) {
@@ -31,6 +32,8 @@ class ItemOptionController extends Controller
             'type' => $data['type'],
             'description' => $data['description'] ?? null,
             'image' => $data['image'] ?? null,
+            'category_id' => $data['category_id'] ?? null, // Save if exists
+
         ]);
 
         if (!empty($data['items'])) {
