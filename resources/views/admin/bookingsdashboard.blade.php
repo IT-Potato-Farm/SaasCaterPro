@@ -309,7 +309,7 @@
                         </button> --}}
 
                         <!-- Export -->
-                        {{-- <button id="printReportBtn" 
+                        {{-- <button id="printReportBtn"
                             class="hover:cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs hover:bg-gray-200 text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -760,11 +760,11 @@
                                                     {{-- <option value="unpaid">Mark Unpaid</option> --}}
                                                     <option value="delete">Delete Order</option>
                                                 @elseif ($status === 'cancelled')
-                                                    
+
                                                     <option value="delete">Delete Order</option>
                                                 @endif
 
-                                                @if ($status !== 'pending' && $status !=='partial' && $status !== 'completed' && $status !== 'cancelled')
+                                                @if ($status !== 'pending' && $status !=='paid' && $status !=='partial' && $status !== 'completed'  && $status !== 'cancelled')
                                                     <option value="penalty">Add Penalty</option>
                                                 @endif
                                             </select>
@@ -899,7 +899,7 @@
                             Event Calendar
                         </h1>
 
-                       
+
 
                         <!-- Calendar Container -->
                         <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 mb-6">
@@ -936,7 +936,7 @@
                             </div>
                         </div>
 
-            
+
 
                     </div>
                 </div>
