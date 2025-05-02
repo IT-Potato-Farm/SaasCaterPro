@@ -916,7 +916,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-orange-500"></span>
-                                <span class="text-sm text-gray-800">Partial Partial</span>
+                                <span class="text-sm text-gray-800">Partial Payment</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-blue-400"></span>
