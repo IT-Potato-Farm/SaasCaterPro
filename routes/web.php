@@ -518,6 +518,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/{penalty}', [PenaltyController::class, 'show'])->name('api.penalties.show');
     Route::put('/{penalty}', [PenaltyController::class, 'update'])->name('api.penalties.update');
     Route::delete('/{penalty}', [PenaltyController::class, 'destroy'])->name('api.penalties.destroy');
+
+    // AJAX ROUTE
+    Route::get('/get-custom-date-range', [AdminController::class, 'getCustomDateRangeData'])
+    ->name('admin.reports.customRange');
+    Route::get('/chart/custom-range', [AdminController::class, 'customChartRange'])->name('chart.customRange');
+
 });
 
 

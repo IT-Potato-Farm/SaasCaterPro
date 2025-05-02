@@ -674,5 +674,157 @@ class AdminController extends Controller
     //         })->toArray();
     //     return view('admin.admindashboard', compact('packages', 'packageItemsGroupedByPackage'));
     // }
+    public function customChartRange(Request $request)
+    {
+        $startDate = Carbon::parse($request->startDate)->startOfDay();
+        $endDate = Carbon::parse($request->endDate)->endOfDay();
 
+        // Ensure we have valid start/end dates
+        if ($endDate->lt($startDate)) {
+            return response()->json([
+                'error' => 'End date must be after start date'
+            ], 400);
+        }
+
+        // Query orders that fall within or overlap with the selected date range
+        $orders = Order::where('status', 'completed')
+            ->where(function ($query) use ($startDate, $endDate) {
+                // Order starts within range
+                $query->whereBetween('event_date_start', [$startDate, $endDate])
+                    // OR order ends within range
+                    ->orWhereBetween('event_date_end', [$startDate, $endDate])
+                    // OR order spans the entire range (starts before and ends after)
+                    ->orWhere(function ($q) use ($startDate, $endDate) {
+                        $q->where('event_date_start', '<=', $startDate)
+                            ->where('event_date_end', '>=', $endDate);
+                    });
+            })
+            ->get();
+
+        // Generate all dates in the range to ensure we have continuous data for the chart
+        $dateRange = [];
+        $current = $startDate->copy();
+
+        while ($current->lte($endDate)) {
+            $dateRange[$current->format('Y-m-d')] = 0;
+            $current->addDay();
+        }
+
+        // Assign orders to dates (can be proportional or full amount based on your business logic)
+        foreach ($orders as $order) {
+            $orderStart = Carbon::parse($order->event_date_start);
+            $orderEnd = Carbon::parse($order->event_date_end);
+
+            // Adjust dates to be within our range
+            if ($orderStart->lt($startDate)) {
+                $orderStart = $startDate->copy();
+            }
+
+            if ($orderEnd->gt($endDate)) {
+                $orderEnd = $endDate->copy();
+            }
+
+            // Calculate days within range
+            $daysInRange = $orderStart->diffInDays($orderEnd) + 1;
+
+            if ($daysInRange <= 1) {
+                // If single day or same day, assign full amount to that day
+                $dateKey = $orderStart->format('Y-m-d');
+                $dateRange[$dateKey] += $order->total;
+            } else {
+                // For multi-day events, either:
+                // Option 1: Distribute evenly across days
+                $amountPerDay = $order->total / $daysInRange;
+
+                $currentDay = $orderStart->copy();
+                while ($currentDay->lte($orderEnd)) {
+                    $dateKey = $currentDay->format('Y-m-d');
+                    $dateRange[$dateKey] += $amountPerDay;
+                    $currentDay->addDay();
+                }
+
+                // Option 2: Alternatively, assign full amount to start date only
+                // Uncomment below and comment the above if you prefer this approach
+                // $dateKey = $orderStart->format('Y-m-d');
+                // $dateRange[$dateKey] += $order->total;
+            }
+        }
+
+        // Prepare data for chart
+        $total = array_sum($dateRange);
+
+        // If too many dates for a readable chart, consider aggregating by week or month
+        if (count($dateRange) > 31) {
+            // Group by week or month for better visualization when range is large
+            $aggregatedData = $this->aggregateDataByPeriod($dateRange, $startDate, $endDate);
+            return response()->json($aggregatedData);
+        }
+
+        return response()->json([
+            'labels' => array_keys($dateRange),
+            'data' => array_values($dateRange),
+            'total' => $total
+        ]);
+    }
+
+    // Helper function to aggregate data by week or month for larger date ranges
+    private function aggregateDataByPeriod($dateRange, $startDate, $endDate)
+    {
+        $diffInDays = $startDate->diffInDays($endDate);
+
+        if ($diffInDays > 90) {
+            // Aggregate by month for ranges > 90 days
+            return $this->aggregateByMonth($dateRange);
+        } else {
+            // Aggregate by week for ranges between 31-90 days
+            return $this->aggregateByWeek($dateRange);
+        }
+    }
+
+    private function aggregateByWeek($dateRange)
+    {
+        $weeklyData = [];
+        $weeklyLabels = [];
+
+        foreach ($dateRange as $date => $value) {
+            $carbon = Carbon::parse($date);
+            $weekKey = $carbon->startOfWeek()->format('M d') . ' - ' . $carbon->endOfWeek()->format('M d');
+
+            if (!isset($weeklyData[$weekKey])) {
+                $weeklyData[$weekKey] = 0;
+                $weeklyLabels[] = $weekKey;
+            }
+
+            $weeklyData[$weekKey] += $value;
+        }
+
+        return [
+            'labels' => $weeklyLabels,
+            'data' => array_values($weeklyData),
+            'total' => array_sum($weeklyData)
+        ];
+    }
+
+    private function aggregateByMonth($dateRange)
+    {
+        $monthlyData = [];
+        $monthlyLabels = [];
+
+        foreach ($dateRange as $date => $value) {
+            $monthKey = Carbon::parse($date)->format('M Y');
+
+            if (!isset($monthlyData[$monthKey])) {
+                $monthlyData[$monthKey] = 0;
+                $monthlyLabels[] = $monthKey;
+            }
+
+            $monthlyData[$monthKey] += $value;
+        }
+
+        return [
+            'labels' => $monthlyLabels,
+            'data' => array_values($monthlyData),
+            'total' => array_sum($monthlyData)
+        ];
+    }
 }

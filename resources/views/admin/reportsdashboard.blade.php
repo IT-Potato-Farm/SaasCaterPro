@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('images/saaslogo.png') }}" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -320,10 +321,15 @@
                                         <option value="year">This Year</option>
                                         <option value="lastYear">Last Year</option>
                                     </select>
-                    
-                                    <!-- ✅ Start and End Date Inputs -->
-                                    <input type="date" id="startDate" class="px-3 py-2 rounded-lg border text-sm bg-gray-50 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <input type="date" id="endDate" class="px-3 py-2 rounded-lg border text-sm bg-gray-50 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="date" id="startDate"
+                                        class="px-2 py-1 border rounded-md text-sm" />
+                                    <input type="date" id="endDate"
+                                        class="px-2 py-1 border rounded-md text-sm" />
+                                    <button onclick="filterCustomDateRange()"
+                                        class="bg-blue-500 text-white text-sm px-3 py-1 rounded-md">
+                                        Filter
+                                    </button>
+
                                 </div>
                             </div>
 
@@ -461,7 +467,6 @@
     @endif
 
     <script>
-   
         function showOrderDetails(orderId) {
             const modal = document.getElementById('orderDetailsModal');
             modal.classList.remove('hidden');
@@ -578,6 +583,7 @@
     </script>
 
     </script>
+
     {{-- CHART TOTAL SALES OVERVIEW EARNING JS DE TO GUMAGANA IF NASA IBANG FILES YAWA --}}
     <script>
         const totalRevenues = {
@@ -587,7 +593,8 @@
             thisWeek: {{ $thisWeekRevenue ?? 0 }},
             sixMonths: {{ $lastSixMonthsRevenue ?? 0 }},
             year: {{ $yearRevenue ?? 0 }},
-            lastYear: {{ $lastYearRevenue ?? 0 }}
+            lastYear: {{ $lastYearRevenue ?? 0 }},
+            custom: 0
         };
 
         const chartDataSets = {
@@ -597,7 +604,8 @@
             thisWeek: @json($thisWeekRevenueChart),
             sixMonths: @json($lastSixMonthsRevenueChart),
             year: @json($thisYearRevenueChart),
-            lastYear: @json($lastYearRevenueChart)
+            lastYear: @json($lastYearRevenueChart),
+            custom: []
         };
 
         const chartLabels = {
@@ -607,7 +615,8 @@
             thisWeek: @json($thisWeekRevenueLabels),
             sixMonths: @json($lastSixMonthsRevenueLabels),
             year: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            lastYear: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            lastYear: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            custom: []
         };
 
         const chartColors = {
@@ -618,6 +627,7 @@
             tooltipBg: "#1F2937",
             tooltipBorder: "#374151",
             tooltipText: "#F9FAFB",
+            custom: "#10B981",
         };
         // TODAY DEFAULT CHART
         let activeButton = 'today';
@@ -733,7 +743,7 @@
                 }).format(total);
             }
         });
-        
+
         function filterChartSales(range) {
             if (!window.salesOverviewChart) {
                 console.error("Chart is not initialized yet.");
@@ -749,17 +759,25 @@
 
             activeButton = range;
 
-            window.salesOverviewChart.data.labels = chartLabels[range] || [];
-            window.salesOverviewChart.data.datasets[0].data = newData;
+            const chart = window.salesOverviewChart;
+            chart.data.labels = chartLabels[range] || [];
 
-            window.salesOverviewChart.data.datasets[0].label = {
-                today: "Today",
-                month: "This Month",
-                thisWeek: "This Week",
-                sixMonths: "Last 6 Months",
-                year: "This Year",
-                lastYear: "Last Year"
-            } [range] || "Sales";
+            Object.assign(chart.data.datasets[0], {
+                label: {
+                    today: "Today",
+                    yesterday: "Yesterday",
+                    month: "This Month",
+                    thisWeek: "This Week",
+                    sixMonths: "Last 6 Months",
+                    year: "This Year",
+                    lastYear: "Last Year",
+                    custom: "Custom Range"
+                } [range] || "Sales",
+                data: newData,
+                borderColor: range === 'custom' ? chartColors.custom : chartColors.thisYear,
+                backgroundColor: range === 'custom' ? "rgba(16, 185, 129, 0.05)" : "rgba(59, 130, 246, 0.05)",
+                pointBorderColor: range === 'custom' ? chartColors.custom : chartColors.thisYear
+            });
 
             window.salesOverviewChart.update();
 
@@ -772,6 +790,78 @@
                     minimumFractionDigits: 0
                 }).format(total);
             }
+        }
+
+        function filterCustomDateRange() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            if (!startDate || !endDate) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+            const totalValueElement = document.getElementById('totalRevenueValue');
+            if (totalValueElement) {
+                totalValueElement.textContent = "Loading...";
+            }
+
+            fetch(`/chart/custom-range?startDate=${startDate}&endDate=${endDate}`)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(({
+                    labels,
+                    data,
+                    total
+                }) => {
+                    if (!window.salesOverviewChart) {
+                        console.error("Chart is not initialized.");
+                        return;
+                    }
+
+                    // console.log("Custom range data received:", {
+                    //     labels,
+                    //     data,
+                    //     total
+                    // });
+
+                    // Store the data for future reference
+                    chartDataSets['custom'] = data;
+                    chartLabels['custom'] = labels;
+                    totalRevenues['custom'] = total;
+
+                    // Set active button
+                    activeButton = 'custom';
+
+                    // Update chart configuration
+                    window.salesOverviewChart.data.labels = labels;
+                    window.salesOverviewChart.data.datasets[0].data = data;
+                    window.salesOverviewChart.data.datasets[0].label = "Custom Range";
+                    window.salesOverviewChart.data.datasets[0].borderColor = chartColors.custom;
+                    window.salesOverviewChart.data.datasets[0].backgroundColor = "rgba(16, 185, 129, 0.05)";
+                    window.salesOverviewChart.data.datasets[0].pointBorderColor = chartColors.custom;
+
+                    // Force chart update
+                    window.salesOverviewChart.update();
+
+                    // Update total value display
+                    if (totalValueElement) {
+                        totalValueElement.textContent = new Intl.NumberFormat("en-PH", {
+                            style: "currency",
+                            currency: "PHP",
+                            minimumFractionDigits: 0
+                        }).format(total);
+                    }
+
+                    console.log("Chart updated with custom data");
+                })
+                .catch(err => {
+                    console.error("Failed to fetch chart data", err);
+                    alert("Error loading chart data: " + err.message);
+                });
         }
     </script>
 
