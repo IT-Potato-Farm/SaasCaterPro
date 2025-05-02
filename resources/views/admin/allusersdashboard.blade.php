@@ -47,7 +47,7 @@
                                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                                 </div>
                             </div>
-                           
+
                         </div>
 
                         <div class="overflow-x-auto">
@@ -126,7 +126,7 @@
                                                 </label>
                                             </td> --}}
                                             {{-- <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                     {{ $user->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                                     {{ ucfirst($user->status) }}
                                                 </span>
@@ -350,40 +350,31 @@
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">
                                         First Name
                                     </label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                            id="first_name" type="text" value="${user.first_name}">
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">
                                         Last Name
                                     </label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                            id="last_name" type="text" value="${user.last_name}">
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
                                         Email
                                     </label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                            id="email" type="email" value="${user.email}">
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="mobile">
                                         Mobile
                                     </label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                            id="mobile" type="text" value="${user.mobile}">
                                 </div>
-                                <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
-                                        Role
-                                    </label>
-                                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                            id="role">
-                                        <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                                        <option value="customer" ${user.role === 'customer' ? 'selected' : ''}>Customer</option>
-                                    </select>
-                                </div>
+
                             </form>
                         `,
                                 showCancelButton: true,
@@ -401,8 +392,7 @@
                                         .value;
                                     const mobile = document.getElementById('mobile')
                                         .value;
-                                    const role = document.getElementById('role')
-                                        .value;
+
 
                                     // Validate form
                                     if (!first_name || !last_name || !email || !
@@ -417,8 +407,8 @@
                                         first_name,
                                         last_name,
                                         email,
-                                        mobile,
-                                        role
+                                        mobile
+                                       
                                     };
                                 }
                             }).then((result) => {

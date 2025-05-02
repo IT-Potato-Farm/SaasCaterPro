@@ -24,7 +24,7 @@ class UserApiController extends Controller
     $user->email = $request->email;
     $user->mobile = $request->mobile;
     $user->role = $request->role;
-    $user->password = Hash::make('password'); 
+    $user->password = Hash::make('password');
     $user->email_verified_at = now();
     $user->save();
 
@@ -39,17 +39,17 @@ class UserApiController extends Controller
 public function update(Request $request, $id)
 {
     $user = User::findOrFail($id);
-    
+
     $validated = $request->validate([
         'first_name' => 'required|string|max:255',
         'last_name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,'.$id,
         'mobile' => 'required|string',
-        'role' => 'required|in:admin,staff,customer',
+        // 'role' => 'required|in:admin,staff,customer',
     ]);
-    
+
     $user->update($validated);
-    
+
     return response()->json([
         'success' => true,
         'message' => 'User updated successfully',
@@ -78,7 +78,7 @@ public function destroy($id)
 {
     $user = User::findOrFail($id);
     $user->delete();
-    
+
     return response()->json([
         'success' => true,
         'message' => 'User deleted successfully'
