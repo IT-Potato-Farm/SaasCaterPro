@@ -10,13 +10,13 @@
     function addItem() {
 
         Swal.fire({
-            title: '<span class="text-xl font-semibold text-gray-800">Add Ulam Item</span>',
+            title: '<span class="text-xl font-semibold text-gray-800">Add Ulam Itemm</span>',
             html: `
             <form id="addItemForm" class="space-y-6 p-6 bg-white rounded-lg shadow-md">
             <!-- Item Name -->
             <div>
                 <label for="swal-name" class="block text-sm font-medium text-gray-700 mb-2">Item Name</label>
-                <input type="text" id="swal-name" name="name" required 
+                <input type="text" id="swal-name" name="name" required
                     class="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                 <div id="name-error" class="mt-1 text-xs text-red-500"></div>
             </div>
@@ -40,8 +40,8 @@
                 </select>
                 <div id="category-error" class="mt-1 text-xs text-red-500"></div>
             </div>
-           
-           
+
+
 
             <!-- Options -->
             <div>
@@ -223,56 +223,11 @@
         });
     }
 
-    function loadOptionsForCategory(categoryId) {
-        const optionsSelect = document.getElementById('swal-options');
 
-        // Clear existing options first
-        $(optionsSelect).empty();
-
-        // Show loading state
-        $(optionsSelect).append(new Option('Loading options...', '')).prop('disabled', true);
-
-        // Make AJAX request
-        fetch(`/api/item-options?category=${categoryId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to load options');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Re-enable and clear the select
-                $(optionsSelect).empty().prop('disabled', false);
-
-                // Add the options
-                if (data.length === 0) {
-                    const noOptions = new Option('No options available for this category', '', false, false);
-                    noOptions.disabled = true;
-
-                    $(optionsSelect).append(noOptions);
-
-                } else {
-                    data.forEach(option => {
-                        const optionText = `${option.type} (${option.category_name})`;
-                        const newOption = new Option(optionText, option.id, false, false);
-                        $(optionsSelect).append(newOption);
-                    });
-                }
-
-                // Refresh Select2
-                $(optionsSelect).trigger('change');
-            })
-            .catch(error => {
-                console.error('Error loading options:', error);
-                $(optionsSelect).empty()
-                    .append(new Option('Error loading options', ''))
-                    .prop('disabled', true)
-                    .trigger('change');
-            });
-    }
 
 
     function addItemOption() {
+
         Swal.fire({
             title: '<span class="text-xl font-semibold text-gray-800">Add Item Option</span>',
             html: `
@@ -298,7 +253,7 @@
             <!-- Type -->
             <div>
                 <label for="swal-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <input type="text" id="swal-type" name="type" required 
+                <input type="text" id="swal-type" name="type" required
                     class="w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                 <div id="type-error" class="mt-1 text-xs text-red-500"></div>
             </div>
@@ -311,8 +266,8 @@
                 <div id="description-error" class="mt-1 text-xs text-red-500"></div>
             </div>
             <!-- Link Items -->
-              
-                
+
+
         </form>
     `,
             showCancelButton: true,
@@ -415,14 +370,68 @@
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Item Option Added!',
-                    text: 'The item option has been successfully added.',
-                    timer: 2000
-                }).then(() => location.reload());
-            }
+        Swal.fire({
+            icon: 'success',
+            title: 'Item Option Added!',
+            text: 'The item option has been successfully added.',
+            timer: 2000,
+            showConfirmButton: false
+        }).then(() => {
+            addItem(); // Call addItem after success
         });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+        addItem(); // Call addItem when cancelled
+    }
+
+        });
+    }
+
+    function loadOptionsForCategory(categoryId) {
+        const optionsSelect = document.getElementById('swal-options');
+
+        // Clear existing options first
+        $(optionsSelect).empty();
+
+        // Show loading state
+        $(optionsSelect).append(new Option('Loading options...', '')).prop('disabled', true);
+
+        // Make AJAX request
+        fetch(`/api/item-options?category=${categoryId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load options');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Re-enable and clear the select
+                $(optionsSelect).empty().prop('disabled', false);
+
+                // Add the options
+                if (data.length === 0) {
+                    const noOptions = new Option('No options available for this category', '', false, false);
+                    noOptions.disabled = true;
+
+                    $(optionsSelect).append(noOptions);
+
+                } else {
+                    data.forEach(option => {
+                        const optionText = `${option.type} (${option.category_name})`;
+                        const newOption = new Option(optionText, option.id, false, false);
+                        $(optionsSelect).append(newOption);
+                    });
+                }
+
+                // Refresh Select2
+                $(optionsSelect).trigger('change');
+            })
+            .catch(error => {
+                console.error('Error loading options:', error);
+                $(optionsSelect).empty()
+                    .append(new Option('Error loading options', ''))
+                    .prop('disabled', true)
+                    .trigger('change');
+            });
     }
 
     function previewAddImage(event) {

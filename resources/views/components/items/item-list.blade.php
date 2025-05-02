@@ -39,14 +39,14 @@
                     <!-- Item Name -->
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Item Name</label>
-                        <input type="text" name="name" value="${name}" 
+                        <input type="text" name="name" value="${name}"
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                             required>
                     </div>
                     <!-- Description -->
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
-                        <textarea name="description" 
+                        <textarea name="description"
                                 class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
                                 >${description}</textarea>
                     </div>
@@ -95,7 +95,7 @@
             }
         });
     }
-    //  Confirm delete 
+    //  Confirm delete
     function confirmDeleteUlam(button) {
         Swal.fire({
             title: 'Are you sure?',
@@ -191,8 +191,8 @@
                                 <div class="flex justify-end space-x-2">
                                     <button
                                         onclick="openEditItem(
-                                            {{ $item->id }}, 
-                                            {{ json_encode($item->name) }}, 
+                                            {{ $item->id }},
+                                            {{ json_encode($item->name) }},
                                             {{ json_encode($item->description) }},
                                             window.itemOptions_{{ $item->id }},
                                             window.allItemOptions_{{ $item->id }}
@@ -204,7 +204,7 @@
                                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
                                     </button>
-                                    
+
 
 
 
@@ -228,9 +228,9 @@
                     @endforeach
                 </tbody>
             </table>
-            <div class="mt-4">
+            {{-- <div class="mt-4">
                 {{ $items->links() }}
-            </div>
+            </div> --}}
         </div>
     @endif
 </div>

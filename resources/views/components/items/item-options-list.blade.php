@@ -23,15 +23,15 @@
                     <!-- Item Type -->
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Item Type</label>
-                        <input type="text" name="type" value="${type}" 
+                        <input type="text" name="type" value="${type}"
                                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                                required>
                     </div>
-                    
+
                     <!-- Description -->
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
-                        <textarea name="description" 
+                        <textarea name="description"
                                   class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none h-32"
                                   >${description}</textarea>
                     </div>
@@ -49,8 +49,8 @@
                     <!-- Image -->
                    <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Item Image</label>
-                        <input type="file" name="image" 
-                               class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none" 
+                        <input type="file" name="image"
+                               class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                                onchange="previewImage(event)">
                         <small class="text-gray-500">Leave blank to keep the current image</small>
                         <div class="mt-2">
@@ -80,7 +80,7 @@
                         dropdown.value = categoryId;
                     }
                 }
-                
+
                 // Initialize preview image if available
                 const imagePreview = document.getElementById('imagePreview');
                 if (imagePreview && image) {
@@ -89,7 +89,7 @@
             },
             preConfirm: () => {
                 const form = document.getElementById(`editForm-${id}`);
-                
+
                 // For debugging: check the form data before submission
                 console.log("Form data before submission:");
                 console.log("Category ID:", document.getElementById(`categoryDropdown-${id}`).value);
@@ -114,7 +114,7 @@
                                     const errorMessages = Object.entries(errorData.errors)
                                         .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
                                         .join('<br>');
-                                    
+
                                     throw new Error(errorMessages);
                                 } else if (errorData.message) {
                                     throw new Error(errorData.message);
@@ -157,7 +157,7 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    //  Confirm delete 
+    //  Confirm delete
     function confirmDelete(button) {
         Swal.fire({
             title: 'Are you sure?',
@@ -216,7 +216,7 @@
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Type Column -->
                             <td class="px-6 py-4">
                                 <div class="text-lg font-semibold text-gray-900">{{ $itemOption->type }}</div>
@@ -231,14 +231,14 @@
                                     {{ $itemOption->category ? $itemOption->category->name : 'No category' }}
                                 </div>
                             </td>
-                            
+
                             <!-- Description Column (hidden on mobile) -->
                             <td class="px-6 py-4 hidden md:table-cell">
                                 <div class="text-sm text-gray-700">
                                     {{ $itemOption->description }}
                                 </div>
                             </td>
-                            
+
                             <!-- Actions Column  -->
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
@@ -263,8 +263,8 @@
                                     <form action="{{ route('itemOption.delete', $itemOption->id) }}" method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             onclick="confirmDelete(this)"
                                             class="flex items-center px-3 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 cursor-pointer transition-colors"
                                             title="Delete"
@@ -283,9 +283,9 @@
                 </tbody>
             </table>
             {{-- PAGINATE --}}
-            <div class="mt-4">
+            {{-- <div class="mt-4">
                 {{ $itemOptions->links() }}
-            </div>
+            </div> --}}
         </div>
     @endif
 </div>

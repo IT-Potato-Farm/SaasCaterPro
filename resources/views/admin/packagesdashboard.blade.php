@@ -14,9 +14,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
-    
-   
+
+
+
     <script>
         let packageItemsMapping = @json($packageItemsGroupedByPackage);
         console.log(packageItemsMapping);
@@ -118,7 +118,7 @@
                             <x-items.item-options-list :itemOptions="$itemOptions" :categories="$categories"/>
                         </div>
 
-                        
+
 
                     </div>
 
@@ -168,21 +168,9 @@
                         </div>
 
                     </div>
-
-
-
-
-
-
                 </div>
-
-
-
-
-
             </main>
         </div>
-
 
     </div>
 
@@ -232,7 +220,7 @@
                 itemsContent.classList.add('hidden');
             });
 
-          
+
 
             if (itemSelectLinker) {
                 itemSelectLinker.addEventListener('change', function() {
@@ -290,14 +278,14 @@
         document.getElementById('itemSelect').addEventListener('change', function() {
             const itemId = this.value;
             const itemOptionsSelect = document.getElementById('itemOptionsSelect');
-    
+
             // Clear previous options
             itemOptionsSelect.innerHTML = '';
-    
+
             if (itemId) {
                 // Generate the route URL using Laravel's route() helper
                 const routeUrl = `{{ route('item-options.fetch', ':itemId') }}`.replace(':itemId', itemId);
-    
+
                 // Fetch item options based on the selected item
                 fetch(routeUrl)
                     .then(response => response.json())
