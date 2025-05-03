@@ -135,7 +135,8 @@ class PackageController extends Controller
 
             Log::debug('Linked Options:', ['linked_options' => $linkedOptions]);
 
-            return redirect()->back()->with('success', 'Item options linked successfully!');
+            // return redirect()->back()->with('success', 'Item options linked successfully!');
+            // return redirect()->back();
         } catch (Exception $e) {
             Log::error('Error linking item to package: ' . $e->getMessage(), [
                 'exception' => $e->getTraceAsString()
@@ -160,16 +161,17 @@ class PackageController extends Controller
             $validated['item_option_ids'] ?? []
         );
 
-        return redirect()->back();
+        // return redirect()->back();
+        return redirect()->back()->with('success', 'Item linked to package successfully!');
+
     }
     public function addUtilToPackage(Request $request)
     {
         try {
-            // Validate the incoming data
             $request->validate([
-                'package_id' => 'required|exists:packages,id', // Ensure package exists
-                'utility_ids' => 'required|array', // Ensure utility_ids is an array
-                'utility_ids.*' => 'exists:utilities,id' // Validate each utility ID exists
+                'package_id' => 'required|exists:packages,id', 
+                'utility_ids' => 'required|array',
+                'utility_ids.*' => 'exists:utilities,id' 
             ]);
 
             $package = Package::findOrFail($request->package_id);
@@ -189,7 +191,8 @@ class PackageController extends Controller
                     ]);
                 }
             }
-            return redirect()->back()->with('success', 'Utilities linked to the package successfully.');
+            // return redirect()->back()->with('success', 'Utilities linked to the package successfully.');
+            return redirect()->back();
         } catch (Exception $e) {
             Log::error("Error linking utilities to package: " . $e->getMessage());
 

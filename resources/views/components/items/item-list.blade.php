@@ -75,13 +75,13 @@
                     form.reportValidity(); // Trigger browser validation messages
                     return false; // Prevent submission
                 }
-
+               
                 // Find current page from pagination controls
                 const paginationControls = document.getElementById("pagination-controls");
                 let currentPageToSave = 1; // Default to 1 if controls not found or no active button
                 if (paginationControls) {
                     const activeButton = paginationControls.querySelector(
-                    'button.bg-blue-500'); // Find the active button by its class
+                        'button.bg-blue-500'); // Find the active button by its class
                     if (activeButton) {
                         currentPageToSave = parseInt(activeButton.textContent, 10);
                     }

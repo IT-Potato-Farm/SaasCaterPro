@@ -76,22 +76,26 @@
 
                             <div class="mt-4">
                                 <h5 class="text-sm font-semibold text-gray-700 mb-3">Options</h5>
-                                <ul class="space-y-2">
-                                    @foreach ($packageItem->options as $packageItemOption)
-                                        <li
-                                            class="flex items-start space-x-3 p-3 bg-gray-50 rounded border border-gray-200">
-                                            <input type="checkbox" name="options[]" value="{{ $packageItemOption->id }}"
-                                                class="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
-                                            <div>
-                                                <span
-                                                    class="text-sm font-medium text-gray-700">{{ $packageItemOption->itemOption->type }}</span>
-                                                <p class="text-xs text-gray-500 mt-1">
-                                                    {{ $packageItemOption->itemOption->description ?? 'No description provided' }}
-                                                </p>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                                @if ($packageItem->options->isEmpty())
+                                    <p class="text-gray-500 italic text-sm">No options linked to this item.</p>
+                                @else
+                                    <ul class="space-y-2">
+                                        @foreach ($packageItem->options as $packageItemOption)
+                                            <li class="flex items-start space-x-3 p-3 bg-gray-50 rounded border border-gray-200">
+                                                <input type="checkbox" name="options[]" value="{{ $packageItemOption->id }}"
+                                                    class="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
+                                                <div>
+                                                    <span class="text-sm font-medium text-gray-700">
+                                                        {{ $packageItemOption->itemOption->type }}
+                                                    </span>
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        {{ $packageItemOption->itemOption->description ?? 'No description provided' }}
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                             </div>
 
                             <div class="mt-6 flex items-center gap-2">

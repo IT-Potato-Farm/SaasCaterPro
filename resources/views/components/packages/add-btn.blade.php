@@ -157,7 +157,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-sm font-medium text-gray-700">Select Items & Options*</label>
-                            <button type="button" onclick="toggleAllItems()" class="text-xs text-blue-600 hover:text-blue-800">Toggle All</button>
+                            <button type="button" onclick="toggleAllItems()" class="text-xs text-blue-600 hover:text-blue-800">Select All</button>
                         </div>
                         <div class="selection-panel">
                             @foreach ($items as $item)
@@ -192,7 +192,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-sm font-medium text-gray-700">Select Utilities</label>
-                            <button type="button" onclick="toggleAllUtilities()" class="text-xs text-blue-600 hover:text-blue-800">Toggle All</button>
+                            <button type="button" onclick="toggleAllUtilities()" class="text-xs text-blue-600 hover:text-blue-800">Select All</button>
                         </div>
                         <div class="selection-panel">
                             <div class="utility-grid">
