@@ -179,7 +179,10 @@ class AdminController extends Controller
             $sortColumn = $sortMap[$requestedSort] ?? $requestedSort;
 
             // Build the query
-            $query = Order::with('user');
+            // $query = Order::with('user');
+            $query = Order::active()->with('user');
+
+
             if ($request->filled('status')) {
                 $query->where('status', $request->input('status'));
             }

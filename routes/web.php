@@ -508,6 +508,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/orders/{order}/mark-completed', [OrderController::class, 'markAsCompleted'])->name('orders.mark-completed');
     Route::put('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::put('/orders/{order}/archive', [OrderController::class, 'archive'])->name('orders.archive');
 
 
     // PENALTY

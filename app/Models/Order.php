@@ -34,6 +34,10 @@ class Order extends Model
     {
         return $this->total - $this->amount_paid;
     }
+    public function scopeActive($query)
+    {
+        return $query->where('archived', false);
+    }
 
     public function orderItems()
     {
@@ -52,7 +56,7 @@ class Order extends Model
     public function penalties()
     {
         return $this->hasMany(Penalty::class);
-    }   
+    }
 
     public function getPaidAttribute()
     {

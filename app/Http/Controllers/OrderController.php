@@ -260,6 +260,21 @@ class OrderController extends Controller
         }
     }
 
+    public function archive($id)
+    {
+        $order = Order::findOrFail($id);
+    
+        try {
+           
+            $order->archived = true; 
+            $order->save();
+    
+            return redirect()->back()->with('success', 'Order archived successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to archive the order.');
+        }
+    }
+
     public function getUpcomingEvents()
     {
         $upcomingEvents = Order::where('event_date', '>=', now())

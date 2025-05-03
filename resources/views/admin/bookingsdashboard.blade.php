@@ -748,7 +748,6 @@
                                                 @if ($status === 'pending')
                                                     <option value="partial">Partial Payment</option>
                                                     <option value="cancel">Cancel Order</option>
-
                                                 @elseif ($status === 'partial')
                                                     <option value="ongoing">Ongoing</option>
                                                 @elseif ($status === 'ongoing')
@@ -758,13 +757,18 @@
                                                     {{-- <option value="unpaid">Mark Unpaid</option> --}}
                                                 @elseif ($status === 'completed')
                                                     {{-- <option value="unpaid">Mark Unpaid</option> --}}
-                                                    <option value="delete">Delete Order</option>
+                                                    {{-- <option value="delete">Delete Order</option> --}}
+                                                    <option value="archive">Archive Order</option>
                                                 @elseif ($status === 'cancelled')
-
                                                     <option value="delete">Delete Order</option>
                                                 @endif
 
-                                                @if ($status !== 'pending' && $status !=='paid' && $status !=='partial' && $status !== 'completed'  && $status !== 'cancelled')
+                                                @if (
+                                                    $status !== 'pending' &&
+                                                        $status !== 'paid' &&
+                                                        $status !== 'partial' &&
+                                                        $status !== 'completed' &&
+                                                        $status !== 'cancelled')
                                                     <option value="penalty">Add Penalty</option>
                                                 @endif
                                             </select>
@@ -787,6 +791,8 @@
                                                 <span id="cancel-btn-{{ $order->id }}"><x-actions.cancel-button
                                                         :order="$order" /></span>
                                                 <span id="penalty-btn-{{ $order->id }}"><x-actions.penalty-button
+                                                        :order="$order" /></span>
+                                                <span id="archive-btn-{{ $order->id }}"><x-actions.archive-button
                                                         :order="$order" /></span>
                                                 <span id="delete-btn-{{ $order->id }}"><x-actions.delete-button
                                                         :order="$order" /></span>
@@ -908,8 +914,8 @@
                         </div>
 
 
-                         <!-- Legend -->
-                         <div class="flex flex-wrap gap-4 justify-center mt-6">
+                        <!-- Legend -->
+                        <div class="flex flex-wrap gap-4 justify-center mt-6">
                             <div class="flex items-center space-x-2">
                                 <span class="w-4 h-4 rounded bg-yellow-400"></span>
                                 <span class="text-sm text-gray-800">Pending Order</span>
