@@ -308,40 +308,47 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         <!-- Sales Overview Chart -->
                         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-lg font-semibold text-gray-800">Sales Overview</h2>
-                                <div class="flex flex-col lg:flex-row gap-2 items-start lg:items-center">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mb-6 flex-wrap">
+                            
+                            <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-800">
+                                Sales Overview
+                            </h2>
 
-                                    <button onclick="toggleCustomDateFilter()"
-                                        class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-300">
-                                        Use Custom Date Range
+                            <!-- Filter Controls -->
+                            <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center flex-wrap">
+                                <button id="customDateBtn" onclick="showCustomDateFilter()"
+                                    class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-300">
+                                    Use Custom Date Range
+                                </button>
+
+                                <button id="backToPresetBtn" onclick="backToPreset()"
+                                    class="hidden bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-300">
+                                    Back to Preset Dates
+                                </button>
+
+                                <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
+                                    class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="today" selected>Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="thisWeek">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="sixMonths">Last 6 Months</option>
+                                    <option value="year">This Year</option>
+                                    <option value="lastYear">Last Year</option>
+                                </select>
+
+                                
+                                <div id="customDateRange" class="hidden flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                                    <input type="date" id="startDate" class="px-2 py-1 border rounded-md text-sm" />
+                                    <input type="date" id="endDate" class="px-2 py-1 border rounded-md text-sm" />
+                                    <button onclick="filterCustomDateRange()"
+                                        class="bg-blue-500 text-white text-sm px-3 py-1 rounded-md">
+                                        Filter
                                     </button>
-
-                                    <select id="salesRangeSelect" onchange="filterChartSales(this.value)"
-                                        class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="today" selected>Today</option>
-                                        <option value="yesterday">Yesterday</option>
-                                        <option value="thisWeek">This Week</option>
-                                        <option value="month">This Month</option>
-                                        <option value="sixMonths">Last 6 Months</option>
-                                        <option value="year">This Year</option>
-                                        <option value="lastYear">Last Year</option>
-                                    </select>
-
-                                    <!-- Custom Date Range (Initially Hidden) -->
-                                    <div id="customDateRange" class="hidden flex gap-2 items-center">
-                                        <input type="date" id="startDate"
-                                            class="px-2 py-1 border rounded-md text-sm" />
-                                        <input type="date" id="endDate"
-                                            class="px-2 py-1 border rounded-md text-sm" />
-                                        <button onclick="filterCustomDateRange()"
-                                            class="bg-blue-500 text-white text-sm px-3 py-1 rounded-md">
-                                            Filter
-                                        </button>
-                                    </div>
-
                                 </div>
                             </div>
+                        </div>
+
 
                             <div id="totalRevenueLabel" class="mb-4 text-sm font-medium text-gray-500">
                                 Total Revenue: <span id="totalRevenueValue"
@@ -591,19 +598,28 @@
             document.getElementById('orderDetailsModal').classList.add('hidden');
         }
 
-        function toggleCustomDateFilter() {
-            const dateRangeDiv = document.getElementById('customDateRange');
+        function showCustomDateFilter() {
+            const customRange = document.getElementById('customDateRange');
             const selectRange = document.getElementById('salesRangeSelect');
+            const backBtn = document.getElementById('backToPresetBtn');
+            const customBtn = document.getElementById('customDateBtn');
 
-            if (dateRangeDiv.classList.contains('hidden')) {
-                // Show date range, hide select
-                dateRangeDiv.classList.remove('hidden');
-                selectRange.classList.add('hidden');
-            } else {
-                // Hide date range, show select
-                dateRangeDiv.classList.add('hidden');
-                selectRange.classList.remove('hidden');
-            }
+            customRange.classList.remove('hidden');
+            selectRange.classList.add('hidden');
+            backBtn.classList.remove('hidden');
+            customBtn.classList.add('hidden');
+        }
+
+        function backToPreset() {
+            const customRange = document.getElementById('customDateRange');
+            const selectRange = document.getElementById('salesRangeSelect');
+            const backBtn = document.getElementById('backToPresetBtn');
+            const customBtn = document.getElementById('customDateBtn');
+
+            customRange.classList.add('hidden');
+            selectRange.classList.remove('hidden');
+            backBtn.classList.add('hidden');
+            customBtn.classList.remove('hidden');
         }
     </script>
 
