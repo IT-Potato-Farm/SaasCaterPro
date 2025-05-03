@@ -760,7 +760,8 @@
                                                     {{-- <option value="delete">Delete Order</option> --}}
                                                     <option value="archive">Archive Order</option>
                                                 @elseif ($status === 'cancelled')
-                                                    <option value="delete">Delete Order</option>
+                                                    <option value="archive">Archive Order</option>
+                                                    {{-- <option value="delete">Delete Order</option> --}}
                                                 @endif
 
                                                 @if (
